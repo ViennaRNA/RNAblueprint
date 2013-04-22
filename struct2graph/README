@@ -1,0 +1,18 @@
+INSTALL
+------------------------------------------------------------------------------
+required packages:
+boost-dev
+libboost-program-options-dev
+build-essentials
+
+---
+make clean
+make
+
+
+HOWTO
+------------------------------------------------------------------------------
+./struct2graph --help will help!
+./struct2graph < input > output              works too,
+./struct2graph -in file -out fileprefix      also works well, and
+./struct2graph                               will give you a pseudo UI!
