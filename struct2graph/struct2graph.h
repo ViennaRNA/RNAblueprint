@@ -85,8 +85,24 @@ void connected_components_to_subgraphs(Graph& g);
 // finds connected components with DFS
 void biconnected_components_to_subgraphs(Graph& g);
 
+// typedefs for ear decomposition
+typedef std::pair<Graph::vertex_descriptor, Graph::vertex_descriptor> edge_t;
+typedef std::map<edge_t, edge_t> ear_t;
+// struct to remember coloring, time, parents of a vertex
+struct property {
+	int color;
+	int preorder;
+	Graph::vertex_descriptor parent;
+	Graph::vertex_descriptor low;
+	edge_t ear;
+};
+typedef std::map<Graph::vertex_descriptor, property> ear_propertymap_t;
+
 // ear decomposition of blocks
 void ear_decomposition(Graph& g, Graph::vertex_descriptor startVertex);
+
+// actual dfs for ear decomposition
+void ear_dfs(Graph& g, Graph::vertex_descriptor v, ear_propertymap_t& p, ear_t& ear, unsigned int& counter);
 
 
 

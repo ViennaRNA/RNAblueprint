@@ -32,6 +32,16 @@ std::ostream& operator<< (std::ostream& os, std::map<U, V>& m) {
 	return os;
 }
 
+// lexmin implementation for pairs of any type
+template <typename T>
+std::pair<T, T>& lexmin(std::pair<T, T>& a, std::pair<T, T>& b) {
+	if (a.first == b.first) {
+		return !(b.second<a.second)?a:b;
+	} else {
+		return !(b.first<a.first)?a:b;
+	}
+}
+
 //! main program starts here
 int main() {
 
@@ -67,11 +77,23 @@ int main() {
 		if (verbose) { std::cerr << "Max degree of subgraph is: " << max_degree << std::endl; }
 		
 		// split further into biconnected components
-		if (max_degree > 3) {
+		if (max_degree >= 3) {
 			biconnected_components_to_subgraphs(*ci);
 			
 			*out << "subgraphs biconnected components:" << std::endl;
 			print_subgraphs(*ci, out);			// print the just created subgraphs
+			
+			Graph::children_iterator ci_b, ci_b_end;
+			for (boost::tie(ci_b, ci_b_end) = (*ci).children(); ci_b != ci_b_end; ++ci_b) {
+				// calculate the max degree of this graph
+				int max_degree = get_max_degree(*ci_b);
+				if (max_degree >= 3) {
+					ear_decomposition(*ci_b, boost::vertex(0, *ci_b));
+					
+					*out << "subgraphs ear decomposition:" << std::endl;
+					print_subgraphs(*ci_b, out);			// print the just created subgraphs
+				}
+			}
 		}
 	}
 	
@@ -259,6 +281,7 @@ void biconnected_components_to_subgraphs(Graph& g) {
 			}
 		}
 	}
+	
 }
 
 int get_max_degree(Graph& g) {
@@ -335,55 +358,110 @@ bool is_bipartite_graph(Graph& g, Graph::vertex_descriptor startVertex, Graph::e
 }
 
 void ear_decomposition(Graph& g, Graph::vertex_descriptor startVertex) {
-
-	// struct to remember coloring, time, parents of a vertex
-	struct property {
-		int color;
-		int DFN;
-		Graph::vertex_descriptor parent;
-	};
-	// map of property for all vertices as key
-	std::map<Graph::vertex_descriptor, property> p;
+	// blocks need to be decomposed into path. this can be conde by Ear Decomposition
 	
-	// time starts at 1
-	unsigned int counter = 1;
-		
-	enum { WHITE, BLACK, GRAY };
+	// map of ear decomposition properties for all vertices as key
+	ear_propertymap_t p;
+	// map of ear structure.
+	ear_t ear;
+	// time starts at 0
+	unsigned int counter = 0;
 
 	if (verbose) { std::cout << "StartVertex is: " << startVertex << std::endl; }
-	Graph::vertex_descriptor u = startVertex;
+	// Algorithm rom Ramachandran (1992) Parallel Open Ear Decomposition with Applications, page 8/9
+	ear_dfs(g, startVertex, p, ear, counter);
+	
+	// print out all data-structures at the end
+	if (verbose) { 
+		std::cerr << "index\tcolor\tporder\tparent\tlow\tear" << std::endl;
+		for (ear_propertymap_t::iterator it = p.begin(); it != p.end(); it++) {
+			std::cerr << it->first << "\t" << 
+        		it->second.color << "\t" <<
+        		it->second.preorder << "\t" <<
+        		it->second.parent << "\t" <<
+        		it->second.low << "\t" <<
+        		it->second.ear.first << "," <<
+        		it->second.ear.second << std::endl;
+		}
+		std::cerr << "index\tear" << std::endl;
+		for (ear_t::iterator it = ear.begin(); it != ear.end(); it++) {
+			std::cerr << it->first.first << "," <<
+			it->first.second << "\t" <<
+			it->second.first << "," <<
+			it->second.second << std::endl;
+		}
+		std::cerr << "counter: " << counter << std::endl;	
+	}
+	
+	// create subgraphs from decomposed ears
+	std::vector<edge_t> found;
+	for (ear_t::iterator it = ear.begin(); it != ear.end(); it++) {
+		if (!(std::find(found.begin(), found.end(), it->second) != found.end())) {
+			// for each ear create a new subgraph
+			Graph& subg = g.create_subgraph();
+			//boost::put(&graph_properties::level, g, "decomposed_ears");
+			if (verbose) { 	std::cerr << "New subgraph for ear (" << it->second.first << "," << it->second.second << ")" << std::endl 
+					<< "Vertices will be included in subgraph: "; }
+			for (ear_t::iterator ti = it; ti != ear.end(); ti++) {
+				if (ti->second == it->second) {
+					found.push_back(ti->second);
+					// add vertex into current subgraph if not present already
+					if (!subg.find_vertex(ti->first.first).second) {
+						boost::add_vertex(ti->first.first, subg);
+						if (verbose) { std::cerr << " " << ti->first.first; }
+					}
+					if (!subg.find_vertex(ti->first.second).second) {
+						boost::add_vertex(ti->first.second, subg);
+						if (verbose) { std::cerr << " " << ti->first.second; }
+					}
+				}
+			}
+			if (verbose) { 	std::cerr << std::endl; }
+		}
+	}
+}
+
+void ear_dfs(Graph& g, Graph::vertex_descriptor v, ear_propertymap_t& p, ear_t& ear, unsigned int& counter) {
+	
+	enum { WHITE, BLACK, GRAY };
+	if (verbose) { std::cout << "v is: " << v << std::endl; }
 	
 	// start ear decomposition
-	p[u].color = GRAY;
-	p[u].DFN = counter;
+	p[v].color = GRAY;
+	p[v].preorder = counter;
 	counter++;
+	p[v].low = boost::num_vertices(g);
+	p[v].ear = std::make_pair(boost::num_vertices(g), boost::num_vertices(g));
 	
 	// get neighbouring vertices
 	typename Graph::out_edge_iterator ei, ei_end;
-	for (boost::tie(ei, ei_end) = boost::out_edges(u, g);  ei != ei_end; ++ei)
+	for (boost::tie(ei, ei_end) = boost::out_edges(v, g);  ei != ei_end; ++ei)
 	{
 		if (verbose) { std::cerr << boost::target(*ei, g) <<" is neighbour through edge: " << *ei << std::endl; }
-		int v = boost::target(*ei, g);
-		if (verbose) { std::cout << "v is: " << v << std::endl; }
+		Graph::vertex_descriptor w = boost::target(*ei, g);
+		if (verbose) { std::cout << "w is: " << w << std::endl; }
 		
-		if (p[v].color == WHITE) {
-			p[v].parent = u;
-			ear_decomposition(g, v);
-//			if (low[v] <= p[v].DFN) {
-//				ear(p[v].parent, v) = (-1, -1);
-//			} else if (low[v] <= p[v].DFN) {
-//				ear(p[v].parent, v) = ear(v);
-//				low[u] = min{low[u],low[v]};
-//				ear[u] = lexmin{ear[u], ear[v]};
-//			}
-		} else if (p[v].color == GRAY) {
-			if ((int) v != (int) p[u].parent) {
-//				low[u] = min{low[u], DFN[v]};
-//				ear(v,u) = (p[v].DFN, p[u].DFN);
-//				ear[u] = lexmin{ear[u], ear(v,u)};
+		if (p[w].color == WHITE) {
+			if (verbose) { std::cout << "w is white" << std::endl; }
+			p[w].parent = v;
+			// start new iteration here
+			ear_dfs(g, w, p, ear, counter);
+			if (p[w].low >= p[w].preorder) {
+				ear[std::make_pair(p[w].parent, w)] = std::make_pair(std::numeric_limits<int>::max(), std::numeric_limits<int>::max());
+			} else {
+				ear[std::make_pair(p[w].parent, w)] = p[w].ear;
+			}
+				p[v].low = std::min((int) p[v].low, (int) p[w].low);
+				p[v].ear = lexmin(p[v].ear, p[w].ear);
+		} else if (p[w].color == GRAY) {
+			if (verbose) { std::cout << "w is gray" << std::endl; }
+			if (w != p[w].parent) {
+				p[v].low = boost::vertex(std::min((int) p[v].low, p[w].preorder), g);
+				ear[std::make_pair(w, v)] = std::make_pair(boost::vertex(p[w].preorder, g), boost::vertex(p[v].preorder, g));
+				p[v].ear = lexmin(p[v].ear, ear[std::make_pair(w, v)]);
 			}
 		}
 	}
-	p[u].color = BLACK;
+	p[v].color = BLACK;
 }
 
