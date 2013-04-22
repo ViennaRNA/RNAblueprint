@@ -76,7 +76,7 @@ int main() {
 		int max_degree = get_max_degree(*ci);
 		if (verbose) { std::cerr << "Max degree of subgraph is: " << max_degree << std::endl; }
 		
-		// split further into biconnected components
+		// split further into biconnected components do ear decomposition
 		if (max_degree >= 3) {
 			biconnected_components_to_subgraphs(*ci);
 			
@@ -272,11 +272,11 @@ void biconnected_components_to_subgraphs(Graph& g) {
 		for (boost::tie(ei, ei_end) = boost::edges(g); ei != ei_end; ++ei) {
 			if (i == component[*ei]) {
 				// add vertex into current subgraph if not present already
-				if (!subg.find_vertex(boost::get(boost::vertex_color_t(), g, boost::source(*ei,g))).second) {
-					boost::add_vertex(boost::get(boost::vertex_color_t(), g, boost::source(*ei,g)), subg);
-				}
 				if (!subg.find_vertex(boost::get(boost::vertex_color_t(), g, boost::target(*ei, g))).second) {
 					boost::add_vertex(boost::get(boost::vertex_color_t(), g, boost::target(*ei, g)), subg);
+				}
+				if (!subg.find_vertex(boost::get(boost::vertex_color_t(), g, boost::source(*ei,g))).second) {
+					boost::add_vertex(boost::get(boost::vertex_color_t(), g, boost::source(*ei,g)), subg);
 				}
 			}
 		}
@@ -446,7 +446,7 @@ void ear_dfs(Graph& g, Graph::vertex_descriptor v, ear_propertymap_t& p, ear_t& 
 			p[w].parent = v;
 			// start new iteration here
 			ear_dfs(g, w, p, ear, counter);
-			if (p[w].low >= p[w].preorder) {
+			if ((int) p[w].low >= p[w].preorder) {
 				ear[std::make_pair(p[w].parent, w)] = std::make_pair(std::numeric_limits<int>::max(), std::numeric_limits<int>::max());
 			} else {
 				ear[std::make_pair(p[w].parent, w)] = p[w].ear;
@@ -462,6 +462,7 @@ void ear_dfs(Graph& g, Graph::vertex_descriptor v, ear_propertymap_t& p, ear_t& 
 			}
 		}
 	}
+	if (verbose) { std::cout << "finishing vertex " << v << std::endl; }
 	p[v].color = BLACK;
 }
 
