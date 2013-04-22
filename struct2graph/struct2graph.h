@@ -62,6 +62,9 @@ typedef boost::subgraph< boost::adjacency_list< boost::vecS, boost::vecS, boost:
 	boost::property< boost::vertex_color_t, int, vertex_property >,
 	boost::property< boost::edge_index_t, int, boost::property < boost::edge_component_t, std::size_t, edge_property> > > > Graph;
 
+// initialise boost command line option parser
+boost::program_options::variables_map init_options(int ac, char* av[]);
+
 // read the input file into a string
 std::vector<std::string> read_input(std::istream* in);
 

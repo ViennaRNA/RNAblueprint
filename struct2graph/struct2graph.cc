@@ -47,42 +47,16 @@ std::pair<T, T>& lexmin(std::pair<T, T>& a, std::pair<T, T>& b) {
 //! main program starts here
 int main(int ac, char* av[]) {
 
-	// boost option parser
-	namespace po = boost::program_options;
-	po::options_description desc("Options");
-	desc.add_options()
-	    ("help", "print help message")
-	    ("verbose", "be verbose")
-	    ("in", po::value<std::string>(), "file to open which contains the structures.")
-	    ("write-graphml", po::value<std::string>(), "write all (sub)graphs to gml files starting with (STRING)")
-	;
-
-	po::variables_map vm;
-	po::store(po::parse_command_line(ac, av, desc), vm);
-	po::notify(vm);  
-
-	if (vm.count("help")) {
-		std::cout << desc << "\n";
-		return 1;
-	}
-	if (vm.count("verbose")) {
-		verbose = true;
-	}
-	if (vm.count("write-graphml")) {
-		if (verbose) { std::cerr << "graphml files will be written." << std::endl; }
-		outfile = vm["write-graphml"].as<std::string>();
-	} else {
-		if (verbose) { std::cerr << "grapml goes to std-out" << std::endl; }
-	}
+	// initialize command line options
+	boost::program_options::variables_map vm = init_options(ac, av);
 	
 	// input handling ( we read from std:in per default and switch to a file if it is given in the --in option
-	std::istream* in = &std::cin;			// in stream
+	// std::in will provide a pseudo interface to enter structures directly!
 	std::vector<std::string> structures;
 	
 	if (vm.count("in")) {
 		if (verbose) { std::cerr << "will read graphml file given in the options." << std::endl; }
-		
-		std::ifstream* infile = new std::ifstream(vm["in"].as<std::string>(), std::ifstream::in);
+			std::ifstream* infile = new std::ifstream(vm["in"].as<std::string>(), std::ifstream::in);
 		if (infile->is_open()) {
 			structures = read_input(infile);
 			infile->close();
@@ -91,16 +65,17 @@ int main(int ac, char* av[]) {
 			return 1;
 		}
 	} else {
-		structures = read_input(in);		// read infile into array
+		std::cerr << "Input structures (one per line); @ to quit" << std::endl
+		<< "....,....1....,....2....,....3....,....4....,....5....,....6....,....7....,....8" << std::endl;
+		structures = read_input(&std::cin);		// read infile into array
 	}
 	
 	std::ostream* out = &std::cout;			// out stream
 	
 	// variables
 	Graph graph = parse_graph(structures);		// generate graph from input vector
-
-	print_graph(graph, out, "graph");			// print the graph as GML to a ostream
-
+	*out << "dependency graph:";
+	print_graph(graph, out, "root-graph");		// print the graph as GML to a ostream
 	connected_components_to_subgraphs(graph);	// get connected components and make subgraphs
 
 	*out << "subgraphs connected components:" << std::endl;
@@ -150,10 +125,40 @@ int main(int ac, char* av[]) {
 	return 0;
 }
 
+boost::program_options::variables_map init_options(int ac, char* av[]) {
+	// boost option parser
+	namespace po = boost::program_options;
+	po::options_description desc("Options");
+	desc.add_options()
+	    ("help", "print help message [boolean]")
+	    ("verbose", "be verbose [boolean]")
+	    ("in", po::value<std::string>(), "file to open which contains the structures [string]")
+	    ("out", po::value<std::string>(), "write all (sub)graphs to gml files starting with given name [string]")
+	;
+
+	po::variables_map vm;
+	po::store(po::parse_command_line(ac, av, desc), vm);
+	po::notify(vm);  
+
+	if (vm.count("help")) {
+		std::cout << desc << "\n";
+		exit(1);
+	}
+	if (vm.count("verbose")) {
+		verbose = true;
+	}
+	if (vm.count("out")) {
+		if (verbose) { std::cerr << "graphml files will be written to file." << std::endl; }
+		outfile = vm["out"].as<std::string>();
+	} else {
+		if (verbose) { std::cerr << "grapml files go to std-out" << std::endl; }
+	}
+	
+	return vm;
+}
+
 std::vector<std::string> read_input(std::istream* in) {
 	// read input file
-	std::cerr << "Input structures (one per line); @ to quit" << std::endl
-		<< "....,....1....,....2....,....3....,....4....,....5....,....6....,....7....,....8" << std::endl;
 	std::string line;
 	std::vector<std::string> structures;
 	while (!in->eof()) {
@@ -176,12 +181,14 @@ std::vector<std::string> read_input(std::istream* in) {
 		}
 		length = elem.length();
 	}
-	
 	return structures;
 }
 
 Graph parse_graph(std::vector<std::string> structures) {
+	// exit if there is no input
+	if (structures.empty()) { exit(1); }
 	
+	// count the number of positons
 	int num_vertices = structures[0].length();
 	if (verbose) { std::cerr << "Generating Graph with " << num_vertices << " vertices." << std::endl; }
 	Graph g(num_vertices);
@@ -216,10 +223,13 @@ Graph parse_graph(std::vector<std::string> structures) {
 				// reset value
 				pair_table[open] = pos;
 				if (verbose) { std::cerr << elem[pos] << ", open count: "<< open; }
+			} else if (elem[pos] != '.') {
+				std::cerr << std::endl << "Unknown character in dot bracked representation" << std::endl;
+				exit(1);
 			}
 			// error handling: there can't be more closing brackets than opening ones
 			if (open < 0) {
-				std::cerr << std::endl << "unbalanced brackets in make_pair_table" << std::endl;
+				std::cerr << std::endl << "Unbalanced brackets in make_pair_table" << std::endl;
 				exit(1);
 			}
 			if (verbose) { std::cerr  << " pos count:" << pos << std::endl; }
@@ -250,15 +260,16 @@ void print_graph(Graph& g, std::ostream* out, std::string nametag) {
 			boost::write_graphml(graphfile, g, dp, true);
 			graphfile << std::endl;
 			graphfile.close();
+			*out << " done!" << std::endl;
 		} else {
-			std::cerr << "Unable to create graph files!" << std::endl;
+			std::cerr << " Unable to create graphml file!" << std::endl;
 		}
 	} else {
+		*out << std::endl;
 		boost::write_graphml(*out, g, dp, true);
 		*out << std::endl;
+		std::cerr << "created graphml!" << std::endl;
 	}
-	
-	if (verbose) { std::cerr << "Generated the output GML graph." << std::endl; }
 }
 
 void print_subgraphs(Graph& g, std::ostream* out, std::string nametag) {
@@ -267,7 +278,7 @@ void print_subgraphs(Graph& g, std::ostream* out, std::string nametag) {
 	for (boost::tie(ci, ci_end) = g.children(); ci != ci_end; ++ci) {
 		std::stringstream name;
 		name << nametag << "-" << num++;
-		*out << name.str() << ":" << std::endl;
+		*out << name.str() << ":";
 		print_graph(*ci, out, name.str());
 	}
 	if (verbose) { std::cerr << "Printed all sugraphs." << std::endl; }
