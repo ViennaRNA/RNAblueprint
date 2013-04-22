@@ -1,0 +1,389 @@
+/* This program reads secundary RNA structures in dot-bracket and
+* builds a graph for a latter ear-decomposition and bipartitness-check
+*
+* Created on: 25.03.2013
+* Author: Stefan Hammer <s.hammer@univie.ac.at>
+* License: GPLv3
+*
+* Compile with: g++ -std=c++11 -g -o struct2graph struct2graph.cc
+*/
+
+// include header
+#include "struct2graph.h"
+
+bool verbose = true;
+
+// overload << operator to print vectors with any content
+template <typename T>
+std::ostream& operator<< (std::ostream& os, std::vector<T>& vec) {
+	int i = 0;
+	for (auto elem : vec) {
+		os << "(" << i++ << ") " << elem << std::endl;
+	}
+	return os;
+}
+
+// overload << operator to print maps with any content
+template <typename U, typename V>
+std::ostream& operator<< (std::ostream& os, std::map<U, V>& m) {
+	for (typename std::map<U, V>::iterator it = m.begin(); it != m.end(); it++) {
+        	os << it->first << "," << it->second << std::endl;
+	}
+	return os;
+}
+
+//! main program starts here
+int main() {
+
+	// variables
+	std::istream* in = &std::cin;			// in stream
+	std::ostream* out = &std::cout;			// out stream
+
+	std::vector<std::string> structures = read_input(in);	// read infile into array
+	Graph graph = parse_graph(structures);		// generate graph from input vector
+
+	print_graph(graph, out);			// print the graph as GML to a ostream
+
+	connected_components_to_subgraphs(graph);	// get connected components and make subgraphs
+
+	*out << "subgraphs connected components:" << std::endl;
+	print_subgraphs(graph, out);			// print the just created subgraphs
+	
+	// iterate over all subgraphs (connected components)
+	Graph::children_iterator ci, ci_end;
+	for (boost::tie(ci, ci_end) = graph.children(); ci != ci_end; ++ci) {
+		// check if subgraph is bipartite with a simple BFS
+		// generate the vertex 0 as vertex_descriptor
+		Graph::vertex_descriptor s = boost::vertex(0, *ci);
+		// generate a edge_descriptor in case the graph is not bipartite
+		Graph::edge_descriptor ed;
+		if (!is_bipartite_graph(*ci, s, ed)) {
+			std::cerr << "Graph is not bipartite! Conflict detected on edge " << ed << std::endl;
+			exit(1);
+		}
+		
+		// calculate the max degree of this graph
+		int max_degree = get_max_degree(*ci);
+		if (verbose) { std::cerr << "Max degree of subgraph is: " << max_degree << std::endl; }
+		
+		// split further into biconnected components
+		if (max_degree > 3) {
+			biconnected_components_to_subgraphs(*ci);
+			
+			*out << "subgraphs biconnected components:" << std::endl;
+			print_subgraphs(*ci, out);			// print the just created subgraphs
+		}
+	}
+	
+	return 0;
+}
+
+std::vector<std::string> read_input(std::istream* in) {
+	// read input file
+	if (verbose) { std::cerr << "Reading file..." << std::endl; }
+	std::string line;
+	std::vector<std::string> structures;
+	while (!in->eof()) {
+		getline (*in,line);
+		if (line.length() != 0) {
+			structures.push_back(line);
+		}
+	}
+
+	if (verbose) { std::cerr << "Read following structures:" << std::endl; }
+	// check if structures have equeal length
+	unsigned int length = 0;
+	for (auto elem : structures) {
+		if (verbose) { std::cerr << elem << std::endl; }
+		if ((length != elem.length()) && (length != 0)){
+			std::cerr << "Structures have unequal length." << std::endl;
+			exit(1);
+		}
+		length = elem.length();
+	}
+	
+	return structures;
+}
+
+Graph parse_graph(std::vector<std::string> structures) {
+	
+	int num_vertices = structures[0].length();
+	if (verbose) { std::cerr << "Generating Graph with " << num_vertices << " vertices." << std::endl; }
+	Graph g(num_vertices);
+	
+	// give the vertices names
+	int vertex_name = 0;
+	Graph::vertex_iterator v, v_end;
+	for (boost::tie(v,v_end) = boost::vertices(g); v != v_end; ++v) {
+		boost::put(boost::vertex_color_t(), g, *v, vertex_name++);
+	}
+
+	// iterate over structures from input
+	for (auto elem : structures) {
+		std::vector<int> pair_table(structures[0].length(), 0);		// remember position of the open bracket
+		unsigned int pos = 0;							// position of the character in the structure
+		unsigned int open = 0;							// remember how many open brackets there are
+		// iterate over characters from structure
+		while (pos < elem.length()) {
+			if (elem[pos] == '(') {
+				pair_table[open] = pos;
+				if (verbose) { std::cerr << elem[pos] << ", open count: "<< open; }
+				open++;
+			} else if (elem[pos] == ')') {
+				open--;
+				// check if edge already exists
+				bool exists_ab = boost::edge(boost::vertex(pair_table[open],g), boost::vertex(pos,g), g).second;
+				bool exists_ba = boost::edge(boost::vertex(pos,g), boost::vertex(pair_table[open],g), g).second;
+				if (!exists_ab && !exists_ba) {
+					// add edge
+					boost::add_edge(boost::vertex(pair_table[open],g), boost::vertex(pos,g), g);
+				}
+				// reset value
+				pair_table[open] = pos;
+				if (verbose) { std::cerr << elem[pos] << ", open count: "<< open; }
+			}
+			// error handling: there can't be more closing brackets than opening ones
+			if (open < 0) {
+				std::cerr << std::endl << "unbalanced brackets in make_pair_table" << std::endl;
+				exit(1);
+			}
+			if (verbose) { std::cerr  << " pos count:" << pos << std::endl; }
+			pos++;
+		}
+		// error handling: at the end all brackets must be closed again!
+		if (open != 0) {
+			std::cerr << std::endl << "too few closed brackets in make_pair_table" << std::endl;
+			exit(1);
+		}
+	}
+	
+	return g;
+}
+
+void print_graph(Graph& g, std::ostream* out) {
+
+	// print vertex and edge properties from my self defined bundled properties
+	boost::dynamic_properties dp;
+	dp.property("name", boost::get(boost::vertex_color_t(), g));
+	dp.property("bipartite_color", boost::get(&vertex_property::bipartite_color, g));
+
+	boost::write_graphml(*out, g, dp, true);
+	*out << std::endl;
+	if (verbose) { std::cerr << "Generated the output GML graph." << std::endl; }
+}
+
+void print_subgraphs(Graph& g, std::ostream* out) {
+	Graph::children_iterator ci, ci_end;
+	int num = 1;
+	for (boost::tie(ci, ci_end) = g.children(); ci != ci_end; ++ci) {
+		*out << "Subgraph " << num++ << ":" << std::endl;
+		print_graph(*ci, out);
+	}
+	if (verbose) { std::cerr << "Printed all sugraphs." << std::endl; }
+}
+
+void connected_components_to_subgraphs(Graph& g) {
+	
+	// get list of connected components into the component vector
+	// http://www.boost.org/doc/libs/1_53_0/libs/graph/doc/connected_components.html
+	// http://www.boost.org/doc/libs/1_53_0/libs/graph/example/connected_components.cpp
+	std::vector<int> component(boost::num_vertices(g));
+	int num = boost::connected_components(g, &component[0]);
+	
+	if (verbose) { 
+		std::cerr << "Number of connected components: " << num << std::endl;
+		std::cerr << component << std::endl; 
+	}
+	
+	// iterate over connected component numbers
+	for (int i = 0; i != num; ++i) {
+		// for each component number generate a new subgraph
+		Graph& subg = g.create_subgraph();
+		//boost::put(&graph_properties::level, g, "connected_component");
+		int vertex = 0;
+		// iterate over elements of connected_components
+		for (auto elem : component) {
+			if (i == elem) {
+				// add vertex into current subgraph
+				boost::add_vertex(vertex, subg);
+			}
+			vertex++;
+		}
+	}
+}
+
+void biconnected_components_to_subgraphs(Graph& g) {
+
+	// // get list of biconnected components into the component property map
+	// http://www.boost.org/doc/libs/1_53_0/libs/graph/doc/biconnected_components.html
+	// http://www.boost.org/doc/libs/1_38_0/libs/graph/example/biconnected_components.cpp
+	boost::property_map < Graph, boost::edge_component_t >::type component = boost::get(boost::edge_component, g);
+	unsigned int num = boost::biconnected_components(g, component);
+	if (verbose) { std::cerr << "Number of biconnected components: " << num << std::endl; }
+	
+	std::vector<Graph::vertex_descriptor> art_points;
+	boost::articulation_points(g, std::back_inserter(art_points));
+	if (verbose) {	std::cerr << "Number of articulation points: " << art_points.size() << " ( "; 
+		for (auto elem : art_points) {
+			std::cerr << boost::get(boost::vertex_color_t(), g, elem) << " ";
+		}
+		std::cerr << ")" << std::endl;	
+	}
+	
+	// get graph and iterate over its edges
+	typename Graph::edge_iterator ei, ei_end;
+	for (boost::tie(ei, ei_end) = boost::edges(g); ei != ei_end; ++ei) {
+		std::cerr << *ei << "\t" <<  "(" << boost::get(boost::vertex_color_t(), g, boost::source(*ei, g)) << "," 
+		<< boost::get(boost::vertex_color_t(), g, boost::target(*ei, g))<< ")" << "\tcomponent: " << component[*ei] << std::endl;
+	}
+	
+	// now need to merge biconnected components that are separated by a articulation point that has a degree == 2 ?!
+	
+	// write biconnected components into subgraphs:
+	for (unsigned int i = 0; i != num; i++) {
+		// for each bicomponent number generate a new subgraph
+		Graph& subg = g.create_subgraph();
+		//boost::put(&graph_properties::level, g, "biconnected_component");
+		// iterate over edges of graph
+		//Graph rg = g.root();
+		typename Graph::edge_iterator ei, ei_end;
+		for (boost::tie(ei, ei_end) = boost::edges(g); ei != ei_end; ++ei) {
+			if (i == component[*ei]) {
+				// add vertex into current subgraph if not present already
+				if (!subg.find_vertex(boost::get(boost::vertex_color_t(), g, boost::source(*ei,g))).second) {
+					boost::add_vertex(boost::get(boost::vertex_color_t(), g, boost::source(*ei,g)), subg);
+				}
+				if (!subg.find_vertex(boost::get(boost::vertex_color_t(), g, boost::target(*ei, g))).second) {
+					boost::add_vertex(boost::get(boost::vertex_color_t(), g, boost::target(*ei, g)), subg);
+				}
+			}
+		}
+	}
+}
+
+int get_max_degree(Graph& g) {
+	int max_degree = 0;
+	typename Graph::vertex_iterator vi, vi_end;
+	for (boost::tie(vi, vi_end) = boost::vertices(g);  vi != vi_end; ++vi) {
+		int current_degree = boost::out_degree(*vi, g);
+		if (current_degree > max_degree) {
+			max_degree = current_degree;
+		}
+	}
+	return max_degree;
+}
+
+bool is_bipartite_graph(Graph& g, Graph::vertex_descriptor startVertex, Graph::edge_descriptor& ed) {
+	// This is a Breadth First Search which checks if the graph is bipartit. 
+	// If not, returns false and the fills the conflicting edge into the edge_descriptor
+	
+	// queue for search stores vertex indexes
+	std::vector<Graph::vertex_descriptor> queue;
+	// struct to remember coloring
+	std::map<Graph::vertex_descriptor, int> color;
+	// struct to remember bfs-coloring
+	std::map<Graph::vertex_descriptor, int> bfscolor;
+	
+	enum { WHITE, BLACK, GRAY, RED };
+	
+	// add start Vertex to queue
+	queue.push_back(startVertex);
+	color[startVertex] = BLACK;
+	if (verbose) { 	std::cerr << "StartVertex is: " << startVertex << std::endl; 
+			std::cerr << "Number of vertices: " << boost::num_vertices(g) << std::endl; }
+
+	// do search
+	while (!queue.empty()) {
+		Graph::vertex_descriptor u = queue.back();
+		if (verbose) { std::cerr << "u is: " << u << std::endl; }
+		// get neighbouring vertices
+		typename Graph::out_edge_iterator ei, ei_end;
+		for (boost::tie(ei, ei_end) = boost::out_edges(u, g);  ei != ei_end; ++ei)
+		{
+			if (verbose) { std::cerr << boost::target(*ei, g) <<" is neighbour through edge: " << *ei << std::endl; }
+			Graph::vertex_descriptor v = boost::target(*ei, g);
+			if (verbose) { std::cerr << "v is: " << v << std::endl; }
+		
+			if (bfscolor[v] == WHITE) {
+				bfscolor[v] = GRAY;
+				queue.push_back(v);
+				
+				if (color[u] == RED) {
+					color[v] = BLACK;
+				} else {
+					color[v] = RED;
+				}
+			} else if (color[u] == color[v]) {
+				if (verbose) { std::cerr << "u and v have the same color -> not bipartite!" << std::endl; }
+				ed = *ei;
+				// return true if graph is not bipartite
+				return false;
+			} else if (color[u] != color[v]) {
+				if (verbose) { std::cerr << "u, v have color: " << color[u] << ", " << color[v] << std::endl; }
+			}
+		}
+		bfscolor[u] = BLACK;
+		// remove element u from queue
+		queue.erase(std::remove(queue.begin(), queue.end(), u), queue.end());
+		
+		if (verbose) {  std::cerr << "queue is:" << std::endl << queue;
+				std::cerr << "color is:" << std::endl << color;
+				std::cerr << "bfscolor is:" << std::endl << bfscolor; }
+	}
+	// return false for bipartite graphs
+	return true;
+}
+
+void ear_decomposition(Graph& g, Graph::vertex_descriptor startVertex) {
+
+	// struct to remember coloring, time, parents of a vertex
+	struct property {
+		int color;
+		int DFN;
+		Graph::vertex_descriptor parent;
+	};
+	// map of property for all vertices as key
+	std::map<Graph::vertex_descriptor, property> p;
+	
+	// time starts at 1
+	unsigned int counter = 1;
+		
+	enum { WHITE, BLACK, GRAY };
+
+	if (verbose) { std::cout << "StartVertex is: " << startVertex << std::endl; }
+	Graph::vertex_descriptor u = startVertex;
+	
+	// start ear decomposition
+	p[u].color = GRAY;
+	p[u].DFN = counter;
+	counter++;
+	
+	// get neighbouring vertices
+	typename Graph::out_edge_iterator ei, ei_end;
+	for (boost::tie(ei, ei_end) = boost::out_edges(u, g);  ei != ei_end; ++ei)
+	{
+		if (verbose) { std::cerr << boost::target(*ei, g) <<" is neighbour through edge: " << *ei << std::endl; }
+		int v = boost::target(*ei, g);
+		if (verbose) { std::cout << "v is: " << v << std::endl; }
+		
+		if (p[v].color == WHITE) {
+			p[v].parent = u;
+			ear_decomposition(g, v);
+//			if (low[v] <= p[v].DFN) {
+//				ear(p[v].parent, v) = (-1, -1);
+//			} else if (low[v] <= p[v].DFN) {
+//				ear(p[v].parent, v) = ear(v);
+//				low[u] = min{low[u],low[v]};
+//				ear[u] = lexmin{ear[u], ear[v]};
+//			}
+		} else if (p[v].color == GRAY) {
+			if ((int) v != (int) p[u].parent) {
+//				low[u] = min{low[u], DFN[v]};
+//				ear(v,u) = (p[v].DFN, p[u].DFN);
+//				ear[u] = lexmin{ear[u], ear(v,u)};
+			}
+		}
+	}
+	p[u].color = BLACK;
+}
+

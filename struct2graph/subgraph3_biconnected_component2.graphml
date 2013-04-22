@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <key id="key0" for="node" attr.name="bipartite_color" attr.type="int" />
+  <key id="key1" for="node" attr.name="name" attr.type="int" />
+  <graph id="G" edgedefault="undirected" parse.nodeids="canonical" parse.edgeids="canonical" parse.order="nodesfirst">
+    <node id="n0">
+      <data key="key0">0</data>
+      <data key="key1">8</data>
+    </node>
+    <node id="n1">
+      <data key="key0">0</data>
+      <data key="key1">2</data>
+    </node>
+    <node id="n2">
+      <data key="key0">0</data>
+      <data key="key1">4</data>
+    </node>
+    <node id="n3">
+      <data key="key0">0</data>
+      <data key="key1">10</data>
+    </node>
+    <node id="n4">
+      <data key="key0">0</data>
+      <data key="key1">0</data>
+    </node>
+    <node id="n5">
+      <data key="key0">0</data>
+      <data key="key1">12</data>
+    </node>
+    <edge id="e0" source="n1" target="n0">
+    </edge>
+    <edge id="e1" source="n2" target="n0">
+    </edge>
+    <edge id="e2" source="n3" target="n1">
+    </edge>
+    <edge id="e3" source="n3" target="n2">
+    </edge>
+    <edge id="e4" source="n4" target="n3">
+    </edge>
+    <edge id="e5" source="n5" target="n1">
+    </edge>
+    <edge id="e6" source="n5" target="n4">
+    </edge>
+    <edge id="e7" source="n5" target="n2">
+    </edge>
+  </graph>
+</graphml>
