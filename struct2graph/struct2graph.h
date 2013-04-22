@@ -5,7 +5,7 @@
 * Author: Stefan Hammer <s.hammer@univie.ac.at>
 * License: GPLv3
 *
-* Compile with: g++ -std=c++11 -g -o struct2graph struct2graph.cc
+* Compile with: g++ -std=c++11 -g -lboost_program_options -o struct2graph struct2graph.cc
 */
 
 #ifndef STRUCT2GRAPH_H
@@ -25,6 +25,7 @@
 #include <limits>
 
 // include boost components
+#include <boost/program_options.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/graph/graphml.hpp>
 #include <boost/graph/connected_components.hpp>
@@ -71,10 +72,10 @@ Graph parse_graph(std::vector<std::string> structures);
 int get_max_degree(Graph& g);
 
 // print the graph as a gml file to the output
-void print_graph(Graph& g, std::ostream* out);
+void print_graph(Graph& g, std::ostream* out, std::string nametag);
 
 // print all the subgraphs as GML (iterator over subgraphs)
-void print_subgraphs(Graph& g, std::ostream* out);
+void print_subgraphs(Graph& g, std::ostream* out, std::string nametag);
 
 // do a Breadth First Search to test for bipartite property
 bool is_bipartite_graph(Graph& g, Graph::vertex_descriptor startVertex, Graph::edge_descriptor& ed);

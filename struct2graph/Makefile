@@ -3,9 +3,10 @@ CC = g++
 LL = g++
 EXE =  struct2graph
 LIBS = libstdc++
+LDFLAGS += -lboost_program_options
 DEFS =
 WARN = -Wall
-OPTI = -g
+OPTI = -g -lboost_program_options
 STD  = -std=c++11
 CCFLAGS = $(WARN) $(STD) $(OPTI)
 CSRC = struct2graph.cc

@@ -5,13 +5,15 @@
 * Author: Stefan Hammer <s.hammer@univie.ac.at>
 * License: GPLv3
 *
-* Compile with: g++ -std=c++11 -g -o struct2graph struct2graph.cc
+* Compile with: g++ -std=c++11 -g -lboost_program_options -o struct2graph struct2graph.cc
 */
 
 // include header
 #include "struct2graph.h"
 
-bool verbose = true;
+bool verbose = false;
+// filenames of graphml files will be starting with this string
+std::string outfile = "";
 
 // overload << operator to print vectors with any content
 template <typename T>
@@ -43,21 +45,67 @@ std::pair<T, T>& lexmin(std::pair<T, T>& a, std::pair<T, T>& b) {
 }
 
 //! main program starts here
-int main() {
+int main(int ac, char* av[]) {
 
-	// variables
+	// boost option parser
+	namespace po = boost::program_options;
+	po::options_description desc("Options");
+	desc.add_options()
+	    ("help", "print help message")
+	    ("verbose", "be verbose")
+	    ("in", po::value<std::string>(), "file to open which contains the structures.")
+	    ("write-graphml", po::value<std::string>(), "write all (sub)graphs to gml files starting with (STRING)")
+	;
+
+	po::variables_map vm;
+	po::store(po::parse_command_line(ac, av, desc), vm);
+	po::notify(vm);  
+
+	if (vm.count("help")) {
+		std::cout << desc << "\n";
+		return 1;
+	}
+	if (vm.count("verbose")) {
+		verbose = true;
+	}
+	if (vm.count("write-graphml")) {
+		if (verbose) { std::cerr << "graphml files will be written." << std::endl; }
+		outfile = vm["write-graphml"].as<std::string>();
+	} else {
+		if (verbose) { std::cerr << "grapml goes to std-out" << std::endl; }
+	}
+	
+	// input handling ( we read from std:in per default and switch to a file if it is given in the --in option
 	std::istream* in = &std::cin;			// in stream
+	std::vector<std::string> structures;
+	
+	if (vm.count("in")) {
+		if (verbose) { std::cerr << "will read graphml file given in the options." << std::endl; }
+		
+		std::ifstream* infile = new std::ifstream(vm["in"].as<std::string>(), std::ifstream::in);
+		if (infile->is_open()) {
+			structures = read_input(infile);
+			infile->close();
+		} else {
+			std::cerr << "Unable to open file";
+			return 1;
+		}
+	} else {
+		structures = read_input(in);		// read infile into array
+	}
+	
 	std::ostream* out = &std::cout;			// out stream
-
-	std::vector<std::string> structures = read_input(in);	// read infile into array
+	
+	// variables
 	Graph graph = parse_graph(structures);		// generate graph from input vector
 
-	print_graph(graph, out);			// print the graph as GML to a ostream
+	print_graph(graph, out, "graph");			// print the graph as GML to a ostream
 
 	connected_components_to_subgraphs(graph);	// get connected components and make subgraphs
 
 	*out << "subgraphs connected components:" << std::endl;
-	print_subgraphs(graph, out);			// print the just created subgraphs
+	// print the just created subgraphs
+	print_subgraphs(graph, out, "connected-component");
 	
 	// iterate over all subgraphs (connected components)
 	Graph::children_iterator ci, ci_end;
@@ -81,33 +129,38 @@ int main() {
 			biconnected_components_to_subgraphs(*ci);
 			
 			*out << "subgraphs biconnected components:" << std::endl;
-			print_subgraphs(*ci, out);			// print the just created subgraphs
+			// print the just created subgraphs
+			print_subgraphs(*ci, out, "biconnected-component");
 			
 			Graph::children_iterator ci_b, ci_b_end;
 			for (boost::tie(ci_b, ci_b_end) = (*ci).children(); ci_b != ci_b_end; ++ci_b) {
 				// calculate the max degree of this graph
 				int max_degree = get_max_degree(*ci_b);
 				if (max_degree >= 3) {
-					ear_decomposition(*ci_b, boost::vertex(0, *ci_b));
+					// starting at 0 does not work atm. maybe underflow of unsigned int/vertex?
+					ear_decomposition(*ci_b, boost::vertex((boost::num_vertices(*ci_b)-1), *ci_b));
 					
 					*out << "subgraphs ear decomposition:" << std::endl;
-					print_subgraphs(*ci_b, out);			// print the just created subgraphs
+					// print the just created subgraphs
+					print_subgraphs(*ci_b, out, "decomposed-ear");
 				}
 			}
 		}
 	}
-	
 	return 0;
 }
 
 std::vector<std::string> read_input(std::istream* in) {
 	// read input file
-	if (verbose) { std::cerr << "Reading file..." << std::endl; }
+	std::cerr << "Input structures (one per line); @ to quit" << std::endl
+		<< "....,....1....,....2....,....3....,....4....,....5....,....6....,....7....,....8" << std::endl;
 	std::string line;
 	std::vector<std::string> structures;
 	while (!in->eof()) {
-		getline (*in,line);
-		if (line.length() != 0) {
+		getline(*in,line);
+		if (line == "@") {
+			std::fclose(stdin);
+		} else if (line.length() != 0) {
 			structures.push_back(line);
 		}
 	}
@@ -182,24 +235,40 @@ Graph parse_graph(std::vector<std::string> structures) {
 	return g;
 }
 
-void print_graph(Graph& g, std::ostream* out) {
+void print_graph(Graph& g, std::ostream* out, std::string nametag) {
 
 	// print vertex and edge properties from my self defined bundled properties
 	boost::dynamic_properties dp;
 	dp.property("name", boost::get(boost::vertex_color_t(), g));
 	dp.property("bipartite_color", boost::get(&vertex_property::bipartite_color, g));
-
-	boost::write_graphml(*out, g, dp, true);
-	*out << std::endl;
+	
+	if (outfile != "") {
+		std::stringstream filename;
+		filename << outfile << "-" << nametag << ".graphml";
+		std::ofstream graphfile(filename.str());
+		if (graphfile.is_open()) {
+			boost::write_graphml(graphfile, g, dp, true);
+			graphfile << std::endl;
+			graphfile.close();
+		} else {
+			std::cerr << "Unable to create graph files!" << std::endl;
+		}
+	} else {
+		boost::write_graphml(*out, g, dp, true);
+		*out << std::endl;
+	}
+	
 	if (verbose) { std::cerr << "Generated the output GML graph." << std::endl; }
 }
 
-void print_subgraphs(Graph& g, std::ostream* out) {
+void print_subgraphs(Graph& g, std::ostream* out, std::string nametag) {
 	Graph::children_iterator ci, ci_end;
 	int num = 1;
 	for (boost::tie(ci, ci_end) = g.children(); ci != ci_end; ++ci) {
-		*out << "Subgraph " << num++ << ":" << std::endl;
-		print_graph(*ci, out);
+		std::stringstream name;
+		name << nametag << "-" << num++;
+		*out << name.str() << ":" << std::endl;
+		print_graph(*ci, out, name.str());
 	}
 	if (verbose) { std::cerr << "Printed all sugraphs." << std::endl; }
 }
@@ -252,11 +321,14 @@ void biconnected_components_to_subgraphs(Graph& g) {
 		std::cerr << ")" << std::endl;	
 	}
 	
-	// get graph and iterate over its edges
-	typename Graph::edge_iterator ei, ei_end;
-	for (boost::tie(ei, ei_end) = boost::edges(g); ei != ei_end; ++ei) {
-		std::cerr << *ei << "\t" <<  "(" << boost::get(boost::vertex_color_t(), g, boost::source(*ei, g)) << "," 
-		<< boost::get(boost::vertex_color_t(), g, boost::target(*ei, g))<< ")" << "\tcomponent: " << component[*ei] << std::endl;
+	if (verbose) {
+		// get graph and iterate over its edges to print connected components table
+		typename Graph::edge_iterator ei, ei_end;
+		for (boost::tie(ei, ei_end) = boost::edges(g); ei != ei_end; ++ei) {
+			std::cerr << *ei << "\t" <<  "(" << boost::get(boost::vertex_color_t(), g, boost::source(*ei, g)) << "," 
+			<< boost::get(boost::vertex_color_t(), g, boost::target(*ei, g))<< ")" 
+			<< "\tcomponent: " << component[*ei] << std::endl;
+		}
 	}
 	
 	// now need to merge biconnected components that are separated by a articulation point that has a degree == 2 ?!
@@ -446,6 +518,7 @@ void ear_dfs(Graph& g, Graph::vertex_descriptor v, ear_propertymap_t& p, ear_t& 
 			p[w].parent = v;
 			// start new iteration here
 			ear_dfs(g, w, p, ear, counter);
+			//TODO: cast low vertex to integer a good idea?
 			if ((int) p[w].low >= p[w].preorder) {
 				ear[std::make_pair(p[w].parent, w)] = std::make_pair(std::numeric_limits<int>::max(), std::numeric_limits<int>::max());
 			} else {
@@ -456,6 +529,8 @@ void ear_dfs(Graph& g, Graph::vertex_descriptor v, ear_propertymap_t& p, ear_t& 
 		} else if (p[w].color == GRAY) {
 			if (verbose) { std::cout << "w is gray" << std::endl; }
 			if (w != p[w].parent) {
+				if (verbose) { std::cout << "found a backedge: " << v << w << std::endl; }
+				//TODO: casting vertex in low to integer a bad idea?
 				p[v].low = boost::vertex(std::min((int) p[v].low, p[w].preorder), g);
 				ear[std::make_pair(w, v)] = std::make_pair(boost::vertex(p[w].preorder, g), boost::vertex(p[v].preorder, g));
 				p[v].ear = lexmin(p[v].ear, ear[std::make_pair(w, v)]);
@@ -463,6 +538,5 @@ void ear_dfs(Graph& g, Graph::vertex_descriptor v, ear_propertymap_t& p, ear_t& 
 		}
 	}
 	if (verbose) { std::cout << "finishing vertex " << v << std::endl; }
-	p[v].color = BLACK;
 }
 
