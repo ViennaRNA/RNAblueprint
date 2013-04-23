@@ -80,6 +80,9 @@ void print_graph(Graph& g, std::ostream* out, std::string nametag);
 // print all the subgraphs as GML (iterator over subgraphs)
 void print_subgraphs(Graph& g, std::ostream* out, std::string nametag);
 
+// does the whole graph decomposition, uses methods below
+void decompose_graph(Graph& graph, std::ostream* out);
+
 // do a Breadth First Search to test for bipartite property
 bool is_bipartite_graph(Graph& g, Graph::vertex_descriptor startVertex, Graph::edge_descriptor& ed);
 

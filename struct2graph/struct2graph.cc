@@ -76,52 +76,9 @@ int main(int ac, char* av[]) {
 	Graph graph = parse_graph(structures);		// generate graph from input vector
 	*out << "dependency graph:";
 	print_graph(graph, out, "root-graph");		// print the graph as GML to a ostream
-	connected_components_to_subgraphs(graph);	// get connected components and make subgraphs
-
-	*out << "subgraphs connected components:" << std::endl;
-	// print the just created subgraphs
-	print_subgraphs(graph, out, "connected-component");
 	
-	// iterate over all subgraphs (connected components)
-	Graph::children_iterator ci, ci_end;
-	for (boost::tie(ci, ci_end) = graph.children(); ci != ci_end; ++ci) {
-		// check if subgraph is bipartite with a simple BFS
-		// generate the vertex 0 as vertex_descriptor
-		Graph::vertex_descriptor s = boost::vertex(0, *ci);
-		// generate a edge_descriptor in case the graph is not bipartite
-		Graph::edge_descriptor ed;
-		if (!is_bipartite_graph(*ci, s, ed)) {
-			std::cerr << "Graph is not bipartite! Conflict detected on edge " << ed << std::endl;
-			exit(1);
-		}
-		
-		// calculate the max degree of this graph
-		int max_degree = get_max_degree(*ci);
-		if (verbose) { std::cerr << "Max degree of subgraph is: " << max_degree << std::endl; }
-		
-		// split further into biconnected components do ear decomposition
-		if (max_degree >= 3) {
-			biconnected_components_to_subgraphs(*ci);
-			
-			*out << "subgraphs biconnected components:" << std::endl;
-			// print the just created subgraphs
-			print_subgraphs(*ci, out, "biconnected-component");
-			
-			Graph::children_iterator ci_b, ci_b_end;
-			for (boost::tie(ci_b, ci_b_end) = (*ci).children(); ci_b != ci_b_end; ++ci_b) {
-				// calculate the max degree of this graph
-				int max_degree = get_max_degree(*ci_b);
-				if (max_degree >= 3) {
-					//TODO starting at 0 does not work atm. maybe underflow of unsigned int/vertex?
-					ear_decomposition(*ci_b, boost::vertex((boost::num_vertices(*ci_b)-1), *ci_b));
-					
-					*out << "subgraphs ear decomposition:" << std::endl;
-					// print the just created subgraphs
-					print_subgraphs(*ci_b, out, "decomposed-ear");
-				}
-			}
-		}
-	}
+	decompose_graph(graph, out);			// decompose the graph into its connected components, biconnected
+							// components and decompose blocks via ear decomposition
 	return 0;
 }
 
@@ -290,6 +247,56 @@ void print_subgraphs(Graph& g, std::ostream* out, std::string nametag) {
 		print_graph(*ci, out, name.str());
 	}
 	if (verbose) { std::cerr << "Printed all sugraphs." << std::endl; }
+}
+
+void decompose_graph(Graph& graph, std::ostream* out) {
+
+	connected_components_to_subgraphs(graph);	// get connected components and make subgraphs
+
+	*out << "subgraphs connected components:" << std::endl;
+	// print the just created subgraphs
+	print_subgraphs(graph, out, "connected-component");
+	
+	// iterate over all subgraphs (connected components)
+	Graph::children_iterator ci, ci_end;
+	for (boost::tie(ci, ci_end) = graph.children(); ci != ci_end; ++ci) {
+		// check if subgraph is bipartite with a simple BFS
+		// generate the vertex 0 as vertex_descriptor
+		Graph::vertex_descriptor s = boost::vertex(0, *ci);
+		// generate a edge_descriptor in case the graph is not bipartite
+		Graph::edge_descriptor ed;
+		if (!is_bipartite_graph(*ci, s, ed)) {
+			std::cerr << "Graph is not bipartite! Conflict detected on edge " << ed << std::endl;
+			exit(1);
+		}
+		
+		// calculate the max degree of this graph
+		int max_degree = get_max_degree(*ci);
+		if (verbose) { std::cerr << "Max degree of subgraph is: " << max_degree << std::endl; }
+		
+		// split further into biconnected components do ear decomposition
+		if (max_degree >= 3) {
+			biconnected_components_to_subgraphs(*ci);
+			
+			*out << "subgraphs biconnected components:" << std::endl;
+			// print the just created subgraphs
+			print_subgraphs(*ci, out, "biconnected-component");
+			
+			Graph::children_iterator ci_b, ci_b_end;
+			for (boost::tie(ci_b, ci_b_end) = (*ci).children(); ci_b != ci_b_end; ++ci_b) {
+				// calculate the max degree of this graph
+				int max_degree = get_max_degree(*ci_b);
+				if (max_degree >= 3) {
+					//TODO starting at 0 does not work atm. maybe underflow of unsigned int/vertex?
+					ear_decomposition(*ci_b, boost::vertex((boost::num_vertices(*ci_b)-1), *ci_b));
+					
+					*out << "subgraphs ear decomposition:" << std::endl;
+					// print the just created subgraphs
+					print_subgraphs(*ci_b, out, "decomposed-ear");
+				}
+			}
+		}
+	}
 }
 
 void connected_components_to_subgraphs(Graph& g) {
