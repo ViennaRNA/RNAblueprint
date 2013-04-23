@@ -112,7 +112,7 @@ int main(int ac, char* av[]) {
 				// calculate the max degree of this graph
 				int max_degree = get_max_degree(*ci_b);
 				if (max_degree >= 3) {
-					// starting at 0 does not work atm. maybe underflow of unsigned int/vertex?
+					//TODO starting at 0 does not work atm. maybe underflow of unsigned int/vertex?
 					ear_decomposition(*ci_b, boost::vertex((boost::num_vertices(*ci_b)-1), *ci_b));
 					
 					*out << "subgraphs ear decomposition:" << std::endl;
@@ -127,31 +127,38 @@ int main(int ac, char* av[]) {
 
 boost::program_options::variables_map init_options(int ac, char* av[]) {
 	// boost option parser
+	// http://www.boost.org/doc/libs/1_53_0/doc/html/program_options/tutorial.html
 	namespace po = boost::program_options;
-	po::options_description desc("Options");
-	desc.add_options()
-	    ("help", "print help message [boolean]")
-	    ("verbose", "be verbose [boolean]")
-	    ("in", po::value<std::string>(), "file to open which contains the structures [string]")
-	    ("out", po::value<std::string>(), "write all (sub)graphs to gml files starting with given name [string]")
+	// Group of options that will be allowed only on command line
+	po::options_description generic("Generic options");
+	generic.add_options()
+		("help,h", "print help message")
+		("verbose,v", po::value(&verbose)->zero_tokens(), "be verbose")
 	;
+	
+	// Group of options that will be allowed on command line and in a config file
+	po::options_description config("Program options");
+	config.add_options()
+		("in,i", po::value<std::string>(), "input file which contains the structures [string]")
+		("out,o", po::value<std::string>(&outfile), "write all (sub)graphs to gml files starting with given name [string]")
+	;
+	
+	po::positional_options_description p;
+	p.add("in", 1).add("out", 2);
+	
+	po::options_description cmdline_options;
+	cmdline_options.add(generic).add(config);
 
 	po::variables_map vm;
-	po::store(po::parse_command_line(ac, av, desc), vm);
+	po::store(po::command_line_parser(ac, av).options(cmdline_options).positional(p).run(), vm);
 	po::notify(vm);  
 
 	if (vm.count("help")) {
-		std::cout << desc << "\n";
+		std::cout << cmdline_options << "\n";
 		exit(1);
-	}
-	if (vm.count("verbose")) {
-		verbose = true;
 	}
 	if (vm.count("out")) {
 		if (verbose) { std::cerr << "graphml files will be written to file." << std::endl; }
-		outfile = vm["out"].as<std::string>();
-	} else {
-		if (verbose) { std::cerr << "grapml files go to std-out" << std::endl; }
 	}
 	
 	return vm;
@@ -169,6 +176,9 @@ std::vector<std::string> read_input(std::istream* in) {
 			structures.push_back(line);
 		}
 	}
+	
+	// exit if there is no input
+	if (structures.empty()) { exit(1); }
 
 	if (verbose) { std::cerr << "Read following structures:" << std::endl; }
 	// check if structures have equeal length
@@ -185,8 +195,6 @@ std::vector<std::string> read_input(std::istream* in) {
 }
 
 Graph parse_graph(std::vector<std::string> structures) {
-	// exit if there is no input
-	if (structures.empty()) { exit(1); }
 	
 	// count the number of positons
 	int num_vertices = structures[0].length();

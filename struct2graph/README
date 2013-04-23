@@ -13,6 +13,9 @@ make
 HOWTO
 ------------------------------------------------------------------------------
 ./struct2graph --help will help!
-./struct2graph < input > output              works too,
-./struct2graph -in file -out fileprefix      also works well, and
-./struct2graph                               will give you a pseudo UI!
+./struct2graph input outputname			will read input file and write files to output
+./struct2graph input				will read input file and wirte graphml to std::out
+./struct2graph < input > output			works too,
+./struct2graph --in file --out outputname		also works well,
+./struct2graph -i file -o outputname		.... and
+./struct2graph					will give you a pseudo UI!
