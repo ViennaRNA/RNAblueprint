@@ -445,8 +445,9 @@ bool is_bipartite_graph(Graph& g, Graph::vertex_descriptor startVertex, Graph::e
 	//			std::cerr << "color is:" << std::endl << color;
 	//			std::cerr << "bfscolor is:" << std::endl << bfscolor; }
 	//}
+	// exit value (if bipartite = true, else false)
 	bool exit = true;
-	
+	// Define A BGL visitor for the BFS algorithm
 	class my_bfs_visitor : public boost::default_bfs_visitor {
 		public:
 		my_bfs_visitor(Graph::edge_descriptor& ed, bool& exit) : m_ed(ed), m_exit(exit) {}
@@ -477,7 +478,7 @@ bool is_bipartite_graph(Graph& g, Graph::vertex_descriptor startVertex, Graph::e
 	};
 	
 	my_bfs_visitor vis(ed, exit);
-	// Do a BGL DFS!
+	// Do a BGL BFS!
 	boost::breadth_first_search(g, startVertex, boost::visitor(vis));
 	return exit;
 }
