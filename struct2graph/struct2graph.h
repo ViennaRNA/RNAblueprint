@@ -34,6 +34,7 @@
 #include <boost/config.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/graph_utility.hpp>
+#include <boost/graph/breadth_first_search.hpp>
 
 // get property with Graph[Graph::vertex_descriptor].bipartite_color = int;
 struct vertex_property {

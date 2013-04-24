@@ -384,9 +384,8 @@ void biconnected_components_to_subgraphs(Graph& g) {
 
 int get_max_degree(Graph& g) {
 	int max_degree = 0;
-	typename Graph::vertex_iterator vi, vi_end;
-	for (boost::tie(vi, vi_end) = boost::vertices(g);  vi != vi_end; ++vi) {
-		int current_degree = boost::out_degree(*vi, g);
+	BGL_FORALL_VERTICES_T(v, g, Graph) {
+		int current_degree = boost::out_degree(v, g);
 		if (current_degree > max_degree) {
 			max_degree = current_degree;
 		}
@@ -399,60 +398,88 @@ bool is_bipartite_graph(Graph& g, Graph::vertex_descriptor startVertex, Graph::e
 	// If not, returns false and the fills the conflicting edge into the edge_descriptor
 	
 	// queue for search stores vertex indexes
-	std::vector<Graph::vertex_descriptor> queue;
+	//std::vector<Graph::vertex_descriptor> queue;
 	// struct to remember coloring
-	std::map<Graph::vertex_descriptor, int> color;
+	//std::map<Graph::vertex_descriptor, int> color;
 	// struct to remember bfs-coloring
-	std::map<Graph::vertex_descriptor, int> bfscolor;
+	//std::map<Graph::vertex_descriptor, int> bfscolor;
+	//enum { WHITE, BLACK, GRAY, RED };
 	
-	enum { WHITE, BLACK, GRAY, RED };
-	
-	// add start Vertex to queue
-	queue.push_back(startVertex);
-	color[startVertex] = BLACK;
 	if (verbose) { 	std::cerr << "StartVertex is: " << startVertex << std::endl; 
 			std::cerr << "Number of vertices: " << boost::num_vertices(g) << std::endl; }
-
+			
+	// add start Vertex to queue
+	//queue.push_back(startVertex);
+	//color[startVertex] = BLACK;
 	// do search
-	while (!queue.empty()) {
-		Graph::vertex_descriptor u = queue.back();
-		if (verbose) { std::cerr << "u is: " << u << std::endl; }
+	//while (!queue.empty()) {
+	//	Graph::vertex_descriptor u = queue.back();
+	//	if (verbose) { std::cerr << "u is: " << u << std::endl; }
 		// get neighbouring vertices
-		typename Graph::out_edge_iterator ei, ei_end;
-		for (boost::tie(ei, ei_end) = boost::out_edges(u, g);  ei != ei_end; ++ei)
-		{
-			if (verbose) { std::cerr << boost::target(*ei, g) <<" is neighbour through edge: " << *ei << std::endl; }
-			Graph::vertex_descriptor v = boost::target(*ei, g);
-			if (verbose) { std::cerr << "v is: " << v << std::endl; }
-		
-			if (bfscolor[v] == WHITE) {
-				bfscolor[v] = GRAY;
-				queue.push_back(v);
-				
-				if (color[u] == RED) {
-					color[v] = BLACK;
-				} else {
-					color[v] = RED;
-				}
-			} else if (color[u] == color[v]) {
-				if (verbose) { std::cerr << "u and v have the same color -> not bipartite!" << std::endl; }
-				ed = *ei;
+	//	BGL_FORALL_ADJ_T(u, v, g, Graph) {
+	//		if (verbose) { std::cerr << "v is: " << v << std::endl; }
+									// examine edge (u,v)
+	//		if (bfscolor[v] == WHITE) {			// is tree edge (u,v)
+	//			bfscolor[v] = GRAY;
+	//			queue.push_back(v);
+									//discover vertex v
+	//			if (color[u] == RED) {
+	//				color[v] = BLACK;
+	//			} else {
+	//				color[v] = RED;
+	//			}
+	//		} else if (color[u] == color[v]) {		// (u,v) is a non-tree edge
+	//			if (verbose) { std::cerr << "u and v have the same color -> not bipartite!" << std::endl; }
+	//			ed = boost::edge(u,v,g).first;
 				// return true if graph is not bipartite
-				return false;
-			} else if (color[u] != color[v]) {
-				if (verbose) { std::cerr << "u, v have color: " << color[u] << ", " << color[v] << std::endl; }
+	//			return false;
+	//		} else if (color[u] != color[v]) {
+	//			if (verbose) { std::cerr << "u, v have color: " << color[u] << ", " << color[v] << std::endl; }
+	//		}
+	//	}
+	//	bfscolor[u] = BLACK;
+		// remove element u from queue
+	//	queue.erase(std::remove(queue.begin(), queue.end(), u), queue.end());
+		
+	//	if (verbose) {  std::cerr << "queue is:" << std::endl << queue;
+	//			std::cerr << "color is:" << std::endl << color;
+	//			std::cerr << "bfscolor is:" << std::endl << bfscolor; }
+	//}
+	bool exit = true;
+	
+	class my_bfs_visitor : public boost::default_bfs_visitor {
+		public:
+		my_bfs_visitor(Graph::edge_descriptor& ed, bool& exit) : m_ed(ed), m_exit(exit) {}
+		Graph::edge_descriptor& m_ed;
+		bool& m_exit;
+		enum { WHITE, BLACK, GRAY, RED };
+		void tree_edge(Graph::edge_descriptor e, Graph g) const {
+			if (verbose) { std::cout << "Detecting Tree edge: " << e << std::endl; }
+			Graph::vertex_descriptor u = boost::source(e, g);
+			Graph::vertex_descriptor v = boost::target(e, g);
+			if (g[u].bipartite_color == RED) {
+				g[v].bipartite_color = BLACK;
+			} else {
+				g[v].bipartite_color = RED;
 			}
 		}
-		bfscolor[u] = BLACK;
-		// remove element u from queue
-		queue.erase(std::remove(queue.begin(), queue.end(), u), queue.end());
-		
-		if (verbose) {  std::cerr << "queue is:" << std::endl << queue;
-				std::cerr << "color is:" << std::endl << color;
-				std::cerr << "bfscolor is:" << std::endl << bfscolor; }
-	}
-	// return false for bipartite graphs
-	return true;
+		void non_tree_edge(Graph::edge_descriptor e, Graph g) const {
+			if (verbose) { std::cout << "Detecting Non-Tree edge: " << e << std::endl; }
+			Graph::vertex_descriptor u = boost::source(e, g);
+			Graph::vertex_descriptor v = boost::target(e, g);
+			if (g[u].bipartite_color == g[v].bipartite_color) {
+				if (verbose) { std::cerr << "u and v have the same color -> not bipartite!" << std::endl; }
+				m_ed = boost::edge(u,v,g).first;
+				// return false if graph is not bipartite
+				m_exit = false;
+			}
+		}
+	};
+	
+	my_bfs_visitor vis(ed, exit);
+	// Do a BGL DFS!
+	boost::breadth_first_search(g, startVertex, boost::visitor(vis));
+	return exit;
 }
 
 void ear_decomposition(Graph& g, Graph::vertex_descriptor startVertex) {
