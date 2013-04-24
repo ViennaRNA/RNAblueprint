@@ -34,13 +34,17 @@
 #include <boost/config.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/graph_utility.hpp>
+#include <boost/graph/random_spanning_tree.hpp>
+#include <boost/random.hpp>
 #include <boost/graph/breadth_first_search.hpp>
+#include <boost/graph/iteration_macros.hpp>
 
 // get property with Graph[Graph::vertex_descriptor].bipartite_color = int;
 struct vertex_property {
 	int bipartite_color;
 	int color;
 	int search_color;
+	int parent;
 };
 
 struct edge_property {
@@ -105,6 +109,12 @@ struct property {
 	edge_t ear;
 };
 typedef std::map<Graph::vertex_descriptor, property> ear_propertymap_t;
+
+// ear decomposition of blocks
+void ear_decomposition1(Graph& g, Graph::vertex_descriptor startVertex);
+
+// get spanning tree with DFS
+void get_spanning_tree(Graph& g, Graph::vertex_descriptor rootVertex);
 
 // ear decomposition of blocks
 void ear_decomposition(Graph& g, Graph::vertex_descriptor startVertex);

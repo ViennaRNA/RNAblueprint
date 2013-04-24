@@ -76,8 +76,9 @@ int main(int ac, char* av[]) {
 	Graph graph = parse_graph(structures);		// generate graph from input vector
 	*out << "dependency graph:";
 	print_graph(graph, out, "root-graph");		// print the graph as GML to a ostream
-	
-	decompose_graph(graph, out);			// decompose the graph into its connected components, biconnected
+	get_spanning_tree(graph, boost::vertex(0, graph));
+	print_graph(graph, out, "spanning-tree-graph");
+	//decompose_graph(graph, out);			// decompose the graph into its connected components, biconnected
 							// components and decompose blocks via ear decomposition
 	return 0;
 }
@@ -216,6 +217,7 @@ void print_graph(Graph& g, std::ostream* out, std::string nametag) {
 	boost::dynamic_properties dp;
 	dp.property("name", boost::get(boost::vertex_color_t(), g));
 	dp.property("bipartite_color", boost::get(&vertex_property::bipartite_color, g));
+	dp.property("parent", boost::get(&vertex_property::parent, g));
 	
 	if (outfile != "") {
 		std::stringstream filename;
@@ -445,6 +447,12 @@ bool is_bipartite_graph(Graph& g, Graph::vertex_descriptor startVertex, Graph::e
 	//			std::cerr << "color is:" << std::endl << color;
 	//			std::cerr << "bfscolor is:" << std::endl << bfscolor; }
 	//}
+	
+	// reset bipartite_color
+	BGL_FORALL_VERTICES_T(v, g, Graph) {
+		g[v].bipartite_color = 0;
+	}
+	
 	// exit value (if bipartite = true, else false)
 	bool exit = true;
 	// Define A BGL visitor for the BFS algorithm
@@ -479,8 +487,69 @@ bool is_bipartite_graph(Graph& g, Graph::vertex_descriptor startVertex, Graph::e
 	
 	my_bfs_visitor vis(ed, exit);
 	// Do a BGL BFS!
+	// http://www.boost.org/doc/libs/1_53_0/libs/graph/doc/breadth_first_search.html
 	boost::breadth_first_search(g, startVertex, boost::visitor(vis));
 	return exit;
+}
+
+void ear_decomposition1(Graph& g, Graph::vertex_descriptor startVertex) {
+		
+	typedef boost::property_map<Graph, boost::vertex_color_t>::type v_color_map_t;
+	v_color_map_t vcolorMap;
+	typedef boost::property_map<Graph, boost::edge_color_t>::type e_color_map_t;
+	e_color_map_t ecolorMap;
+}
+
+void get_spanning_tree(Graph& g, Graph::vertex_descriptor rootVertex) {
+
+	BGL_FORALL_VERTICES_T(v, g, Graph) {
+		g[v].parent = 0;
+	}
+
+	class my_dfs_visitor : public boost::default_dfs_visitor {
+		public:
+		//my_dfs_visitor(Graph::edge_descriptor& ed, bool& exit) : m_ed(ed), m_exit(exit) {}
+		//Graph::edge_descriptor& m_ed;
+		//bool& m_exit;
+		enum { WHITE, BLACK, GRAY, RED };
+		void examine_edge(Graph::edge_descriptor e, Graph g) const {
+			if (verbose) { std::cout << "Found edge: " << e << std::endl; }
+			Graph::vertex_descriptor u = boost::source(e, g);
+			Graph::vertex_descriptor v = boost::target(e, g);
+			g[v].parent = (int) u;
+		}
+		void tree_edge(Graph::edge_descriptor e, Graph g) const {
+			if (verbose) { std::cout << "Detecting tree-edge: " << e << std::endl; }
+			Graph::vertex_descriptor u = boost::source(e, g);
+			Graph::vertex_descriptor v = boost::target(e, g);
+			g[v].parent = (int) u;
+			//if (g[u].bipartite_color == RED) {
+			//	g[v].bipartite_color = BLACK;
+			//} else {
+			//	g[v].bipartite_color = RED;
+			//}
+		}
+		void back_edge(Graph::edge_descriptor e, Graph g) const {
+			if (verbose) { std::cout << "Detecting back-edge: " << e << std::endl; }
+			Graph::vertex_descriptor u = boost::source(e, g);
+			Graph::vertex_descriptor v = boost::target(e, g);
+			g[v].parent = (int) u;
+			//if (g[u].bipartite_color == g[v].bipartite_color) {
+			//	if (verbose) { std::cerr << "u and v have the same color -> not bipartite!" << std::endl; }
+			//	m_ed = boost::edge(u,v,g).first;
+				// return false if graph is not bipartite
+			//	m_exit = false;
+			//}
+		}
+	};
+	
+	my_dfs_visitor vis;
+
+	// Do a BGL DFS!
+	// http://www.boost.org/doc/libs/1_53_0/libs/graph/doc/depth_first_search.html
+	// Did not work: http://www.boost.org/doc/libs/1_53_0/libs/graph/doc/undirected_dfs.html
+	// boost::undirected_dfs(g, boost::visitor(vis), vcolorMap, ecolorMap, rootVertex);
+	boost::depth_first_search(g, visitor(vis));
 }
 
 void ear_decomposition(Graph& g, Graph::vertex_descriptor startVertex) {

@@ -17,5 +17,5 @@ $(COBJ): %.o: %.cc
 	$(CC) -c $(CCFLAGS) $< -o $@
 clean:
 	rm -f $(COBJ)
-	rm -f $(EXE) *~
+	rm -f $(EXE) *~ */*~
 PHONY: clean
