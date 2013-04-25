@@ -39,16 +39,15 @@
 #include <boost/graph/breadth_first_search.hpp>
 #include <boost/graph/iteration_macros.hpp>
 
-// get property with Graph[Graph::vertex_descriptor].bipartite_color = int;
+// get property with Graph[Vertex].bipartite_color = int;
 struct vertex_property {
 	int bipartite_color;
 	int color;
 	int search_color;
-	int parent;
 };
 
 struct edge_property {
-	// put something here
+	int ear;
 };
 
 namespace boost {
@@ -66,6 +65,8 @@ typedef boost::adjacency_list_traits< boost::vecS, boost::vecS, boost::undirecte
 typedef boost::subgraph< boost::adjacency_list< boost::vecS, boost::vecS, boost::undirectedS, 
 	boost::property< boost::vertex_color_t, int, vertex_property >,
 	boost::property< boost::edge_index_t, int, boost::property < boost::edge_component_t, std::size_t, edge_property> > > > Graph;
+typedef Graph::edge_descriptor Edge;
+typedef Graph::vertex_descriptor Vertex;
 
 // initialise boost command line option parser
 boost::program_options::variables_map init_options(int ac, char* av[]);
@@ -89,7 +90,7 @@ void print_subgraphs(Graph& g, std::ostream* out, std::string nametag);
 void decompose_graph(Graph& graph, std::ostream* out);
 
 // do a Breadth First Search to test for bipartite property
-bool is_bipartite_graph(Graph& g, Graph::vertex_descriptor startVertex, Graph::edge_descriptor& ed);
+bool is_bipartite_graph(Graph& g, Vertex startVertex, Edge& ed);
 
 // get a vector of all vertices with their component id. finds connected components with DFS
 void connected_components_to_subgraphs(Graph& g);
@@ -98,29 +99,35 @@ void connected_components_to_subgraphs(Graph& g);
 void biconnected_components_to_subgraphs(Graph& g);
 
 // typedefs for ear decomposition
-typedef std::pair<Graph::vertex_descriptor, Graph::vertex_descriptor> edge_t;
+typedef std::pair<Vertex, Vertex> edge_t;
 typedef std::map<edge_t, edge_t> ear_t;
 // struct to remember coloring, time, parents of a vertex
 struct property {
 	int color;
 	int preorder;
-	Graph::vertex_descriptor parent;
-	Graph::vertex_descriptor low;
+	Vertex parent;
+	Vertex low;
 	edge_t ear;
 };
-typedef std::map<Graph::vertex_descriptor, property> ear_propertymap_t;
+typedef std::map<Vertex, property> ear_propertymap_t;
 
 // ear decomposition of blocks
-void ear_decomposition1(Graph& g, Graph::vertex_descriptor startVertex);
+void ear_decomposition1(Graph& g, Vertex startVertex);
 
 // get spanning tree with DFS
-void get_spanning_tree(Graph& g, Graph::vertex_descriptor rootVertex);
+void get_spanning_tree(Graph& g, std::map<Vertex, Vertex>& parents, std::vector<Edge>& crossedges, Vertex& start);
+
+// given all the parents of a spanning_tree, find the lca a crossedge
+std::pair<Vertex, int> get_lca_distance(Graph& g, std::map<Vertex, Vertex>& parents, Edge e, Vertex r);
+
+// do a walk in the spanning tree starting at v and ending at the root r -> return a vector with the walk
+std::vector<Vertex> make_tree_walk(std::map<Vertex, Vertex>& parents, Vertex v, Vertex r);
 
 // ear decomposition of blocks
-void ear_decomposition(Graph& g, Graph::vertex_descriptor startVertex);
+void ear_decomposition(Graph& g, Vertex startVertex);
 
 // actual dfs for ear decomposition
-void ear_dfs(Graph& g, Graph::vertex_descriptor v, ear_propertymap_t& p, ear_t& ear, unsigned int& counter);
+void ear_dfs(Graph& g, Vertex v, ear_propertymap_t& p, ear_t& ear, unsigned int& counter);
 
 
 

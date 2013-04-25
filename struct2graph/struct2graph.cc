@@ -76,9 +76,8 @@ int main(int ac, char* av[]) {
 	Graph graph = parse_graph(structures);		// generate graph from input vector
 	*out << "dependency graph:";
 	print_graph(graph, out, "root-graph");		// print the graph as GML to a ostream
-	get_spanning_tree(graph, boost::vertex(0, graph));
-	print_graph(graph, out, "spanning-tree-graph");
-	//decompose_graph(graph, out);			// decompose the graph into its connected components, biconnected
+	
+	decompose_graph(graph, out);			// decompose the graph into its connected components, biconnected
 							// components and decompose blocks via ear decomposition
 	return 0;
 }
@@ -217,7 +216,7 @@ void print_graph(Graph& g, std::ostream* out, std::string nametag) {
 	boost::dynamic_properties dp;
 	dp.property("name", boost::get(boost::vertex_color_t(), g));
 	dp.property("bipartite_color", boost::get(&vertex_property::bipartite_color, g));
-	dp.property("parent", boost::get(&vertex_property::parent, g));
+	dp.property("ear", boost::get(&edge_property::ear, g));
 	
 	if (outfile != "") {
 		std::stringstream filename;
@@ -264,12 +263,12 @@ void decompose_graph(Graph& graph, std::ostream* out) {
 	for (boost::tie(ci, ci_end) = graph.children(); ci != ci_end; ++ci) {
 		// check if subgraph is bipartite with a simple BFS
 		// generate the vertex 0 as vertex_descriptor
-		Graph::vertex_descriptor s = boost::vertex(0, *ci);
+		Vertex s = boost::vertex(0, *ci);
 		// generate a edge_descriptor in case the graph is not bipartite
-		Graph::edge_descriptor ed;
+		Edge ed;
 		if (!is_bipartite_graph(*ci, s, ed)) {
 			std::cerr << "Graph is not bipartite! Conflict detected on edge " << ed << std::endl;
-			exit(1);
+			//exit(1);
 		}
 		
 		// calculate the max degree of this graph
@@ -290,7 +289,8 @@ void decompose_graph(Graph& graph, std::ostream* out) {
 				int max_degree = get_max_degree(*ci_b);
 				if (max_degree >= 3) {
 					//TODO starting at 0 does not work atm. maybe underflow of unsigned int/vertex?
-					ear_decomposition(*ci_b, boost::vertex((boost::num_vertices(*ci_b)-1), *ci_b));
+					//TODO use ear_decompositon1 or normal one?!
+					ear_decomposition1(*ci_b, boost::vertex((boost::num_vertices(*ci_b)-1), *ci_b));
 					
 					*out << "subgraphs ear decomposition:" << std::endl;
 					// print the just created subgraphs
@@ -340,7 +340,7 @@ void biconnected_components_to_subgraphs(Graph& g) {
 	unsigned int num = boost::biconnected_components(g, component);
 	if (verbose) { std::cerr << "Number of biconnected components: " << num << std::endl; }
 	
-	std::vector<Graph::vertex_descriptor> art_points;
+	std::vector<Vertex> art_points;
 	boost::articulation_points(g, std::back_inserter(art_points));
 	if (verbose) {	std::cerr << "Number of articulation points: " << art_points.size() << " ( "; 
 		for (auto elem : art_points) {
@@ -395,16 +395,16 @@ int get_max_degree(Graph& g) {
 	return max_degree;
 }
 
-bool is_bipartite_graph(Graph& g, Graph::vertex_descriptor startVertex, Graph::edge_descriptor& ed) {
+bool is_bipartite_graph(Graph& g, Vertex startVertex, Edge& ed) {
 	// This is a Breadth First Search which checks if the graph is bipartit. 
 	// If not, returns false and the fills the conflicting edge into the edge_descriptor
 	
 	// queue for search stores vertex indexes
-	//std::vector<Graph::vertex_descriptor> queue;
+	//std::vector<Vertex> queue;
 	// struct to remember coloring
-	//std::map<Graph::vertex_descriptor, int> color;
+	//std::map<Vertex, int> color;
 	// struct to remember bfs-coloring
-	//std::map<Graph::vertex_descriptor, int> bfscolor;
+	//std::map<Vertex, int> bfscolor;
 	//enum { WHITE, BLACK, GRAY, RED };
 	
 	if (verbose) { 	std::cerr << "StartVertex is: " << startVertex << std::endl; 
@@ -415,7 +415,7 @@ bool is_bipartite_graph(Graph& g, Graph::vertex_descriptor startVertex, Graph::e
 	//color[startVertex] = BLACK;
 	// do search
 	//while (!queue.empty()) {
-	//	Graph::vertex_descriptor u = queue.back();
+	//	Vertex u = queue.back();
 	//	if (verbose) { std::cerr << "u is: " << u << std::endl; }
 		// get neighbouring vertices
 	//	BGL_FORALL_ADJ_T(u, v, g, Graph) {
@@ -458,24 +458,24 @@ bool is_bipartite_graph(Graph& g, Graph::vertex_descriptor startVertex, Graph::e
 	// Define A BGL visitor for the BFS algorithm
 	class my_bfs_visitor : public boost::default_bfs_visitor {
 		public:
-		my_bfs_visitor(Graph::edge_descriptor& ed, bool& exit) : m_ed(ed), m_exit(exit) {}
-		Graph::edge_descriptor& m_ed;
+		my_bfs_visitor(Edge& ed, bool& exit) : m_ed(ed), m_exit(exit) {}
+		Edge& m_ed;
 		bool& m_exit;
 		enum { WHITE, BLACK, GRAY, RED };
-		void tree_edge(Graph::edge_descriptor e, Graph g) const {
+		void tree_edge(Edge e, Graph g) const {
 			if (verbose) { std::cout << "Detecting Tree edge: " << e << std::endl; }
-			Graph::vertex_descriptor u = boost::source(e, g);
-			Graph::vertex_descriptor v = boost::target(e, g);
+			Vertex u = boost::source(e, g);
+			Vertex v = boost::target(e, g);
 			if (g[u].bipartite_color == RED) {
 				g[v].bipartite_color = BLACK;
 			} else {
 				g[v].bipartite_color = RED;
 			}
 		}
-		void non_tree_edge(Graph::edge_descriptor e, Graph g) const {
+		void non_tree_edge(Edge e, Graph g) const {
 			if (verbose) { std::cout << "Detecting Non-Tree edge: " << e << std::endl; }
-			Graph::vertex_descriptor u = boost::source(e, g);
-			Graph::vertex_descriptor v = boost::target(e, g);
+			Vertex u = boost::source(e, g);
+			Vertex v = boost::target(e, g);
 			if (g[u].bipartite_color == g[v].bipartite_color) {
 				if (verbose) { std::cerr << "u and v have the same color -> not bipartite!" << std::endl; }
 				m_ed = boost::edge(u,v,g).first;
@@ -492,67 +492,173 @@ bool is_bipartite_graph(Graph& g, Graph::vertex_descriptor startVertex, Graph::e
 	return exit;
 }
 
-void ear_decomposition1(Graph& g, Graph::vertex_descriptor startVertex) {
+void ear_decomposition1(Graph& g, Vertex startVertex) {
 		
 	typedef boost::property_map<Graph, boost::vertex_color_t>::type v_color_map_t;
 	v_color_map_t vcolorMap;
 	typedef boost::property_map<Graph, boost::edge_color_t>::type e_color_map_t;
 	e_color_map_t ecolorMap;
+	
+	std::map<Vertex, Vertex> parents;
+	std::vector<Edge> crossedges;
+	Vertex start;
+	//std::map<Edge, std::pair<Vertex,int> > lcad;
+	std::map<int, std::map<Edge, Vertex> > delca;
+	
+	// get the spanning tree of our graph
+	get_spanning_tree(g, parents, crossedges, start);
+	// find the lca distances
+	for (auto e : crossedges) {
+		std::cerr << "starting at new chrossedge: " << e << std::endl;
+		std::pair<Vertex, int> lcad = get_lca_distance(g, parents, e, start);
+		std::cerr << "lca " << lcad.first << " has distance " << lcad.second << std::endl;
+		delca[lcad.second][e] = lcad.first;
+	}
+	
+	if (verbose) {
+		for (std::map<int, std::map<Edge, Vertex> >::iterator it=delca.begin(); it!=delca.end(); ++it) {
+			std::cerr << it->first << "(";
+			for (std::map<Edge, Vertex>::iterator iit=(it->second).begin(); iit!=(it->second).end(); ++iit) {
+				std::cerr << "[" << iit->first << ", " << iit->second << "]";
+			}
+			std::cerr << ")" << std::endl;
+		}
+	}
+	
+	// reset ear_integer
+	BGL_FORALL_EDGES_T(e, g, Graph) {
+		g[e].ear = 0;
+	}
+	
+	// now start at the biggest distance, at the biggest lexmin crossedge and make walks from the vertices to the lca
+	// old values will be overwritten, therefore you get all the ears correctly
+	int ear = 0;
+	for (std::map<int, std::map<Edge, Vertex> >::reverse_iterator it=delca.rbegin(); it!=delca.rend(); ++it) {
+		for (std::map<Edge, Vertex>::reverse_iterator iit=(it->second).rbegin(); iit!=(it->second).rend(); ++iit) {
+			Vertex r = iit->second;
+			g[iit->first].ear = ear;
+			Vertex i = boost::source(iit->first,g);
+			while (i != r) {
+				std::map<Vertex, Vertex>::iterator iiit;
+				iiit = parents.find(i);
+				g[boost::edge(i,iiit->second,g).first].ear = ear;
+				i = iiit->second;
+			}
+			i = boost::target(iit->first,g);
+			while (i != r) {
+				std::map<Vertex, Vertex>::iterator iiit;
+				iiit = parents.find(i);
+				g[boost::edge(i,iiit->second,g).first].ear = ear;
+				i = iiit->second;
+			}
+			ear++;
+		}
+	}
+	// write ears into subgraphs
+	for (int i = 0; i != ear; i++) {
+		Graph& subg = g.create_subgraph();
+		//boost::put(&graph_properties::level, g, "decomposed_ears");
+		// iterate over edges of graph
+		//Graph rg = g.root();
+		BGL_FORALL_EDGES_T(e, g, Graph) {
+			if (i == g[e].ear) {
+				// add vertex into current subgraph if not present already
+				if (!subg.find_vertex(boost::get(boost::vertex_color_t(), g, boost::target(e, g))).second) {
+					boost::add_vertex(boost::get(boost::vertex_color_t(), g, boost::target(e, g)), subg);
+				}
+				if (!subg.find_vertex(boost::get(boost::vertex_color_t(), g, boost::source(e,g))).second) {
+					boost::add_vertex(boost::get(boost::vertex_color_t(), g, boost::source(e,g)), subg);
+				}
+			}
+		}
+	}
 }
 
-void get_spanning_tree(Graph& g, Graph::vertex_descriptor rootVertex) {
-
-	BGL_FORALL_VERTICES_T(v, g, Graph) {
-		g[v].parent = 0;
-	}
+void get_spanning_tree(Graph& g, std::map<Vertex, Vertex>& parents, std::vector<Edge>& crossedges, Vertex& start) {
 
 	class my_dfs_visitor : public boost::default_dfs_visitor {
 		public:
-		//my_dfs_visitor(Graph::edge_descriptor& ed, bool& exit) : m_ed(ed), m_exit(exit) {}
-		//Graph::edge_descriptor& m_ed;
-		//bool& m_exit;
+		my_dfs_visitor(std::map<Vertex, Vertex>& parents, std::vector<Edge>& crossedges, Vertex& start) : p(parents), c(crossedges), sv(start) {}
+		std::map<Vertex, Vertex>& p;
+		std::vector<Edge>& c;
+		Vertex& sv;
 		enum { WHITE, BLACK, GRAY, RED };
-		void examine_edge(Graph::edge_descriptor e, Graph g) const {
-			if (verbose) { std::cout << "Found edge: " << e << std::endl; }
-			Graph::vertex_descriptor u = boost::source(e, g);
-			Graph::vertex_descriptor v = boost::target(e, g);
-			g[v].parent = (int) u;
+		void start_vertex(Vertex s, Graph g) const {
+			if (verbose) { std::cerr << "Start vertex: " << s << std::endl; }
+			sv = s;
 		}
-		void tree_edge(Graph::edge_descriptor e, Graph g) const {
-			if (verbose) { std::cout << "Detecting tree-edge: " << e << std::endl; }
-			Graph::vertex_descriptor u = boost::source(e, g);
-			Graph::vertex_descriptor v = boost::target(e, g);
-			g[v].parent = (int) u;
-			//if (g[u].bipartite_color == RED) {
-			//	g[v].bipartite_color = BLACK;
-			//} else {
-			//	g[v].bipartite_color = RED;
-			//}
+		void tree_edge(Edge e, Graph g) const {
+			if (verbose) { std::cerr << "Detecting tree-edge: " << e << std::endl; }
+			Vertex u = boost::source(e, g);
+			Vertex v = boost::target(e, g);
+			p[v] = u;
 		}
-		void back_edge(Graph::edge_descriptor e, Graph g) const {
-			if (verbose) { std::cout << "Detecting back-edge: " << e << std::endl; }
-			Graph::vertex_descriptor u = boost::source(e, g);
-			Graph::vertex_descriptor v = boost::target(e, g);
-			g[v].parent = (int) u;
-			//if (g[u].bipartite_color == g[v].bipartite_color) {
-			//	if (verbose) { std::cerr << "u and v have the same color -> not bipartite!" << std::endl; }
-			//	m_ed = boost::edge(u,v,g).first;
-				// return false if graph is not bipartite
-			//	m_exit = false;
-			//}
+		void forward_or_cross_edge(Edge e, Graph g) const {
+			if (verbose) { std::cerr << "Detecting back-edge: " << e << std::endl; }
+			//Vertex u = boost::source(e, g);
+			//Vertex v = boost::target(e, g);
+			c.push_back(e);
 		}
 	};
 	
-	my_dfs_visitor vis;
+	my_dfs_visitor vis(parents, crossedges, start);
 
 	// Do a BGL DFS!
 	// http://www.boost.org/doc/libs/1_53_0/libs/graph/doc/depth_first_search.html
 	// Did not work: http://www.boost.org/doc/libs/1_53_0/libs/graph/doc/undirected_dfs.html
 	// boost::undirected_dfs(g, boost::visitor(vis), vcolorMap, ecolorMap, rootVertex);
 	boost::depth_first_search(g, visitor(vis));
+	if (verbose) {
+		std::cerr << "Root vertex: " << start << std::endl;
+		std::cerr << "Spanning tree (vertex, parent) and cross-edges:" << std::endl;
+		for (std::map<Vertex, Vertex>::iterator it=parents.begin(); it!=parents.end(); ++it) {
+			std::cerr << it->first << " => " << it->second << std::endl;
+		}
+		for (auto elem : crossedges) {
+			std::cerr << elem << std::endl;
+		}
+	}
 }
 
-void ear_decomposition(Graph& g, Graph::vertex_descriptor startVertex) {
+std::pair<Vertex, int> get_lca_distance(Graph& g, std::map<Vertex, Vertex>& parents, Edge e, Vertex r) {
+
+	// make walks from the vertices to the root of the tree
+	std::vector<Vertex> uwalk = make_tree_walk(parents, boost::target(e, g), r);
+	std::vector<Vertex> vwalk = make_tree_walk(parents, boost::source(e, g), r);
+	if (verbose) {
+		for (auto elem : uwalk)
+			std::cerr << elem << "->";
+		std::cerr << std::endl;
+		for (auto elem : vwalk)
+			std::cerr << elem << "->";	
+		std::cerr << std::endl;
+	}
+	// get the lca from the walks
+	Vertex lca;
+	int distance = -1;
+	while (uwalk.back() == vwalk.back()) {
+		lca = uwalk.back();
+		distance++;
+		uwalk.pop_back();
+		vwalk.pop_back();
+	}	
+	return std::make_pair(lca,distance);
+}
+
+std::vector<Vertex> make_tree_walk(std::map<Vertex, Vertex>& parents, Vertex v, Vertex r) {
+	std::vector<Vertex> walk;
+	Vertex i = v;
+	walk.push_back(i);
+	while (i != r) {
+		std::map<Vertex, Vertex>::iterator it;
+		it = parents.find(i);
+		walk.push_back(it->second);
+		i = it->second;
+	}
+	return walk;
+}
+
+void ear_decomposition(Graph& g, Vertex startVertex) {
 	// blocks need to be decomposed into path. this can be conde by Ear Decomposition
 	
 	// map of ear decomposition properties for all vertices as key
@@ -563,7 +669,7 @@ void ear_decomposition(Graph& g, Graph::vertex_descriptor startVertex) {
 	unsigned int counter = 0;
 
 	if (verbose) { std::cout << "StartVertex is: " << startVertex << std::endl; }
-	// Algorithm rom Ramachandran (1992) Parallel Open Ear Decomposition with Applications, page 8/9
+	// Algorithm from Ramachandran (1992) Parallel Open Ear Decomposition with Applications, page 8/9
 	ear_dfs(g, startVertex, p, ear, counter);
 	
 	// print out all data-structures at the end
@@ -616,7 +722,7 @@ void ear_decomposition(Graph& g, Graph::vertex_descriptor startVertex) {
 	}
 }
 
-void ear_dfs(Graph& g, Graph::vertex_descriptor v, ear_propertymap_t& p, ear_t& ear, unsigned int& counter) {
+void ear_dfs(Graph& g, Vertex v, ear_propertymap_t& p, ear_t& ear, unsigned int& counter) {
 	
 	enum { WHITE, BLACK, GRAY };
 	if (verbose) { std::cout << "v is: " << v << std::endl; }
@@ -633,7 +739,7 @@ void ear_dfs(Graph& g, Graph::vertex_descriptor v, ear_propertymap_t& p, ear_t& 
 	for (boost::tie(ei, ei_end) = boost::out_edges(v, g);  ei != ei_end; ++ei)
 	{
 		if (verbose) { std::cerr << boost::target(*ei, g) <<" is neighbour through edge: " << *ei << std::endl; }
-		Graph::vertex_descriptor w = boost::target(*ei, g);
+		Vertex w = boost::target(*ei, g);
 		if (verbose) { std::cout << "w is: " << w << std::endl; }
 		
 		if (p[w].color == WHITE) {
@@ -652,7 +758,7 @@ void ear_dfs(Graph& g, Graph::vertex_descriptor v, ear_propertymap_t& p, ear_t& 
 		} else if (p[w].color == GRAY) {
 			if (verbose) { std::cout << "w is gray" << std::endl; }
 			if (w != p[w].parent) {
-				if (verbose) { std::cout << "found a backedge: " << v << w << std::endl; }
+				if (verbose) { std::cout << "found a crossedge: " << v << w << std::endl; }
 				//TODO: casting vertex in low to integer a bad idea?
 				p[v].low = boost::vertex(std::min((int) p[v].low, p[w].preorder), g);
 				ear[std::make_pair(w, v)] = std::make_pair(boost::vertex(p[w].preorder, g), boost::vertex(p[v].preorder, g));
