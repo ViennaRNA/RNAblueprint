@@ -494,11 +494,6 @@ bool is_bipartite_graph(Graph& g, Vertex startVertex, Edge& ed) {
 
 void ear_decomposition1(Graph& g, Vertex startVertex) {
 		
-	typedef boost::property_map<Graph, boost::vertex_color_t>::type v_color_map_t;
-	v_color_map_t vcolorMap;
-	typedef boost::property_map<Graph, boost::edge_color_t>::type e_color_map_t;
-	e_color_map_t ecolorMap;
-	
 	std::map<Vertex, Vertex> parents;
 	std::vector<Edge> crossedges;
 	Vertex start;
@@ -602,12 +597,14 @@ void get_spanning_tree(Graph& g, std::map<Vertex, Vertex>& parents, std::vector<
 	};
 	
 	my_dfs_visitor vis(parents, crossedges, start);
+	
+	std::vector<boost::default_color_type> colorMap;
 
 	// Do a BGL DFS!
 	// http://www.boost.org/doc/libs/1_53_0/libs/graph/doc/depth_first_search.html
 	// Did not work: http://www.boost.org/doc/libs/1_53_0/libs/graph/doc/undirected_dfs.html
 	// boost::undirected_dfs(g, boost::visitor(vis), vcolorMap, ecolorMap, rootVertex);
-	boost::depth_first_search(g, visitor(vis));
+	boost::depth_first_search(g, visitor(vis) ); //colorMap, boost::vertex(0,g)
 	if (verbose) {
 		std::cerr << "Root vertex: " << start << std::endl;
 		std::cerr << "Spanning tree (vertex, parent) and cross-edges:" << std::endl;
