@@ -289,7 +289,8 @@ void decompose_graph(Graph& graph, std::ostream* out) {
 				int max_degree = get_max_degree(*ci_b);
 				if (max_degree >= 3) {
 					//TODO starting at 0 does not work atm. maybe underflow of unsigned int/vertex?
-					//TODO use ear_decompositon1 or normal one?!
+					//TODO use ear_decompositon1 (Schieber & Vishkin (1986)) or ear_decomposition (Ramachandran (1992)) one?!
+					//ear_decomposition(*ci_b, boost::vertex((boost::num_vertices(*ci_b)-1), *ci_b));
 					ear_decomposition1(*ci_b, boost::vertex((boost::num_vertices(*ci_b)-1), *ci_b));
 					
 					*out << "subgraphs ear decomposition:" << std::endl;
@@ -497,11 +498,12 @@ void ear_decomposition1(Graph& g, Vertex startVertex) {
 	std::map<Vertex, Vertex> parents;
 	std::vector<Edge> crossedges;
 	Vertex start;
-	//std::map<Edge, std::pair<Vertex,int> > lcad;
+	//delca saves (map of distance : (map of edge : lca))
 	std::map<int, std::map<Edge, Vertex> > delca;
 	
 	// get the spanning tree of our graph
 	get_spanning_tree(g, parents, crossedges, start);
+	
 	// find the lca distances
 	for (auto e : crossedges) {
 		std::cerr << "starting at new chrossedge: " << e << std::endl;
@@ -616,6 +618,29 @@ void get_spanning_tree(Graph& g, std::map<Vertex, Vertex>& parents, std::vector<
 		}
 	}
 }
+
+void all_spanning_trees(Graph& g, std::vector< std::pair< std::map<Vertex, Vertex>, std::vector<Edge> > >& trees, std::vector< std::vector<Edge> >& cycles) {
+	// vector ( pair(parents, crossedges)) trees;
+	//cycles: get first element and delete this element
+	//for edges in cycle {
+	//	if edge = tree edge {
+	//		delete in parents
+	//		add to crossedge
+	//		delete crossedge of this circle
+	//		add parent of prev crossedge: two posibillities
+	//			x parent from y
+	//				push_back new container to trees
+	//				start new iteration
+	//			y parent from x
+	//				push_back new container to trees
+	//				start new iteration
+	//	if edge = cross edge
+	//		start new iteration
+	//	}
+	//}
+}
+
+
 
 std::pair<Vertex, int> get_lca_distance(Graph& g, std::map<Vertex, Vertex>& parents, Edge e, Vertex r) {
 
