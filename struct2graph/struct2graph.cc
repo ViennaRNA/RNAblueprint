@@ -629,9 +629,11 @@ void all_spanning_trees(Graph& g, std::vector< std::pair< std::map<Vertex, Verte
 	//		delete crossedge of this circle
 	//		add parent of prev crossedge: two posibillities
 	//			x parent from y
+	//				update parents up to lca
 	//				push_back new container to trees
 	//				start new iteration
 	//			y parent from x
+	//				update parents up to lca
 	//				push_back new container to trees
 	//				start new iteration
 	//	if edge = cross edge
