@@ -121,7 +121,7 @@ void ear_decomposition1(Graph& g, std::map<Vertex, Vertex>& parents, std::vector
 void get_spanning_tree(Graph& g, std::map<Vertex, Vertex>& parents, std::vector<Edge>& crossedges, Vertex& start);
 
 // change spanning tree with sampling a random new one
-void change_spanning_tree(Graph& g, std::map<Vertex, Vertex>& parents, std::vector<Edge>& crossedges, Vertex& root);
+void change_spanning_tree(Graph& g, std::mt19937& r, std::map<Vertex, Vertex>& parents, std::vector<Edge>& crossedges, Vertex& root);
 
 // given all the parents of a spanning_tree, find the lca a crossedge
 std::pair<Vertex, int> get_lca_distance(Graph& g, std::map<Vertex, Vertex>& parents, Edge e, Vertex r);

@@ -450,6 +450,15 @@ void do_ear_decompositions (Graph& g, Vertex startVertex) {
 	std::vector<Edge> crossedges;
 	Vertex start;
 	
+	// random generator to make spanning tree sampling
+	unsigned seed1 = std::chrono::system_clock::now().time_since_epoch().count();
+	std::mt19937 r (seed1);  // mt19937 is a standard mersenne_twister_engine
+	if (seed != "") {
+		std::seed_seq seed2 (seed.begin(), seed.end());
+		r.seed(seed2);
+	}
+	std::cerr << "Using this seed: " << r() << std::endl;
+	
 	// get the spanning tree of our graph
 	get_spanning_tree(g, parents, crossedges, start);
 	// print parents, cross-edges and root vertex
@@ -466,8 +475,8 @@ void do_ear_decompositions (Graph& g, Vertex startVertex) {
 	
 	ear_decomposition1(g, parents, crossedges, start);
 	
-	for (int i = 1; i !=5; i++) {
-		change_spanning_tree(g, parents, crossedges, start);
+	for (int i = 1; i !=20; i++) {
+		change_spanning_tree(g, r, parents, crossedges, start);
 		
 		// print parents, cross-edges and root vertex
 		if (verbose) {
@@ -483,6 +492,8 @@ void do_ear_decompositions (Graph& g, Vertex startVertex) {
 		ear_decomposition1(g, parents, crossedges, start);
 	}
 }
+
+int h = 1;
 
 void ear_decomposition1(Graph& g, std::map<Vertex, Vertex>& parents, std::vector<Edge>& crossedges, Vertex& start) {
 	
@@ -536,24 +547,30 @@ void ear_decomposition1(Graph& g, std::map<Vertex, Vertex>& parents, std::vector
 			ear++;
 		}
 	}
+	
+	std::stringstream name;
+	name << "ear-decomposition" << "-" << h++;
+	std::cout << name.str() << ":";
+	print_graph(g, &std::cout, name.str());
+	
 	// write ears into subgraphs
-	for (int i = 0; i != ear; i++) {
-		Graph& subg = g.create_subgraph();
+	//for (int i = 0; i != ear; i++) {
+	//	Graph& subg = g.create_subgraph();
 		//boost::put(&graph_properties::level, g, "decomposed_ears");
 		// iterate over edges of graph
 		//Graph rg = g.root();
-		BGL_FORALL_EDGES_T(e, g, Graph) {
-			if (i == g[e].ear) {
+	//	BGL_FORALL_EDGES_T(e, g, Graph) {
+	//		if (i == g[e].ear) {
 				// add vertex into current subgraph if not present already
-				if (!subg.find_vertex(boost::get(boost::vertex_color_t(), g, boost::target(e, g))).second) {
-					boost::add_vertex(boost::get(boost::vertex_color_t(), g, boost::target(e, g)), subg);
-				}
-				if (!subg.find_vertex(boost::get(boost::vertex_color_t(), g, boost::source(e,g))).second) {
-					boost::add_vertex(boost::get(boost::vertex_color_t(), g, boost::source(e,g)), subg);
-				}
-			}
-		}
-	}
+	//			if (!subg.find_vertex(boost::get(boost::vertex_color_t(), g, boost::target(e, g))).second) {
+	//				boost::add_vertex(boost::get(boost::vertex_color_t(), g, boost::target(e, g)), subg);
+	//			}
+	//			if (!subg.find_vertex(boost::get(boost::vertex_color_t(), g, boost::source(e,g))).second) {
+	//				boost::add_vertex(boost::get(boost::vertex_color_t(), g, boost::source(e,g)), subg);
+	//			}
+	//		}
+	//	}
+	//}
 }
 
 void get_spanning_tree(Graph& g, std::map<Vertex, Vertex>& parents, std::vector<Edge>& crossedges, Vertex& start) {
@@ -594,7 +611,7 @@ void get_spanning_tree(Graph& g, std::map<Vertex, Vertex>& parents, std::vector<
 	boost::depth_first_search(g, visitor(vis) ); //colorMap, boost::vertex(0,g)
 }
 
-void change_spanning_tree(Graph& g, std::map<Vertex, Vertex>& parents, std::vector<Edge>& crossedges, Vertex& start) {
+void change_spanning_tree(Graph& g, std::mt19937& r, std::map<Vertex, Vertex>& parents, std::vector<Edge>& crossedges, Vertex& start) {
 
 	// take random edge <= tree edges
 	// take random old crossedge <= crossedges 
@@ -608,24 +625,28 @@ void change_spanning_tree(Graph& g, std::map<Vertex, Vertex>& parents, std::vect
 	//		else if reach one (or is) new crossedge vertex -> invert parents + add new parent for old crossedge
 	// return with new parents and crossedges
 	
-	// random generator
-	unsigned seed1 = std::chrono::system_clock::now().time_since_epoch().count();
-	std::mt19937 r (seed1);  // mt19937 is a standard mersenne_twister_engine
-	if (seed != "") {
-		std::seed_seq seed2 (seed.begin(), seed.end());
-		r.seed(seed2);
-	}
-	std::cerr << "Using this seed: " << r() << std::endl;
-	// get random edge and crossedge
-	std::uniform_int_distribution<int> rand_tree_edge(0, parents.size()-1);  //(min, max)
-	int x = rand_tree_edge(r);
-	Edge edge = boost::edge(x, parents[x], g).first;
+	// get random crossedgeedge
 	std::uniform_int_distribution<int> rand_crossedge(0, crossedges.size()-1);  //(min, max)
 	Edge old_crossedge = crossedges[rand_crossedge(r)];
-	if (verbose) { std::cerr << "choosen crossedge: " << old_crossedge << " and tree-edge " << edge << std::endl; }
+	if (verbose) { std::cerr << "choosen crossedge: " << old_crossedge << std::endl; }
 	// calculate lca of old crossedge
 	Vertex lca = get_lca_distance(g, parents, old_crossedge, start).first;
 	if (verbose) { std::cerr << "lca from old crossedge: " << lca << std::endl; }
+	// get current cycle
+	std::vector<Vertex> source_walk = make_tree_walk(parents, boost::source(old_crossedge, g), lca);
+	std::vector<Vertex> target_walk = make_tree_walk(parents, boost::target(old_crossedge, g), lca);
+	// merge cycle paths and delete lca
+	target_walk.erase(--target_walk.end());
+	source_walk.erase(--source_walk.end());
+	for (auto elem : source_walk) {
+		target_walk.push_back(elem);
+	}
+	if (verbose) {	std::cerr << "cycle is:" << std::endl << target_walk << std::endl; }
+	// get random edge from cycle
+	std::uniform_int_distribution<int> rand_tree_edge(0, target_walk.size()-1);  //(min, max)
+	int x = rand_tree_edge(r);
+	Edge edge = boost::edge(target_walk[x], parents[target_walk[x]], g).first;
+	if (verbose) {	std::cerr << "Random Tree Edge is:" << edge << std::endl; }
 	// erase source target pair of edge in parents
 	for (std::map<Vertex, Vertex>::iterator it=parents.begin(); it!=parents.end(); ++it) {
 		if (((it->second == boost::source(edge,g)) && (it->first == boost::target(edge,g))) ||
@@ -635,17 +656,14 @@ void change_spanning_tree(Graph& g, std::map<Vertex, Vertex>& parents, std::vect
 	}
 	// add edge to crossedge
 	crossedges.push_back(edge);
-	
 	// delete old crossedge
 	std::vector<Edge>::iterator it = std::find(crossedges.begin(), crossedges.end(), old_crossedge);
 	crossedges.erase(it);
-
 	// walk from both vertices to add parent of old crossedge and update parents
 	std::vector<Vertex> adjacent_v;
 	adjacent_v.push_back(boost::source(old_crossedge, g));
 	adjacent_v.push_back(boost::target(old_crossedge, g));
 	Vertex other = adjacent_v[1];
-	
 	for (auto v : adjacent_v) {
 		if (verbose) { std::cerr << "walk from vertex " << v << std::endl; }
 		if (verbose) { std::cerr << "other is " << other << std::endl; }
