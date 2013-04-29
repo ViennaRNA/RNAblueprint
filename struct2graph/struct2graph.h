@@ -129,7 +129,7 @@ std::pair<Vertex, int> get_lca_distance(Graph& g, std::map<Vertex, Vertex>& pare
 std::vector<Vertex> make_tree_walk(std::map<Vertex, Vertex>& parents, Vertex v, Vertex r);
 
 // calculate spanning tree properties for coloring
-void calculate_alpha_beta(Graph& g, int my);
+void calculate_alpha_beta(Graph& g, int my, std::vector<Edge>& crossedges);
 
 // ear decomposition of blocks
 void ear_decomposition(Graph& g, Vertex startVertex);

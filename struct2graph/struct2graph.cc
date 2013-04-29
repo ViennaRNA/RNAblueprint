@@ -15,6 +15,7 @@ bool verbose = false;
 // filenames of graphml files will be starting with this string
 std::string outfile = "";
 std::string seed = "";
+int num_trees = 1;
 
 // overload << operator to print vectors with any content
 template <typename T>
@@ -100,6 +101,7 @@ boost::program_options::variables_map init_options(int ac, char* av[]) {
 		("in,i", po::value<std::string>(), "input file which contains the structures [string]")
 		("out,o", po::value<std::string>(&outfile), "write all (sub)graphs to gml files starting with given name [string]")
 		("seed,s", po::value<std::string>(&seed), "random number generator seed [string]")
+		("trees,t", po::value<int>(&num_trees), "amount of different spanning trees to use for ear decomposition statistic [int]")
 	;
 	
 	po::positional_options_description p;
@@ -475,9 +477,11 @@ void do_ear_decompositions (Graph& g, Vertex startVertex) {
 	}
 	
 	ear_decomposition1(g, parents, crossedges, start);
-	calculate_alpha_beta(g, crossedges.size());
+	if (num_trees > 1) {
+		calculate_alpha_beta(g, crossedges.size(), crossedges);
+	}
 	
-	for (int i = 1; i != 1; i++) {
+	for (int i = 1; i != num_trees; i++) {
 		change_spanning_tree(g, r, parents, crossedges, start);
 		
 		// print parents, cross-edges and root vertex
@@ -492,12 +496,9 @@ void do_ear_decompositions (Graph& g, Vertex startVertex) {
 			}
 		}
 		ear_decomposition1(g, parents, crossedges, start);
-		calculate_alpha_beta(g, crossedges.size());
+		calculate_alpha_beta(g, crossedges.size(), crossedges);
 	}
 }
-
-// remember how many trees we calculated
-int h = 1;
 
 void ear_decomposition1(Graph& g, std::map<Vertex, Vertex>& parents, std::vector<Edge>& crossedges, Vertex& start) {
 	
@@ -552,29 +553,29 @@ void ear_decomposition1(Graph& g, std::map<Vertex, Vertex>& parents, std::vector
 		}
 	}
 	
-	std::stringstream name;
-	name << "ear-decomposition" << "-" << h++;
-	std::cout << name.str() << ":";
-	print_graph(g, &std::cout, name.str());
+	//std::stringstream name;
+	//name << "ear-decomposition" << "-" << n++;
+	//std::cout << name.str() << ":";
+	//print_graph(g, &std::cout, name.str());
 	
 	// write ears into subgraphs
-	//for (int i = 0; i != ear; i++) {
-	//	Graph& subg = g.create_subgraph();
+	for (int i = 0; i != ear; i++) {
+		Graph& subg = g.create_subgraph();
 		//boost::put(&graph_properties::level, g, "decomposed_ears");
 		// iterate over edges of graph
 		//Graph rg = g.root();
-	//	BGL_FORALL_EDGES_T(e, g, Graph) {
-	//		if (i == g[e].ear) {
+		BGL_FORALL_EDGES_T(e, g, Graph) {
+			if (i == g[e].ear) {
 				// add vertex into current subgraph if not present already
-	//			if (!subg.find_vertex(boost::get(boost::vertex_color_t(), g, boost::target(e, g))).second) {
-	//				boost::add_vertex(boost::get(boost::vertex_color_t(), g, boost::target(e, g)), subg);
-	//			}
-	//			if (!subg.find_vertex(boost::get(boost::vertex_color_t(), g, boost::source(e,g))).second) {
-	//				boost::add_vertex(boost::get(boost::vertex_color_t(), g, boost::source(e,g)), subg);
-	//			}
-	//		}
-	//	}
-	//}
+				if (!subg.find_vertex(boost::get(boost::vertex_color_t(), g, boost::target(e, g))).second) {
+					boost::add_vertex(boost::get(boost::vertex_color_t(), g, boost::target(e, g)), subg);
+				}
+				if (!subg.find_vertex(boost::get(boost::vertex_color_t(), g, boost::source(e,g))).second) {
+					boost::add_vertex(boost::get(boost::vertex_color_t(), g, boost::source(e,g)), subg);
+				}
+			}
+		}
+	}
 }
 
 void get_spanning_tree(Graph& g, std::map<Vertex, Vertex>& parents, std::vector<Edge>& crossedges, Vertex& start) {
@@ -739,7 +740,7 @@ std::vector<Vertex> make_tree_walk(std::map<Vertex, Vertex>& parents, Vertex v, 
 	return walk;
 }
 
-void calculate_alpha_beta(Graph& g, int my) {
+void calculate_alpha_beta(Graph& g, int my, std::vector<Edge>& crossedges) {
 	
 	// structure to remember Ak
 	std::map<int, std::vector<Vertex> > Ak;
@@ -762,7 +763,7 @@ void calculate_alpha_beta(Graph& g, int my) {
 					int maxear = 0;
 					typename Graph::out_edge_iterator ei, ei_end;
 					for (boost::tie(ei, ei_end) = boost::out_edges(adja, g);  ei != ei_end; ++ei) {
-						if(g[*ei].ear > maxear) { maxear = g[e].ear; }
+						if(g[*ei].ear > maxear) { maxear = g[*ei].ear; }
 					}
 				
 					if (maxear > k) { g[adja].color = 1; }
@@ -771,8 +772,7 @@ void calculate_alpha_beta(Graph& g, int my) {
 			}
 		}
 		
-		
-		print_graph(g, &std::cout, "test_color");
+		//print_graph(g, &std::cout, "test_color");
 		// remember Ak for this k
 		std::vector< Vertex > thisAk;
 		// write colored vertices into thisAk
@@ -800,20 +800,27 @@ void calculate_alpha_beta(Graph& g, int my) {
 	
 	// write statistic output file
 	std::stringstream filename;
-	filename << outfile << "_statistics.txt";
+	if (outfile != "") {
+		filename << outfile << "-statistics.txt";
+	} else { filename << "statistics.txt"; }
 	std::ofstream statfile(filename.str(), std::ofstream::out | std::ofstream::app);
 	if (statfile.is_open()) {
+		// print alpha and beta
 		statfile << alpha << " " << beta << " ";
+		// print Ak sets
 		for (int i = 0; i != my; i++) {
 			for (auto elem : Ak[i]) {
 				if(elem != Ak[i].back()) {
-					statfile << elem << ",";
+					statfile << boost::get(boost::vertex_color_t(), g, elem) << ",";
 				} else {
-					statfile << elem;
+					statfile << boost::get(boost::vertex_color_t(), g, elem);
 				}
 			}
 			statfile << " ";
-			
+		}
+		// also print crossedges to reproduce trees afterwards
+		for (auto elem : crossedges) {
+			statfile << elem;
 		}
 		statfile << std::endl;
 		statfile.close();
