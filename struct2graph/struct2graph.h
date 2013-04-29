@@ -43,7 +43,6 @@
 struct vertex_property {
 	int bipartite_color;
 	int color;
-	int search_color;
 };
 
 struct edge_property {
@@ -128,6 +127,9 @@ std::pair<Vertex, int> get_lca_distance(Graph& g, std::map<Vertex, Vertex>& pare
 
 // do a walk in the spanning tree starting at v and ending at the root r -> return a vector with the walk
 std::vector<Vertex> make_tree_walk(std::map<Vertex, Vertex>& parents, Vertex v, Vertex r);
+
+// calculate spanning tree properties for coloring
+void calculate_alpha_beta(Graph& g, int my);
 
 // ear decomposition of blocks
 void ear_decomposition(Graph& g, Vertex startVertex);

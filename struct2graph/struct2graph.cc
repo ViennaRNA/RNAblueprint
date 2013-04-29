@@ -218,6 +218,7 @@ void print_graph(Graph& g, std::ostream* out, std::string nametag) {
 	boost::dynamic_properties dp;
 	dp.property("name", boost::get(boost::vertex_color_t(), g));
 	dp.property("bipartite_color", boost::get(&vertex_property::bipartite_color, g));
+	dp.property("color", boost::get(&vertex_property::color, g));
 	dp.property("ear", boost::get(&edge_property::ear, g));
 	
 	if (outfile != "") {
@@ -474,8 +475,9 @@ void do_ear_decompositions (Graph& g, Vertex startVertex) {
 	}
 	
 	ear_decomposition1(g, parents, crossedges, start);
+	calculate_alpha_beta(g, crossedges.size());
 	
-	for (int i = 1; i !=20; i++) {
+	for (int i = 1; i != 1; i++) {
 		change_spanning_tree(g, r, parents, crossedges, start);
 		
 		// print parents, cross-edges and root vertex
@@ -490,9 +492,11 @@ void do_ear_decompositions (Graph& g, Vertex startVertex) {
 			}
 		}
 		ear_decomposition1(g, parents, crossedges, start);
+		calculate_alpha_beta(g, crossedges.size());
 	}
 }
 
+// remember how many trees we calculated
 int h = 1;
 
 void ear_decomposition1(Graph& g, std::map<Vertex, Vertex>& parents, std::vector<Edge>& crossedges, Vertex& start) {
@@ -697,8 +701,6 @@ void change_spanning_tree(Graph& g, std::mt19937& r, std::map<Vertex, Vertex>& p
 	}
 }
 
-
-
 std::pair<Vertex, int> get_lca_distance(Graph& g, std::map<Vertex, Vertex>& parents, Edge e, Vertex r) {
 
 	// make walks from the vertices to the root of the tree
@@ -735,6 +737,90 @@ std::vector<Vertex> make_tree_walk(std::map<Vertex, Vertex>& parents, Vertex v, 
 		i = it->second;
 	}
 	return walk;
+}
+
+void calculate_alpha_beta(Graph& g, int my) {
+	
+	// structure to remember Ak
+	std::map<int, std::vector<Vertex> > Ak;
+	unsigned int alpha = 0;
+	unsigned int beta = 0;
+	
+	// reset_color
+	BGL_FORALL_VERTICES_T(v, g, Graph) {
+		g[v].color = 0;
+	}
+	
+	for (int k = 0; k != my; k++) {
+		BGL_FORALL_EDGES_T(e, g, Graph) {
+			if (g[e].ear == k) {
+				std::vector<Vertex> adjacent_v;
+				adjacent_v.push_back(boost::source(e, g));
+				adjacent_v.push_back(boost::target(e, g));
+				//TODO we calculate maxear twice for many vertices...
+				for (auto adja : adjacent_v) {
+					int maxear = 0;
+					typename Graph::out_edge_iterator ei, ei_end;
+					for (boost::tie(ei, ei_end) = boost::out_edges(adja, g);  ei != ei_end; ++ei) {
+						if(g[*ei].ear > maxear) { maxear = g[e].ear; }
+					}
+				
+					if (maxear > k) { g[adja].color = 1; }
+					else { g[adja].color = 0; }
+				}
+			}
+		}
+		
+		
+		print_graph(g, &std::cout, "test_color");
+		// remember Ak for this k
+		std::vector< Vertex > thisAk;
+		// write colored vertices into thisAk
+		BGL_FORALL_VERTICES_T(v, g, Graph) {
+			if (g[v].color == 1) {
+				thisAk.push_back(v);
+			}
+		}
+		Ak[k] = thisAk;
+		if (thisAk.size() > alpha) { alpha = thisAk.size(); }
+		
+		if (k > 0) {
+			std::vector<Vertex> Akplus1_without_Ak;
+			for (auto elem : thisAk) {
+				std::vector<Vertex>::iterator iter = find(Ak[k-1].begin(), Ak[k-1].end(), elem);
+				if (iter == Ak[k-1].end()) {
+					// elem is in thisAk but not in Ak[k-1]
+					Akplus1_without_Ak.push_back(elem);
+				}
+			}
+			unsigned int thisbeta = Ak[k-1].size() + Akplus1_without_Ak.size();
+			if (beta < thisbeta) { beta = thisbeta; }
+		}
+	}
+	
+	// write statistic output file
+	std::stringstream filename;
+	filename << outfile << "_statistics.txt";
+	std::ofstream statfile(filename.str(), std::ofstream::out | std::ofstream::app);
+	if (statfile.is_open()) {
+		statfile << alpha << " " << beta << " ";
+		for (int i = 0; i != my; i++) {
+			for (auto elem : Ak[i]) {
+				if(elem != Ak[i].back()) {
+					statfile << elem << ",";
+				} else {
+					statfile << elem;
+				}
+			}
+			statfile << " ";
+			
+		}
+		statfile << std::endl;
+		statfile.close();
+		if (verbose) { std::cerr << "Statistics written to outfile!" << std::endl; }
+	} else {
+			std::cerr << " Unable to create graphml file!" << std::endl;
+	}
 }
 
 void ear_decomposition(Graph& g, Vertex startVertex) {
