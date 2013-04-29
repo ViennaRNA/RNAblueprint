@@ -23,6 +23,8 @@
 #include <string>
 #include <array>
 #include <limits>
+#include <chrono>
+#include <random>
 
 // include boost components
 #include <boost/program_options.hpp>
@@ -34,8 +36,6 @@
 #include <boost/config.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/graph_utility.hpp>
-#include <boost/graph/random_spanning_tree.hpp>
-#include <boost/random.hpp>
 #include <boost/graph/breadth_first_search.hpp>
 #include <boost/graph/iteration_macros.hpp>
 
@@ -111,11 +111,17 @@ struct property {
 };
 typedef std::map<Vertex, property> ear_propertymap_t;
 
+// do a ear_decomposition1 using different spanning trees
+void do_ear_decompositions (Graph& g, Vertex startVertex);
+
 // ear decomposition of blocks
-void ear_decomposition1(Graph& g, Vertex startVertex);
+void ear_decomposition1(Graph& g, std::map<Vertex, Vertex>& parents, std::vector<Edge>& crossedges, Vertex& start);
 
 // get spanning tree with DFS
 void get_spanning_tree(Graph& g, std::map<Vertex, Vertex>& parents, std::vector<Edge>& crossedges, Vertex& start);
+
+// change spanning tree with sampling a random new one
+void change_spanning_tree(Graph& g, std::map<Vertex, Vertex>& parents, std::vector<Edge>& crossedges, Vertex& root);
 
 // given all the parents of a spanning_tree, find the lca a crossedge
 std::pair<Vertex, int> get_lca_distance(Graph& g, std::map<Vertex, Vertex>& parents, Edge e, Vertex r);

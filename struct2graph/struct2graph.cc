@@ -14,6 +14,7 @@
 bool verbose = false;
 // filenames of graphml files will be starting with this string
 std::string outfile = "";
+std::string seed = "";
 
 // overload << operator to print vectors with any content
 template <typename T>
@@ -98,6 +99,7 @@ boost::program_options::variables_map init_options(int ac, char* av[]) {
 	config.add_options()
 		("in,i", po::value<std::string>(), "input file which contains the structures [string]")
 		("out,o", po::value<std::string>(&outfile), "write all (sub)graphs to gml files starting with given name [string]")
+		("seed,s", po::value<std::string>(&seed), "random number generator seed [string]")
 	;
 	
 	po::positional_options_description p;
@@ -289,9 +291,9 @@ void decompose_graph(Graph& graph, std::ostream* out) {
 				int max_degree = get_max_degree(*ci_b);
 				if (max_degree >= 3) {
 					//TODO starting at 0 does not work atm. maybe underflow of unsigned int/vertex?
-					//TODO use ear_decompositon1 (Schieber & Vishkin (1986)) or ear_decomposition (Ramachandran (1992)) one?!
+					//TODO use do_ear_decompositons (Schieber & Vishkin (1986)) or ear_decomposition (Ramachandran (1992)) one?!
 					//ear_decomposition(*ci_b, boost::vertex((boost::num_vertices(*ci_b)-1), *ci_b));
-					ear_decomposition1(*ci_b, boost::vertex((boost::num_vertices(*ci_b)-1), *ci_b));
+					do_ear_decompositions(*ci_b, boost::vertex((boost::num_vertices(*ci_b)-1), *ci_b));
 					
 					*out << "subgraphs ear decomposition:" << std::endl;
 					// print the just created subgraphs
@@ -400,59 +402,8 @@ bool is_bipartite_graph(Graph& g, Vertex startVertex, Edge& ed) {
 	// This is a Breadth First Search which checks if the graph is bipartit. 
 	// If not, returns false and the fills the conflicting edge into the edge_descriptor
 	
-	// queue for search stores vertex indexes
-	//std::vector<Vertex> queue;
-	// struct to remember coloring
-	//std::map<Vertex, int> color;
-	// struct to remember bfs-coloring
-	//std::map<Vertex, int> bfscolor;
-	//enum { WHITE, BLACK, GRAY, RED };
-	
 	if (verbose) { 	std::cerr << "StartVertex is: " << startVertex << std::endl; 
 			std::cerr << "Number of vertices: " << boost::num_vertices(g) << std::endl; }
-			
-	// add start Vertex to queue
-	//queue.push_back(startVertex);
-	//color[startVertex] = BLACK;
-	// do search
-	//while (!queue.empty()) {
-	//	Vertex u = queue.back();
-	//	if (verbose) { std::cerr << "u is: " << u << std::endl; }
-		// get neighbouring vertices
-	//	BGL_FORALL_ADJ_T(u, v, g, Graph) {
-	//		if (verbose) { std::cerr << "v is: " << v << std::endl; }
-									// examine edge (u,v)
-	//		if (bfscolor[v] == WHITE) {			// is tree edge (u,v)
-	//			bfscolor[v] = GRAY;
-	//			queue.push_back(v);
-									//discover vertex v
-	//			if (color[u] == RED) {
-	//				color[v] = BLACK;
-	//			} else {
-	//				color[v] = RED;
-	//			}
-	//		} else if (color[u] == color[v]) {		// (u,v) is a non-tree edge
-	//			if (verbose) { std::cerr << "u and v have the same color -> not bipartite!" << std::endl; }
-	//			ed = boost::edge(u,v,g).first;
-				// return true if graph is not bipartite
-	//			return false;
-	//		} else if (color[u] != color[v]) {
-	//			if (verbose) { std::cerr << "u, v have color: " << color[u] << ", " << color[v] << std::endl; }
-	//		}
-	//	}
-	//	bfscolor[u] = BLACK;
-		// remove element u from queue
-	//	queue.erase(std::remove(queue.begin(), queue.end(), u), queue.end());
-		
-	//	if (verbose) {  std::cerr << "queue is:" << std::endl << queue;
-	//			std::cerr << "color is:" << std::endl << color;
-	//			std::cerr << "bfscolor is:" << std::endl << bfscolor; }
-	//}
-	
-	// reset bipartite_color
-	BGL_FORALL_VERTICES_T(v, g, Graph) {
-		g[v].bipartite_color = 0;
-	}
 	
 	// exit value (if bipartite = true, else false)
 	bool exit = true;
@@ -493,22 +444,56 @@ bool is_bipartite_graph(Graph& g, Vertex startVertex, Edge& ed) {
 	return exit;
 }
 
-void ear_decomposition1(Graph& g, Vertex startVertex) {
-		
+void do_ear_decompositions (Graph& g, Vertex startVertex) {
+	
 	std::map<Vertex, Vertex> parents;
 	std::vector<Edge> crossedges;
 	Vertex start;
-	//delca saves (map of distance : (map of edge : lca))
-	std::map<int, std::map<Edge, Vertex> > delca;
 	
 	// get the spanning tree of our graph
 	get_spanning_tree(g, parents, crossedges, start);
+	// print parents, cross-edges and root vertex
+	if (verbose) {
+		std::cerr << "Root vertex: " << start << std::endl;
+		std::cerr << "Spanning tree (vertex, parent) and cross-edges:" << std::endl;
+		for (std::map<Vertex, Vertex>::iterator it=parents.begin(); it!=parents.end(); ++it) {
+			std::cerr << it->first << " => " << it->second << std::endl;
+		}
+		for (auto elem : crossedges) {
+			std::cerr << elem << std::endl;
+		}
+	}
+	
+	ear_decomposition1(g, parents, crossedges, start);
+	
+	for (int i = 1; i !=5; i++) {
+		change_spanning_tree(g, parents, crossedges, start);
+		
+		// print parents, cross-edges and root vertex
+		if (verbose) {
+			std::cerr << "Root vertex: " << start << std::endl;
+			std::cerr << "Spanning tree (vertex, parent) and cross-edges:" << std::endl;
+			for (std::map<Vertex, Vertex>::iterator it=parents.begin(); it!=parents.end(); ++it) {
+				std::cerr << it->first << " => " << it->second << std::endl;
+			}
+			for (auto elem : crossedges) {
+				std::cerr << elem << std::endl;
+			}
+		}
+		ear_decomposition1(g, parents, crossedges, start);
+	}
+}
+
+void ear_decomposition1(Graph& g, std::map<Vertex, Vertex>& parents, std::vector<Edge>& crossedges, Vertex& start) {
+	
+	//delca saves (map of distance : (map of edge : lca))
+	std::map<int, std::map<Edge, Vertex> > delca;
 	
 	// find the lca distances
 	for (auto e : crossedges) {
-		std::cerr << "starting at new chrossedge: " << e << std::endl;
+		if (verbose) { std::cerr << "starting at new chrossedge: " << e << std::endl; }
 		std::pair<Vertex, int> lcad = get_lca_distance(g, parents, e, start);
-		std::cerr << "lca " << lcad.first << " has distance " << lcad.second << std::endl;
+		if (verbose) { std::cerr << "lca " << lcad.first << " has distance " << lcad.second << std::endl; }
 		delca[lcad.second][e] = lcad.first;
 	}
 	
@@ -607,39 +592,91 @@ void get_spanning_tree(Graph& g, std::map<Vertex, Vertex>& parents, std::vector<
 	// Did not work: http://www.boost.org/doc/libs/1_53_0/libs/graph/doc/undirected_dfs.html
 	// boost::undirected_dfs(g, boost::visitor(vis), vcolorMap, ecolorMap, rootVertex);
 	boost::depth_first_search(g, visitor(vis) ); //colorMap, boost::vertex(0,g)
-	if (verbose) {
-		std::cerr << "Root vertex: " << start << std::endl;
-		std::cerr << "Spanning tree (vertex, parent) and cross-edges:" << std::endl;
-		for (std::map<Vertex, Vertex>::iterator it=parents.begin(); it!=parents.end(); ++it) {
-			std::cerr << it->first << " => " << it->second << std::endl;
-		}
-		for (auto elem : crossedges) {
-			std::cerr << elem << std::endl;
-		}
-	}
 }
 
-void all_spanning_trees(Graph& g, std::vector< std::pair< std::map<Vertex, Vertex>, std::vector<Edge> > >& trees, std::vector< std::vector<Edge> >& cycles) {
-	// vector ( pair(parents, crossedges)) trees;
-	//cycles: get first element and delete this element
-	//for edges in cycle {
-	//	if edge = tree edge {
-	//		delete in parents
-	//		add to crossedge
-	//		delete crossedge of this circle
-	//		add parent of prev crossedge: two posibillities
-	//			x parent from y
-	//				update parents up to lca
-	//				push_back new container to trees
-	//				start new iteration
-	//			y parent from x
-	//				update parents up to lca
-	//				push_back new container to trees
-	//				start new iteration
-	//	if edge = cross edge
-	//		start new iteration
-	//	}
-	//}
+void change_spanning_tree(Graph& g, std::map<Vertex, Vertex>& parents, std::vector<Edge>& crossedges, Vertex& start) {
+
+	// take random edge <= tree edges
+	// take random old crossedge <= crossedges 
+	// calculate lca of old crossedge
+	// delete edge in parents
+	// add edge to crossedge
+	// delete old crossedge in crossedges
+	// (add parent of old crossedge and update parents):
+	//	walk from old crossedge vertices up to lca (remembering path in vertex)
+	//		if reach lca -> do nothing
+	//		else if reach one (or is) new crossedge vertex -> invert parents + add new parent for old crossedge
+	// return with new parents and crossedges
+	
+	// random generator
+	unsigned seed1 = std::chrono::system_clock::now().time_since_epoch().count();
+	std::mt19937 r (seed1);  // mt19937 is a standard mersenne_twister_engine
+	if (seed != "") {
+		std::seed_seq seed2 (seed.begin(), seed.end());
+		r.seed(seed2);
+	}
+	std::cerr << "Using this seed: " << r() << std::endl;
+	// get random edge and crossedge
+	std::uniform_int_distribution<int> rand_tree_edge(0, parents.size()-1);  //(min, max)
+	int x = rand_tree_edge(r);
+	Edge edge = boost::edge(x, parents[x], g).first;
+	std::uniform_int_distribution<int> rand_crossedge(0, crossedges.size()-1);  //(min, max)
+	Edge old_crossedge = crossedges[rand_crossedge(r)];
+	if (verbose) { std::cerr << "choosen crossedge: " << old_crossedge << " and tree-edge " << edge << std::endl; }
+	// calculate lca of old crossedge
+	Vertex lca = get_lca_distance(g, parents, old_crossedge, start).first;
+	if (verbose) { std::cerr << "lca from old crossedge: " << lca << std::endl; }
+	// erase source target pair of edge in parents
+	for (std::map<Vertex, Vertex>::iterator it=parents.begin(); it!=parents.end(); ++it) {
+		if (((it->second == boost::source(edge,g)) && (it->first == boost::target(edge,g))) ||
+		((it->second == boost::target(edge,g)) && (it->first == boost::source(edge,g)))) {
+			parents.erase(it);
+		}
+	}
+	// add edge to crossedge
+	crossedges.push_back(edge);
+	
+	// delete old crossedge
+	std::vector<Edge>::iterator it = std::find(crossedges.begin(), crossedges.end(), old_crossedge);
+	crossedges.erase(it);
+
+	// walk from both vertices to add parent of old crossedge and update parents
+	std::vector<Vertex> adjacent_v;
+	adjacent_v.push_back(boost::source(old_crossedge, g));
+	adjacent_v.push_back(boost::target(old_crossedge, g));
+	Vertex other = adjacent_v[1];
+	
+	for (auto v : adjacent_v) {
+		if (verbose) { std::cerr << "walk from vertex " << v << std::endl; }
+		if (verbose) { std::cerr << "other is " << other << std::endl; }
+		std::vector<Vertex> walk;
+		Vertex i = v;
+		walk.push_back(i);
+		while (i != lca) {
+			std::map<Vertex, Vertex>::iterator it;
+			it = parents.find(i);
+			if (it != parents.end()) {
+				walk.push_back(it->second);
+			}
+			//if reach one (or is) new crossedge vertex -> invert parents + add new parent for old crossedge
+			if ((i == boost::source(edge, g)) || (i == boost::target(edge, g))) {
+				// invert parents
+				Vertex child;
+				bool first = true;
+				for (auto w : walk) {
+					if (!first) {
+						parents[w] = child;
+					}
+					child = w;
+					first = false;
+				}
+				parents[v] = other;
+				break;
+			}
+			i = it->second;
+		}
+		other = v;
+	}
 }
 
 
