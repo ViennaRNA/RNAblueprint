@@ -558,20 +558,22 @@ void ear_decomposition1(Graph& g, std::map<Vertex, Vertex>& parents, std::vector
 	//std::cout << name.str() << ":";
 	//print_graph(g, &std::cout, name.str());
 	
-	// write ears into subgraphs
-	for (int i = 0; i != ear; i++) {
-		Graph& subg = g.create_subgraph();
-		//boost::put(&graph_properties::level, g, "decomposed_ears");
-		// iterate over edges of graph
-		//Graph rg = g.root();
-		BGL_FORALL_EDGES_T(e, g, Graph) {
-			if (i == g[e].ear) {
-				// add vertex into current subgraph if not present already
-				if (!subg.find_vertex(boost::get(boost::vertex_color_t(), g, boost::target(e, g))).second) {
-					boost::add_vertex(boost::get(boost::vertex_color_t(), g, boost::target(e, g)), subg);
-				}
-				if (!subg.find_vertex(boost::get(boost::vertex_color_t(), g, boost::source(e,g))).second) {
-					boost::add_vertex(boost::get(boost::vertex_color_t(), g, boost::source(e,g)), subg);
+	// write ears into subgraphs if program is not used for statistics
+	if (num_trees <= 1) {
+		for (int i = 0; i != ear; i++) {
+			Graph& subg = g.create_subgraph();
+			//boost::put(&graph_properties::level, g, "decomposed_ears");
+			// iterate over edges of graph
+			//Graph rg = g.root();
+			BGL_FORALL_EDGES_T(e, g, Graph) {
+				if (i == g[e].ear) {
+					// add vertex into current subgraph if not present already
+					if (!subg.find_vertex(boost::get(boost::vertex_color_t(), g, boost::target(e, g))).second) {
+						boost::add_vertex(boost::get(boost::vertex_color_t(), g, boost::target(e, g)), subg);
+					}
+					if (!subg.find_vertex(boost::get(boost::vertex_color_t(), g, boost::source(e,g))).second) {
+						boost::add_vertex(boost::get(boost::vertex_color_t(), g, boost::source(e,g)), subg);
+					}
 				}
 			}
 		}
