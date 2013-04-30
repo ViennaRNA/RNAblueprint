@@ -114,10 +114,10 @@ typedef std::map<Vertex, property> ear_propertymap_t;
 void do_ear_decompositions (Graph& g, Vertex startVertex);
 
 // ear decomposition of blocks
-void ear_decomposition1(Graph& g, std::map<Vertex, Vertex>& parents, std::vector<Edge>& crossedges, Vertex& start);
+void ear_decomposition1(Graph& g, std::map<Vertex, Vertex>& parents, std::vector<Edge>& crossedges, Vertex start);
 
 // get spanning tree with DFS
-void get_spanning_tree(Graph& g, std::map<Vertex, Vertex>& parents, std::vector<Edge>& crossedges, Vertex& start);
+void get_spanning_tree(Graph& g, std::map<Vertex, Vertex>& parents, std::vector<Edge>& crossedges, Vertex start);
 
 // change spanning tree with sampling a random new one
 void change_spanning_tree(Graph& g, std::mt19937& r, std::map<Vertex, Vertex>& parents, std::vector<Edge>& crossedges, Vertex& root);
