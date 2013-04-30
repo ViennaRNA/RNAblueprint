@@ -298,12 +298,16 @@ void decompose_graph(Graph& graph, std::ostream* out) {
 					//ear_decomposition(*ci_b, boost::vertex((boost::num_vertices(*ci_b)-1), *ci_b));
 					
 					//for statistics start at all vertices as root for DFS
-					BGL_FORALL_VERTICES_T(v, *ci_b, Graph) {
-						do_ear_decompositions(*ci_b, v);
+					if (num_trees > 1) {
+						BGL_FORALL_VERTICES_T(v, *ci_b, Graph) {
+							do_ear_decompositions(*ci_b, v);
+						}
+					} else {
+						do_ear_decompositions(*ci_b, boost::vertex((boost::num_vertices(*ci_b)-1), *ci_b));
+						*out << "subgraphs ear decomposition:" << std::endl;
+						// print the just created subgraphs
+						print_subgraphs(*ci_b, out, "decomposed-ear");
 					}
-					*out << "subgraphs ear decomposition:" << std::endl;
-					// print the just created subgraphs
-					print_subgraphs(*ci_b, out, "decomposed-ear");
 				}
 			}
 		}
