@@ -101,7 +101,7 @@ boost::program_options::variables_map init_options(int ac, char* av[]) {
 		("in,i", po::value<std::string>(), "input file which contains the structures [string]")
 		("out,o", po::value<std::string>(&outfile), "write all (sub)graphs to gml files starting with given name [string]")
 		("seed,s", po::value<std::string>(&seed), "random number generator seed [string]")
-		("trees,t", po::value<int>(&num_trees), "amount of different spanning trees to use for ear decomposition statistic [int]")
+		("trees,t", po::value<int>(&num_trees), "amount of different spanning trees for every root to calculate for ear decomposition statistic [int]")
 	;
 	
 	po::positional_options_description p;
@@ -296,8 +296,11 @@ void decompose_graph(Graph& graph, std::ostream* out) {
 					//TODO starting at 0 does not work atm. maybe underflow of unsigned int/vertex?
 					//TODO use do_ear_decompositons (Schieber & Vishkin (1986)) or ear_decomposition (Ramachandran (1992)) one?!
 					//ear_decomposition(*ci_b, boost::vertex((boost::num_vertices(*ci_b)-1), *ci_b));
-					do_ear_decompositions(*ci_b, boost::vertex((boost::num_vertices(*ci_b)-1), *ci_b));
 					
+					//for statistics start at all vertices as root for DFS
+					BGL_FORALL_VERTICES_T(v, *ci_b, Graph) {
+						do_ear_decompositions(*ci_b, v);
+					}
 					*out << "subgraphs ear decomposition:" << std::endl;
 					// print the just created subgraphs
 					print_subgraphs(*ci_b, out, "decomposed-ear");
@@ -451,7 +454,6 @@ void do_ear_decompositions (Graph& g, Vertex startVertex) {
 	
 	std::map<Vertex, Vertex> parents;
 	std::vector<Edge> crossedges;
-	Vertex start;
 	
 	// random generator to make spanning tree sampling
 	unsigned seed1 = std::chrono::system_clock::now().time_since_epoch().count();
@@ -463,10 +465,10 @@ void do_ear_decompositions (Graph& g, Vertex startVertex) {
 	std::cerr << "Using this seed: " << r() << std::endl;
 	
 	// get the spanning tree of our graph
-	get_spanning_tree(g, parents, crossedges, start);
+	get_spanning_tree(g, parents, crossedges, startVertex);
 	// print parents, cross-edges and root vertex
 	if (verbose) {
-		std::cerr << "Root vertex: " << start << std::endl;
+		std::cerr << "Root vertex: " << startVertex << std::endl;
 		std::cerr << "Spanning tree (vertex, parent) and cross-edges:" << std::endl;
 		for (std::map<Vertex, Vertex>::iterator it=parents.begin(); it!=parents.end(); ++it) {
 			std::cerr << it->first << " => " << it->second << std::endl;
@@ -476,17 +478,17 @@ void do_ear_decompositions (Graph& g, Vertex startVertex) {
 		}
 	}
 	
-	ear_decomposition1(g, parents, crossedges, start);
+	ear_decomposition1(g, parents, crossedges, startVertex);
 	if (num_trees > 1) {
 		calculate_alpha_beta(g, crossedges.size(), crossedges);
 	}
 	
 	for (int i = 1; i != num_trees; i++) {
-		change_spanning_tree(g, r, parents, crossedges, start);
+		change_spanning_tree(g, r, parents, crossedges, startVertex);
 		
 		// print parents, cross-edges and root vertex
 		if (verbose) {
-			std::cerr << "Root vertex: " << start << std::endl;
+			std::cerr << "Root vertex: " << startVertex << std::endl;
 			std::cerr << "Spanning tree (vertex, parent) and cross-edges:" << std::endl;
 			for (std::map<Vertex, Vertex>::iterator it=parents.begin(); it!=parents.end(); ++it) {
 				std::cerr << it->first << " => " << it->second << std::endl;
@@ -495,12 +497,12 @@ void do_ear_decompositions (Graph& g, Vertex startVertex) {
 				std::cerr << elem << std::endl;
 			}
 		}
-		ear_decomposition1(g, parents, crossedges, start);
+		ear_decomposition1(g, parents, crossedges, startVertex);
 		calculate_alpha_beta(g, crossedges.size(), crossedges);
 	}
 }
 
-void ear_decomposition1(Graph& g, std::map<Vertex, Vertex>& parents, std::vector<Edge>& crossedges, Vertex& start) {
+void ear_decomposition1(Graph& g, std::map<Vertex, Vertex>& parents, std::vector<Edge>& crossedges, Vertex start) {
 	
 	//delca saves (map of distance : (map of edge : lca))
 	std::map<int, std::map<Edge, Vertex> > delca;
@@ -580,18 +582,16 @@ void ear_decomposition1(Graph& g, std::map<Vertex, Vertex>& parents, std::vector
 	}
 }
 
-void get_spanning_tree(Graph& g, std::map<Vertex, Vertex>& parents, std::vector<Edge>& crossedges, Vertex& start) {
+void get_spanning_tree(Graph& g, std::map<Vertex, Vertex>& parents, std::vector<Edge>& crossedges, Vertex start) {
 
 	class my_dfs_visitor : public boost::default_dfs_visitor {
 		public:
-		my_dfs_visitor(std::map<Vertex, Vertex>& parents, std::vector<Edge>& crossedges, Vertex& start) : p(parents), c(crossedges), sv(start) {}
+		my_dfs_visitor(std::map<Vertex, Vertex>& parents, std::vector<Edge>& crossedges) : p(parents), c(crossedges) {}
 		std::map<Vertex, Vertex>& p;
 		std::vector<Edge>& c;
-		Vertex& sv;
 		enum { WHITE, BLACK, GRAY, RED };
 		void start_vertex(Vertex s, Graph g) const {
 			if (verbose) { std::cerr << "Start vertex: " << s << std::endl; }
-			sv = s;
 		}
 		void tree_edge(Edge e, Graph g) const {
 			if (verbose) { std::cerr << "Detecting tree-edge: " << e << std::endl; }
@@ -607,15 +607,13 @@ void get_spanning_tree(Graph& g, std::map<Vertex, Vertex>& parents, std::vector<
 		}
 	};
 	
-	my_dfs_visitor vis(parents, crossedges, start);
-	
-	std::vector<boost::default_color_type> colorMap;
+	my_dfs_visitor vis(parents, crossedges);
 
 	// Do a BGL DFS!
 	// http://www.boost.org/doc/libs/1_53_0/libs/graph/doc/depth_first_search.html
 	// Did not work: http://www.boost.org/doc/libs/1_53_0/libs/graph/doc/undirected_dfs.html
 	// boost::undirected_dfs(g, boost::visitor(vis), vcolorMap, ecolorMap, rootVertex);
-	boost::depth_first_search(g, visitor(vis) ); //colorMap, boost::vertex(0,g)
+	boost::depth_first_search(g, visitor(vis).root_vertex(start));
 }
 
 void change_spanning_tree(Graph& g, std::mt19937& r, std::map<Vertex, Vertex>& parents, std::vector<Edge>& crossedges, Vertex& start) {
