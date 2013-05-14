@@ -12,6 +12,7 @@
 #include "struct2graph.h"
 
 bool verbose = false;
+bool no_bipartite_check = false;
 // filenames of graphml files will be starting with this string
 std::string outfile = "";
 std::string seed = "";
@@ -102,6 +103,7 @@ boost::program_options::variables_map init_options(int ac, char* av[]) {
 		("out,o", po::value<std::string>(&outfile), "write all (sub)graphs to gml files starting with given name [string]")
 		("seed,s", po::value<std::string>(&seed), "random number generator seed [string]")
 		("trees,t", po::value<int>(&num_trees), "amount of different spanning trees for every root to calculate for ear decomposition statistic [int]")
+		("noBipartiteCheck,b", po::value(&no_bipartite_check)->zero_tokens(), "Don't check if input dependency graph is bipartite")
 	;
 	
 	po::positional_options_description p;
@@ -266,14 +268,16 @@ void decompose_graph(Graph& graph, std::ostream* out) {
 	// iterate over all subgraphs (connected components)
 	Graph::children_iterator ci, ci_end;
 	for (boost::tie(ci, ci_end) = graph.children(); ci != ci_end; ++ci) {
-		// check if subgraph is bipartite with a simple BFS
-		// generate the vertex 0 as vertex_descriptor
-		Vertex s = boost::vertex(0, *ci);
-		// generate a edge_descriptor in case the graph is not bipartite
-		Edge ed;
-		if (!is_bipartite_graph(*ci, s, ed)) {
-			std::cerr << "Graph is not bipartite! Conflict detected on edge " << ed << std::endl;
-			//exit(1);
+		if (!no_bipartite_check) {
+			// check if subgraph is bipartite with a simple BFS
+			// generate the vertex 0 as vertex_descriptor
+			Vertex s = boost::vertex(0, *ci);
+			// generate a edge_descriptor for the case that the graph is not bipartite
+			Edge ed;
+			if (!is_bipartite_graph(*ci, s, ed)) {
+				std::cerr << "Graph is not bipartite! Conflict detected on edge " << ed << std::endl;
+				exit(1);
+			}
 		}
 		
 		// calculate the max degree of this graph
