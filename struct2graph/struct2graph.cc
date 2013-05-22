@@ -16,7 +16,7 @@ bool no_bipartite_check = false;
 // filenames of graphml files will be starting with this string
 std::string outfile = "";
 std::string seed = "";
-int num_trees = 1;
+int num_trees = 0;
 
 // overload << operator to print vectors with any content
 template <typename T>
@@ -102,7 +102,7 @@ boost::program_options::variables_map init_options(int ac, char* av[]) {
 		("in,i", po::value<std::string>(), "input file which contains the structures [string]")
 		("out,o", po::value<std::string>(&outfile), "write all (sub)graphs to gml files starting with given name [string]")
 		("seed,s", po::value<std::string>(&seed), "random number generator seed [string]")
-		("trees,t", po::value<int>(&num_trees), "amount of different spanning trees for every root to calculate for ear decomposition statistic [int]")
+		("stat-trees,t", po::value<int>(&num_trees), "do decomposition statistics: define amount of different spanning trees for every root to calculate [int]")
 		("noBipartiteCheck,b", po::value(&no_bipartite_check)->zero_tokens(), "Don't check if input dependency graph is bipartite")
 	;
 	
@@ -297,17 +297,15 @@ void decompose_graph(Graph& graph, std::ostream* out) {
 				// calculate the max degree of this graph
 				int max_degree = get_max_degree(*ci_b);
 				if (max_degree >= 3) {
-					//TODO starting at 0 does not work atm. maybe underflow of unsigned int/vertex?
-					//TODO use do_ear_decompositons (Schieber & Vishkin (1986)) or ear_decomposition (Ramachandran (1992)) one?!
-					//ear_decomposition(*ci_b, boost::vertex((boost::num_vertices(*ci_b)-1), *ci_b));
-					
-					//for statistics start at all vertices as root for DFS
-					if (num_trees > 1) {
-						BGL_FORALL_VERTICES_T(v, *ci_b, Graph) {
-							do_ear_decompositions(*ci_b, v);
-						}
+					// only for statistics start at all vertices as root for DFS
+					if (num_trees > 0) {
+						do_spanning_tree_stat(*ci_b);
 					} else {
-						do_ear_decompositions(*ci_b, boost::vertex((boost::num_vertices(*ci_b)-1), *ci_b));
+					
+						//TODO starting at 0 does not work atm. maybe underflow of unsigned int/vertex?
+						//TODO use do_ear_decompositons (Schieber & Vishkin (1986)) or ear_decomposition (Ramachandran (1992)) one?!
+						ramachandran_ear_decomposition(*ci_b);
+						//schieber_ear_decomposition(*ci_b);
 						*out << "subgraphs ear decomposition:" << std::endl;
 						// print the just created subgraphs
 						print_subgraphs(*ci_b, out, "decomposed-ear");
@@ -458,11 +456,7 @@ bool is_bipartite_graph(Graph& g, Vertex startVertex, Edge& ed) {
 	return exit;
 }
 
-void do_ear_decompositions (Graph& g, Vertex startVertex) {
-	
-	std::map<Vertex, Vertex> parents;
-	std::vector<Edge> crossedges;
-	
+void do_spanning_tree_stat (Graph& g) {
 	// random generator to make spanning tree sampling
 	unsigned seed1 = std::chrono::system_clock::now().time_since_epoch().count();
 	std::mt19937 r (seed1);  // mt19937 is a standard mersenne_twister_engine
@@ -472,45 +466,87 @@ void do_ear_decompositions (Graph& g, Vertex startVertex) {
 	}
 	std::cerr << "Using this seed: " << r() << std::endl;
 	
-	// get the spanning tree of our graph
-	get_spanning_tree(g, parents, crossedges, startVertex);
-	// print parents, cross-edges and root vertex
-	if (verbose) {
-		std::cerr << "Root vertex: " << startVertex << std::endl;
-		std::cerr << "Spanning tree (vertex, parent) and cross-edges:" << std::endl;
-		for (std::map<Vertex, Vertex>::iterator it=parents.begin(); it!=parents.end(); ++it) {
-			std::cerr << it->first << " => " << it->second << std::endl;
-		}
-		for (auto elem : crossedges) {
-			std::cerr << elem << std::endl;
-		}
-	}
-	
-	ear_decomposition1(g, parents, crossedges, startVertex);
-	if (num_trees > 1) {
-		calculate_alpha_beta(g, crossedges.size(), crossedges);
-	}
-	
-	for (int i = 1; i != num_trees; i++) {
-		change_spanning_tree(g, r, parents, crossedges, startVertex);
+	// start at all vertices of the subgraph as root of the tree
+	BGL_FORALL_VERTICES_T(v, g, Graph) {	
+		// generate num_trees spanning trees for statistics
+		for (int i = 1; i != num_trees+1; i++) {
+			// remember predescessor map and all non-tree edges
+			std::map<Vertex, Vertex> parents;
+			std::vector<Edge> crossedges;
 		
-		// print parents, cross-edges and root vertex
-		if (verbose) {
-			std::cerr << "Root vertex: " << startVertex << std::endl;
-			std::cerr << "Spanning tree (vertex, parent) and cross-edges:" << std::endl;
-			for (std::map<Vertex, Vertex>::iterator it=parents.begin(); it!=parents.end(); ++it) {
-				std::cerr << it->first << " => " << it->second << std::endl;
+			// get a boost random spanning tree
+			get_random_spanning_tree (g, r, parents, crossedges, v);
+		
+			// print parents, cross-edges and root vertex
+			if (verbose) {
+				std::cerr << "Root vertex: " << v << std::endl;
+				std::cerr << "Spanning tree (vertex, parent) and cross-edges:" << std::endl;
+				for (std::map<Vertex, Vertex>::iterator it=parents.begin(); it!=parents.end(); ++it) {
+					std::cerr << it->first << " => " << it->second << std::endl;
+				}
+				for (auto elem : crossedges) {
+					std::cerr << elem << std::endl;
+				}
 			}
-			for (auto elem : crossedges) {
-				std::cerr << elem << std::endl;
-			}
+			
+			// do the actual ear decomposition
+			ear_decomposition (g, parents, crossedges, v);
+			
+			// calculate the two performance critical variables alpha and beta
+			calculate_alpha_beta(g, v, crossedges);
 		}
-		ear_decomposition1(g, parents, crossedges, startVertex);
-		calculate_alpha_beta(g, crossedges.size(), crossedges);
 	}
 }
 
-void ear_decomposition1(Graph& g, std::map<Vertex, Vertex>& parents, std::vector<Edge>& crossedges, Vertex start) {
+void schieber_ear_decomposition (Graph& g) {
+	// remember predescessor map and all non-tree edges
+	std::map<Vertex, Vertex> parents;
+	std::vector<Edge> crossedges;
+	
+	// start Vertex
+	Vertex startVertex = boost::vertex((boost::num_vertices(g)-1), g);
+		
+	// random generator to make spanning tree sampling
+	unsigned seed1 = std::chrono::system_clock::now().time_since_epoch().count();
+	std::mt19937 r (seed1);  // mt19937 is a standard mersenne_twister_engine
+	if (seed != "") {
+		std::seed_seq seed2 (seed.begin(), seed.end());
+		r.seed(seed2);
+	}
+	std::cerr << "Using this seed: " << r() << std::endl;
+	
+	// get a boost random spanning tree
+	get_random_spanning_tree (g, r, parents, crossedges, startVertex);
+	
+	// do the actual ear decomposition
+	ear_decomposition (g, parents, crossedges, startVertex);
+	
+	// write ears into subgraphs if program is not used for statistics
+	int ears;
+	BGL_FORALL_EDGES_T(e, g, Graph) {
+		if (ears < g[e].ear) { ears = g[e].ear; }
+	}
+	
+	for (int i = 0; i != ears+1; i++) {
+		Graph& subg = g.create_subgraph();
+		//boost::put(&graph_properties::level, g, "decomposed_ears");
+		// iterate over edges of graph
+		//Graph rg = g.root();
+		BGL_FORALL_EDGES_T(e, g, Graph) {
+			if (i == g[e].ear) {
+				// add vertex into current subgraph if not present already
+				if (!subg.find_vertex(boost::get(boost::vertex_color_t(), g, boost::target(e, g))).second) {
+					boost::add_vertex(boost::get(boost::vertex_color_t(), g, boost::target(e, g)), subg);
+				}
+				if (!subg.find_vertex(boost::get(boost::vertex_color_t(), g, boost::source(e,g))).second) {
+					boost::add_vertex(boost::get(boost::vertex_color_t(), g, boost::source(e,g)), subg);
+				}
+			}
+		}
+	}
+}
+
+void ear_decomposition (Graph& g, std::map<Vertex, Vertex>& parents, std::vector<Edge>& crossedges, Vertex start) {
 	
 	//delca saves (map of distance : (map of edge : lca))
 	std::map<int, std::map<Edge, Vertex> > delca;
@@ -562,151 +598,31 @@ void ear_decomposition1(Graph& g, std::map<Vertex, Vertex>& parents, std::vector
 			ear++;
 		}
 	}
-	
-	//std::stringstream name;
-	//name << "ear-decomposition" << "-" << n++;
-	//std::cout << name.str() << ":";
-	//print_graph(g, &std::cout, name.str());
-	
-	// write ears into subgraphs if program is not used for statistics
-	if (num_trees <= 1) {
-		for (int i = 0; i != ear; i++) {
-			Graph& subg = g.create_subgraph();
-			//boost::put(&graph_properties::level, g, "decomposed_ears");
-			// iterate over edges of graph
-			//Graph rg = g.root();
-			BGL_FORALL_EDGES_T(e, g, Graph) {
-				if (i == g[e].ear) {
-					// add vertex into current subgraph if not present already
-					if (!subg.find_vertex(boost::get(boost::vertex_color_t(), g, boost::target(e, g))).second) {
-						boost::add_vertex(boost::get(boost::vertex_color_t(), g, boost::target(e, g)), subg);
-					}
-					if (!subg.find_vertex(boost::get(boost::vertex_color_t(), g, boost::source(e,g))).second) {
-						boost::add_vertex(boost::get(boost::vertex_color_t(), g, boost::source(e,g)), subg);
-					}
-				}
-			}
-		}
-	}
 }
 
-void get_spanning_tree(Graph& g, std::map<Vertex, Vertex>& parents, std::vector<Edge>& crossedges, Vertex start) {
-
-	class my_dfs_visitor : public boost::default_dfs_visitor {
-		public:
-		my_dfs_visitor(std::map<Vertex, Vertex>& parents, std::vector<Edge>& crossedges) : p(parents), c(crossedges) {}
-		std::map<Vertex, Vertex>& p;
-		std::vector<Edge>& c;
-		enum { WHITE, BLACK, GRAY, RED };
-		void start_vertex(Vertex s, Graph g) const {
-			if (verbose) { std::cerr << "Start vertex: " << s << std::endl; }
-		}
-		void tree_edge(Edge e, Graph g) const {
-			if (verbose) { std::cerr << "Detecting tree-edge: " << e << std::endl; }
-			Vertex u = boost::source(e, g);
-			Vertex v = boost::target(e, g);
-			p[v] = u;
-		}
-		void forward_or_cross_edge(Edge e, Graph g) const {
-			if (verbose) { std::cerr << "Detecting back-edge: " << e << std::endl; }
-			//Vertex u = boost::source(e, g);
-			//Vertex v = boost::target(e, g);
-			c.push_back(e);
-		}
-	};
+void get_random_spanning_tree (Graph& g, std::mt19937& r, std::map<Vertex, Vertex>& parents, std::vector<Edge>& crossedges, Vertex start) {
 	
-	my_dfs_visitor vis(parents, crossedges);
-
-	// Do a BGL DFS!
-	// http://www.boost.org/doc/libs/1_53_0/libs/graph/doc/depth_first_search.html
-	// Did not work: http://www.boost.org/doc/libs/1_53_0/libs/graph/doc/undirected_dfs.html
-	// boost::undirected_dfs(g, boost::visitor(vis), vcolorMap, ecolorMap, rootVertex);
-	boost::depth_first_search(g, visitor(vis).root_vertex(start));
-}
-
-void change_spanning_tree(Graph& g, std::mt19937& r, std::map<Vertex, Vertex>& parents, std::vector<Edge>& crossedges, Vertex& start) {
-
-	// take random edge <= tree edges
-	// take random old crossedge <= crossedges 
-	// calculate lca of old crossedge
-	// delete edge in parents
-	// add edge to crossedge
-	// delete old crossedge in crossedges
-	// (add parent of old crossedge and update parents):
-	//	walk from old crossedge vertices up to lca (remembering path in vertex)
-	//		if reach lca -> do nothing
-	//		else if reach one (or is) new crossedge vertex -> invert parents + add new parent for old crossedge
-	// return with new parents and crossedges
+	boost::associative_property_map< std::map<Vertex,Vertex> > pm(parents);
+	// call boost random spanning tree here:
+	boost::random_spanning_tree(g, r, predecessor_map(pm).root_vertex(start));
+	if (verbose) { std::cerr << "Got a boost random spanning tree..." << std::endl; }
 	
-	// get random crossedgeedge
-	std::uniform_int_distribution<int> rand_crossedge(0, crossedges.size()-1);  //(min, max)
-	Edge old_crossedge = crossedges[rand_crossedge(r)];
-	if (verbose) { std::cerr << "choosen crossedge: " << old_crossedge << std::endl; }
-	// calculate lca of old crossedge
-	Vertex lca = get_lca_distance(g, parents, old_crossedge, start).first;
-	if (verbose) { std::cerr << "lca from old crossedge: " << lca << std::endl; }
-	// get current cycle
-	std::vector<Vertex> source_walk = make_tree_walk(parents, boost::source(old_crossedge, g), lca);
-	std::vector<Vertex> target_walk = make_tree_walk(parents, boost::target(old_crossedge, g), lca);
-	// merge cycle paths and delete lca
-	target_walk.erase(--target_walk.end());
-	source_walk.erase(--source_walk.end());
-	for (auto elem : source_walk) {
-		target_walk.push_back(elem);
+	// create the crossedges vector for the later ear-decomposition!
+	// clear all values
+	BGL_FORALL_EDGES_T(e, g, Graph) {
+		g[e].color = 0;
 	}
-	if (verbose) {	std::cerr << "cycle is:" << std::endl << target_walk << std::endl; }
-	// get random edge from cycle
-	std::uniform_int_distribution<int> rand_tree_edge(0, target_walk.size()-1);  //(min, max)
-	int x = rand_tree_edge(r);
-	Edge edge = boost::edge(target_walk[x], parents[target_walk[x]], g).first;
-	if (verbose) {	std::cerr << "Random Tree Edge is:" << edge << std::endl; }
-	// erase source target pair of edge in parents
+	// mark all tree edges
 	for (std::map<Vertex, Vertex>::iterator it=parents.begin(); it!=parents.end(); ++it) {
-		if (((it->second == boost::source(edge,g)) && (it->first == boost::target(edge,g))) ||
-		((it->second == boost::target(edge,g)) && (it->first == boost::source(edge,g)))) {
-			parents.erase(it);
+		if (it->first != start) {
+			g[boost::edge(it->first, it->second, g).first].color = 1;
 		}
 	}
-	// add edge to crossedge
-	crossedges.push_back(edge);
-	// delete old crossedge
-	std::vector<Edge>::iterator it = std::find(crossedges.begin(), crossedges.end(), old_crossedge);
-	crossedges.erase(it);
-	// walk from both vertices to add parent of old crossedge and update parents
-	std::vector<Vertex> adjacent_v;
-	adjacent_v.push_back(boost::source(old_crossedge, g));
-	adjacent_v.push_back(boost::target(old_crossedge, g));
-	Vertex other = adjacent_v[1];
-	for (auto v : adjacent_v) {
-		if (verbose) { std::cerr << "walk from vertex " << v << std::endl; }
-		if (verbose) { std::cerr << "other is " << other << std::endl; }
-		std::vector<Vertex> walk;
-		Vertex i = v;
-		walk.push_back(i);
-		while (i != lca) {
-			std::map<Vertex, Vertex>::iterator it;
-			it = parents.find(i);
-			if (it != parents.end()) {
-				walk.push_back(it->second);
-			}
-			//if reach one (or is) new crossedge vertex -> invert parents + add new parent for old crossedge
-			if ((i == boost::source(edge, g)) || (i == boost::target(edge, g))) {
-				// invert parents
-				Vertex child;
-				bool first = true;
-				for (auto w : walk) {
-					if (!first) {
-						parents[w] = child;
-					}
-					child = w;
-					first = false;
-				}
-				parents[v] = other;
-				break;
-			}
-			i = it->second;
+	// push all non-tree edges into crossedges
+	BGL_FORALL_EDGES_T(e, g, Graph) {
+		if (g[e].color == 0) {
+			crossedges.push_back(e);
 		}
-		other = v;
 	}
 }
 
@@ -748,18 +664,22 @@ std::vector<Vertex> make_tree_walk(std::map<Vertex, Vertex>& parents, Vertex v, 
 	return walk;
 }
 
-void calculate_alpha_beta(Graph& g, int my, std::vector<Edge>& crossedges) {
+void calculate_alpha_beta(Graph& g, Vertex root, std::vector<Edge>& crossedges) {
 	
 	// structure to remember Ak
 	std::map<int, std::vector<Vertex> > Ak;
 	unsigned int alpha = 0;
 	unsigned int beta = 0;
+	int my = crossedges.size();
 	
 	// reset_color
 	BGL_FORALL_VERTICES_T(v, g, Graph) {
 		g[v].color = 0;
 	}
 	
+	// iterate over all ear decomposition iterations and inside this loop over all edges of this ear
+	// this edges have source and target vertices, iterate over both
+	// then iterate over the adjacent out edges of these vertices and get the hightes ear number into maxear
 	for (int k = 0; k != my; k++) {
 		BGL_FORALL_EDGES_T(e, g, Graph) {
 			if (g[e].ear == k) {
@@ -826,6 +746,8 @@ void calculate_alpha_beta(Graph& g, int my, std::vector<Edge>& crossedges) {
 			}
 			statfile << " ";
 		}
+		// print root of spanning tree
+		statfile << root << " ";
 		// also print crossedges to reproduce trees afterwards
 		for (auto elem : crossedges) {
 			statfile << elem;
@@ -834,12 +756,15 @@ void calculate_alpha_beta(Graph& g, int my, std::vector<Edge>& crossedges) {
 		statfile.close();
 		if (verbose) { std::cerr << "Statistics written to outfile!" << std::endl; }
 	} else {
-			std::cerr << " Unable to create graphml file!" << std::endl;
+			std::cerr << " Unable to create statistics file!" << std::endl;
 	}
 }
 
-void ear_decomposition(Graph& g, Vertex startVertex) {
-	// blocks need to be decomposed into path. this can be conde by Ear Decomposition
+void ramachandran_ear_decomposition (Graph& g) {
+	// blocks need to be decomposed into path. this can be done by Ear Decomposition
+	
+	// start Vertex
+	Vertex startVertex = boost::vertex((boost::num_vertices(g)-1), g);
 	
 	// map of ear decomposition properties for all vertices as key
 	ear_propertymap_t p;
