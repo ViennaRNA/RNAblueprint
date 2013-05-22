@@ -13,6 +13,7 @@
 
 bool verbose = false;
 bool no_bipartite_check = false;
+bool ramachandran = false;
 // filenames of graphml files will be starting with this string
 std::string outfile = "";
 std::string seed = "";
@@ -102,6 +103,7 @@ boost::program_options::variables_map init_options(int ac, char* av[]) {
 		("in,i", po::value<std::string>(), "input file which contains the structures [string]")
 		("out,o", po::value<std::string>(&outfile), "write all (sub)graphs to gml files starting with given name [string]")
 		("seed,s", po::value<std::string>(&seed), "random number generator seed [string]")
+		("ramachandran,r", po::value(&ramachandran)->zero_tokens(), "Use the Ramachandran ear decomposition algorithmus")
 		("stat-trees,t", po::value<int>(&num_trees), "do decomposition statistics: define amount of different spanning trees for every root to calculate [int]")
 		("noBipartiteCheck,b", po::value(&no_bipartite_check)->zero_tokens(), "Don't check if input dependency graph is bipartite")
 	;
@@ -304,8 +306,11 @@ void decompose_graph(Graph& graph, std::ostream* out) {
 					
 						//TODO starting at 0 does not work atm. maybe underflow of unsigned int/vertex?
 						//TODO use do_ear_decompositons (Schieber & Vishkin (1986)) or ear_decomposition (Ramachandran (1992)) one?!
-						ramachandran_ear_decomposition(*ci_b);
-						//schieber_ear_decomposition(*ci_b);
+						if (ramachandran) {
+							ramachandran_ear_decomposition(*ci_b);
+						} else {
+							schieber_ear_decomposition(*ci_b);
+						}
 						*out << "subgraphs ear decomposition:" << std::endl;
 						// print the just created subgraphs
 						print_subgraphs(*ci_b, out, "decomposed-ear");
