@@ -521,10 +521,22 @@ void schieber_ear_decomposition (Graph& g) {
 	// get a boost random spanning tree
 	get_random_spanning_tree (g, r, parents, crossedges, startVertex);
 	
+	// print parents, cross-edges and root vertex
+	if (verbose) {
+		std::cerr << "Root vertex: " << startVertex << std::endl;
+		std::cerr << "Spanning tree (vertex, parent) and cross-edges:" << std::endl;
+		for (std::map<Vertex, Vertex>::iterator it=parents.begin(); it!=parents.end(); ++it) {
+			std::cerr << it->first << " => " << it->second << std::endl;
+		}
+		for (auto elem : crossedges) {
+			std::cerr << elem << std::endl;
+		}
+	}
+	
 	// do the actual ear decomposition
 	ear_decomposition (g, parents, crossedges, startVertex);
 	
-	// write ears into subgraphs if program is not used for statistics
+	// write ears into subgraphs
 	int ears;
 	BGL_FORALL_EDGES_T(e, g, Graph) {
 		if (ears < g[e].ear) { ears = g[e].ear; }
@@ -584,11 +596,13 @@ void ear_decomposition (Graph& g, std::map<Vertex, Vertex>& parents, std::vector
 		for (std::map<Edge, Vertex>::reverse_iterator iit=(it->second).rbegin(); iit!=(it->second).rend(); ++iit) {
 			Vertex r = iit->second;
 			g[iit->first].ear = ear;
+			//std::cerr << "lca is: " << r << "; coloring ear: " << ear << std::endl;
 			Vertex i = boost::source(iit->first,g);
 			while (i != r) {
 				std::map<Vertex, Vertex>::iterator iiit;
 				iiit = parents.find(i);
 				g[boost::edge(i,iiit->second,g).first].ear = ear;
+				//std::cerr << "edge " << boost::edge(i,iiit->second,g).first << " will be ear " << ear << std::endl;
 				i = iiit->second;
 			}
 			i = boost::target(iit->first,g);
@@ -596,6 +610,7 @@ void ear_decomposition (Graph& g, std::map<Vertex, Vertex>& parents, std::vector
 				std::map<Vertex, Vertex>::iterator iiit;
 				iiit = parents.find(i);
 				g[boost::edge(i,iiit->second,g).first].ear = ear;
+				//std::cerr << "edge " << boost::edge(i,iiit->second,g).first << " will be ear " << ear << std::endl;
 				i = iiit->second;
 			}
 			ear++;
@@ -643,13 +658,14 @@ std::pair<Vertex, int> get_lca_distance(Graph& g, std::map<Vertex, Vertex>& pare
 		std::cerr << std::endl;
 	}
 	// get the lca from the walks
-	Vertex lca;
+	Vertex lca = boost::graph_traits<Graph>::null_vertex();
 	int distance = -1;
 	while (uwalk.back() == vwalk.back()) {
-		lca = uwalk.back();
+		lca = vwalk.back();
 		distance++;
 		uwalk.pop_back();
 		vwalk.pop_back();
+		if ((uwalk.size() == 0) || (vwalk.size() == 0)) { break; }
 	}	
 	return std::make_pair(lca,distance);
 }
