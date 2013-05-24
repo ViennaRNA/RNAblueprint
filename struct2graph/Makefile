@@ -2,13 +2,13 @@
 CC = g++
 LL = g++
 EXE =  struct2graph
-LIBS = libstdc++
-LDFLAGS += -lboost_program_options
+LIBS = -lstdc++
+LDFLAGS = -lboost_program_options
 DEFS =
 WARN = -Wall
-OPTI = -g -lboost_program_options
+OPTI = -g
 STD  = -std=c++11
-CCFLAGS = $(WARN) $(STD) $(OPTI)
+CCFLAGS = $(WARN) $(STD) $(OPTI) $(DEFS) $(LIBS)
 CSRC = struct2graph.cc
 COBJ = $(foreach file, $(CSRC:.cc=.o), $(file))
 # rules

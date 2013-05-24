@@ -11,7 +11,6 @@ void get_spanning_tree(Graph& g, std::map<Vertex, Vertex>& parents, std::vector<
 // change spanning tree with sampling a random new one
 void change_spanning_tree(Graph& g, std::mt19937& r, std::map<Vertex, Vertex>& parents, std::vector<Edge>& crossedges, Vertex& root);
 
-
 void get_spanning_tree(Graph& g, std::map<Vertex, Vertex>& parents, std::vector<Edge>& crossedges, Vertex start) {
 
 	class my_dfs_visitor : public boost::default_dfs_visitor {

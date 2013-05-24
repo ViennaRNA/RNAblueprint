@@ -16,7 +16,7 @@ bool no_bipartite_check = false;
 bool ramachandran = false;
 // filenames of graphml files will be starting with this string
 std::string outfile = "";
-std::string seed = "";
+unsigned long seed = 0;
 int num_trees = 0;
 
 // overload << operator to print vectors with any content
@@ -102,7 +102,7 @@ boost::program_options::variables_map init_options(int ac, char* av[]) {
 	config.add_options()
 		("in,i", po::value<std::string>(), "input file which contains the structures [string]")
 		("out,o", po::value<std::string>(&outfile), "write all (sub)graphs to gml files starting with given name [string]")
-		("seed,s", po::value<std::string>(&seed), "random number generator seed [string]")
+		("seed,s", po::value<unsigned long>(&seed), "random number generator seed [unsigned long]")
 		("ramachandran,r", po::value(&ramachandran)->zero_tokens(), "Use the Ramachandran ear decomposition algorithmus")
 		("stat-trees,t", po::value<int>(&num_trees), "do decomposition statistics: define amount of different spanning trees for every root to calculate [int]")
 		("noBipartiteCheck,b", po::value(&no_bipartite_check)->zero_tokens(), "Don't check if input dependency graph is bipartite")
@@ -463,13 +463,12 @@ bool is_bipartite_graph(Graph& g, Vertex startVertex, Edge& ed) {
 
 void do_spanning_tree_stat (Graph& g) {
 	// random generator to make spanning tree sampling
-	unsigned seed1 = std::chrono::system_clock::now().time_since_epoch().count();
-	std::mt19937 r (seed1);  // mt19937 is a standard mersenne_twister_engine
-	if (seed != "") {
-		std::seed_seq seed2 (seed.begin(), seed.end());
-		r.seed(seed2);
+	if (seed == 0) {
+		unsigned long clock_seed = std::chrono::system_clock::now().time_since_epoch().count();
+		seed = clock_seed;
 	}
-	std::cerr << "Using this seed: " << r() << std::endl;
+	std::mt19937 r (seed);  // mt19937 is a standard mersenne_twister_engine
+	std::cerr << "Using this seed: " << seed << std::endl;
 	
 	// start at all vertices of the subgraph as root of the tree
 	BGL_FORALL_VERTICES_T(v, g, Graph) {	
@@ -512,13 +511,12 @@ void schieber_ear_decomposition (Graph& g) {
 	Vertex startVertex = boost::vertex((boost::num_vertices(g)-1), g);
 		
 	// random generator to make spanning tree sampling
-	unsigned seed1 = std::chrono::system_clock::now().time_since_epoch().count();
-	std::mt19937 r (seed1);  // mt19937 is a standard mersenne_twister_engine
-	if (seed != "") {
-		std::seed_seq seed2 (seed.begin(), seed.end());
-		r.seed(seed2);
+	if (seed == 0) {
+		unsigned long clock_seed = std::chrono::system_clock::now().time_since_epoch().count();
+		seed = clock_seed;
 	}
-	std::cerr << "Using this seed: " << r() << std::endl;
+	std::mt19937 r (seed);  // mt19937 is a standard mersenne_twister_engine
+	std::cerr << "Using this seed: " << seed << std::endl;
 	
 	// get a boost random spanning tree
 	get_random_spanning_tree (g, r, parents, crossedges, startVertex);
@@ -878,4 +876,5 @@ void ear_dfs(Graph& g, Vertex v, ear_propertymap_t& p, ear_t& ear, unsigned int&
 	}
 	if (verbose) { std::cout << "finishing vertex " << v << std::endl; }
 }
+
 
