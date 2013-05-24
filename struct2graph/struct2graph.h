@@ -119,7 +119,10 @@ std::pair<Vertex, int> get_lca_distance(Graph& g, std::map<Vertex, Vertex>& pare
 std::vector<Vertex> make_tree_walk(std::map<Vertex, Vertex>& parents, Vertex v, Vertex r);
 
 // calculate spanning tree properties for coloring
-void calculate_alpha_beta(Graph& g, Vertex root, std::vector<Edge>& crossedges);
+std::pair< unsigned int, unsigned int > calculate_alpha_beta(Graph& g, std::vector<Edge>& crossedges, std::map<int, std::vector<Vertex> >& Ak);
+
+// write statistic output file
+void print_ab_stat (unsigned int alpha, unsigned int beta, std::map<int, std::vector<Vertex> > Ak, Graph& g, Vertex root, std::vector<Edge>& crossedges);
 
 // typedefs for ramachandran ear decomposition
 typedef std::pair<Vertex, Vertex> edge_t;

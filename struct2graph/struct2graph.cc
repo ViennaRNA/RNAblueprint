@@ -471,7 +471,7 @@ void do_spanning_tree_stat (Graph& g) {
 	std::cerr << "Using this seed: " << seed << std::endl;
 	
 	// start at all vertices of the subgraph as root of the tree
-	BGL_FORALL_VERTICES_T(v, g, Graph) {	
+	BGL_FORALL_VERTICES_T(root, g, Graph) {	
 		// generate num_trees spanning trees for statistics
 		for (int i = 1; i != num_trees+1; i++) {
 			// remember predescessor map and all non-tree edges
@@ -479,11 +479,11 @@ void do_spanning_tree_stat (Graph& g) {
 			std::vector<Edge> crossedges;
 		
 			// get a boost random spanning tree
-			get_random_spanning_tree (g, r, parents, crossedges, v);
+			get_random_spanning_tree (g, r, parents, crossedges, root);
 		
 			// print parents, cross-edges and root vertex
 			if (verbose) {
-				std::cerr << "Root vertex: " << v << std::endl;
+				std::cerr << "Root vertex: " << root << std::endl;
 				std::cerr << "Spanning tree (vertex, parent) and cross-edges:" << std::endl;
 				for (std::map<Vertex, Vertex>::iterator it=parents.begin(); it!=parents.end(); ++it) {
 					std::cerr << it->first << " => " << it->second << std::endl;
@@ -494,10 +494,17 @@ void do_spanning_tree_stat (Graph& g) {
 			}
 			
 			// do the actual ear decomposition
-			ear_decomposition (g, parents, crossedges, v);
+			ear_decomposition (g, parents, crossedges, root);
 			
 			// calculate the two performance critical variables alpha and beta
-			calculate_alpha_beta(g, v, crossedges);
+			// store attachment vertices per each step of the ear decomposition in Ak
+			std::map<int, std::vector<Vertex> > Ak;
+			unsigned int alpha;
+			unsigned int beta;
+			std::tie(alpha, beta) = calculate_alpha_beta(g, crossedges, Ak);
+			
+			// write statistics to a file
+			print_ab_stat (alpha, beta, Ak, g, root, crossedges);
 		}
 	}
 }
@@ -683,10 +690,10 @@ std::vector<Vertex> make_tree_walk(std::map<Vertex, Vertex>& parents, Vertex v, 
 	return walk;
 }
 
-void calculate_alpha_beta(Graph& g, Vertex root, std::vector<Edge>& crossedges) {
+std::pair< unsigned int, unsigned int > calculate_alpha_beta(Graph& g, std::vector<Edge>& crossedges, std::map<int, std::vector<Vertex> >& Ak) {
 	
-	// structure to remember Ak
-	std::map<int, std::vector<Vertex> > Ak;
+	// structure to remember Ak (attachment vertices)
+	//std::map<int, std::vector<Vertex> > Ak;
 	unsigned int alpha = 0;
 	unsigned int beta = 0;
 	int my = crossedges.size();
@@ -744,6 +751,12 @@ void calculate_alpha_beta(Graph& g, Vertex root, std::vector<Edge>& crossedges) 
 			if (beta < thisbeta) { beta = thisbeta; }
 		}
 	}
+	return std::make_pair(alpha, beta);
+}	
+
+void print_ab_stat (unsigned int alpha, unsigned int beta, std::map<int, std::vector<Vertex> > Ak, Graph& g, Vertex root, std::vector<Edge>& crossedges) {
+	
+	int my = crossedges.size();
 	
 	// write statistic output file
 	std::stringstream filename;
