@@ -57,8 +57,7 @@ namespace boost {
 		enum
 		{ num = 555 };
 		typedef edge_property_tag kind;
-	}
-	edge_component;
+	};
 }
 
 //, graph_properties 

@@ -10,10 +10,16 @@
 
 // include header
 #include "main.h"
+#include "parsestruct.h"
+#include "printgraph.h"
 
+//declare global variables
+bool verbose = false;
+unsigned long seed = 0;
 
 //! main program starts here
 int main(int ac, char* av[]) {
+
 
 	// initialize command line options
 	boost::program_options::variables_map vm = init_options(ac, av);
@@ -41,15 +47,44 @@ int main(int ac, char* av[]) {
 	std::ostream* out = &std::cout;			// out stream
 	
 	// variables
-	Graph graph = parse_graph(structures);		// generate graph from input vector
+	Graph graph = parse_structures(structures);		// generate graph from input vector
 	*out << "dependency graph:";
-	print_graph(graph, out, "root-graph");		// print the graph as GML to a ostream
+	print_graph(graph, out, vm["out"].as<std::string>(), "root-graph");		// print the graph as GML to a ostream
 	
-	decompose_graph(graph, out);			// decompose the graph into its connected components, biconnected
+	//decompose_graph(graph, out);			// decompose the graph into its connected components, biconnected
 							// components and decompose blocks via ear decomposition
 	return 0;
 }
 
+std::vector<std::string> read_input(std::istream* in) {
+	// read input file
+	std::string line;
+	std::vector<std::string> structures;
+	while (!in->eof()) {
+		getline(*in,line);
+		if (line == "@") {
+			std::fclose(stdin);
+		} else if (line.length() != 0) {
+			structures.push_back(line);
+		}
+	}
+	
+	// exit if there is no input
+	if (structures.empty()) { exit(1); }
+
+	if (verbose) { std::cerr << "Read following structures:" << std::endl; }
+	// check if structures have equeal length
+	unsigned int length = 0;
+	for (auto elem : structures) {
+		if (verbose) { std::cerr << elem << std::endl; }
+		if ((length != elem.length()) && (length != 0)){
+			std::cerr << "Structures have unequal length." << std::endl;
+			exit(1);
+		}
+		length = elem.length();
+	}
+	return structures;
+}
 
 
 boost::program_options::variables_map init_options(int ac, char* av[]) {
@@ -67,11 +102,11 @@ boost::program_options::variables_map init_options(int ac, char* av[]) {
 	po::options_description config("Program options");
 	config.add_options()
 		("in,i", po::value<std::string>(), "input file which contains the structures [string]")
-		("out,o", po::value<std::string>(&outfile), "write all (sub)graphs to gml files starting with given name [string]")
+		("out,o", po::value<std::string>(), "write all (sub)graphs to gml files starting with given name [string]")
 		("seed,s", po::value<unsigned long>(&seed), "random number generator seed [unsigned long]")
-		("ramachandran,r", po::value(&ramachandran)->zero_tokens(), "Use the Ramachandran ear decomposition algorithmus")
-		("stat-trees,t", po::value<int>(&num_trees), "do decomposition statistics: define amount of different spanning trees for every root to calculate [int]")
-		("noBipartiteCheck,b", po::value(&no_bipartite_check)->zero_tokens(), "Don't check if input dependency graph is bipartite")
+		("ramachandran,r", po::value<bool>()->zero_tokens(), "Use the Ramachandran ear decomposition algorithmus")
+		("stat-trees,t", po::value<int>(), "do decomposition statistics: define amount of different spanning trees for every root to calculate [int]")
+		("noBipartiteCheck,b", po::value<bool>()->zero_tokens(), "Don't check if input dependency graph is bipartite")
 	;
 	
 	po::positional_options_description p;

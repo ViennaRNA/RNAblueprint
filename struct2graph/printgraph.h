@@ -8,17 +8,22 @@
 * Compile with: g++ -std=c++11 -g -lboost_program_options -o struct2graph struct2graph.cc
 */
 
-#ifndef PARSESTRUCT_H
-#define PARSESTRUCT_H
+#ifndef PRINTGRAPH_H
+#define PRINTGRAPH_H
 
 // include common header with graph definition and global variables
 #include "common.h"
 
 // include standard library parts
+#include <iostream>
 
 // include boost components
+#include <boost/graph/graphml.hpp>
 
-// parse the input string into a graph
-Graph parse_structures(std::vector<std::string> structures);
+// print the graph as a gml file to the output
+void print_graph(Graph& g, std::ostream* out, std::string outfile, std::string nametag);
+
+// print all the subgraphs as GML (iterator over subgraphs)
+void print_subgraphs(Graph& g, std::ostream* out, std::string nametag);
 
 #endif

@@ -356,7 +356,8 @@ void biconnected_components_to_subgraphs(Graph& g) {
 	// // get list of biconnected components into the component property map
 	// http://www.boost.org/doc/libs/1_53_0/libs/graph/doc/biconnected_components.html
 	// http://www.boost.org/doc/libs/1_38_0/libs/graph/example/biconnected_components.cpp
-	boost::property_map < Graph, boost::edge_component_t >::type component = boost::get(boost::edge_component, g);
+	boost::edge_component_t edge_component;
+	boost::property_map < Graph, boost::edge_component_t >::type component = boost::get(edge_component, g);
 	unsigned int num = boost::biconnected_components(g, component);
 	if (verbose) { std::cerr << "Number of biconnected components: " << num << std::endl; }
 	
