@@ -5,7 +5,6 @@
 * Author: Stefan Hammer <s.hammer@univie.ac.at>
 * License: GPLv3
 *
-* Compile with: g++ -std=c++11 -g -lboost_program_options -o struct2graph struct2graph.cc
 */
 
 #ifndef TREESTATISTICS_H
@@ -13,13 +12,20 @@
 
 // include common header with graph definition and global variables
 #include "common.h"
+#include "decompose.h"
+#include "printgraph.h"
 
 // include standard library parts
+#include <chrono>
+#include <random>
+#include <iostream>
+#include <sstream>
 
 // include boost components
 
+
 // do statistics with many spannign trees calculating alpha and beta values using the schieber algorithm
-void do_spanning_tree_stat (Graph& g);
+void do_spanning_tree_stat (Graph& g, int num_trees);
 
 // calculate spanning tree properties for coloring
 std::pair< unsigned int, unsigned int > calculate_alpha_beta(Graph& g, std::vector<Edge>& crossedges, std::map<int, std::vector<Vertex> >& Ak);

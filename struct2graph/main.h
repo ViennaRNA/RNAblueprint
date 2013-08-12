@@ -5,7 +5,6 @@
 * Author: Stefan Hammer <s.hammer@univie.ac.at>
 * License: GPLv3
 *
-* Compile with: g++ -std=c++11 -g -lboost_program_options -o struct2graph struct2graph.cc
 */
 
 #ifndef MAIN_H

@@ -5,7 +5,6 @@
 * Author: Stefan Hammer <s.hammer@univie.ac.at>
 * License: GPLv3
 *
-* Compile with: g++ -std=c++11 -g -lboost_program_options -o struct2graph struct2graph.cc
 */
 
 #ifndef PRINTGRAPH_H
@@ -16,12 +15,16 @@
 
 // include standard library parts
 #include <iostream>
+#include <sstream>
 
 // include boost components
 #include <boost/graph/graphml.hpp>
 
+// global variables
+extern std::string outfile;
+
 // print the graph as a gml file to the output
-void print_graph(Graph& g, std::ostream* out, std::string outfile, std::string nametag);
+void print_graph(Graph& g, std::ostream* out, std::string nametag);
 
 // print all the subgraphs as GML (iterator over subgraphs)
 void print_subgraphs(Graph& g, std::ostream* out, std::string nametag);

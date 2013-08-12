@@ -1,7 +1,7 @@
 # vars
 CC = g++
 LL = g++
-EXE =  main
+EXE = RNAdesign
 LIBS = -lstdc++
 LDFLAGS = -lboost_program_options
 DEFS =
@@ -9,13 +9,17 @@ WARN = -Wall
 OPTI = -g
 STD  = -std=c++11
 CCFLAGS = $(WARN) $(STD) $(OPTI) $(DEFS) $(LIBS)
-CSRC = main.cc parsestruct.cc
-COBJ = $(foreach file, $(CSRC:.cc=.o), $(file))
+CSRC = printgraph.cc decompose.cc treestatistics.cc parsestruct.cc main.cc
+COBJ = $(CSRC:.cc=.o)
 # rules
 all: $(EXE)
-$(COBJ): %.o: %.cc
+	@echo RNAdesign has been compiled
+$(EXE): $(COBJ)
+	$(CC) $(CCFLAGS) $(LDFLAGS) -o $(EXE) $(COBJ) 
+.cc.o:
 	$(CC) -c $(CCFLAGS) $< -o $@
 clean:
 	rm -f $(COBJ)
-	rm -f $(EXE) *~ */*~
+	rm -f $(EXE)
+	rm -f *~ */*~
 PHONY: clean

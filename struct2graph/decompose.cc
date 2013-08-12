@@ -5,14 +5,15 @@
 * Author: Stefan Hammer <s.hammer@univie.ac.at>
 * License: GPLv3
 *
-* Compile with: g++ -std=c++11 -g -lboost_program_options -o struct2graph struct2graph.cc
 */
 
 // include header
 #include "decompose.h"
+#include "printgraph.h"
+#include "treestatistics.h"
 
 
-void decompose_graph(Graph& graph, std::ostream* out) {
+void decompose_graph(Graph& graph, std::ostream* out, int num_trees, bool ramachandran, bool no_bipartite_check) {
 
 	connected_components_to_subgraphs(graph);	// get connected components and make subgraphs
 
@@ -54,7 +55,7 @@ void decompose_graph(Graph& graph, std::ostream* out) {
 				if (max_degree >= 3) {
 					// only for statistics start at all vertices as root for DFS
 					if (num_trees > 0) {
-						do_spanning_tree_stat(*ci_b);
+						do_spanning_tree_stat(*ci_b, num_trees);
 					} else {
 					
 						//TODO starting at 0 does not work atm. maybe underflow of unsigned int/vertex?

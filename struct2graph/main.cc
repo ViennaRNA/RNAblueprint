@@ -5,24 +5,28 @@
 * Author: Stefan Hammer <s.hammer@univie.ac.at>
 * License: GPLv3
 *
-* Compile with: g++ -std=c++11 -g -lboost_program_options -o struct2graph struct2graph.cc
 */
 
 // include header
 #include "main.h"
 #include "parsestruct.h"
 #include "printgraph.h"
+#include "decompose.h"
 
 //declare global variables
 bool verbose = false;
 unsigned long seed = 0;
+std::string outfile;
 
 //! main program starts here
 int main(int ac, char* av[]) {
 
-
 	// initialize command line options
 	boost::program_options::variables_map vm = init_options(ac, av);
+	int num_trees = 0;
+	if (vm.count("stat-trees")) { num_trees = vm["stat-trees"].as< int >(); }
+	bool ramachandran = vm["ramachandran"].as< bool >();
+	bool no_bipartite_check = vm["noBipartiteCheck"].as< bool >();
 	
 	// input handling ( we read from std:in per default and switch to a file if it is given in the --in option
 	// std::in will provide a pseudo interface to enter structures directly!
@@ -41,18 +45,19 @@ int main(int ac, char* av[]) {
 	} else {
 		std::cerr << "Input structures (one per line); @ to quit" << std::endl
 		<< "....,....1....,....2....,....3....,....4....,....5....,....6....,....7....,....8" << std::endl;
-		structures = read_input(&std::cin);		// read infile into array
+		structures = read_input(&std::cin);			// read infile into array
 	}
 	
-	std::ostream* out = &std::cout;			// out stream
+	std::ostream* out = &std::cout;					// out stream
 	
 	// variables
-	Graph graph = parse_structures(structures);		// generate graph from input vector
+	Graph graph = parse_structures(structures);			// generate graph from input vector
 	*out << "dependency graph:";
-	print_graph(graph, out, vm["out"].as<std::string>(), "root-graph");		// print the graph as GML to a ostream
+	print_graph(graph, out, "root-graph");				// print the graph as GML to a ostream
 	
-	//decompose_graph(graph, out);			// decompose the graph into its connected components, biconnected
-							// components and decompose blocks via ear decomposition
+	decompose_graph(graph, out, num_trees, 	// decompose the graph into its connected components, biconnected
+		ramachandran, no_bipartite_check);
+									// components and decompose blocks via ear decomposition
 	return 0;
 }
 
@@ -102,11 +107,11 @@ boost::program_options::variables_map init_options(int ac, char* av[]) {
 	po::options_description config("Program options");
 	config.add_options()
 		("in,i", po::value<std::string>(), "input file which contains the structures [string]")
-		("out,o", po::value<std::string>(), "write all (sub)graphs to gml files starting with given name [string]")
+		("out,o", po::value<std::string>(&outfile), "write all (sub)graphs to gml files starting with given name [string]")
 		("seed,s", po::value<unsigned long>(&seed), "random number generator seed [unsigned long]")
-		("ramachandran,r", po::value<bool>()->zero_tokens(), "Use the Ramachandran ear decomposition algorithmus")
+		("ramachandran,r", po::bool_switch()->default_value(false)->zero_tokens(), "Use the Ramachandran ear decomposition algorithmus")
 		("stat-trees,t", po::value<int>(), "do decomposition statistics: define amount of different spanning trees for every root to calculate [int]")
-		("noBipartiteCheck,b", po::value<bool>()->zero_tokens(), "Don't check if input dependency graph is bipartite")
+		("noBipartiteCheck,b", po::bool_switch()->default_value(false)->zero_tokens(), "Don't check if input dependency graph is bipartite")
 	;
 	
 	po::positional_options_description p;

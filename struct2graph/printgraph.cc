@@ -5,14 +5,13 @@
 * Author: Stefan Hammer <s.hammer@univie.ac.at>
 * License: GPLv3
 *
-* Compile with: g++ -std=c++11 -g -lboost_program_options -o struct2graph struct2graph.cc
 */
 
 // include header
 #include "printgraph.h"
 
 
-void print_graph(Graph& g, std::ostream* out, std::string outfile, std::string nametag) {
+void print_graph(Graph& g, std::ostream* out, std::string nametag) {
 
 	// print vertex and edge properties from my self defined bundled properties
 	boost::dynamic_properties dp;

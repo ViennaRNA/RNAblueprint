@@ -5,7 +5,6 @@
 * Author: Stefan Hammer <s.hammer@univie.ac.at>
 * License: GPLv3
 *
-* Compile with: g++ -std=c++11 -g -lboost_program_options -o struct2graph struct2graph.cc
 */
 
 // include header
@@ -13,7 +12,7 @@
 
 
 
-void do_spanning_tree_stat (Graph& g) {
+void do_spanning_tree_stat (Graph& g, int num_trees) {
 	// random generator to make spanning tree sampling
 	if (seed == 0) {
 		unsigned long clock_seed = std::chrono::system_clock::now().time_since_epoch().count();

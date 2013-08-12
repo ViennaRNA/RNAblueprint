@@ -5,7 +5,6 @@
 * Author: Stefan Hammer <s.hammer@univie.ac.at>
 * License: GPLv3
 *
-* Compile with: g++ -std=c++11 -g -lboost_program_options -o struct2graph struct2graph.cc
 */
 
 #ifndef DECOMPOSE_H
@@ -15,8 +14,15 @@
 #include "common.h"
 
 // include standard library parts
+#include <random>
+#include <chrono>
+#include <limits>
 
 // include boost components
+#include <boost/graph/connected_components.hpp>
+#include <boost/graph/biconnected_components.hpp>
+#include <boost/graph/breadth_first_search.hpp>
+#include <boost/graph/random_spanning_tree.hpp>
 
 // typedefs for ramachandran ear decomposition
 typedef std::pair<Vertex, Vertex> edge_t;
@@ -32,8 +38,19 @@ struct property {
 typedef std::map<Vertex, property> ear_propertymap_t;
 
 
+// lexmin implementation for pairs of any type
+template <typename T>
+std::pair<T, T>& lexmin(std::pair<T, T>& a, std::pair<T, T>& b) {
+	if (a.first == b.first) {
+		return !(b.second<a.second)?a:b;
+	} else {
+		return !(b.first<a.first)?a:b;
+	}
+}
+
+
 // does the whole graph decomposition, uses methods below
-void decompose_graph(Graph& graph, std::ostream* out);
+void decompose_graph(Graph& graph, std::ostream* out, int num_trees, bool ramachandran, bool no_bipartite_check);
 
 // get a vector of all vertices with their component id. finds connected components with DFS
 void connected_components_to_subgraphs(Graph& g);
