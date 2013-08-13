@@ -18,14 +18,6 @@
 // include boost components
 
 
-// do statistics with many spannign trees calculating alpha and beta values using the schieber algorithm
-void do_spanning_tree_stat (Graph& g, int num_trees);
-
-// calculate spanning tree properties for coloring
-std::pair< unsigned int, unsigned int > calculate_alpha_beta(Graph& g, std::vector<Edge>& crossedges, std::map<int, std::vector<Vertex> >& Ak);
-
-// write statistic output file
-void print_ab_stat (unsigned int alpha, unsigned int beta, std::map<int, std::vector<Vertex> > Ak, Graph& g, Vertex root, std::vector<Edge>& crossedges);
 
 
 #endif
