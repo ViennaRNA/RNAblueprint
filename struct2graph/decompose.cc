@@ -250,6 +250,15 @@ void schieber_ear_decomposition (Graph& g) {
 	// do the actual ear decomposition
 	ear_decomposition (g, parents, crossedges, startVertex);
 	
+	// calculate the two performance critical variables alpha and beta
+	// store attachment vertices per each step of the ear decomposition in Ak
+	std::map<int, std::vector<Vertex> > Ak;
+	unsigned int alpha;
+	unsigned int beta;
+	std::tie(alpha, beta) = calculate_alpha_beta(g, crossedges, Ak);
+	std::cerr << "Alpha is: " << alpha << std::endl;
+	std::cerr << "Beta is: " << beta << std::endl;	
+	
 	// write ears into subgraphs
 	int ears;
 	BGL_FORALL_EDGES_T(e, g, Graph) {

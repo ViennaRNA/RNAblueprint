@@ -55,9 +55,11 @@ int main(int ac, char* av[]) {
 	*out << "dependency graph:";
 	print_graph(graph, out, "root-graph");				// print the graph as GML to a ostream
 	
-	decompose_graph(graph, out, num_trees, 	// decompose the graph into its connected components, biconnected
-		ramachandran, no_bipartite_check);
-									// components and decompose blocks via ear decomposition
+	decompose_graph(graph, out, num_trees, 				// decompose the graph into its connected components, biconnected
+		ramachandran, no_bipartite_check);			// components and decompose blocks via ear decomposition
+	
+	
+	
 	return 0;
 }
 
@@ -110,7 +112,7 @@ boost::program_options::variables_map init_options(int ac, char* av[]) {
 		("out,o", po::value<std::string>(&outfile), "write all (sub)graphs to gml files starting with given name [string]")
 		("seed,s", po::value<unsigned long>(&seed), "random number generator seed [unsigned long]")
 		("ramachandran,r", po::bool_switch()->default_value(false)->zero_tokens(), "Use the Ramachandran ear decomposition algorithmus")
-		("stat-trees,t", po::value<int>(), "do decomposition statistics: define amount of different spanning trees for every root to calculate [int]")
+		("stat-trees,t", po::value<int>(), "only do ear-decomposition statistics: define amount of different spanning trees for every root to calculate [int]")
 		("noBipartiteCheck,b", po::bool_switch()->default_value(false)->zero_tokens(), "Don't check if input dependency graph is bipartite")
 	;
 	
