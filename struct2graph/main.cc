@@ -12,10 +12,10 @@
 #include "parsestruct.h"
 #include "printgraph.h"
 #include "decompose.h"
+#include "pathcoloring.h"
 
 //declare global variables
 bool verbose = false;
-unsigned long seed = 0;
 std::string outfile;
 
 //! main program starts here
@@ -24,9 +24,17 @@ int main(int ac, char* av[]) {
 	// initialize command line options
 	boost::program_options::variables_map vm = init_options(ac, av);
 	int num_trees = 0;
-	if (vm.count("stat-trees")) { num_trees = vm["stat-trees"].as< int >(); }
-	bool ramachandran = vm["ramachandran"].as< bool >();
-	bool no_bipartite_check = vm["noBipartiteCheck"].as< bool >();
+	if (vm.count("stat-trees")) { num_trees = vm["stat-trees"].as<int>(); }
+	bool ramachandran = vm["ramachandran"].as<bool>();
+	bool no_bipartite_check = vm["noBipartiteCheck"].as<bool>();
+	
+	// initialize mersenne twister with our seed
+	unsigned long seed = std::chrono::system_clock::now().time_since_epoch().count();
+	if (vm.count("seed")) {
+		seed = vm["seed"].as<unsigned long>();
+	}
+	rand_gen.seed(seed);
+	std::cerr << "Using this seed: " << seed << std::endl;
 	
 	// input handling ( we read from std:in per default and switch to a file if it is given in the --in option
 	// std::in will provide a pseudo interface to enter structures directly!
@@ -58,7 +66,9 @@ int main(int ac, char* av[]) {
 	decompose_graph(graph, out, num_trees, 				// decompose the graph into its connected components, biconnected
 		ramachandran, no_bipartite_check);			// components and decompose blocks via ear decomposition
 	
-	
+	std::string sequence;
+	*out << "Number of sequences: " << generate_path_seq (sequence, 'A', 'U', 10) << std::endl;
+	*out << sequence << std::endl;
 	
 	return 0;
 }
@@ -110,7 +120,7 @@ boost::program_options::variables_map init_options(int ac, char* av[]) {
 	config.add_options()
 		("in,i", po::value<std::string>(), "input file which contains the structures [string]")
 		("out,o", po::value<std::string>(&outfile), "write all (sub)graphs to gml files starting with given name [string]")
-		("seed,s", po::value<unsigned long>(&seed), "random number generator seed [unsigned long]")
+		("seed,s", po::value<unsigned long>(), "random number generator seed [unsigned long]")
 		("ramachandran,r", po::bool_switch()->default_value(false)->zero_tokens(), "Use the Ramachandran ear decomposition algorithmus")
 		("stat-trees,t", po::value<int>(), "only do ear-decomposition statistics: define amount of different spanning trees for every root to calculate [int]")
 		("noBipartiteCheck,b", po::bool_switch()->default_value(false)->zero_tokens(), "Don't check if input dependency graph is bipartite")

@@ -14,8 +14,6 @@
 #include "common.h"
 
 // include standard library parts
-#include <random>
-#include <chrono>
 #include <limits>
 
 // include boost components
@@ -71,7 +69,7 @@ void schieber_ear_decomposition (Graph& g);
 void ear_decomposition (Graph& g, std::map<Vertex, Vertex>& parents, std::vector<Edge>& crossedges, Vertex start);
 
 // get boost random spanning tree for schieber ear decomposition
-void get_random_spanning_tree (Graph& g, std::mt19937& r, std::map<Vertex, Vertex>& parents, std::vector<Edge>& crossedges, Vertex start);
+void get_random_spanning_tree (Graph& g, std::map<Vertex, Vertex>& parents, std::vector<Edge>& crossedges, Vertex start);
 
 // given all the parents of a spanning_tree, find the lca a crossedge (helper for schieber ear decomposition)
 std::pair<Vertex, int> get_lca_distance(Graph& g, std::map<Vertex, Vertex>& parents, Edge e, Vertex r);

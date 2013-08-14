@@ -16,8 +16,6 @@
 #include "printgraph.h"
 
 // include standard library parts
-#include <chrono>
-#include <random>
 #include <iostream>
 #include <sstream>
 

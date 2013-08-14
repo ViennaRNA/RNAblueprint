@@ -13,14 +13,7 @@
 
 
 void do_spanning_tree_stat (Graph& g, int num_trees) {
-	// random generator to make spanning tree sampling
-	if (seed == 0) {
-		unsigned long clock_seed = std::chrono::system_clock::now().time_since_epoch().count();
-		seed = clock_seed;
-	}
-	std::mt19937 r (seed);  // mt19937 is a standard mersenne_twister_engine
-	std::cerr << "Using this seed: " << seed << std::endl;
-	
+		
 	// start at all vertices of the subgraph as root of the tree
 	BGL_FORALL_VERTICES_T(root, g, Graph) {	
 		// generate num_trees spanning trees for statistics
@@ -30,7 +23,7 @@ void do_spanning_tree_stat (Graph& g, int num_trees) {
 			std::vector<Edge> crossedges;
 		
 			// get a boost random spanning tree
-			get_random_spanning_tree (g, r, parents, crossedges, root);
+			get_random_spanning_tree (g, parents, crossedges, root);
 		
 			// print parents, cross-edges and root vertex
 			if (verbose) {

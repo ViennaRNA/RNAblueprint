@@ -223,17 +223,9 @@ void schieber_ear_decomposition (Graph& g) {
 	
 	// start Vertex
 	Vertex startVertex = boost::vertex((boost::num_vertices(g)-1), g);
-		
-	// random generator to make spanning tree sampling
-	if (seed == 0) {
-		unsigned long clock_seed = std::chrono::system_clock::now().time_since_epoch().count();
-		seed = clock_seed;
-	}
-	std::mt19937 r (seed);  // mt19937 is a standard mersenne_twister_engine
-	std::cerr << "Using this seed: " << seed << std::endl;
 	
 	// get a boost random spanning tree
-	get_random_spanning_tree (g, r, parents, crossedges, startVertex);
+	get_random_spanning_tree (g, parents, crossedges, startVertex);
 	
 	// print parents, cross-edges and root vertex
 	if (verbose) {
@@ -341,11 +333,11 @@ void ear_decomposition (Graph& g, std::map<Vertex, Vertex>& parents, std::vector
 	}
 }
 
-void get_random_spanning_tree (Graph& g, std::mt19937& r, std::map<Vertex, Vertex>& parents, std::vector<Edge>& crossedges, Vertex start) {
+void get_random_spanning_tree (Graph& g, std::map<Vertex, Vertex>& parents, std::vector<Edge>& crossedges, Vertex start) {
 	
 	boost::associative_property_map< std::map<Vertex,Vertex> > pm(parents);
 	// call boost random spanning tree here:
-	boost::random_spanning_tree(g, r, predecessor_map(pm).root_vertex(start));
+	boost::random_spanning_tree(g, rand_gen, predecessor_map(pm).root_vertex(start));
 	if (verbose) { std::cerr << "Got a boost random spanning tree..." << std::endl; }
 	
 	// create the crossedges vector for the later ear-decomposition!

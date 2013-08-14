@@ -10,7 +10,6 @@
 // include header
 #include "printgraph.h"
 
-
 void print_graph(Graph& g, std::ostream* out, std::string nametag) {
 
 	// print vertex and edge properties from my self defined bundled properties

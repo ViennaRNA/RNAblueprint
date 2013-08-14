@@ -16,6 +16,7 @@
 // include standard library parts
 #include <iostream>
 #include <fstream>
+#include <chrono>
 
 // include boost components
 #include <boost/program_options.hpp>

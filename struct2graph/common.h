@@ -14,6 +14,7 @@
 #include <string>
 #include <vector>
 #include <array>
+#include <random>
 
 // include boost components
 #include <boost/lexical_cast.hpp>
@@ -24,7 +25,9 @@
 
 //Global variables
 extern bool verbose;
-extern unsigned long seed;
+
+// Mersenne twister engine
+static std::mt19937 rand_gen;
 
 // get property with Graph[Vertex].bipartite_color = int;
 struct vertex_property {
