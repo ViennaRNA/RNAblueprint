@@ -9,7 +9,7 @@ WARN = -Wall
 OPTI = -g
 STD  = -std=c++11
 CCFLAGS = $(WARN) $(STD) $(OPTI) $(DEFS) $(LIBS)
-CSRC = printgraph.cc decompose.cc treestatistics.cc parsestruct.cc pathcoloring.cc graphcoloring.cc main.cc
+CSRC = common.cc printgraph.cc decompose.cc treestatistics.cc parsestruct.cc pathcoloring.cc graphcoloring.cc main.cc
 COBJ = $(CSRC:.cc=.o)
 # rules
 all: $(EXE)

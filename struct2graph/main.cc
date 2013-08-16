@@ -35,7 +35,7 @@ int main(int ac, char* av[]) {
 	}
 	rand_gen.seed(seed);
 	std::cerr << "Using this seed: " << seed << std::endl;
-	
+
 	// input handling ( we read from std:in per default and switch to a file if it is given in the --in option
 	// std::in will provide a pseudo interface to enter structures directly!
 	std::vector<std::string> structures;
@@ -58,7 +58,6 @@ int main(int ac, char* av[]) {
 	
 	std::ostream* out = &std::cout;					// out stream
 	
-	// variables
 	Graph graph = parse_structures(structures);			// generate graph from input vector
 	*out << "dependency graph:";
 	print_graph(graph, out, "root-graph");				// print the graph as GML to a ostream
@@ -67,7 +66,7 @@ int main(int ac, char* av[]) {
 		ramachandran, no_bipartite_check);			// components and decompose blocks via ear decomposition
 	
 	std::string sequence;
-	*out << "Number of sequences: " << generate_path_seq (sequence, 'A', 'U', 10) << std::endl;
+	*out << "Number of sequences: " << generate_path_seq (sequence, 'C', 'G', 14) << std::endl;
 	*out << sequence << std::endl;
 	
 	return 0;

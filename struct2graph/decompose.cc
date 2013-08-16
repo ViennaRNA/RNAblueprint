@@ -12,7 +12,6 @@
 #include "printgraph.h"
 #include "treestatistics.h"
 
-
 void decompose_graph(Graph& graph, std::ostream* out, int num_trees, bool ramachandran, bool no_bipartite_check) {
 
 	connected_components_to_subgraphs(graph);	// get connected components and make subgraphs
