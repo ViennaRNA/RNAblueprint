@@ -138,7 +138,7 @@ sub queue_manager {
 					   "sort", scalar(@sort),
 					   "evaluate", scalar(@evaluate));
 				# show how many items are in the queues at the moment
-				print "$_: Queue:\t";
+				print "\r$_\t\t";
 				foreach (keys %num) { print $_." ".$num{$_}."\t";};
 				print "\n";
 				my ($key) = sort { $num{$b} cmp $num{$a} } keys %num;
@@ -168,7 +168,7 @@ sub queue_manager {
 # job is idle. important if nothing has to be run
 sub idle {
 	($cid) = @_;
-	print "$cid: is idle.\n";
+	print "\r$cid: is idle.";
 }
 
 # sub function to run RNAsubopt

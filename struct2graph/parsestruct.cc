@@ -19,9 +19,8 @@ Graph parse_structures(std::vector<std::string> structures) {
 	
 	// give the vertices names
 	int vertex_name = 0;
-	Graph::vertex_iterator v, v_end;
-	for (boost::tie(v,v_end) = boost::vertices(g); v != v_end; ++v) {
-		boost::put(boost::vertex_color_t(), g, *v, vertex_name++);
+	BGL_FORALL_VERTICES_T(v, g, Graph) {
+		boost::put(boost::vertex_color_t(), g, v, vertex_name++);
 	}
 
 	// iterate over structures from input

@@ -28,10 +28,14 @@ extern bool verbose;
 // random number generator
 extern std::mt19937 rand_gen;
 
+// Encode Bases to enums
+enum {A, U, G, C, X};
+
 // get property with Graph[Vertex].bipartite_color = int;
 struct vertex_property {
 	int bipartite_color;
 	int color;
+	char base;
 };
 
 struct edge_property {
@@ -74,5 +78,8 @@ std::ostream& operator<< (std::ostream& os, std::map<U, V>& m) {
 	}
 	return os;
 }
+
+// matrix template
+template < class T, size_t ROWS, size_t COLS > using matrix = std::array< std::array< T, COLS >, ROWS >;
 
 #endif

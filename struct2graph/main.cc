@@ -66,7 +66,7 @@ int main(int ac, char* av[]) {
 		ramachandran, no_bipartite_check);			// components and decompose blocks via ear decomposition
 	
 	std::string sequence;
-	*out << "Number of sequences: " << generate_path_seq (sequence, 'C', 'G', 14) << std::endl;
+	*out << "Number of sequences: " << generate_path_seq (sequence, C, G, 14) << std::endl;
 	*out << sequence << std::endl;
 	
 	return 0;

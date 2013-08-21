@@ -251,7 +251,7 @@ void schieber_ear_decomposition (Graph& g) {
 	std::cerr << "Beta is: " << beta << std::endl;	
 	
 	// write ears into subgraphs
-	int ears;
+	int ears = 0;
 	BGL_FORALL_EDGES_T(e, g, Graph) {
 		if (ears < g[e].ear) { ears = g[e].ear; }
 	}
