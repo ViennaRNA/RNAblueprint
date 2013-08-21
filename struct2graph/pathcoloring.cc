@@ -118,8 +118,7 @@ unsigned int generate_path_seq (std::string& sequence, int first, int last, unsi
 	// if begin and end are X, just assign a begining character
 	if ((first == X) && (last == X)) {
 		number_of_sequences = p.get(length);
-		std::uniform_int_distribution<int> dist(0, 3);
-		first = dist(rand_gen);
+		first = floor(dist(rand_gen)*4);
 	// if begin or end are X, always start at begining
 	} else if ((first == X) && (last != X)){
 		first = last;
@@ -198,4 +197,6 @@ unsigned int generate_path_seq (std::string& sequence, int first, int last, unsi
 	return number_of_sequences;
 }
 
-
+unsigned int generate_cycle_seq (std::string& sequence, int first, unsigned int length) {
+	return generate_path_seq (sequence, int first, int first, length);
+}
