@@ -29,7 +29,7 @@ extern bool verbose;
 extern std::mt19937 rand_gen;
 
 // Encode Bases to enums
-enum {A, U, G, C, X};
+enum bases {A, U, G, C, X};
 
 // get property with Graph[Vertex].bipartite_color = int;
 struct vertex_property {
@@ -81,5 +81,8 @@ std::ostream& operator<< (std::ostream& os, std::map<U, V>& m) {
 
 // matrix template
 template < class T, size_t ROWS, size_t COLS > using matrix = std::array< std::array< T, COLS >, ROWS >;
+
+// function to make enum a char again
+char enum_to_char(int intletter);
 
 #endif

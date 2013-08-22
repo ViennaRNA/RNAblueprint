@@ -23,7 +23,7 @@ Fibonacci::Fibonacci(unsigned int length)
 
 Pairing::Pairing(unsigned int l)
  : p(l+1)
- , length(l)
+ , length(l+1)
 {
 	// Definition:
 	// length 1: p[A][U][1] = 1, p[U][A][1] = 1, p[G][C][1] = 1, p[C][G][1] = 1, p[U][G][1] = 1, p[G][U][1] = 1
@@ -41,6 +41,12 @@ Pairing::Pairing(unsigned int l)
 	p[1][G][U] = 1;
 	p[1][U][G] = 1;
 	
+	//fill length 0 with probability 1 for same base (important for setting last base)
+	p[0][A][A] = 1;
+	p[0][U][U] = 1;
+	p[0][G][G] = 1;
+	p[0][C][C] = 1;
+	
 	// fill pathlength up to length (can be done with matrix multiplication of the pairing matrix
 	for (unsigned int i = 2; i <= l; i++) {
 		p[i] = multiply(p[i-1],p[1]);
@@ -48,10 +54,10 @@ Pairing::Pairing(unsigned int l)
 	
 	if(verbose) {
 		std::cerr << "Pairing constructor called and filled" << std::endl;
-		for (unsigned int l = 1; l <= l; l++) {
-			for (unsigned int i = 0; i <=3; i++) {
-				for (unsigned int j = 0; j <=3; j++) {
-					std::cerr << get(l, i, j) << ", ";
+		for (unsigned int k = 0; k <= l; k++) {
+			for (unsigned int i = 0; i < 4; i++) {
+				for (unsigned int j = 0; j < 4; j++) {
+					std::cerr << get(k, i, j) << ", ";
 				}
 				std::cerr << std::endl;
 			}
@@ -78,14 +84,29 @@ rnaMatrix Pairing::multiply(rnaMatrix A, rnaMatrix B) {
 
 unsigned int Pairing::get(unsigned int l, unsigned int b1, unsigned int b2) {
 	
-	if ((l > length) || (b1 > 3) || (b2 > 3))) {
-		std::cerr << "Requested a value in pairing matrix which is out of range." << std::endl;
+	// if we request a probability for an unknown (X) character at one or both ends, 
+	// return the sum of the probabilities for all characters at this position
+	if ((b1 == X) || (b2 == X)) {
+		if ((b1 == X) && (b2 == X)) {
+			return get(l);
+		} else if (b1 == X) {
+			return get(l, b2);
+		} else if (b2 == X) {
+			return get(l, b1);
+		}
+	}
+	
+	// check if the requested length is bigger than our initilisation or that a base bigger than 3 is requested
+	// -> to avoid segfaults or unknown behaviour!
+	if ((l > length) || (b1 > 3) || (b2 > 3)) {
+		std::cerr << "Requested a value in pairing matrix which is out of range: p[" << l << "][" << b1 << "][" << b2 << "]" << std::endl;
 		exit(1);
 	}
 	return p[l][b1][b2];
 }
 
 unsigned int Pairing::get(unsigned int l, unsigned int b1) {
+	// return the sum of all probabilities of the possible characters at position 2
 	unsigned int sum = 0;
 	for (unsigned int i = 0; i < 4; i++) {
 		sum += get(l, b1, i);
@@ -94,6 +115,7 @@ unsigned int Pairing::get(unsigned int l, unsigned int b1) {
 }
 
 unsigned int Pairing::get(unsigned int l) {
+	// return the sum of all probabilities of the possible characters at position 1 and 2
 	unsigned int sum = 0;
 	for (unsigned int i = 0; i < 4; i++) {
 		sum += get(l, i);
@@ -101,102 +123,96 @@ unsigned int Pairing::get(unsigned int l) {
 	return sum;
 }
 
-unsigned int generate_path_seq (std::string& sequence, int first, int last, unsigned int length) {
+unsigned int generate_path_seq (std::string& sequence, int first, int last, int length) {
+		
+	// pairing matrix for every length
+	Pairing p(length+1);
+	// set maximum possible muber of sequences for first....last
+	int max_number_of_sequences = p.get(length, first, last);
+	// delare random number distribution and get a random number
+	std::uniform_real_distribution<float> dist(0, 1);
+	// number of possible sequences at each possible step
+	int number_of_sequences = 0;
+	//
 	
+	// set the first base
+	if (first != X) {
+		sequence += enum_to_char(first);
+		length--;
+	}
+	
+	while (length >= 0) {
+		number_of_sequences = p.get(length+1, first, last);
+		
+		// look in paring matrix for next possible character and remember them
+		std::vector< int > posibilities(4);
+		for (int i = 0; i < 4; i++) {
+			if (p.get(1, first, i) >= 1) {
+				posibilities.push_back(i);
+			}
+		}
+		
+		// get a rando number between 0 and the max number of seq [0,nos).
+		float random = dist(rand_gen)*number_of_sequences;
+		
+		// stochastically take one of the posibilities
+		// start at the probability of first possible character and add each other base probability as long as the random number is bigger.
+		int sum = 0;
+		for (auto base : posibilities) {
+			sum += p.get(length, base, last);
+			// if the random number is bigger than our probability, take this base as the first base!
+			if (random < sum) {
+				sequence += enum_to_char(base);
+				first = base;
+				length--;
+				// dont forget to exit the loop, otherwise will always be first = C;
+				break;
+			}
+		}
+	}
+	return max_number_of_sequences;
+}
+
+unsigned int generate_cycle_seq (std::string& sequence, int first, int length) {
+
+	// max number of sequences to return
+	int max_number_of_sequences = 0;
 	// check if length is even number
 	if (length % 2 != 0) {
 		std::cerr << std::endl << "Length of the path to color is an odd number. This can't be!" << std::endl;
 		exit(1);
 	}
 	
-	int number_of_sequences = 0;
-	// pairing matrix for every length
-	Pairing p(length);
-	// delare random number distribution and get a random number
-	std::uniform_real_distribution<int> dist(0, 1);
-	
-	// if begin and end are X, just assign a begining character
-	if ((first == X) && (last == X)) {
-		number_of_sequences = p.get(length);
-		first = floor(dist(rand_gen)*4);
-	// if begin or end are X, always start at begining
-	} else if ((first == X) && (last != X)){
-		first = last;
-		last = X;
-	}
-	
-	// start coloring here!
-	
-	
-	/*
-	// initialice fibonacci numbers for max length+1
-	Fibonacci fibo(length+1);
-		
-	// calculate total number of possible sequences
-	unsigned int number_of_sequences = 2 * (fibo.get(length+1) + fibo.get(length) );
-	
-	// delare random number distribution and get a random number
-	std::uniform_int_distribution<int> dist(0, number_of_sequences);
-	
-	for (int i = 0; i < 100; i++) {
-	
-	unsigned int rand = dist(rand_gen);
-	//std::cerr << "initial rand is: " << rand << std::endl;
-	
-	// feed first base to stream
-	sequence += first;
-	
-	// do this as the first one must end with an U or G.
-	if (sequence.back() == 'A') {
-		sequence += 'U';
-	} else if (sequence.back() == 'C') {
-		sequence += 'G';
-		rand -= fibo.get( length );
+	if (first != X) {
+		// return a path with same begin and end, but then remove the last character again -> cycle!
+		max_number_of_sequences = generate_path_seq (sequence, first, first, length);
+		sequence.pop_back();
 	} else {
-		rand -= (2 * fibo.get(length));
-		if (rand >= fibo.get(length+1)) {
-			rand -= fibo.get(length+1);
+		// initialize fibonacci numbers
+		Fibonacci fibo(length+1);
+		// max number of sequences is
+		max_number_of_sequences = 2*(fibo.get(length + 1)+fibo.get(length - 1)); // is same as 2* Lucas (length)
+		// delare random number distribution and get a random number
+		std::uniform_real_distribution<float> dist(0, 1); //TODO include 1!!
+		float random = dist(rand_gen);
+		if (verbose) {
+			std::cerr << random << std::endl;
 		}
-	}
-	
-	// extend the sequence
-	while (sequence.size() < length) {
-	//	std::cerr << "rand is: " << rand << std::endl;
 		
-		if (rand < fibo.get( length - sequence.size() )) {
-			if (*sequence.rbegin() == 'G') { sequence += "CG"; }
-			if (*sequence.rbegin() == 'U') { sequence += "AU"; }
+		if (random*max_number_of_sequences < fibo.get(length-1)) {
+			sequence += 'A';
+			generate_path_seq(sequence, U, U, length - 2);
+		} else if (random*max_number_of_sequences/2 < fibo.get(length-1)) {
+			sequence += 'C';
+			generate_path_seq(sequence, G, G, length - 2);
 		} else {
-			rand -= fibo.get( length - sequence.size() );
-			(sequence.back() == 'G') ? sequence += 'U' : sequence += 'G';
-		}
-	//	std::cerr << "Our new sequence: " << sequence << std::endl;
-	}
-	
-	// exchange last character and fit to previous one
-	if (sequence.back() != last) {
-	//	std::cerr << "Last character does not fit: " << sequence.back() << last << std::endl;
-		sequence.back() = last;
-		
-		if (sequence.back() == 'A') {
-			sequence[sequence.length()-2] = 'U';
-		} else if (sequence.back() == 'C') {
-			sequence[sequence.length()-2] = 'G';
+			random -= 2*fibo.get(length-1)/max_number_of_sequences;
+			if (random*max_number_of_sequences < fibo.get(length + 1)) {
+				generate_path_seq(sequence, U, X, length-1);
+			} else {
+				generate_path_seq(sequence, G, X, length-1);
+			}
 		}
 	}
-	
-	
-	std::cerr << sequence << std::endl;
-	sequence = "";
-	}
-	*/
-	
-	
-	
-	
-	return number_of_sequences;
-}
-
-unsigned int generate_cycle_seq (std::string& sequence, int first, unsigned int length) {
-	return generate_path_seq (sequence, int first, int first, length);
+	return max_number_of_sequences;
 }

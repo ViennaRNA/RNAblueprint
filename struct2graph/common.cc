@@ -11,3 +11,18 @@
 #include "common.h"
 
 std::mt19937 rand_gen;
+
+char enum_to_char(int intletter) {
+	char charletter;
+	switch ( intletter ) {
+		case A:	charletter = 'A';
+			break;
+		case G:	charletter = 'G';
+			break;
+		case C:	charletter = 'C';
+			break;
+		case U:	charletter = 'U';
+			break;
+	}
+	return charletter;
+}

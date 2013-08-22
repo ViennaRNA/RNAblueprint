@@ -46,9 +46,9 @@ class Pairing {
 };
 
 // fills the string sequence with random bases, given the first and the last base and the intended length; returns the number of possible solutions
-unsigned int generate_path_seq (std::string& sequence, int first, int last, unsigned int length);
+unsigned int generate_path_seq (std::string& sequence, int first, int last, int length);
 
 // same for cycles (just a wrapper)
-unsigned int generate_cycle_seq (std::string& sequence, int first, unsigned int length);
+unsigned int generate_cycle_seq (std::string& sequence, int first, int length);
 
 #endif
