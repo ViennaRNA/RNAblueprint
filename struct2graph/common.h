@@ -82,7 +82,8 @@ std::ostream& operator<< (std::ostream& os, std::map<U, V>& m) {
 // matrix template
 template < class T, size_t ROWS, size_t COLS > using matrix = std::array< std::array< T, COLS >, ROWS >;
 
-// function to make enum a char again
+// function to make enum a char again and other way round
 char enum_to_char(int intletter);
+int char_to_enum(char charletter);
 
 #endif

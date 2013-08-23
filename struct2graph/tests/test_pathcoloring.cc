@@ -49,32 +49,28 @@ int main(int ac, char* av[]) {
 	print_graph(g, out, "path");
 	
 	std::string sequence;
-	*out << "Number of sequences (G,G,16): " << generate_path_seq (sequence, G, G, 16) << std::endl;
-	*out << sequence << std::endl;
 	
-	sequence.clear();
-	*out << "Number of sequences (X,G,3): " << generate_path_seq (sequence, X, G, 3) << std::endl;
-	*out << sequence << std::endl;
+	std::vector < std::vector < int > > testcase;
+	testcase.push_back({G,G,2});
+	testcase.push_back({X,G,3});
+	testcase.push_back({C,X,4});
+	testcase.push_back({X,X,1});
+	testcase.push_back({X,X,5});
+	testcase.push_back({-1,A,6});
+	testcase.push_back({-1,G,6});
+	testcase.push_back({-1,X,4});
 	
-	sequence.clear();
-	*out << "Number of sequences (C,X,4): " << generate_path_seq (sequence, C, X, 4) << std::endl;
-	*out << sequence << std::endl;
-	
-	sequence.clear();
-	*out << "Number of sequences (X,X,1): " << generate_path_seq (sequence, X, X, 1) << std::endl;
-	*out << sequence << std::endl;
-	
-	sequence.clear();
-	*out << "Number of sequences (X,X,100): " << generate_path_seq (sequence, X, X, 100) << std::endl;
-	*out << sequence << std::endl;
-	
-	*out << "And now two cycles:" << std::endl;
-	sequence.clear();
-	*out << "Number of sequences (A,10): " << generate_cycle_seq (sequence, A, 10) << std::endl;
-	*out << sequence << std::endl;
-	
-	sequence.clear();
-	*out << "Number of sequences (X,4): " << generate_cycle_seq (sequence, X, 4) << std::endl;
-	*out << sequence << std::endl;
+	for (auto elem : testcase) {
+		sequence.clear();
+		*out << "-------------------------------------------------------------------" << std::endl;
+		*out << "Sequence (" << enum_to_char(elem[0]) << "," << enum_to_char(elem[1]) << "," << elem[2] << "): " << std::endl;
+		if (elem[0] >= 0) {
+			*out << "Number of Sequenes: " << generate_path_seq (sequence, elem[0], elem[1], elem[2]) << std::endl;
+		} else {
+			*out << "Number of Sequenes: " << generate_cycle_seq (sequence, elem[1], elem[2]) << std::endl;
+		}
+		*out << sequence << std::endl;
+	}
+
 	return 0;
 }

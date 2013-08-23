@@ -19,7 +19,8 @@
 // include boost components
 
 // typedefs
-typedef matrix< unsigned int, 4, 4 > rnaMatrix;
+#define A_Size 4
+typedef matrix< unsigned long long, A_Size, A_Size > rnaMatrix;
 
 // class definitions
 // Class to get Fibonacci numbers
@@ -35,9 +36,9 @@ class Fibonacci {
 class Pairing {
 	public:
 		Pairing (unsigned int length);
-		unsigned int get(unsigned int l, unsigned int b1, unsigned int b2);
-		unsigned int get(unsigned int l, unsigned int b1);
-		unsigned int get(unsigned int l);
+		unsigned long long get(unsigned int l, unsigned int b1, unsigned int b2);
+		unsigned long long get(unsigned int l, unsigned int b1);
+		unsigned long long get(unsigned int l);
 		//matrix< unsigned int, 4, 4 > getMatrix(unsigned int l) { return p[l]; };
 	private:
 		std::vector< rnaMatrix > p;
@@ -46,9 +47,9 @@ class Pairing {
 };
 
 // fills the string sequence with random bases, given the first and the last base and the intended length; returns the number of possible solutions
-unsigned int generate_path_seq (std::string& sequence, int first, int last, int length);
+unsigned long long generate_path_seq (std::string& sequence, int first, int last, int length);
 
 // same for cycles (just a wrapper)
-unsigned int generate_cycle_seq (std::string& sequence, int first, int length);
+unsigned long long generate_cycle_seq (std::string& sequence, int first, int length);
 
 #endif
