@@ -10,15 +10,10 @@
 // include header
 #include "graphcoloring.h"
 
-// take highest ear, write all posibilities for open cut points into matrix (together with number of possible sequences for whole ear)
+// color single unconnected vertices
 
-// next ear: find open and fixed cut points
-// write into matrix the posibilities of the fixed (internal) cut point(s) from previous matrix and generate the posibilities for new open cut points
-// therefore need function that checks the pairing matrix and gives you back the posibility of the last given the first letter of a path.
-// eg: length 2, first A -> last has to be U
-// length 3, first U -> last letter can be U or A
+// color unconnected paths
 
-// in the end add cycle -> all cut points are internal ones.
-// now randomly get one combination of cut point bases.
+// color blocks
 
-// color the paths in between with pathcoloring.cc
+// color paths that are connected to blocks
