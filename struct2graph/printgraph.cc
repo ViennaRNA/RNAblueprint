@@ -14,9 +14,10 @@ void print_graph(Graph& g, std::ostream* out, std::string nametag) {
 
 	// print vertex and edge properties from my self defined bundled properties
 	boost::dynamic_properties dp;
-	dp.property("name", boost::get(boost::vertex_color_t(), g));
 	dp.property("bipartite_color", boost::get(&vertex_property::bipartite_color, g));
 	dp.property("color", boost::get(&vertex_property::color, g));
+	dp.property("base", boost::get(&vertex_property::base, g));
+	dp.property("name", boost::get(boost::vertex_color_t(), g));
 	dp.property("ear", boost::get(&edge_property::ear, g));
 	
 	if (outfile != "") {

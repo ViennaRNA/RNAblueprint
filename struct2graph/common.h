@@ -35,7 +35,7 @@ enum bases {A, U, G, C, X};
 struct vertex_property {
 	int bipartite_color;
 	int color;
-	char base;
+	int base = X;
 };
 
 struct edge_property {

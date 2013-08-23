@@ -247,3 +247,19 @@ unsigned long long generate_cycle_seq (std::string& sequence, int first, int len
 	}
 	return max_number_of_sequences;
 }
+
+unsigned long long color_on_graph (Graph& g) {
+	unsigned long long max_number_of_sequences = 0;
+	
+	// check if given graph is indeed a path with max_degree = 2 and two ends with degree = 1;
+	
+	// else check if it is a cycle (all vertices degree 2)
+	
+	// find out the length of the path
+	
+	// find out the color of the first and the last base
+	
+	// call generate_path_seq and color the vertices accordingly
+	
+	return max_number_of_sequences;
+}

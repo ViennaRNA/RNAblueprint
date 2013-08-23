@@ -52,4 +52,8 @@ unsigned long long generate_path_seq (std::string& sequence, int first, int last
 // same for cycles (just a wrapper)
 unsigned long long generate_cycle_seq (std::string& sequence, int first, int length);
 
+// function that takes a path or cycle (in form of a graph), meassures its length, first and last base assignment, 
+// calls generate_path/cycle_seq, and assignes all the colors to the Graph
+unsigned long long color_on_graph (Graph& g)
+
 #endif
