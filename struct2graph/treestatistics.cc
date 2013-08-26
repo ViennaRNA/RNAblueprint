@@ -26,7 +26,7 @@ void do_spanning_tree_stat (Graph& g, int num_trees) {
 			get_random_spanning_tree (g, parents, crossedges, root);
 		
 			// print parents, cross-edges and root vertex
-			if (verbose) {
+			if (debug) {
 				std::cerr << "Root vertex: " << root << std::endl;
 				std::cerr << "Spanning tree (vertex, parent) and cross-edges:" << std::endl;
 				for (std::map<Vertex, Vertex>::iterator it=parents.begin(); it!=parents.end(); ++it) {
@@ -149,7 +149,7 @@ void print_ab_stat (unsigned int alpha, unsigned int beta, std::map<int, std::ve
 		}
 		statfile << std::endl;
 		statfile.close();
-		if (verbose) { std::cerr << "Statistics written to outfile!" << std::endl; }
+		if (debug) { std::cerr << "Statistics written to outfile!" << std::endl; }
 	} else {
 			std::cerr << " Unable to create statistics file!" << std::endl;
 	}

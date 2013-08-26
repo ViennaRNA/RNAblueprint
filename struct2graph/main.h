@@ -28,4 +28,7 @@ boost::program_options::variables_map init_options(int ac, char* av[]);
 // read the input file into a string
 std::vector<std::string> read_input(std::istream* in);
 
+// extract the sequence from the root graph
+std::string get_sequence(Graph& g);
+
 #endif

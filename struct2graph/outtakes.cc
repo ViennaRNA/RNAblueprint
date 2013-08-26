@@ -20,16 +20,16 @@ void get_spanning_tree(Graph& g, std::map<Vertex, Vertex>& parents, std::vector<
 		std::vector<Edge>& c;
 		enum { WHITE, BLACK, GRAY, RED };
 		void start_vertex(Vertex s, Graph g) const {
-			if (verbose) { std::cerr << "Start vertex: " << s << std::endl; }
+			if (debug) { std::cerr << "Start vertex: " << s << std::endl; }
 		}
 		void tree_edge(Edge e, Graph g) const {
-			if (verbose) { std::cerr << "Detecting tree-edge: " << e << std::endl; }
+			if (debug) { std::cerr << "Detecting tree-edge: " << e << std::endl; }
 			Vertex u = boost::source(e, g);
 			Vertex v = boost::target(e, g);
 			p[v] = u;
 		}
 		void forward_or_cross_edge(Edge e, Graph g) const {
-			if (verbose) { std::cerr << "Detecting back-edge: " << e << std::endl; }
+			if (debug) { std::cerr << "Detecting back-edge: " << e << std::endl; }
 			//Vertex u = boost::source(e, g);
 			//Vertex v = boost::target(e, g);
 			c.push_back(e);
@@ -62,10 +62,10 @@ void change_spanning_tree(Graph& g, std::mt19937& r, std::map<Vertex, Vertex>& p
 	// get random crossedgeedge
 	std::uniform_int_distribution<int> rand_crossedge(0, crossedges.size()-1);  //(min, max)
 	Edge old_crossedge = crossedges[rand_crossedge(r)];
-	if (verbose) { std::cerr << "choosen crossedge: " << old_crossedge << std::endl; }
+	if (debug) { std::cerr << "choosen crossedge: " << old_crossedge << std::endl; }
 	// calculate lca of old crossedge
 	Vertex lca = get_lca_distance(g, parents, old_crossedge, start).first;
-	if (verbose) { std::cerr << "lca from old crossedge: " << lca << std::endl; }
+	if (debug) { std::cerr << "lca from old crossedge: " << lca << std::endl; }
 	// get current cycle
 	std::vector<Vertex> source_walk = make_tree_walk(parents, boost::source(old_crossedge, g), lca);
 	std::vector<Vertex> target_walk = make_tree_walk(parents, boost::target(old_crossedge, g), lca);
@@ -75,12 +75,12 @@ void change_spanning_tree(Graph& g, std::mt19937& r, std::map<Vertex, Vertex>& p
 	for (auto elem : source_walk) {
 		target_walk.push_back(elem);
 	}
-	if (verbose) {	std::cerr << "cycle is:" << std::endl << target_walk << std::endl; }
+	if (debug) {	std::cerr << "cycle is:" << std::endl << target_walk << std::endl; }
 	// get random edge from cycle
 	std::uniform_int_distribution<int> rand_tree_edge(0, target_walk.size()-1);  //(min, max)
 	int x = rand_tree_edge(r);
 	Edge edge = boost::edge(target_walk[x], parents[target_walk[x]], g).first;
-	if (verbose) {	std::cerr << "Random Tree Edge is:" << edge << std::endl; }
+	if (debug) {	std::cerr << "Random Tree Edge is:" << edge << std::endl; }
 	// erase source target pair of edge in parents
 	for (std::map<Vertex, Vertex>::iterator it=parents.begin(); it!=parents.end(); ++it) {
 		if (((it->second == boost::source(edge,g)) && (it->first == boost::target(edge,g))) ||
@@ -99,8 +99,8 @@ void change_spanning_tree(Graph& g, std::mt19937& r, std::map<Vertex, Vertex>& p
 	adjacent_v.push_back(boost::target(old_crossedge, g));
 	Vertex other = adjacent_v[1];
 	for (auto v : adjacent_v) {
-		if (verbose) { std::cerr << "walk from vertex " << v << std::endl; }
-		if (verbose) { std::cerr << "other is " << other << std::endl; }
+		if (debug) { std::cerr << "walk from vertex " << v << std::endl; }
+		if (debug) { std::cerr << "other is " << other << std::endl; }
 		std::vector<Vertex> walk;
 		Vertex i = v;
 		walk.push_back(i);

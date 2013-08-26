@@ -10,7 +10,7 @@
 // include header
 #include "struct2graph.h"
 
-bool verbose = false;
+bool debug = false;
 bool no_bipartite_check = false;
 bool ramachandran = false;
 // filenames of graphml files will be starting with this string
@@ -58,7 +58,7 @@ int main(int ac, char* av[]) {
 	std::vector<std::string> structures;
 	
 	if (vm.count("in")) {
-		if (verbose) { std::cerr << "will read graphml file given in the options." << std::endl; }
+		if (debug) { std::cerr << "will read graphml file given in the options." << std::endl; }
 			std::ifstream* infile = new std::ifstream(vm["in"].as<std::string>(), std::ifstream::in);
 		if (infile->is_open()) {
 			structures = read_input(infile);
@@ -93,7 +93,7 @@ boost::program_options::variables_map init_options(int ac, char* av[]) {
 	po::options_description generic("Generic options");
 	generic.add_options()
 		("help,h", "print help message")
-		("verbose,v", po::value(&verbose)->zero_tokens(), "be verbose")
+		("debug,v", po::value(&debug)->zero_tokens(), "be debug")
 	;
 	
 	// Group of options that will be allowed on command line and in a config file
@@ -122,7 +122,7 @@ boost::program_options::variables_map init_options(int ac, char* av[]) {
 		exit(1);
 	}
 	if (vm.count("out")) {
-		if (verbose) { std::cerr << "graphml files will be written to file." << std::endl; }
+		if (debug) { std::cerr << "graphml files will be written to file." << std::endl; }
 	}
 	
 	return vm;
@@ -144,11 +144,11 @@ std::vector<std::string> read_input(std::istream* in) {
 	// exit if there is no input
 	if (structures.empty()) { exit(1); }
 
-	if (verbose) { std::cerr << "Read following structures:" << std::endl; }
+	if (debug) { std::cerr << "Read following structures:" << std::endl; }
 	// check if structures have equeal length
 	unsigned int length = 0;
 	for (auto elem : structures) {
-		if (verbose) { std::cerr << elem << std::endl; }
+		if (debug) { std::cerr << elem << std::endl; }
 		if ((length != elem.length()) && (length != 0)){
 			std::cerr << "Structures have unequal length." << std::endl;
 			exit(1);
@@ -162,7 +162,7 @@ Graph parse_graph(std::vector<std::string> structures) {
 	
 	// count the number of positons
 	int num_vertices = structures[0].length();
-	if (verbose) { std::cerr << "Generating Graph with " << num_vertices << " vertices." << std::endl; }
+	if (debug) { std::cerr << "Generating Graph with " << num_vertices << " vertices." << std::endl; }
 	Graph g(num_vertices);
 	
 	// give the vertices names
@@ -181,7 +181,7 @@ Graph parse_graph(std::vector<std::string> structures) {
 		while (pos < elem.length()) {
 			if (elem[pos] == '(') {
 				pair_table[open] = pos;
-				if (verbose) { std::cerr << elem[pos] << ", open count: "<< open; }
+				if (debug) { std::cerr << elem[pos] << ", open count: "<< open; }
 				open++;
 			} else if (elem[pos] == ')') {
 				open--;
@@ -194,7 +194,7 @@ Graph parse_graph(std::vector<std::string> structures) {
 				}
 				// reset value
 				pair_table[open] = pos;
-				if (verbose) { std::cerr << elem[pos] << ", open count: "<< open; }
+				if (debug) { std::cerr << elem[pos] << ", open count: "<< open; }
 			} else if (elem[pos] != '.') {
 				std::cerr << std::endl << "Unknown character in dot bracked representation" << std::endl;
 				exit(1);
@@ -204,7 +204,7 @@ Graph parse_graph(std::vector<std::string> structures) {
 				std::cerr << std::endl << "Unbalanced brackets in make_pair_table" << std::endl;
 				exit(1);
 			}
-			if (verbose) { std::cerr  << " pos count:" << pos << std::endl; }
+			if (debug) { std::cerr  << " pos count:" << pos << std::endl; }
 			pos++;
 		}
 		// error handling: at the end all brackets must be closed again!
@@ -255,7 +255,7 @@ void print_subgraphs(Graph& g, std::ostream* out, std::string nametag) {
 		*out << name.str() << ":";
 		print_graph(*ci, out, name.str());
 	}
-	if (verbose) { std::cerr << "Printed all subgraphs." << std::endl; }
+	if (debug) { std::cerr << "Printed all subgraphs." << std::endl; }
 }
 
 void decompose_graph(Graph& graph, std::ostream* out) {
@@ -283,7 +283,7 @@ void decompose_graph(Graph& graph, std::ostream* out) {
 		
 		// calculate the max degree of this graph
 		int max_degree = get_max_degree(*ci);
-		if (verbose) { std::cerr << "Max degree of subgraph is: " << max_degree << std::endl; }
+		if (debug) { std::cerr << "Max degree of subgraph is: " << max_degree << std::endl; }
 		
 		// split further into biconnected components do ear decomposition
 		if (max_degree >= 3) {
@@ -328,7 +328,7 @@ void connected_components_to_subgraphs(Graph& g) {
 	std::vector<int> component(boost::num_vertices(g));
 	int num = boost::connected_components(g, &component[0]);
 	
-	if (verbose) { 
+	if (debug) { 
 		std::cerr << "Number of connected components: " << num << std::endl;
 		std::cerr << component << std::endl; 
 	}
@@ -358,18 +358,18 @@ void biconnected_components_to_subgraphs(Graph& g) {
 	boost::edge_component_t edge_component;
 	boost::property_map < Graph, boost::edge_component_t >::type component = boost::get(edge_component, g);
 	unsigned int num = boost::biconnected_components(g, component);
-	if (verbose) { std::cerr << "Number of biconnected components: " << num << std::endl; }
+	if (debug) { std::cerr << "Number of biconnected components: " << num << std::endl; }
 	
 	std::vector<Vertex> art_points;
 	boost::articulation_points(g, std::back_inserter(art_points));
-	if (verbose) {	std::cerr << "Number of articulation points: " << art_points.size() << " ( "; 
+	if (debug) {	std::cerr << "Number of articulation points: " << art_points.size() << " ( "; 
 		for (auto elem : art_points) {
 			std::cerr << boost::get(boost::vertex_color_t(), g, elem) << " ";
 		}
 		std::cerr << ")" << std::endl;	
 	}
 	
-	if (verbose) {
+	if (debug) {
 		// get graph and iterate over its edges to print connected components table
 		typename Graph::edge_iterator ei, ei_end;
 		for (boost::tie(ei, ei_end) = boost::edges(g); ei != ei_end; ++ei) {
@@ -419,7 +419,7 @@ bool is_bipartite_graph(Graph& g, Vertex startVertex, Edge& ed) {
 	// This is a Breadth First Search which checks if the graph is bipartit. 
 	// If not, returns false and the fills the conflicting edge into the edge_descriptor
 	
-	if (verbose) { 	std::cerr << "StartVertex is: " << startVertex << std::endl; 
+	if (debug) { 	std::cerr << "StartVertex is: " << startVertex << std::endl; 
 			std::cerr << "Number of vertices: " << boost::num_vertices(g) << std::endl; }
 	
 	// exit value (if bipartite = true, else false)
@@ -432,7 +432,7 @@ bool is_bipartite_graph(Graph& g, Vertex startVertex, Edge& ed) {
 		bool& m_exit;
 		enum { WHITE, BLACK, GRAY, RED };
 		void tree_edge(Edge e, Graph g) const {
-			if (verbose) { std::cout << "Detecting Tree edge: " << e << std::endl; }
+			if (debug) { std::cout << "Detecting Tree edge: " << e << std::endl; }
 			Vertex u = boost::source(e, g);
 			Vertex v = boost::target(e, g);
 			if (g[u].bipartite_color == RED) {
@@ -442,11 +442,11 @@ bool is_bipartite_graph(Graph& g, Vertex startVertex, Edge& ed) {
 			}
 		}
 		void non_tree_edge(Edge e, Graph g) const {
-			if (verbose) { std::cout << "Detecting Non-Tree edge: " << e << std::endl; }
+			if (debug) { std::cout << "Detecting Non-Tree edge: " << e << std::endl; }
 			Vertex u = boost::source(e, g);
 			Vertex v = boost::target(e, g);
 			if (g[u].bipartite_color == g[v].bipartite_color) {
-				if (verbose) { std::cerr << "u and v have the same color -> not bipartite!" << std::endl; }
+				if (debug) { std::cerr << "u and v have the same color -> not bipartite!" << std::endl; }
 				m_ed = boost::edge(u,v,g).first;
 				// return false if graph is not bipartite
 				m_exit = false;
@@ -482,7 +482,7 @@ void do_spanning_tree_stat (Graph& g) {
 			get_random_spanning_tree (g, r, parents, crossedges, root);
 		
 			// print parents, cross-edges and root vertex
-			if (verbose) {
+			if (debug) {
 				std::cerr << "Root vertex: " << root << std::endl;
 				std::cerr << "Spanning tree (vertex, parent) and cross-edges:" << std::endl;
 				for (std::map<Vertex, Vertex>::iterator it=parents.begin(); it!=parents.end(); ++it) {
@@ -529,7 +529,7 @@ void schieber_ear_decomposition (Graph& g) {
 	get_random_spanning_tree (g, r, parents, crossedges, startVertex);
 	
 	// print parents, cross-edges and root vertex
-	if (verbose) {
+	if (debug) {
 		std::cerr << "Root vertex: " << startVertex << std::endl;
 		std::cerr << "Spanning tree (vertex, parent) and cross-edges:" << std::endl;
 		for (std::map<Vertex, Vertex>::iterator it=parents.begin(); it!=parents.end(); ++it) {
@@ -575,13 +575,13 @@ void ear_decomposition (Graph& g, std::map<Vertex, Vertex>& parents, std::vector
 	
 	// find the lca distances
 	for (auto e : crossedges) {
-		if (verbose) { std::cerr << "starting at new chrossedge: " << e << std::endl; }
+		if (debug) { std::cerr << "starting at new chrossedge: " << e << std::endl; }
 		std::pair<Vertex, int> lcad = get_lca_distance(g, parents, e, start);
-		if (verbose) { std::cerr << "lca " << lcad.first << " has distance " << lcad.second << std::endl; }
+		if (debug) { std::cerr << "lca " << lcad.first << " has distance " << lcad.second << std::endl; }
 		delca[lcad.second][e] = lcad.first;
 	}
 	
-	if (verbose) {
+	if (debug) {
 		for (std::map<int, std::map<Edge, Vertex> >::iterator it=delca.begin(); it!=delca.end(); ++it) {
 			std::cerr << it->first << "(";
 			for (std::map<Edge, Vertex>::iterator iit=(it->second).begin(); iit!=(it->second).end(); ++iit) {
@@ -630,7 +630,7 @@ void get_random_spanning_tree (Graph& g, std::mt19937& r, std::map<Vertex, Verte
 	boost::associative_property_map< std::map<Vertex,Vertex> > pm(parents);
 	// call boost random spanning tree here:
 	boost::random_spanning_tree(g, r, predecessor_map(pm).root_vertex(start));
-	if (verbose) { std::cerr << "Got a boost random spanning tree..." << std::endl; }
+	if (debug) { std::cerr << "Got a boost random spanning tree..." << std::endl; }
 	
 	// create the crossedges vector for the later ear-decomposition!
 	// clear all values
@@ -656,7 +656,7 @@ std::pair<Vertex, int> get_lca_distance(Graph& g, std::map<Vertex, Vertex>& pare
 	// make walks from the vertices to the root of the tree
 	std::vector<Vertex> uwalk = make_tree_walk(parents, boost::target(e, g), r);
 	std::vector<Vertex> vwalk = make_tree_walk(parents, boost::source(e, g), r);
-	if (verbose) {
+	if (debug) {
 		for (auto elem : uwalk)
 			std::cerr << elem << "->";
 		std::cerr << std::endl;
@@ -786,7 +786,7 @@ void print_ab_stat (unsigned int alpha, unsigned int beta, std::map<int, std::ve
 		}
 		statfile << std::endl;
 		statfile.close();
-		if (verbose) { std::cerr << "Statistics written to outfile!" << std::endl; }
+		if (debug) { std::cerr << "Statistics written to outfile!" << std::endl; }
 	} else {
 			std::cerr << " Unable to create statistics file!" << std::endl;
 	}
@@ -805,12 +805,12 @@ void ramachandran_ear_decomposition (Graph& g) {
 	// time starts at 0
 	unsigned int counter = 0;
 
-	if (verbose) { std::cout << "StartVertex is: " << startVertex << std::endl; }
+	if (debug) { std::cout << "StartVertex is: " << startVertex << std::endl; }
 	// Algorithm from Ramachandran (1992) Parallel Open Ear Decomposition with Applications, page 8/9
 	ear_dfs(g, startVertex, p, ear, counter);
 	
 	// print out all data-structures at the end
-	if (verbose) { 
+	if (debug) { 
 		std::cerr << "index\tcolor\tporder\tparent\tlow\tear" << std::endl;
 		for (ear_propertymap_t::iterator it = p.begin(); it != p.end(); it++) {
 			std::cerr << it->first << "\t" << 
@@ -838,7 +838,7 @@ void ramachandran_ear_decomposition (Graph& g) {
 			// for each ear create a new subgraph
 			Graph& subg = g.create_subgraph();
 			//boost::put(&graph_properties::level, g, "decomposed_ears");
-			if (verbose) { 	std::cerr << "New subgraph for ear (" << it->second.first << "," << it->second.second << ")" << std::endl 
+			if (debug) { 	std::cerr << "New subgraph for ear (" << it->second.first << "," << it->second.second << ")" << std::endl 
 					<< "Vertices will be included in subgraph: "; }
 			for (ear_t::iterator ti = it; ti != ear.end(); ti++) {
 				if (ti->second == it->second) {
@@ -846,15 +846,15 @@ void ramachandran_ear_decomposition (Graph& g) {
 					// add vertex into current subgraph if not present already
 					if (!subg.find_vertex(ti->first.first).second) {
 						boost::add_vertex(ti->first.first, subg);
-						if (verbose) { std::cerr << " " << ti->first.first; }
+						if (debug) { std::cerr << " " << ti->first.first; }
 					}
 					if (!subg.find_vertex(ti->first.second).second) {
 						boost::add_vertex(ti->first.second, subg);
-						if (verbose) { std::cerr << " " << ti->first.second; }
+						if (debug) { std::cerr << " " << ti->first.second; }
 					}
 				}
 			}
-			if (verbose) { 	std::cerr << std::endl; }
+			if (debug) { 	std::cerr << std::endl; }
 		}
 	}
 }
@@ -862,7 +862,7 @@ void ramachandran_ear_decomposition (Graph& g) {
 void ear_dfs(Graph& g, Vertex v, ear_propertymap_t& p, ear_t& ear, unsigned int& counter) {
 	
 	enum { WHITE, BLACK, GRAY };
-	if (verbose) { std::cout << "v is: " << v << std::endl; }
+	if (debug) { std::cout << "v is: " << v << std::endl; }
 	
 	// start ear decomposition
 	p[v].color = GRAY;
@@ -875,12 +875,12 @@ void ear_dfs(Graph& g, Vertex v, ear_propertymap_t& p, ear_t& ear, unsigned int&
 	typename Graph::out_edge_iterator ei, ei_end;
 	for (boost::tie(ei, ei_end) = boost::out_edges(v, g);  ei != ei_end; ++ei)
 	{
-		if (verbose) { std::cerr << boost::target(*ei, g) <<" is neighbour through edge: " << *ei << std::endl; }
+		if (debug) { std::cerr << boost::target(*ei, g) <<" is neighbour through edge: " << *ei << std::endl; }
 		Vertex w = boost::target(*ei, g);
-		if (verbose) { std::cout << "w is: " << w << std::endl; }
+		if (debug) { std::cout << "w is: " << w << std::endl; }
 		
 		if (p[w].color == WHITE) {
-			if (verbose) { std::cout << "w is white" << std::endl; }
+			if (debug) { std::cout << "w is white" << std::endl; }
 			p[w].parent = v;
 			// start new iteration here
 			ear_dfs(g, w, p, ear, counter);
@@ -893,9 +893,9 @@ void ear_dfs(Graph& g, Vertex v, ear_propertymap_t& p, ear_t& ear, unsigned int&
 				p[v].low = std::min((int) p[v].low, (int) p[w].low);
 				p[v].ear = lexmin(p[v].ear, p[w].ear);
 		} else if (p[w].color == GRAY) {
-			if (verbose) { std::cout << "w is gray" << std::endl; }
+			if (debug) { std::cout << "w is gray" << std::endl; }
 			if (w != p[w].parent) {
-				if (verbose) { std::cout << "found a crossedge: " << v << w << std::endl; }
+				if (debug) { std::cout << "found a crossedge: " << v << w << std::endl; }
 				//TODO: casting vertex in low to integer a bad idea?
 				p[v].low = boost::vertex(std::min((int) p[v].low, p[w].preorder), g);
 				ear[std::make_pair(w, v)] = std::make_pair(boost::vertex(p[w].preorder, g), boost::vertex(p[v].preorder, g));
@@ -903,7 +903,7 @@ void ear_dfs(Graph& g, Vertex v, ear_propertymap_t& p, ear_t& ear, unsigned int&
 			}
 		}
 	}
-	if (verbose) { std::cout << "finishing vertex " << v << std::endl; }
+	if (debug) { std::cout << "finishing vertex " << v << std::endl; }
 }
 
 

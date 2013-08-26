@@ -57,6 +57,6 @@ void print_subgraphs(Graph& g, std::ostream* out, std::string nametag) {
 		*out << name.str() << ":";
 		print_graph(*ci, out, name.str());
 	}
-	if (verbose) { std::cerr << "Printed all subgraphs." << std::endl; }
+	if (debug) { std::cerr << "Printed all subgraphs." << std::endl; }
 }
 

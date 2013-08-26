@@ -17,9 +17,11 @@ void decompose_graph(Graph& graph, std::ostream* out, int num_trees, bool ramach
 
 	connected_components_to_subgraphs(graph);	// get connected components and make subgraphs
 
-	*out << "subgraphs connected components:" << std::endl;
-	// print the just created subgraphs
-	print_subgraphs(graph, out, "connected-component");
+	if (debug) {
+		*out << "subgraphs connected components:" << std::endl;
+		// print the just created subgraphs
+		print_subgraphs(graph, out, "connected-component");
+	}
 	
 	// iterate over all subgraphs (connected components)
 	Graph::children_iterator ci, ci_end;
@@ -38,21 +40,23 @@ void decompose_graph(Graph& graph, std::ostream* out, int num_trees, bool ramach
 		
 		// calculate the max degree of this graph
 		int max_degree = get_min_max_degree(*ci).second;
-		if (verbose) { std::cerr << "Max degree of subgraph is: " << max_degree << std::endl; }
+		if (debug) { std::cerr << "Max degree of subgraph is: " << max_degree << std::endl; }
 		
 		// split further into biconnected components do ear decomposition
-		if (max_degree >= 3) {
+		if (max_degree > 2) {
 			biconnected_components_to_subgraphs(*ci);
 			
-			*out << "subgraphs biconnected components:" << std::endl;
-			// print the just created subgraphs
-			print_subgraphs(*ci, out, "biconnected-component");
+			if (debug) {
+				*out << "subgraphs biconnected components:" << std::endl;
+				// print the just created subgraphs
+				print_subgraphs(*ci, out, "biconnected-component");
+			}
 			
 			Graph::children_iterator ci_b, ci_b_end;
 			for (boost::tie(ci_b, ci_b_end) = (*ci).children(); ci_b != ci_b_end; ++ci_b) {
-				// calculate the max degree of this graph
+				// calculate the max degree of this graph (biconnected component)
 				int max_degree = get_min_max_degree(*ci_b).second;
-				if (max_degree >= 3) {
+				if (max_degree > 2) {
 					// only for statistics start at all vertices as root for DFS
 					if (num_trees > 0) {
 						do_spanning_tree_stat(*ci_b, num_trees);
@@ -65,9 +69,12 @@ void decompose_graph(Graph& graph, std::ostream* out, int num_trees, bool ramach
 						} else {
 							schieber_ear_decomposition(*ci_b);
 						}
-						*out << "subgraphs ear decomposition:" << std::endl;
-						// print the just created subgraphs
-						print_subgraphs(*ci_b, out, "decomposed-ear");
+						
+						if (debug) {
+							*out << "subgraphs ear decomposition:" << std::endl;
+							// print the just created subgraphs
+							print_subgraphs(*ci_b, out, "decomposed-ear");
+						}
 					}
 				}
 			}
@@ -83,7 +90,7 @@ void connected_components_to_subgraphs(Graph& g) {
 	std::vector<int> component(boost::num_vertices(g));
 	int num = boost::connected_components(g, &component[0]);
 	
-	if (verbose) { 
+	if (debug) { 
 		std::cerr << "Number of connected components: " << num << std::endl;
 		std::cerr << component << std::endl; 
 	}
@@ -113,18 +120,18 @@ void biconnected_components_to_subgraphs(Graph& g) {
 	boost::edge_component_t edge_component;
 	boost::property_map < Graph, boost::edge_component_t >::type component = boost::get(edge_component, g);
 	unsigned int num = boost::biconnected_components(g, component);
-	if (verbose) { std::cerr << "Number of biconnected components: " << num << std::endl; }
+	if (debug) { std::cerr << "Number of biconnected components: " << num << std::endl; }
 	
 	std::vector<Vertex> art_points;
 	boost::articulation_points(g, std::back_inserter(art_points));
-	if (verbose) {	std::cerr << "Number of articulation points: " << art_points.size() << " ( "; 
+	if (debug) {	std::cerr << "Number of articulation points: " << art_points.size() << " ( "; 
 		for (auto elem : art_points) {
 			std::cerr << boost::get(boost::vertex_color_t(), g, elem) << " ";
 		}
 		std::cerr << ")" << std::endl;	
 	}
 	
-	if (verbose) {
+	if (debug) {
 		// get graph and iterate over its edges to print connected components table
 		typename Graph::edge_iterator ei, ei_end;
 		for (boost::tie(ei, ei_end) = boost::edges(g); ei != ei_end; ++ei) {
@@ -171,7 +178,7 @@ void schieber_ear_decomposition (Graph& g) {
 	get_random_spanning_tree (g, parents, crossedges, startVertex);
 	
 	// print parents, cross-edges and root vertex
-	if (verbose) {
+	if (debug) {
 		std::cerr << "Root vertex: " << startVertex << std::endl;
 		std::cerr << "Spanning tree (vertex, parent) and cross-edges:" << std::endl;
 		for (std::map<Vertex, Vertex>::iterator it=parents.begin(); it!=parents.end(); ++it) {
@@ -226,13 +233,13 @@ void ear_decomposition (Graph& g, std::map<Vertex, Vertex>& parents, std::vector
 	
 	// find the lca distances
 	for (auto e : crossedges) {
-		if (verbose) { std::cerr << "starting at new chrossedge: " << e << std::endl; }
+		if (debug) { std::cerr << "starting at new chrossedge: " << e << std::endl; }
 		std::pair<Vertex, int> lcad = get_lca_distance(g, parents, e, start);
-		if (verbose) { std::cerr << "lca " << lcad.first << " has distance " << lcad.second << std::endl; }
+		if (debug) { std::cerr << "lca " << lcad.first << " has distance " << lcad.second << std::endl; }
 		delca[lcad.second][e] = lcad.first;
 	}
 	
-	if (verbose) {
+	if (debug) {
 		for (std::map<int, std::map<Edge, Vertex> >::iterator it=delca.begin(); it!=delca.end(); ++it) {
 			std::cerr << it->first << "(";
 			for (std::map<Edge, Vertex>::iterator iit=(it->second).begin(); iit!=(it->second).end(); ++iit) {
@@ -281,7 +288,7 @@ void get_random_spanning_tree (Graph& g, std::map<Vertex, Vertex>& parents, std:
 	boost::associative_property_map< std::map<Vertex,Vertex> > pm(parents);
 	// call boost random spanning tree here:
 	boost::random_spanning_tree(g, rand_gen, predecessor_map(pm).root_vertex(start));
-	if (verbose) { std::cerr << "Got a boost random spanning tree..." << std::endl; }
+	if (debug) { std::cerr << "Got a boost random spanning tree..." << std::endl; }
 	
 	// create the crossedges vector for the later ear-decomposition!
 	// clear all values
@@ -307,7 +314,7 @@ std::pair<Vertex, int> get_lca_distance(Graph& g, std::map<Vertex, Vertex>& pare
 	// make walks from the vertices to the root of the tree
 	std::vector<Vertex> uwalk = make_tree_walk(parents, boost::target(e, g), r);
 	std::vector<Vertex> vwalk = make_tree_walk(parents, boost::source(e, g), r);
-	if (verbose) {
+	if (debug) {
 		for (auto elem : uwalk)
 			std::cerr << elem << "->";
 		std::cerr << std::endl;
@@ -354,12 +361,12 @@ void ramachandran_ear_decomposition (Graph& g) {
 	// time starts at 0
 	unsigned int counter = 0;
 
-	if (verbose) { std::cout << "StartVertex is: " << startVertex << std::endl; }
+	if (debug) { std::cout << "StartVertex is: " << startVertex << std::endl; }
 	// Algorithm from Ramachandran (1992) Parallel Open Ear Decomposition with Applications, page 8/9
 	ear_dfs(g, startVertex, p, ear, counter);
 	
 	// print out all data-structures at the end
-	if (verbose) { 
+	if (debug) { 
 		std::cerr << "index\tcolor\tporder\tparent\tlow\tear" << std::endl;
 		for (ear_propertymap_t::iterator it = p.begin(); it != p.end(); it++) {
 			std::cerr << it->first << "\t" << 
@@ -387,7 +394,7 @@ void ramachandran_ear_decomposition (Graph& g) {
 			// for each ear create a new subgraph
 			Graph& subg = g.create_subgraph();
 			//boost::put(&graph_properties::level, g, "decomposed_ears");
-			if (verbose) { 	std::cerr << "New subgraph for ear (" << it->second.first << "," << it->second.second << ")" << std::endl 
+			if (debug) { 	std::cerr << "New subgraph for ear (" << it->second.first << "," << it->second.second << ")" << std::endl 
 					<< "Vertices will be included in subgraph: "; }
 			for (ear_t::iterator ti = it; ti != ear.end(); ti++) {
 				if (ti->second == it->second) {
@@ -395,15 +402,15 @@ void ramachandran_ear_decomposition (Graph& g) {
 					// add vertex into current subgraph if not present already
 					if (!subg.find_vertex(ti->first.first).second) {
 						boost::add_vertex(ti->first.first, subg);
-						if (verbose) { std::cerr << " " << ti->first.first; }
+						if (debug) { std::cerr << " " << ti->first.first; }
 					}
 					if (!subg.find_vertex(ti->first.second).second) {
 						boost::add_vertex(ti->first.second, subg);
-						if (verbose) { std::cerr << " " << ti->first.second; }
+						if (debug) { std::cerr << " " << ti->first.second; }
 					}
 				}
 			}
-			if (verbose) { 	std::cerr << std::endl; }
+			if (debug) { 	std::cerr << std::endl; }
 		}
 	}
 }
@@ -411,7 +418,7 @@ void ramachandran_ear_decomposition (Graph& g) {
 void ear_dfs(Graph& g, Vertex v, ear_propertymap_t& p, ear_t& ear, unsigned int& counter) {
 	
 	enum { WHITE, BLACK, GRAY };
-	if (verbose) { std::cout << "v is: " << v << std::endl; }
+	if (debug) { std::cout << "v is: " << v << std::endl; }
 	
 	// start ear decomposition
 	p[v].color = GRAY;
@@ -424,12 +431,12 @@ void ear_dfs(Graph& g, Vertex v, ear_propertymap_t& p, ear_t& ear, unsigned int&
 	typename Graph::out_edge_iterator ei, ei_end;
 	for (boost::tie(ei, ei_end) = boost::out_edges(v, g);  ei != ei_end; ++ei)
 	{
-		if (verbose) { std::cerr << boost::target(*ei, g) <<" is neighbour through edge: " << *ei << std::endl; }
+		if (debug) { std::cerr << boost::target(*ei, g) <<" is neighbour through edge: " << *ei << std::endl; }
 		Vertex w = boost::target(*ei, g);
-		if (verbose) { std::cout << "w is: " << w << std::endl; }
+		if (debug) { std::cout << "w is: " << w << std::endl; }
 		
 		if (p[w].color == WHITE) {
-			if (verbose) { std::cout << "w is white" << std::endl; }
+			if (debug) { std::cout << "w is white" << std::endl; }
 			p[w].parent = v;
 			// start new iteration here
 			ear_dfs(g, w, p, ear, counter);
@@ -442,9 +449,9 @@ void ear_dfs(Graph& g, Vertex v, ear_propertymap_t& p, ear_t& ear, unsigned int&
 				p[v].low = std::min((int) p[v].low, (int) p[w].low);
 				p[v].ear = lexmin(p[v].ear, p[w].ear);
 		} else if (p[w].color == GRAY) {
-			if (verbose) { std::cout << "w is gray" << std::endl; }
+			if (debug) { std::cout << "w is gray" << std::endl; }
 			if (w != p[w].parent) {
-				if (verbose) { std::cout << "found a crossedge: " << v << w << std::endl; }
+				if (debug) { std::cout << "found a crossedge: " << v << w << std::endl; }
 				//TODO: casting vertex in low to integer a bad idea?
 				p[v].low = boost::vertex(std::min((int) p[v].low, p[w].preorder), g);
 				ear[std::make_pair(w, v)] = std::make_pair(boost::vertex(p[w].preorder, g), boost::vertex(p[v].preorder, g));
@@ -452,7 +459,7 @@ void ear_dfs(Graph& g, Vertex v, ear_propertymap_t& p, ear_t& ear, unsigned int&
 			}
 		}
 	}
-	if (verbose) { std::cout << "finishing vertex " << v << std::endl; }
+	if (debug) { std::cout << "finishing vertex " << v << std::endl; }
 }
 
 

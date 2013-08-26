@@ -53,7 +53,7 @@ Pairing::Pairing(unsigned int l)
 		p[i] = multiply(p[i-1],p[1]);
 	}
 	
-	/*if(verbose) {
+	/*if(debug) {
 		std::cerr << "Pairing constructor called and filled" << std::endl;
 		for (unsigned int k = 0; k <= l; k++) {
 			std::cerr << k << ":" << std::endl;
@@ -143,7 +143,7 @@ unsigned long long generate_path_seq (Sequence& sequence, int first, int last, i
 		length--;
 	}
 	
-	if (verbose) {
+	if (debug) {
 		std::cerr << "Max Number of Sequences is: " << max_number_of_sequences << std::endl;
 		std::cerr << "Length is: " << length << std::endl;
 		std::cerr << "Sequence is: " << sequence << std::endl;
@@ -189,7 +189,7 @@ unsigned long long generate_path_seq (Sequence& sequence, int first, int last, i
 			exit(1);
 		}
 		
-		if (verbose) {
+		if (debug) {
 			std::cerr << "Number of Sequences is: " << number_of_sequences << std::endl;
 			std::cerr << "Random is: " << random*number_of_sequences << std::endl;
 			std::cerr << "Possibilities is: " << posibilities << std::endl;
@@ -226,7 +226,7 @@ unsigned long long generate_cycle_seq (Sequence& sequence, int first, int length
 		std::uniform_real_distribution<float> dist(0, 1);
 		float random = dist(rand_gen);
 		
-		if (verbose) { std::cerr << random << std::endl; }
+		if (debug) { std::cerr << random << std::endl; }
 		
 		// if random number is smaller than fibo(n-1)/2Lucas(n) -> add an A and color the rest with U,U,n-2
 		if (random*max_number_of_sequences < fibo.get(length-1)) {
@@ -257,8 +257,8 @@ unsigned long long color_path_cycle_graph (Graph& g) {
 	int min_degree;
 	std::tie(min_degree, max_degree) = get_min_max_degree(g);
 	
-	if (max_degree > 2 || min_degree < 1) {
-		std::cerr << std::endl << "This graph is no cycle or path (min degree < 1 or max degree > 2). I can't color this!" << std::endl;
+	if (max_degree > 2) {
+		std::cerr << std::endl << "This graph is no cycle or path (max degree > 2). I can't color this!" << std::endl;
 		exit(1);
 	}
 	
@@ -311,9 +311,13 @@ unsigned long long color_path_cycle_graph (Graph& g) {
 			std::cerr << std::endl << "This cycle already is partly colored in between. I can't color this!" << std::endl;
 			exit(1);
 		}
+	} else if (length == 0 && boost::num_vertices(g) == 1) {
+		// its a single vertex!
+		max_number_of_sequences = generate_path_seq (sequence, g[boost::vertex(0, g)].base, X, length);
+		sequencestring_to_graph(g, boost::vertex(0, g), sequence);
 	} else {
 		// this is no path  - more than two "ends"
-		std::cerr << std::endl << "This graph is no cycle or path (too many vertices with degree 1). I can't color this!" << std::endl;
+		std::cerr << std::endl << "This graph is no cycle or path. I can't color this!" << std::endl;
 		exit(1);
 	}
 	

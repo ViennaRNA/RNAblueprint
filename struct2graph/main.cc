@@ -12,10 +12,13 @@
 #include "parsestruct.h"
 #include "printgraph.h"
 #include "decompose.h"
-#include "pathcoloring.h"
+#include "graphcoloring.h"
+
+// boost components
+#include <boost/graph/iteration_macros.hpp>
 
 //declare global variables
-bool verbose = false;
+bool debug = false;
 std::string outfile;
 
 //! main program starts here
@@ -24,24 +27,19 @@ int main(int ac, char* av[]) {
 	// initialize command line options
 	boost::program_options::variables_map vm = init_options(ac, av);
 	int num_trees = 0;
+	unsigned int number_of_designs = 4;
 	if (vm.count("stat-trees")) { num_trees = vm["stat-trees"].as<int>(); }
+	if (vm.count("num")) { number_of_designs = vm["num"].as<unsigned int>(); }
 	bool ramachandran = vm["ramachandran"].as<bool>();
 	bool no_bipartite_check = vm["noBipartiteCheck"].as<bool>();
+	bool verbose = vm["verbose"].as<bool>();
 	
-	// initialize mersenne twister with our seed
-	unsigned long seed = std::chrono::system_clock::now().time_since_epoch().count();
-	if (vm.count("seed")) {
-		seed = vm["seed"].as<unsigned long>();
-	}
-	rand_gen.seed(seed);
-	std::cerr << "Using this seed: " << seed << std::endl;
-
 	// input handling ( we read from std:in per default and switch to a file if it is given in the --in option
 	// std::in will provide a pseudo interface to enter structures directly!
 	std::vector<std::string> structures;
 	
 	if (vm.count("in")) {
-		if (verbose) { std::cerr << "will read graphml file given in the options." << std::endl; }
+		if (debug) { std::cerr << "will read graphml file given in the options." << std::endl; }
 			std::ifstream* infile = new std::ifstream(vm["in"].as<std::string>(), std::ifstream::in);
 		if (infile->is_open()) {
 			structures = read_input(infile);
@@ -58,14 +56,34 @@ int main(int ac, char* av[]) {
 	
 	std::ostream* out = &std::cout;					// out stream
 	
+	// initialize mersenne twister with our seed
+	unsigned long seed = std::chrono::system_clock::now().time_since_epoch().count();
+	if (vm.count("seed")) {
+		seed = vm["seed"].as<unsigned long>();
+	}
+	rand_gen.seed(seed);
+	if (verbose) {
+		*out << "Using this seed: " << seed << std::endl;
+	}
+	
 	Graph graph = parse_structures(structures);			// generate graph from input vector
-	*out << "dependency graph:";
-	print_graph(graph, out, "root-graph");				// print the graph as GML to a ostream
+	if (debug) {
+		*out << "dependency graph:";
+		print_graph(graph, out, "root-graph");			// print the graph as GML to a ostream
+	}
 	
 	decompose_graph(graph, out, num_trees, 				// decompose the graph into its connected components, biconnected
 		ramachandran, no_bipartite_check);			// components and decompose blocks via ear decomposition
 	
-	// call function to color graph
+	if (vm.count("in")) {
+		std::cerr << "....,....1....,....2....,....3....,....4....,....5....,....6....,....7....,....8" << std::endl;
+	}
+	
+	while (number_of_designs > 0) {
+		color_graph(graph, out);				// color the graph!
+		*out << get_sequence(graph) << std::endl;		// extract the sequence from the graph
+		number_of_designs--;
+	}
 	
 	return 0;
 }
@@ -86,11 +104,11 @@ std::vector<std::string> read_input(std::istream* in) {
 	// exit if there is no input
 	if (structures.empty()) { exit(1); }
 
-	if (verbose) { std::cerr << "Read following structures:" << std::endl; }
+	if (debug) { std::cerr << "Read following structures:" << std::endl; }
 	// check if structures have equeal length
 	unsigned int length = 0;
 	for (auto elem : structures) {
-		if (verbose) { std::cerr << elem << std::endl; }
+		if (debug) { std::cerr << elem << std::endl; }
 		if ((length != elem.length()) && (length != 0)){
 			std::cerr << "Structures have unequal length." << std::endl;
 			exit(1);
@@ -109,15 +127,17 @@ boost::program_options::variables_map init_options(int ac, char* av[]) {
 	po::options_description generic("Generic options");
 	generic.add_options()
 		("help,h", "print help message")
-		("verbose,v", po::value(&verbose)->zero_tokens(), "be verbose")
+		("verbose,v", po::bool_switch()->default_value(false)->zero_tokens(), "be verbose")
+		("debug,d", po::value(&debug)->zero_tokens(), "be verbose for debugging")
 	;
 	
 	// Group of options that will be allowed on command line and in a config file
 	po::options_description config("Program options");
 	config.add_options()
 		("in,i", po::value<std::string>(), "input file which contains the structures [string]")
-		("out,o", po::value<std::string>(&outfile), "write all (sub)graphs to gml files starting with given name [string]")
+		("out,o", po::value<std::string>(&outfile), "write all (sub)graphs to gml files starting with given name (only works with -d) [string]")
 		("seed,s", po::value<unsigned long>(), "random number generator seed [unsigned long]")
+		("num,n", po::value<unsigned int>(), "number of designs (default: 4) [unsigned int]")
 		("ramachandran,r", po::bool_switch()->default_value(false)->zero_tokens(), "Use the Ramachandran ear decomposition algorithmus")
 		("stat-trees,t", po::value<int>(), "only do ear-decomposition statistics: define amount of different spanning trees for every root to calculate [int]")
 		("noBipartiteCheck,b", po::bool_switch()->default_value(false)->zero_tokens(), "Don't check if input dependency graph is bipartite")
@@ -138,9 +158,18 @@ boost::program_options::variables_map init_options(int ac, char* av[]) {
 		exit(1);
 	}
 	if (vm.count("out")) {
-		if (verbose) { std::cerr << "graphml files will be written to file." << std::endl; }
+		if (debug) { std::cerr << "graphml files will be written to file." << std::endl; }
 	}
 	
 	return vm;
+}
+
+std::string get_sequence(Graph& g) {
+	std::string sequence(boost::num_vertices(g), 'X');
+	
+	BGL_FORALL_VERTICES_T(v, g, Graph) {
+		sequence[boost::get(boost::vertex_color_t(), g, v)] = enum_to_char(g[v].base);
+	}
+	return sequence;
 }
 

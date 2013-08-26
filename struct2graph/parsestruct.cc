@@ -14,7 +14,7 @@ Graph parse_structures(std::vector<std::string> structures) {
 	
 	// count the number of positons
 	int num_vertices = structures[0].length();
-	if (verbose) { std::cerr << "Generating Graph with " << num_vertices << " vertices." << std::endl; }
+	if (debug) { std::cerr << "Generating Graph with " << num_vertices << " vertices." << std::endl; }
 	Graph g(num_vertices);
 	
 	// give the vertices names
@@ -32,7 +32,7 @@ Graph parse_structures(std::vector<std::string> structures) {
 		while (pos < elem.length()) {
 			if (elem[pos] == '(') {
 				pair_table[open] = pos;
-				if (verbose) { std::cerr << elem[pos] << ", open count: "<< open; }
+				if (debug) { std::cerr << elem[pos] << ", open count: "<< open; }
 				open++;
 			} else if (elem[pos] == ')') {
 				open--;
@@ -45,7 +45,7 @@ Graph parse_structures(std::vector<std::string> structures) {
 				}
 				// reset value
 				pair_table[open] = pos;
-				if (verbose) { std::cerr << elem[pos] << ", open count: "<< open; }
+				if (debug) { std::cerr << elem[pos] << ", open count: "<< open; }
 			} else if (elem[pos] != '.') {
 				std::cerr << std::endl << "Unknown character in dot bracked representation" << std::endl;
 				exit(1);
@@ -55,7 +55,7 @@ Graph parse_structures(std::vector<std::string> structures) {
 				std::cerr << std::endl << "Unbalanced brackets in make_pair_table" << std::endl;
 				exit(1);
 			}
-			if (verbose) { std::cerr  << " pos count:" << pos << std::endl; }
+			if (debug) { std::cerr  << " pos count:" << pos << std::endl; }
 			pos++;
 		}
 		// error handling: at the end all brackets must be closed again!

@@ -29,7 +29,7 @@ bool is_bipartite_graph(Graph& g, Vertex startVertex, Edge& ed) {
 	// This is a Breadth First Search which checks if the graph is bipartit. 
 	// If not, returns false and the fills the conflicting edge into the edge_descriptor
 	
-	if (verbose) { 	std::cerr << "StartVertex is: " << startVertex << std::endl; 
+	if (debug) { 	std::cerr << "StartVertex is: " << startVertex << std::endl; 
 			std::cerr << "Number of vertices: " << boost::num_vertices(g) << std::endl; }
 	
 	// exit value (if bipartite = true, else false)
@@ -42,7 +42,7 @@ bool is_bipartite_graph(Graph& g, Vertex startVertex, Edge& ed) {
 		bool& m_exit;
 		enum { WHITE, BLACK, GRAY, RED };
 		void tree_edge(Edge e, Graph g) const {
-			if (verbose) { std::cout << "Detecting Tree edge: " << e << std::endl; }
+			if (debug) { std::cout << "Detecting Tree edge: " << e << std::endl; }
 			Vertex u = boost::source(e, g);
 			Vertex v = boost::target(e, g);
 			if (g[u].bipartite_color == RED) {
@@ -52,11 +52,11 @@ bool is_bipartite_graph(Graph& g, Vertex startVertex, Edge& ed) {
 			}
 		}
 		void non_tree_edge(Edge e, Graph g) const {
-			if (verbose) { std::cout << "Detecting Non-Tree edge: " << e << std::endl; }
+			if (debug) { std::cout << "Detecting Non-Tree edge: " << e << std::endl; }
 			Vertex u = boost::source(e, g);
 			Vertex v = boost::target(e, g);
 			if (g[u].bipartite_color == g[v].bipartite_color) {
-				if (verbose) { std::cerr << "u and v have the same color -> not bipartite!" << std::endl; }
+				if (debug) { std::cerr << "u and v have the same color -> not bipartite!" << std::endl; }
 				m_ed = boost::edge(u,v,g).first;
 				// return false if graph is not bipartite
 				m_exit = false;

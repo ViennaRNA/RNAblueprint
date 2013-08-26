@@ -23,7 +23,7 @@
 #include <boost/graph/iteration_macros.hpp>
 
 //Global variables
-extern bool verbose;
+extern bool debug;
 
 // random number generator
 extern std::mt19937 rand_gen;

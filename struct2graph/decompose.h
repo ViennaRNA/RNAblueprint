@@ -46,8 +46,7 @@ std::pair<T, T>& lexmin(std::pair<T, T>& a, std::pair<T, T>& b) {
 	}
 }
 
-
-// does the whole graph decomposition, uses methods below
+// does the graph decomposition, and calls the coloring of the subgraphs
 void decompose_graph(Graph& graph, std::ostream* out, int num_trees, bool ramachandran, bool no_bipartite_check);
 
 // get a vector of all vertices with their component id. finds connected components with DFS

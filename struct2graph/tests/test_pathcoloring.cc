@@ -17,7 +17,7 @@
 #include <chrono>
 
 //declare global variables
-bool verbose = false;
+bool debug = false;
 std::string outfile;
 
 // function declaration
