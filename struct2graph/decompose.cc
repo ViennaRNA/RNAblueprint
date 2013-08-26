@@ -11,6 +11,7 @@
 #include "decompose.h"
 #include "printgraph.h"
 #include "treestatistics.h"
+#include "graphcommon.h"
 
 void decompose_graph(Graph& graph, std::ostream* out, int num_trees, bool ramachandran, bool no_bipartite_check) {
 
@@ -36,7 +37,7 @@ void decompose_graph(Graph& graph, std::ostream* out, int num_trees, bool ramach
 		}
 		
 		// calculate the max degree of this graph
-		int max_degree = get_max_degree(*ci);
+		int max_degree = get_min_max_degree(*ci).second;
 		if (verbose) { std::cerr << "Max degree of subgraph is: " << max_degree << std::endl; }
 		
 		// split further into biconnected components do ear decomposition
@@ -50,7 +51,7 @@ void decompose_graph(Graph& graph, std::ostream* out, int num_trees, bool ramach
 			Graph::children_iterator ci_b, ci_b_end;
 			for (boost::tie(ci_b, ci_b_end) = (*ci).children(); ci_b != ci_b_end; ++ci_b) {
 				// calculate the max degree of this graph
-				int max_degree = get_max_degree(*ci_b);
+				int max_degree = get_min_max_degree(*ci_b).second;
 				if (max_degree >= 3) {
 					// only for statistics start at all vertices as root for DFS
 					if (num_trees > 0) {
@@ -156,63 +157,6 @@ void biconnected_components_to_subgraphs(Graph& g) {
 		}
 	}
 	
-}
-
-int get_max_degree(Graph& g) {
-	int max_degree = 0;
-	BGL_FORALL_VERTICES_T(v, g, Graph) {
-		int current_degree = boost::out_degree(v, g);
-		if (current_degree > max_degree) {
-			max_degree = current_degree;
-		}
-	}
-	return max_degree;
-}
-
-bool is_bipartite_graph(Graph& g, Vertex startVertex, Edge& ed) {
-	// This is a Breadth First Search which checks if the graph is bipartit. 
-	// If not, returns false and the fills the conflicting edge into the edge_descriptor
-	
-	if (verbose) { 	std::cerr << "StartVertex is: " << startVertex << std::endl; 
-			std::cerr << "Number of vertices: " << boost::num_vertices(g) << std::endl; }
-	
-	// exit value (if bipartite = true, else false)
-	bool exit = true;
-	// Define A BGL visitor for the BFS algorithm
-	class my_bfs_visitor : public boost::default_bfs_visitor {
-		public:
-		my_bfs_visitor(Edge& ed, bool& exit) : m_ed(ed), m_exit(exit) {}
-		Edge& m_ed;
-		bool& m_exit;
-		enum { WHITE, BLACK, GRAY, RED };
-		void tree_edge(Edge e, Graph g) const {
-			if (verbose) { std::cout << "Detecting Tree edge: " << e << std::endl; }
-			Vertex u = boost::source(e, g);
-			Vertex v = boost::target(e, g);
-			if (g[u].bipartite_color == RED) {
-				g[v].bipartite_color = BLACK;
-			} else {
-				g[v].bipartite_color = RED;
-			}
-		}
-		void non_tree_edge(Edge e, Graph g) const {
-			if (verbose) { std::cout << "Detecting Non-Tree edge: " << e << std::endl; }
-			Vertex u = boost::source(e, g);
-			Vertex v = boost::target(e, g);
-			if (g[u].bipartite_color == g[v].bipartite_color) {
-				if (verbose) { std::cerr << "u and v have the same color -> not bipartite!" << std::endl; }
-				m_ed = boost::edge(u,v,g).first;
-				// return false if graph is not bipartite
-				m_exit = false;
-			}
-		}
-	};
-	
-	my_bfs_visitor vis(ed, exit);
-	// Do a BGL BFS!
-	// http://www.boost.org/doc/libs/1_53_0/libs/graph/doc/breadth_first_search.html
-	boost::breadth_first_search(g, startVertex, boost::visitor(vis));
-	return exit;
 }
 
 void schieber_ear_decomposition (Graph& g) {

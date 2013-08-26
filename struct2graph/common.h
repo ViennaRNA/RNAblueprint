@@ -31,16 +31,19 @@ extern std::mt19937 rand_gen;
 // Encode Bases to enums
 enum bases {A, U, G, C, X};
 
+// Typedef for sequences of enums
+typedef std::deque< int > Sequence;
+
 // get property with Graph[Vertex].bipartite_color = int;
 struct vertex_property {
-	int bipartite_color;
-	int color;
+	int bipartite_color = 0;
+	int color = 0;
 	int base = X;
 };
 
 struct edge_property {
-	int ear;
-	int color;
+	int ear = 0;
+	int color = 0;
 };
 
 namespace boost {
@@ -59,6 +62,10 @@ typedef boost::subgraph< boost::adjacency_list< boost::vecS, boost::vecS, boost:
 	boost::property< boost::edge_index_t, int, boost::property < boost::edge_component_t, std::size_t, edge_property> > > > Graph;
 typedef Graph::edge_descriptor Edge;
 typedef Graph::vertex_descriptor Vertex;
+
+// function to make enum a char again and other way round
+char enum_to_char(int intletter);
+int char_to_enum(char charletter);
 
 // overload << operator to print vectors with any content
 template <typename T>
@@ -79,11 +86,10 @@ std::ostream& operator<< (std::ostream& os, std::map<U, V>& m) {
 	return os;
 }
 
+// overload << operator to print deques with sequence information
+std::ostream& operator<< (std::ostream& os, Sequence& sequence);
+
 // matrix template
 template < class T, size_t ROWS, size_t COLS > using matrix = std::array< std::array< T, COLS >, ROWS >;
-
-// function to make enum a char again and other way round
-char enum_to_char(int intletter);
-int char_to_enum(char charletter);
 
 #endif

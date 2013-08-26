@@ -11,12 +11,20 @@
 #include "printgraph.h"
 
 void print_graph(Graph& g, std::ostream* out, std::string nametag) {
-
+	// convert enums of bases to chars
+	std::map<Vertex, char> bases;
+	boost::associative_property_map< std::map<Vertex, char> > base_map(bases);
+	
+	BGL_FORALL_VERTICES_T(v, g, Graph) {
+		bases.insert(std::make_pair(v, enum_to_char(g[v].base)));
+	}
+    
 	// print vertex and edge properties from my self defined bundled properties
 	boost::dynamic_properties dp;
 	dp.property("bipartite_color", boost::get(&vertex_property::bipartite_color, g));
 	dp.property("color", boost::get(&vertex_property::color, g));
-	dp.property("base", boost::get(&vertex_property::base, g));
+	dp.property("base", base_map);
+	//roperty("base_enum", boost::get(&vertex_property::base, g));
 	dp.property("name", boost::get(boost::vertex_color_t(), g));
 	dp.property("ear", boost::get(&edge_property::ear, g));
 	

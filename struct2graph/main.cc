@@ -65,9 +65,7 @@ int main(int ac, char* av[]) {
 	decompose_graph(graph, out, num_trees, 				// decompose the graph into its connected components, biconnected
 		ramachandran, no_bipartite_check);			// components and decompose blocks via ear decomposition
 	
-	std::string sequence;
-	*out << "Number of sequences: " << generate_path_seq (sequence, C, G, 13) << std::endl;
-	*out << sequence << std::endl;
+	// call function to color graph
 	
 	return 0;
 }

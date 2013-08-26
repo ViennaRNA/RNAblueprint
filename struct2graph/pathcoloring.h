@@ -47,13 +47,16 @@ class Pairing {
 };
 
 // fills the string sequence with random bases, given the first and the last base and the intended length; returns the number of possible solutions
-unsigned long long generate_path_seq (std::string& sequence, int first, int last, int length);
+unsigned long long generate_path_seq (std::deque< int >& sequence, int first, int last, int length);
 
 // same for cycles (just a wrapper)
-unsigned long long generate_cycle_seq (std::string& sequence, int first, int length);
+unsigned long long generate_cycle_seq (std::deque< int >& sequence, int first, int length);
 
 // function that takes a path or cycle (in form of a graph), meassures its length, first and last base assignment, 
 // calls generate_path/cycle_seq, and assignes all the colors to the Graph
-unsigned long long color_on_graph (Graph& g)
+unsigned long long color_path_cycle_graph (Graph& g);
+
+// this function takes a sequence of bases and assigns them to a graph (must be a path or a cycle!)
+void sequencestring_to_graph(Graph& g, Vertex vertex, std::deque< int >& sequence);
 
 #endif

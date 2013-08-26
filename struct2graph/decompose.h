@@ -56,12 +56,6 @@ void connected_components_to_subgraphs(Graph& g);
 // finds connected components with DFS
 void biconnected_components_to_subgraphs(Graph& g);
 
-// get max degree of a graph
-int get_max_degree(Graph& g);
-
-// do a Breadth First Search to test for bipartite property
-bool is_bipartite_graph(Graph& g, Vertex startVertex, Edge& ed);
-
 // do a schieber ear decomposition without any statistics
 void schieber_ear_decomposition (Graph& g);
 

@@ -45,3 +45,10 @@ int char_to_enum(char charletter) {
 	}
 	return intletter;
 }
+
+std::ostream& operator<< (std::ostream& os, Sequence& sequence) {
+	for (auto base : sequence) {
+		os << enum_to_char(base);
+	}
+	return os;
+}
