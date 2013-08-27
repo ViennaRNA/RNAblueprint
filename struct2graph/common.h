@@ -38,6 +38,7 @@ typedef std::deque< int > Sequence;
 struct vertex_property {
 	int bipartite_color = 0;
 	int color = 0;
+	std::vector< int > Ak;
 	int base = X;
 };
 

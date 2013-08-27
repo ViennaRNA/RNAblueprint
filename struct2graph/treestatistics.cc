@@ -56,7 +56,7 @@ void do_spanning_tree_stat (Graph& g, int num_trees) {
 std::pair< unsigned int, unsigned int > calculate_alpha_beta(Graph& g, std::vector<Edge>& crossedges, std::map<int, std::vector<Vertex> >& Ak) {
 	
 	// structure to remember Ak (attachment vertices)
-	//std::map<int, std::vector<Vertex> > Ak;
+	// std::map<int, std::vector<Vertex> > Ak;
 	unsigned int alpha = 0;
 	unsigned int beta = 0;
 	int my = crossedges.size();
@@ -66,11 +66,12 @@ std::pair< unsigned int, unsigned int > calculate_alpha_beta(Graph& g, std::vect
 		g[v].color = 0;
 	}
 	
-	// iterate over all ear decomposition iterations and inside this loop over all edges of this ear
+	// iterate over all ear decomposition iterations and calculate alpha and beta
+	// and inside this loop over all edges of this ear
 	// this edges have source and target vertices, iterate over both
 	// then iterate over the adjacent out edges of these vertices and get the hightes ear number into maxear
 	for (int k = 0; k != my; k++) {
-		BGL_FORALL_EDGES_T(e, g, Graph) {
+		/*BGL_FORALL_EDGES_T(e, g, Graph) {
 			if (g[e].ear == k) {
 				std::vector<Vertex> adjacent_v;
 				adjacent_v.push_back(boost::source(e, g));
@@ -87,26 +88,24 @@ std::pair< unsigned int, unsigned int > calculate_alpha_beta(Graph& g, std::vect
 					else { g[adja].color = 0; }
 				}
 			}
-		}
+		}*/
 		
 		//print_graph(g, &std::cout, "test_color");
-		// remember Ak for this k
-		std::vector< Vertex > thisAk;
-		// write colored vertices into thisAk
+		
+		// write Articulation Points from vertices into Ak[k]
 		BGL_FORALL_VERTICES_T(v, g, Graph) {
-			if (g[v].color == 1) {
-				thisAk.push_back(v);
+			if (g[v].Ak[k] == 1) {
+				Ak[k].push_back(v);
 			}
 		}
-		Ak[k] = thisAk;
-		if (thisAk.size() > alpha) { alpha = thisAk.size(); }
+		if (Ak[k].size() > alpha) { alpha = Ak[k].size(); }
 		
 		if (k > 0) {
 			std::vector<Vertex> Akplus1_without_Ak;
-			for (auto elem : thisAk) {
+			for (auto elem : Ak[k]) {
 				std::vector<Vertex>::iterator iter = find(Ak[k-1].begin(), Ak[k-1].end(), elem);
 				if (iter == Ak[k-1].end()) {
-					// elem is in thisAk but not in Ak[k-1]
+					// elem is in Ak[k] but not in Ak[k-1]
 					Akplus1_without_Ak.push_back(elem);
 				}
 			}
@@ -115,6 +114,30 @@ std::pair< unsigned int, unsigned int > calculate_alpha_beta(Graph& g, std::vect
 		}
 	}
 	return std::make_pair(alpha, beta);
+}
+
+void color_Ak_points (Graph& g) {
+	// iterate over all vertices and compare the ear numbers of its out-edges.
+	// push the right ear number into the vertex property Ak vector
+	std::vector< int > earnumbers;
+	BGL_FORALL_VERTICES_T(v, g, Graph) {
+		// reset earnumbers
+		earnumbers.clear();
+		BGL_FORALL_OUTEDGES_T(v, e, g, Graph) {
+			// compare this new earnumber to all the others
+			for (auto numb : earnumbers) {
+				if (g[e].ear < numb) {
+					g[v].Ak[g[e].ear] = 1;
+				} else if (g[e].ear > numb) {
+					g[v].Ak[numb] = 1;
+					earnumbers.push_back(g[e].ear);
+				}
+			}
+			if (earnumbers.size() == 0)			// always save the first outedge-earnumber
+				earnumbers.push_back(g[e].ear);		// save the current earnumber to the others
+		}
+		
+	}
 }
 
 void print_ab_stat (unsigned int alpha, unsigned int beta, std::map<int, std::vector<Vertex> > Ak, Graph& g, Vertex root, std::vector<Edge>& crossedges) {

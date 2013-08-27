@@ -11,20 +11,28 @@
 #include "printgraph.h"
 
 void print_graph(Graph& g, std::ostream* out, std::string nametag) {
-	// convert enums of bases to chars
+	// to convert enums of bases to chars
 	std::map<Vertex, char> bases;
 	boost::associative_property_map< std::map<Vertex, char> > base_map(bases);
+	// to convert list of articulation points to string
+	std::map< Vertex, std::string > aps;
+	boost::associative_property_map< std::map<Vertex, std::string> > ap_map(aps);
 	
 	BGL_FORALL_VERTICES_T(v, g, Graph) {
 		bases.insert(std::make_pair(v, enum_to_char(g[v].base)));
+		
+		// list of articulation points to string
+		// get indexes which are 1 and put them into stringstream
+		aps.insert(std::make_pair(v, ss.str()));
 	}
     
-	// print vertex and edge properties from my self defined bundled properties
+	// print vertex and edge properties from my self-defined bundled properties
 	boost::dynamic_properties dp;
 	dp.property("bipartite_color", boost::get(&vertex_property::bipartite_color, g));
 	dp.property("color", boost::get(&vertex_property::color, g));
 	dp.property("base", base_map);
-	//roperty("base_enum", boost::get(&vertex_property::base, g));
+	//property("base_enum", boost::get(&vertex_property::base, g));
+	dp.property("Ak", ap_map);
 	dp.property("name", boost::get(boost::vertex_color_t(), g));
 	dp.property("ear", boost::get(&edge_property::ear, g));
 	
