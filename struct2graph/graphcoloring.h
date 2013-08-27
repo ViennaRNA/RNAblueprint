@@ -18,7 +18,10 @@
 // include boost components
 
 // color the root graph!
-void color_graph (Graph& graph, std::ostream* out);
+void color_graph (Graph& graph);
+
+// function to do the coloring of the ear decomposition
+void color_blocks (Graph& g);
 
 // reset the bases of the graph to X
 void reset_colors(Graph& g);

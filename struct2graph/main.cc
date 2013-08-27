@@ -75,12 +75,14 @@ int main(int ac, char* av[]) {
 	decompose_graph(graph, out, num_trees, 				// decompose the graph into its connected components, biconnected
 		ramachandran, no_bipartite_check);			// components and decompose blocks via ear decomposition
 	
+	print_graph(graph, out, "colored-graph");
+	
 	if (vm.count("in")) {
 		std::cerr << "....,....1....,....2....,....3....,....4....,....5....,....6....,....7....,....8" << std::endl;
 	}
 	
 	while (number_of_designs > 0) {
-		color_graph(graph, out);				// color the graph!
+		color_graph(graph);				// color the graph!
 		*out << get_sequence(graph) << std::endl;		// extract the sequence from the graph
 		number_of_designs--;
 	}

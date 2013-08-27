@@ -115,7 +115,7 @@ std::pair< unsigned int, unsigned int > calculate_alpha_beta(Graph& g, std::vect
 		}
 	}
 	return std::make_pair(alpha, beta);
-}	
+}
 
 void print_ab_stat (unsigned int alpha, unsigned int beta, std::map<int, std::vector<Vertex> > Ak, Graph& g, Vertex root, std::vector<Edge>& crossedges) {
 	

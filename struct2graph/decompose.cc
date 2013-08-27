@@ -24,56 +24,56 @@ void decompose_graph(Graph& graph, std::ostream* out, int num_trees, bool ramach
 	}
 	
 	// iterate over all subgraphs (connected components)
-	Graph::children_iterator ci, ci_end;
-	for (boost::tie(ci, ci_end) = graph.children(); ci != ci_end; ++ci) {
+	Graph::children_iterator cc, cc_end;
+	for (boost::tie(cc, cc_end) = graph.children(); cc != cc_end; ++cc) {
 		if (!no_bipartite_check) {
 			// check if subgraph is bipartite with a simple BFS
 			// generate the vertex 0 as vertex_descriptor
-			Vertex s = boost::vertex(0, *ci);
+			Vertex s = boost::vertex(0, *cc);
 			// generate a edge_descriptor for the case that the graph is not bipartite
 			Edge ed;
-			if (!is_bipartite_graph(*ci, s, ed)) {
+			if (!is_bipartite_graph(*cc, s, ed)) {
 				std::cerr << "Graph is not bipartite! Conflict detected on edge " << ed << std::endl;
 				exit(1);
 			}
 		}
 		
 		// calculate the max degree of this graph
-		int max_degree = get_min_max_degree(*ci).second;
+		int max_degree = get_min_max_degree(*cc).second;
 		if (debug) { std::cerr << "Max degree of subgraph is: " << max_degree << std::endl; }
 		
 		// split further into biconnected components do ear decomposition
 		if (max_degree > 2) {
-			biconnected_components_to_subgraphs(*ci);
+			biconnected_components_to_subgraphs(*cc);
 			
 			if (debug) {
 				*out << "subgraphs biconnected components:" << std::endl;
 				// print the just created subgraphs
-				print_subgraphs(*ci, out, "biconnected-component");
+				print_subgraphs(*cc, out, "biconnected-component");
 			}
 			
-			Graph::children_iterator ci_b, ci_b_end;
-			for (boost::tie(ci_b, ci_b_end) = (*ci).children(); ci_b != ci_b_end; ++ci_b) {
+			Graph::children_iterator bc, bc_end;
+			for (boost::tie(bc, bc_end) = (*cc).children(); bc != bc_end; ++bc) {
 				// calculate the max degree of this graph (biconnected component)
-				int max_degree = get_min_max_degree(*ci_b).second;
+				int max_degree = get_min_max_degree(*bc).second;
 				if (max_degree > 2) {
 					// only for statistics start at all vertices as root for DFS
 					if (num_trees > 0) {
-						do_spanning_tree_stat(*ci_b, num_trees);
+						do_spanning_tree_stat(*bc, num_trees);
 					} else {
 					
 						//TODO starting at 0 does not work atm. maybe underflow of unsigned int/vertex?
 						//TODO use do_ear_decompositons (Schieber & Vishkin (1986)) or ear_decomposition (Ramachandran (1992)) one?!
 						if (ramachandran) {
-							ramachandran_ear_decomposition(*ci_b);
+							ramachandran_ear_decomposition(*bc);
 						} else {
-							schieber_ear_decomposition(*ci_b);
+							schieber_ear_decomposition(*bc);
 						}
 						
 						if (debug) {
 							*out << "subgraphs ear decomposition:" << std::endl;
 							// print the just created subgraphs
-							print_subgraphs(*ci_b, out, "decomposed-ear");
+							print_subgraphs(*bc, out, "decomposed-ear");
 						}
 					}
 				}

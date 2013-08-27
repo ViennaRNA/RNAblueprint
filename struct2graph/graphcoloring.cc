@@ -12,7 +12,7 @@
 #include "graphcommon.h"
 #include "pathcoloring.h"
 
-void color_graph (Graph& graph, std::ostream* out) {
+void color_graph (Graph& graph) {
 	// root graph
 	
 	// reset basese to X
@@ -27,16 +27,31 @@ void color_graph (Graph& graph, std::ostream* out) {
 		} else {
 			Graph::children_iterator bc, bc_end;
 			for (boost::tie(bc, bc_end) = (*cc).children(); bc != bc_end; ++bc) {
-				// biconnected components
-				if (get_min_max_degree(*bc).second <= 2) {
-					// color biconnected components here
-				} else {
+				// biconnected components (color blocks first!)
+				if (get_min_max_degree(*bc).second > 2) {
 					// blocks
 					// color blocks here
+					//color_blocks(*bc);
+				}
+			}
+			
+			for (boost::tie(bc, bc_end) = (*cc).children(); bc != bc_end; ++bc) {
+				if (get_min_max_degree(*bc).second >= 2) {
+					// biconnected component paths
+					// color paths here
+					color_path_cycle_graph (*bc);
 				}
 			}
 		}
 	}
+}
+
+void color_blocks (Graph& g) {
+	// start with filling the matrix
+	
+	
+	
+	// backtracing
 }
 
 void reset_colors(Graph& g) {
