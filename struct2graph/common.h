@@ -14,6 +14,7 @@
 #include <string>
 #include <vector>
 #include <array>
+#include <set>
 
 // include boost components
 #include <boost/lexical_cast.hpp>
@@ -38,7 +39,7 @@ typedef std::deque< int > Sequence;
 struct vertex_property {
 	int bipartite_color = 0;
 	int color = 0;
-	std::vector< int > Ak;
+	std::set< int > Ak;
 	int base = X;
 };
 

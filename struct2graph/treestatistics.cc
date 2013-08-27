@@ -10,7 +10,8 @@
 // include header
 #include "treestatistics.h"
 
-
+// include boost components
+#include <boost/graph/iteration_macros.hpp>
 
 void do_spanning_tree_stat (Graph& g, int num_trees) {
 		
@@ -61,10 +62,8 @@ std::pair< unsigned int, unsigned int > calculate_alpha_beta(Graph& g, std::vect
 	unsigned int beta = 0;
 	int my = crossedges.size();
 	
-	// reset_color
-	BGL_FORALL_VERTICES_T(v, g, Graph) {
-		g[v].color = 0;
-	}
+	// detect Articulation Points and push them into graph as vertex property Ak
+	color_Ak_points (g);
 	
 	// iterate over all ear decomposition iterations and calculate alpha and beta
 	// and inside this loop over all edges of this ear
@@ -94,7 +93,7 @@ std::pair< unsigned int, unsigned int > calculate_alpha_beta(Graph& g, std::vect
 		
 		// write Articulation Points from vertices into Ak[k]
 		BGL_FORALL_VERTICES_T(v, g, Graph) {
-			if (g[v].Ak[k] == 1) {
+			if (g[v].Ak.find(k) != g[v].Ak.end()) {
 				Ak[k].push_back(v);
 			}
 		}
@@ -127,9 +126,9 @@ void color_Ak_points (Graph& g) {
 			// compare this new earnumber to all the others
 			for (auto numb : earnumbers) {
 				if (g[e].ear < numb) {
-					g[v].Ak[g[e].ear] = 1;
+					g[v].Ak.insert(g[e].ear);
 				} else if (g[e].ear > numb) {
-					g[v].Ak[numb] = 1;
+					g[v].Ak.insert(numb);
 					earnumbers.push_back(g[e].ear);
 				}
 			}

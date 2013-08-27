@@ -13,6 +13,9 @@
 #include "treestatistics.h"
 #include "graphcommon.h"
 
+// include boost components
+#include <boost/graph/iteration_macros.hpp>
+
 void decompose_graph(Graph& graph, std::ostream* out, int num_trees, bool ramachandran, bool no_bipartite_check) {
 
 	connected_components_to_subgraphs(graph);	// get connected components and make subgraphs

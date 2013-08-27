@@ -10,7 +10,7 @@
 // include header
 #include "printgraph.h"
 
-void print_graph(Graph& g, std::ostream* out, std::string nametag) {
+void print_graph (Graph& g, std::ostream* out, std::string nametag) {
 	// to convert enums of bases to chars
 	std::map<Vertex, char> bases;
 	boost::associative_property_map< std::map<Vertex, char> > base_map(bases);
@@ -21,9 +21,14 @@ void print_graph(Graph& g, std::ostream* out, std::string nametag) {
 	BGL_FORALL_VERTICES_T(v, g, Graph) {
 		bases.insert(std::make_pair(v, enum_to_char(g[v].base)));
 		
-		// list of articulation points to string
-		// get indexes which are 1 and put them into stringstream
-		aps.insert(std::make_pair(v, ss.str()));
+		// convert list of articulation points to string
+		std::stringstream ap_stream;
+		for (auto elem : g[v].Ak) {
+			ap_stream << elem << " ";
+		}
+		std::string ap_string = ap_stream.str();
+		if (ap_string.size() > 1) { ap_string.pop_back(); }					// delete last character
+		aps.insert(std::make_pair(v, ap_string));
 	}
     
 	// print vertex and edge properties from my self-defined bundled properties
