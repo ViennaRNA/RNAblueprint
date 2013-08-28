@@ -47,8 +47,9 @@ ProbabilityMatrix::ProbabilityMatrix (Graph& g) {
 	// now start at the outermost ear
 	for (unsigned int k = 0; k < my+1; k++) {
 		for (auto ap : Ak[k]) {
+			// find out if previous Aks are still Ak or if they are internal now
 			for (unsigned int i = 0; i < A_Size; i++) {
-				
+				// Nk[A6][A10][A1] = sum(AUGC in inner Ap = 9) P[A6][x9][3 pathlength] * P[x9][A10][1] * Nk-1 [x9][A1]
 				
 			}
 		}
