@@ -67,29 +67,26 @@ std::pair< unsigned int, unsigned int > calculate_alpha_beta(Graph& g, std::vect
 	// iterate over all ear decomposition iterations 
 	for (int k = 0; k != my; k++) {
 		// Ak are already stored in graph as a vertex propertys
-		// struct to store Ak for this k
-		std::vector< Vertex > thisAk;
-		// write vertex property into thisAk
+		// write vertex property into Ak[k]
 		BGL_FORALL_VERTICES_T(v, g, Graph) {
-			std::set< int > Aks = g[v].Ak;
-			if (Aks.find(k) != Aks.end()) {
-				thisAk.push_back(v);
+			if (g[v].Ak.find(k) != g[v].Ak.end()) {
+				Ak[k].push_back(v);
 			}
 		}
-		Ak[k] = thisAk;
-		//std::cerr << thisAk << std::endl;
-		if (thisAk.size() > alpha) { alpha = thisAk.size(); }
-		
+		// always store biggest alpha
+		if (Ak[k].size() > alpha) { alpha = Ak[k].size(); }
+		// calculate beta here
 		if (k > 0) {
 			std::vector<Vertex> Akplus1_without_Ak;
-			for (auto elem : thisAk) {
+			for (auto elem : Ak[k]) {
 				std::vector<Vertex>::iterator iter = find(Ak[k-1].begin(), Ak[k-1].end(), elem);
 				if (iter == Ak[k-1].end()) {
-					// elem is in thisAk but not in Ak[k-1]
+					// elem is in Ak[k] but not in Ak[k-1]
 					Akplus1_without_Ak.push_back(elem);
 				}
 			}
 			unsigned int thisbeta = Ak[k-1].size() + Akplus1_without_Ak.size();
+			// alywas store biggest beta
 			if (beta < thisbeta) { beta = thisbeta; }
 		}
 	}
