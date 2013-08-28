@@ -29,6 +29,8 @@ extern bool debug;
 // random number generator
 extern std::mt19937 rand_gen;
 
+// define size of the alphabet
+#define A_Size 4
 // Encode Bases to enums
 enum bases {A, U, G, C, X};
 

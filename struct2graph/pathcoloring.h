@@ -19,7 +19,6 @@
 // include boost components
 
 // typedefs
-#define A_Size 4
 typedef matrix< unsigned long long, A_Size, A_Size > rnaMatrix;
 
 // class definitions

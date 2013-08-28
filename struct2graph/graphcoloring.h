@@ -17,6 +17,22 @@
 
 // include boost components
 
+// typedefs
+
+// class definitions
+// Class to get Pairing numbers
+class ProbabilityMatrix {
+	public:
+		ProbabilityMatrix (Graph& g);
+		unsigned long long get(unsigned int e, unsigned int a, unsigned int b);		// e... ear (k), a Ak# (Vertex), b... Base
+		unsigned long long get(unsigned int e, unsigned int a);				// sum of all Bases of this Ak
+	private:
+		// vector of k (ears), map of artikulation points (Vertex number) and array of bases.
+		std::vector< std::map < unsigned int, std::array<unsigned long long, A_Size > > > p;
+		// biggest ear number
+		unsigned int my = 0;
+};
+
 // color the root graph!
 void color_graph (Graph& graph);
 

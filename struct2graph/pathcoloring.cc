@@ -127,8 +127,8 @@ unsigned long long Pairing::get(unsigned int l) {
 unsigned long long generate_path_seq (Sequence& sequence, int first, int last, int length) {
 		
 	// pairing matrix for every length
-	Pairing p(length+1);
-	// set maximum possible muber of sequences for first....last
+	Pairing p(length+1);		//TODO initialize only once for the whole program as ist is static content!
+	// set maximum possible number of sequences for first....last
 	unsigned long long max_number_of_sequences = p.get(length, first, last);
 	// delare random number distribution and get a random number
 	std::uniform_real_distribution<float> dist(0, 1);

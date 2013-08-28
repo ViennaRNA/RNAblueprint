@@ -12,6 +12,75 @@
 #include "graphcommon.h"
 #include "pathcoloring.h"
 
+ProbabilityMatrix::ProbabilityMatrix (Graph& g) {
+	// get number of ears in this ear decomposition
+	BGL_FORALL_EDGES_T(e, g, Graph) {
+		if (my < g[e].ear) { my = g[e].ear; }
+	}
+	
+	// get maximal length of an ear
+	unsigned int length;
+	for (unsigned int k = 0; k < my+1; k++) {
+		unsigned int tmp_length = 0;
+		BGL_FORALL_EDGES_T(e, g, Graph) {
+			if (g[e].ear == k) { tmp_length++; }
+		}
+		if (length < tmp_length) { length = tmp_length; }
+	}
+	
+	// get Pairing matrix for path, TODO only initialize once for the whole program!
+	Pairing p(length+1);
+	
+	// structure to remember Ak (attachment vertices)
+	std::map<int, std::set<Vertex> > Ak;
+	// iterate over all ear decomposition iterations 
+	for (int k = 0; k < my+1; k++) {
+		// Ak are already stored in graph as a vertex propertys
+		// write vertex property into Ak[k]
+		BGL_FORALL_VERTICES_T(v, g, Graph) {
+			if (g[v].Ak.find(k) != g[v].Ak.end()) {
+				Ak[k].insert(v);
+			}
+		}
+	}
+	
+	// now start at the outermost ear
+	for (unsigned int k = 0; k < my+1; k++) {
+		for (auto ap : Ak[k]) {
+			for (unsigned int i = 0; i < A_Size; i++) {
+				
+				
+			}
+		}
+	}
+}
+
+unsigned long long ProbabilityMatrix::get(unsigned int e, unsigned int a, unsigned int b) {
+	if ((e > my) || (b > A_Size-1)) {
+		std::cerr << "Requested a value in probability matrix which is out of range: p[" << e << "][" << a << "][" << b << "]" << std::endl;
+		exit(1);
+	}
+	
+	unsigned long long rvalue;
+	// important for map: if you request with [] an entry will be created for unexisting ones.
+	if (p[e].find(a) != p[e].end()) {
+		rvalue = p[e][a][b];
+	} else {
+		rvalue = 0;
+	}
+	
+	return rvalue;
+}
+
+unsigned long long ProbabilityMatrix::get(unsigned int e, unsigned int a) {
+	// return the sum of all probabilities of articulation point
+	unsigned long long sum = 0;
+	for (unsigned int i = 0; i < A_Size; i++) {
+		sum += get(e, a, i);
+	}
+	return sum;
+}
+
 void color_graph (Graph& graph) {
 	// root graph
 	
