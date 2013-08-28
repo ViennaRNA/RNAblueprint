@@ -70,6 +70,9 @@ std::pair<Vertex, int> get_lca_distance(Graph& g, std::map<Vertex, Vertex>& pare
 // do a walk in the spanning tree starting at v and ending at the root r -> return a vector with the walk  (helper for schieber ear decomposition)
 std::vector<Vertex> make_tree_walk(std::map<Vertex, Vertex>& parents, Vertex v, Vertex r);
 
+// identify articulation points and add them as graph property Ak
+void color_Ak_points (Graph& g);
+
 // ear decomposition of blocks
 void ramachandran_ear_decomposition(Graph& g);
 

@@ -195,6 +195,9 @@ void schieber_ear_decomposition (Graph& g) {
 	// do the actual ear decomposition
 	ear_decomposition (g, parents, crossedges, startVertex);
 	
+	// detect Articulation Points and push them into the graph as vertex property Ak
+	color_Ak_points (g);
+	
 	// calculate the two performance critical variables alpha and beta
 	// store attachment vertices per each step of the ear decomposition in Ak
 	std::map<int, std::vector<Vertex> > Ak;
@@ -349,6 +352,32 @@ std::vector<Vertex> make_tree_walk(std::map<Vertex, Vertex>& parents, Vertex v, 
 		i = it->second;
 	}
 	return walk;
+}
+
+void color_Ak_points (Graph& g) {
+	// iterate over all vertices and compare the ear numbers of its out-edges.
+	// push the right ear number into the vertex property Ak vector
+	std::vector< int > earnumbers;
+	BGL_FORALL_VERTICES_T(v, g, Graph) {
+		// clear previous stored Articulation Points
+		g[v].Ak.clear();
+		// reset earnumbers
+		earnumbers.clear();
+		BGL_FORALL_OUTEDGES_T(v, e, g, Graph) {
+			// compare this new earnumber to all the others
+			for (auto numb : earnumbers) {
+				if (g[e].ear < numb) {
+					g[v].Ak.insert(g[e].ear);
+				} else if (g[e].ear > numb) {
+					g[v].Ak.insert(numb);
+					earnumbers.push_back(g[e].ear);
+				}
+			}
+			if (earnumbers.size() == 0)			// always save the first outedge-earnumber
+				earnumbers.push_back(g[e].ear);		// save the current earnumber to the others
+		}
+		
+	}
 }
 
 void ramachandran_ear_decomposition (Graph& g) {

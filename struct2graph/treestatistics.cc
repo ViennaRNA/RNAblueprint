@@ -10,8 +10,7 @@
 // include header
 #include "treestatistics.h"
 
-// include boost components
-#include <boost/graph/iteration_macros.hpp>
+
 
 void do_spanning_tree_stat (Graph& g, int num_trees) {
 		
@@ -41,6 +40,9 @@ void do_spanning_tree_stat (Graph& g, int num_trees) {
 			// do the actual ear decomposition
 			ear_decomposition (g, parents, crossedges, root);
 			
+			// detect Articulation Points and push them into the graph as vertex property Ak
+			color_Ak_points (g);
+			
 			// calculate the two performance critical variables alpha and beta
 			// store attachment vertices per each step of the ear decomposition in Ak
 			std::map<int, std::vector<Vertex> > Ak;
@@ -57,54 +59,33 @@ void do_spanning_tree_stat (Graph& g, int num_trees) {
 std::pair< unsigned int, unsigned int > calculate_alpha_beta(Graph& g, std::vector<Edge>& crossedges, std::map<int, std::vector<Vertex> >& Ak) {
 	
 	// structure to remember Ak (attachment vertices)
-	// std::map<int, std::vector<Vertex> > Ak;
+	//std::map<int, std::vector<Vertex> > Ak;
 	unsigned int alpha = 0;
 	unsigned int beta = 0;
 	int my = crossedges.size();
 	
-	// detect Articulation Points and push them into graph as vertex property Ak
-	color_Ak_points (g);
-	
-	// iterate over all ear decomposition iterations and calculate alpha and beta
-	// and inside this loop over all edges of this ear
-	// this edges have source and target vertices, iterate over both
-	// then iterate over the adjacent out edges of these vertices and get the hightes ear number into maxear
+	// iterate over all ear decomposition iterations 
 	for (int k = 0; k != my; k++) {
-		/*BGL_FORALL_EDGES_T(e, g, Graph) {
-			if (g[e].ear == k) {
-				std::vector<Vertex> adjacent_v;
-				adjacent_v.push_back(boost::source(e, g));
-				adjacent_v.push_back(boost::target(e, g));
-				//TODO we calculate maxear twice for many vertices...
-				for (auto adja : adjacent_v) {
-					int maxear = 0;
-					typename Graph::out_edge_iterator ei, ei_end;
-					for (boost::tie(ei, ei_end) = boost::out_edges(adja, g);  ei != ei_end; ++ei) {
-						if(g[*ei].ear > maxear) { maxear = g[*ei].ear; }
-					}
-				
-					if (maxear > k) { g[adja].color = 1; }
-					else { g[adja].color = 0; }
-				}
-			}
-		}*/
-		
-		//print_graph(g, &std::cout, "test_color");
-		
-		// write Articulation Points from vertices into Ak[k]
+		// Ak are already stored in graph as a vertex propertys
+		// struct to store Ak for this k
+		std::vector< Vertex > thisAk;
+		// write vertex property into thisAk
 		BGL_FORALL_VERTICES_T(v, g, Graph) {
-			if (g[v].Ak.find(k) != g[v].Ak.end()) {
-				Ak[k].push_back(v);
+			std::set< int > Aks = g[v].Ak;
+			if (Aks.find(k) != Aks.end()) {
+				thisAk.push_back(v);
 			}
 		}
-		if (Ak[k].size() > alpha) { alpha = Ak[k].size(); }
+		Ak[k] = thisAk;
+		//std::cerr << thisAk << std::endl;
+		if (thisAk.size() > alpha) { alpha = thisAk.size(); }
 		
 		if (k > 0) {
 			std::vector<Vertex> Akplus1_without_Ak;
-			for (auto elem : Ak[k]) {
+			for (auto elem : thisAk) {
 				std::vector<Vertex>::iterator iter = find(Ak[k-1].begin(), Ak[k-1].end(), elem);
 				if (iter == Ak[k-1].end()) {
-					// elem is in Ak[k] but not in Ak[k-1]
+					// elem is in thisAk but not in Ak[k-1]
 					Akplus1_without_Ak.push_back(elem);
 				}
 			}
@@ -113,31 +94,7 @@ std::pair< unsigned int, unsigned int > calculate_alpha_beta(Graph& g, std::vect
 		}
 	}
 	return std::make_pair(alpha, beta);
-}
-
-void color_Ak_points (Graph& g) {
-	// iterate over all vertices and compare the ear numbers of its out-edges.
-	// push the right ear number into the vertex property Ak vector
-	std::vector< int > earnumbers;
-	BGL_FORALL_VERTICES_T(v, g, Graph) {
-		// reset earnumbers
-		earnumbers.clear();
-		BGL_FORALL_OUTEDGES_T(v, e, g, Graph) {
-			// compare this new earnumber to all the others
-			for (auto numb : earnumbers) {
-				if (g[e].ear < numb) {
-					g[v].Ak.insert(g[e].ear);
-				} else if (g[e].ear > numb) {
-					g[v].Ak.insert(numb);
-					earnumbers.push_back(g[e].ear);
-				}
-			}
-			if (earnumbers.size() == 0)			// always save the first outedge-earnumber
-				earnumbers.push_back(g[e].ear);		// save the current earnumber to the others
-		}
-		
-	}
-}
+}	
 
 void print_ab_stat (unsigned int alpha, unsigned int beta, std::map<int, std::vector<Vertex> > Ak, Graph& g, Vertex root, std::vector<Edge>& crossedges) {
 	
