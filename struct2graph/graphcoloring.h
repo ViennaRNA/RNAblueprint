@@ -24,13 +24,17 @@
 class ProbabilityMatrix {
 	public:
 		ProbabilityMatrix (Graph& g);
-		unsigned long long get(unsigned int e, unsigned int a, unsigned int b);		// e... ear (k), a Ak# (Vertex), b... Base
-		unsigned long long get(unsigned int e, unsigned int a);				// sum of all Bases of this Ak
+		unsigned long long get(unsigned int k, unsigned int a, unsigned int b);		// k... ear (k), a Ak# (Vertex), b... Base
+		unsigned long long get(unsigned int k, unsigned int a);				// sum of all Bases of this Ak
 	private:
 		// vector of k (ears), map of artikulation points (Vertex number) and array of bases.
-		std::vector< std::map < unsigned int, std::array<unsigned long long, A_Size > > > p;
+		std::vector< std::map < std::string, unsigned long long > > n;
+		// structure to remember Ak (attachment vertices)
+		std::map<int, std::set<Vertex> > Ak;
 		// biggest ear number
 		unsigned int my = 0;
+		// key builder for n map get()
+		std::string get_key(std::map< int, unsigned int >);
 };
 
 // color the root graph!

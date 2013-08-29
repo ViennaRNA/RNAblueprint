@@ -15,15 +15,16 @@
 ProbabilityMatrix::ProbabilityMatrix (Graph& g) {
 	// get number of ears in this ear decomposition
 	BGL_FORALL_EDGES_T(e, g, Graph) {
-		if (my < g[e].ear) { my = g[e].ear; }
+		if (my < (unsigned int) g[e].ear) { my = g[e].ear; }
 	}
+	my++; // my is not the biggest ear index but the total number of ears!
 	
 	// get maximal length of an ear
 	unsigned int length;
-	for (unsigned int k = 0; k < my+1; k++) {
+	for (unsigned int k = 0; k < my; k++) {
 		unsigned int tmp_length = 0;
 		BGL_FORALL_EDGES_T(e, g, Graph) {
-			if (g[e].ear == k) { tmp_length++; }
+			if ((unsigned int) g[e].ear == k) { tmp_length++; }
 		}
 		if (length < tmp_length) { length = tmp_length; }
 	}
@@ -31,10 +32,8 @@ ProbabilityMatrix::ProbabilityMatrix (Graph& g) {
 	// get Pairing matrix for path, TODO only initialize once for the whole program!
 	Pairing p(length+1);
 	
-	// structure to remember Ak (attachment vertices)
-	std::map<int, std::set<Vertex> > Ak;
 	// iterate over all ear decomposition iterations 
-	for (int k = 0; k < my+1; k++) {
+	for (unsigned int k = 0; k < my; k++) {
 		// Ak are already stored in graph as a vertex propertys
 		// write vertex property into Ak[k]
 		BGL_FORALL_VERTICES_T(v, g, Graph) {
@@ -44,28 +43,54 @@ ProbabilityMatrix::ProbabilityMatrix (Graph& g) {
 		}
 	}
 	
+	// store internal Articulation Points
+	std::set< int > Ai;
 	// now start at the outermost ear
-	for (unsigned int k = 0; k < my+1; k++) {
+	unsigned int k = 0;
+	
+	Graph::children_iterator ear, ear_end;
+	for (boost::tie(ear, ear_end) = (g).children(); ear != ear_end; ++ear) {
 		for (auto ap : Ak[k]) {
-			// find out if previous Aks are still Ak or if they are internal now
-			for (unsigned int i = 0; i < A_Size; i++) {
+			for (unsigned int b = 0; b < A_Size; b++) {
 				// Nk[A6][A10][A1] = sum(AUGC in inner Ap = 9) P[A6][x9][3 pathlength] * P[x9][A10][1] * Nk-1 [x9][A1]
+				// std::vector< std::map < unsigned int, std::array<unsigned long long, A_Size > > > n;
+				
+				n[k][ap][b] = 0;
 				
 			}
 		}
+		
+		
+		// iterate over articulation points of this ear
+		// find out if this Aks are still Ak of next ear or if they are internal then (-> push into Ai)
+		Ai.clear();
+		for (auto v : Ak[k]) {
+			if (Ak[k+1].find(v) == Ak[k+1].end()) {				// vertices are no Aps in next k
+				BGL_FORALL_OUTEDGES_T(v, e, g, Graph) {			// look at all edges
+					if (g[e].ear == k+1) {				// if next ear is glued here this will be internal
+						Ai.insert(v);
+					} else {					// else it is still an external next k
+						Ak[k+1].insert(v);
+					}
+				}
+			}
+		}
+		
+		// now going to next ear!
+		k++;
 	}
 }
 
-unsigned long long ProbabilityMatrix::get(unsigned int e, unsigned int a, unsigned int b) {
-	if ((e > my) || (b > A_Size-1)) {
-		std::cerr << "Requested a value in probability matrix which is out of range: p[" << e << "][" << a << "][" << b << "]" << std::endl;
+unsigned long long ProbabilityMatrix::get(unsigned int k, unsigned int a, unsigned int b) {
+	if ((k > my) || (b > A_Size-1)) {
+		std::cerr << "Requested a value in probability matrix which is out of range: p[" << k << "][" << a << "][" << b << "]" << std::endl;
 		exit(1);
 	}
 	
 	unsigned long long rvalue;
 	// important for map: if you request with [] an entry will be created for unexisting ones.
-	if (p[e].find(a) != p[e].end()) {
-		rvalue = p[e][a][b];
+	if (n[k].find(a) != n[k].end()) {
+		rvalue = n[k][a][b];
 	} else {
 		rvalue = 0;
 	}
@@ -73,11 +98,11 @@ unsigned long long ProbabilityMatrix::get(unsigned int e, unsigned int a, unsign
 	return rvalue;
 }
 
-unsigned long long ProbabilityMatrix::get(unsigned int e, unsigned int a) {
+unsigned long long ProbabilityMatrix::get(unsigned int k, unsigned int a) {
 	// return the sum of all probabilities of articulation point
 	unsigned long long sum = 0;
 	for (unsigned int i = 0; i < A_Size; i++) {
-		sum += get(e, a, i);
+		sum += get(k, a, i);
 	}
 	return sum;
 }
@@ -101,12 +126,12 @@ void color_graph (Graph& graph) {
 				if (get_min_max_degree(*bc).second > 2) {
 					// blocks
 					// color blocks here
-					//color_blocks(*bc);
+					color_blocks(*bc);
 				}
 			}
 			
 			for (boost::tie(bc, bc_end) = (*cc).children(); bc != bc_end; ++bc) {
-				if (get_min_max_degree(*bc).second >= 2) {
+				if (get_min_max_degree(*bc).second <= 2) {
 					// biconnected component paths
 					// color paths here
 					color_path_cycle_graph (*bc);
