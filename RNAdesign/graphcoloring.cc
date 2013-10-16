@@ -43,7 +43,7 @@ ProbabilityMatrix::ProbabilityMatrix (Graph& g) {
 		}
 	}
 	
-	// store internal Articulation Points
+	// store inner Articulation Points
 	std::set< int > Ai;
 	// now start at the outermost ear
 	unsigned int k = 0;
@@ -55,7 +55,7 @@ ProbabilityMatrix::ProbabilityMatrix (Graph& g) {
 				// Nk[A6][A10][A1] = sum(AUGC in inner Ap = 9) P[A6][x9][3 pathlength] * P[x9][A10][1] * Nk-1 [x9][A1]
 				// std::vector< std::map < unsigned int, std::array<unsigned long long, A_Size > > > n;
 				
-				n[k][ap][b] = 0;
+//				n[k][ap][b] = 0;
 				
 			}
 		}
@@ -82,18 +82,18 @@ ProbabilityMatrix::ProbabilityMatrix (Graph& g) {
 }
 
 unsigned long long ProbabilityMatrix::get(unsigned int k, unsigned int a, unsigned int b) {
-	if ((k > my) || (b > A_Size-1)) {
-		std::cerr << "Requested a value in probability matrix which is out of range: p[" << k << "][" << a << "][" << b << "]" << std::endl;
-		exit(1);
-	}
+//	if ((k > my) || (b > A_Size-1)) {
+//		std::cerr << "Requested a value in probability matrix which is out of range: p[" << k << "][" << a << "][" << b << "]" << std::endl;
+//		exit(1);
+//	}
 	
 	unsigned long long rvalue;
 	// important for map: if you request with [] an entry will be created for unexisting ones.
-	if (n[k].find(a) != n[k].end()) {
-		rvalue = n[k][a][b];
-	} else {
-		rvalue = 0;
-	}
+//	if (n[k].find(a) != n[k].end()) {
+//		rvalue = n[k][a][b];
+//	} else {
+//		rvalue = 0;
+//	}
 	
 	return rvalue;
 }
@@ -101,9 +101,9 @@ unsigned long long ProbabilityMatrix::get(unsigned int k, unsigned int a, unsign
 unsigned long long ProbabilityMatrix::get(unsigned int k, unsigned int a) {
 	// return the sum of all probabilities of articulation point
 	unsigned long long sum = 0;
-	for (unsigned int i = 0; i < A_Size; i++) {
-		sum += get(k, a, i);
-	}
+//	for (unsigned int i = 0; i < A_Size; i++) {
+//		sum += get(k, a, i);
+//	}
 	return sum;
 }
 

@@ -27,8 +27,10 @@ class ProbabilityMatrix {
 		unsigned long long get(unsigned int k, unsigned int a, unsigned int b);		// k... ear (k), a Ak# (Vertex), b... Base
 		unsigned long long get(unsigned int k, unsigned int a);				// sum of all Bases of this Ak
 	private:
-		// vector of k (ears), map of artikulation points (Vertex number) and array of bases.
-		std::vector< std::map < std::string, unsigned long long > > n;
+		typedef std::map < int, int > key;
+		bool operator < (const key& x);
+		// vector of k (ears), map of possibilities saved by key
+		std::vector< std::map < key , unsigned long long > > n;
 		// structure to remember Ak (attachment vertices)
 		std::map<int, std::set<Vertex> > Ak;
 		// biggest ear number
