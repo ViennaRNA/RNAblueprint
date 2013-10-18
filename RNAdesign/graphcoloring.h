@@ -14,10 +14,20 @@
 #include "common.h"
 
 // include standard library parts
+#include <unordered_map>
+#include <functional>
 
 // include boost components
+#include <boost/functional/hash.hpp>
 
 // typedefs
+typedef std::unordered_map < int, int > MyKey;
+
+// Class with cusom hash function for the ProbabilityMatrix
+class MyKeyHash {
+	public:
+		std::size_t operator() (const MyKey& k) const;
+};
 
 // class definitions
 // Class to get Pairing numbers
@@ -27,16 +37,16 @@ class ProbabilityMatrix {
 		unsigned long long get(unsigned int k, unsigned int a, unsigned int b);		// k... ear (k), a Ak# (Vertex), b... Base
 		unsigned long long get(unsigned int k, unsigned int a);				// sum of all Bases of this Ak
 	private:
-		typedef std::map < int, int > key;
-		bool operator < (const key& x);
 		// vector of k (ears), map of possibilities saved by key
-		std::vector< std::map < key , unsigned long long > > n;
+		std::vector< std::unordered_map < MyKey , unsigned long long , MyKeyHash> > n;
 		// structure to remember Ak (attachment vertices)
 		std::map<int, std::set<Vertex> > Ak;
 		// biggest ear number
 		unsigned int my = 0;
-		// key builder for n map get()
-		std::string get_key(std::map< int, unsigned int >);
+		// My custom hash key used for n
+		friend class MyKeyHash;
+		// calculate all the key probabilities and start more from there
+		void calculate_probabilities(std::set<Vertex>& ap, MyKey& k);
 };
 
 // color the root graph!

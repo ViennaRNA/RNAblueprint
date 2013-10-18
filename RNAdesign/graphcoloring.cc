@@ -12,6 +12,20 @@
 #include "graphcommon.h"
 #include "pathcoloring.h"
 
+std::size_t MyKeyHash::operator() (const MyKey& k) const {
+	// Start with 0 as a hash value   .
+	std::size_t hash = 0;
+	
+	for (auto elem : k) {
+		boost::hash_combine(hash, boost::hash_value(elem.first));
+		boost::hash_combine(hash, boost::hash_value(elem.second));
+	}
+	
+	return hash;
+}
+
+
+
 ProbabilityMatrix::ProbabilityMatrix (Graph& g) {
 	// get number of ears in this ear decomposition
 	BGL_FORALL_EDGES_T(e, g, Graph) {
@@ -47,19 +61,24 @@ ProbabilityMatrix::ProbabilityMatrix (Graph& g) {
 	std::set< int > Ai;
 	// now start at the outermost ear
 	unsigned int k = 0;
+
 	
+	// start at the outermost ear and process inwards
 	Graph::children_iterator ear, ear_end;
 	for (boost::tie(ear, ear_end) = (g).children(); ear != ear_end; ++ear) {
-		for (auto ap : Ak[k]) {
-			for (unsigned int b = 0; b < A_Size; b++) {
-				// Nk[A6][A10][A1] = sum(AUGC in inner Ap = 9) P[A6][x9][3 pathlength] * P[x9][A10][1] * Nk-1 [x9][A1]
-				// std::vector< std::map < unsigned int, std::array<unsigned long long, A_Size > > > n;
-				
-//				n[k][ap][b] = 0;
-				
-			}
-		}
+		// Nk[A6][A10][A1] = sum(AUGC in inner Ap = 9) P[A6][x9][3 pathlength] * P[x9][A10][1] * Nk-1 [x9][A1]
 		
+		std::vector<MyKey> key_combinations;		// this is what we want to fill next
+		MyKey mykey;					// helper to recursively build the posibilities
+		std::set<Vertex> ap = Ak[k];			// need to send a copy of the current Artikulation Points
+		
+		calculate_probabilities(ap, mykey, key_combinations);
+		
+		for (auto thiskey : key_combinations) {
+			unsigned long long probability = get_probability(thiskey, *ear, Ak[k], Ai);
+			if (probability != 0)
+				n[k][thiskey] = probability;
+		}
 		
 		// iterate over articulation points of this ear
 		// find out if this Aks are still Ak of next ear or if they are internal then (-> push into Ai)
@@ -79,6 +98,70 @@ ProbabilityMatrix::ProbabilityMatrix (Graph& g) {
 		// now going to next ear!
 		k++;
 	}
+}
+
+void ProbabilityMatrix::calculate_combinations(std::set<Vertex>& ap, MyKey& mykey, std::vector<MyKey>& key_combinations) {
+	
+	if (ap.size() > 0) {
+		std::set<Vertex>::iterator it=ap.begin();
+		Vertex v = *it;
+		ap.erase(it);
+		
+		for ( unsigned int b = 0; b < A_Size; b++ ) {
+			mykey.insert(std::make_pair<int,int>(v,b));
+			// recursion starts here
+			calculate_probabilities(ap, mykey);
+			
+			if (ap.size() == 0) {
+				// remember our generated key
+				key_combinations.push_back(mykey);
+			}
+			// remove current vertex again to make space for a new base
+			mykey.erase(v);
+		}
+		// add current vertex again
+		ap.insert(v);
+	}
+}
+
+unsigned long long ProbabilityMatrix::get_probability ( MyKey mykey, Graph& g, std::set<Vertex>& ap, std::set<Vertex>& ai) {
+	unsigned long long max_number_of_sequences = 0;	
+	
+	// Nk[A6][A10][A1] = sum(AUGC in inner Ap = 9) P[A6][x9][3 pathlength] * P[x9][A10][1] * Nk-1 [x9][A1]
+	BGL_FORALL_VERTICES_T(v, g, Graph) {
+		g[v].color = 0;
+	}
+	
+	// get Aks of this 
+	std::vertex<Vertex> thisaps;
+	for ( v : ap ) {
+		if (g.find_vertex(v).second) {
+			thisaps.push_back(v);
+		}
+	}
+		
+	int length;
+	Vertex v = thisaps[0];
+	while (v != thisaps[1];
+		v = get_length_to_next_internal_ap(g, length, v, ai);		
+	}
+	
+	
+	return max_number_of_sequences;
+}
+
+Vertex get_length_to_next_internal_ap(Graph& g, int& length, Vertex v, std::set<Vertex> ai) {
+	Vertex v;
+	
+	BGL_FORALL_ADJ_T(vertex, adj, g, Graph) {
+		if (g[adj].color == 0) {
+			g[adj].color = 1;
+			length++;
+			
+		}
+	}
+	
+	return v;
 }
 
 unsigned long long ProbabilityMatrix::get(unsigned int k, unsigned int a, unsigned int b) {
@@ -110,7 +193,7 @@ unsigned long long ProbabilityMatrix::get(unsigned int k, unsigned int a) {
 void color_graph (Graph& graph) {
 	// root graph
 	
-	// reset basese to X
+	// reset bases to X
 	reset_colors(graph);
 	
 	Graph::children_iterator cc, cc_end;
@@ -143,8 +226,7 @@ void color_graph (Graph& graph) {
 
 void color_blocks (Graph& g) {
 	// start with filling the matrix
-	
-	
+	ProbabilityMatrix pm(g);
 	
 	// backtracing
 }
