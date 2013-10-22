@@ -9,11 +9,8 @@
 *
 */
 
-// Include Boost.Test
-#define BOOST_TEST_MODULE Test_Addition
-#include <boost/test/unit_test.hpp>
-
 // include header
+#include "../printgraph.h"
 #include "../pathcoloring.h"
 #include "../common.h"
 #include <random>
