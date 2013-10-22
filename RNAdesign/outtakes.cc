@@ -130,3 +130,9 @@ void change_spanning_tree(Graph& g, std::mt19937& r, std::map<Vertex, Vertex>& p
 		other = v;
 	}
 }
+
+
+/// outtake from decompose.cc
+
+
+

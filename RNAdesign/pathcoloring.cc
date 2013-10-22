@@ -165,7 +165,7 @@ unsigned long long generate_path_seq (Sequence& sequence, int first, int last, i
 			}
 		}
 		
-		// get a rando number between 0 and the max number of seq [0,nos).
+		// get a random number between 0 and the max number of seq [0,nos).
 		float random = dist(rand_gen);
 		
 		// stochastically take one of the posibilities
@@ -284,7 +284,7 @@ unsigned long long color_path_cycle_graph (Graph& g) {
 	}
 	
 	if (ends.size() == 2) {
-		// it is a phath!
+		// it is a path!
 		// check if any of the non-end vertices have assigend colors
 		if (colored_bases.size() > 0) {
 			std::cerr << std::endl << "This path already is partly colored in between. I can't color this!" << std::endl;

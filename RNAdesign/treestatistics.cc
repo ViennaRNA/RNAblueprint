@@ -56,6 +56,32 @@ void do_spanning_tree_stat (Graph& g, int num_trees) {
 	}
 }
 
+void color_Ak_points (Graph& g) {
+	// iterate over all vertices and compare the ear numbers of its out-edges.
+	// push the right ear number into the vertex property Ak vector
+	std::vector< int > earnumbers;
+	BGL_FORALL_VERTICES_T(v, g, Graph) {
+		// clear previous stored Articulation Points
+		g[v].Ak.clear();
+		// reset earnumbers
+		earnumbers.clear();
+		BGL_FORALL_OUTEDGES_T(v, e, g, Graph) {
+			// compare this new earnumber to all the others
+			for (auto numb : earnumbers) {
+				if (g[e].ear < numb) {
+					g[v].Ak.insert(g[e].ear);
+				} else if (g[e].ear > numb) {
+					g[v].Ak.insert(numb);
+					earnumbers.push_back(g[e].ear);
+				}
+			}
+			if (earnumbers.size() == 0)			// always save the first outedge-earnumber
+				earnumbers.push_back(g[e].ear);		// save the current earnumber to the others
+		}
+		
+	}
+}
+
 std::pair< unsigned int, unsigned int > calculate_alpha_beta(Graph& g, std::vector<Edge>& crossedges, std::map<int, std::vector<Vertex> >& Ak) {
 	
 	// structure to remember Ak (attachment vertices)

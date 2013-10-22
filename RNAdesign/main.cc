@@ -82,7 +82,7 @@ int main(int ac, char* av[]) {
 	}
 	
 	while (number_of_designs > 0) {
-		color_graph(graph);				// color the graph!
+		color_graph(graph);					// color the graph!
 		*out << get_sequence(graph) << std::endl;		// extract the sequence from the graph
 		number_of_designs--;
 	}

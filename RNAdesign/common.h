@@ -42,6 +42,7 @@ struct vertex_property {
 	int bipartite_color = 0;
 	int color = 0;
 	std::set< int > Ak;
+	int Ai = 0;
 	int base = X;
 };
 

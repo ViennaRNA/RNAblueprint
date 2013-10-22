@@ -56,13 +56,13 @@ class ProbabilityMatrix {
 		// calculate all the key probabilities and start more from there
 		void calculate_probabilities(std::set<Vertex>& ap, MyKey& k);
 		// calculates all base combinations for current articulation points (recursion)
-		void calculate_combinations(std::set<Vertex>& ap, MyKey& mykey, std::vector<MyKey>& key_combinations);
+		void calculate_combinations(Graph& g, std::set<Vertex>& ap, MyKey& mykey, std::vector<MyKey>& key_combinations);
 		// actually calculate the probability for the given key
 		unsigned long long get_probability ( MyKey mykey, Graph& g, std::set<Vertex> ap, std::set<Vertex>& ai, Pairing& p, unsigned int k);
 		// this function walks through an ear and returns the lengths and the stop articulation vertex (internal or final one)
 		std::pair<Vertex, int> get_length_to_next_ap(Graph& g, Vertex start, std::set<Vertex>& ai);
 		// recursion to get base combinations done in (sum over AUGC in 6) of (sum over AUGC in 10) of ...
-		void make_sum_of_sum( std::set<Vertex>& ai, MyKey& mykey, MyKey& lastkey, std::vector<SubProbability>& sub_probabilities, Pairing& p, unsigned int k, unsigned long long& max_number_of_sequences);
+		void make_sum_of_sum( Graph& g, std::set<Vertex>& ai, MyKey& mykey, MyKey& lastkey, std::vector<SubProbability>& sub_probabilities, Pairing& p, unsigned int k, unsigned long long& max_number_of_sequences);
 		// get the color of either mykey or lastkey.
 		int get_color_from_key(MyKey& mykey, MyKey& lastkey, Vertex v);
 };

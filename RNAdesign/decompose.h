@@ -71,7 +71,13 @@ std::pair<Vertex, int> get_lca_distance(Graph& g, std::map<Vertex, Vertex>& pare
 std::vector<Vertex> make_tree_walk(std::map<Vertex, Vertex>& parents, Vertex v, Vertex r);
 
 // identify articulation points and add them as graph property Ak
-void color_Ak_points (Graph& g);
+void color_articulation_points (Graph& g);
+
+// in an ear graph just get the degree of edges participating in this ear
+int degree_in_ear (Vertex& v, Graph& g, int k);
+
+// create subgraphs for paths between articulation points (for easier coloring afterwards)
+void parts_between_articulation_points_to_subgraphs (Graph& g, int k);
 
 // ear decomposition of blocks
 void ramachandran_ear_decomposition(Graph& g);

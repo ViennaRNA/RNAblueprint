@@ -43,7 +43,7 @@ ProbabilityMatrix::ProbabilityMatrix (Graph& g) {
 		if (max_length < tmp_length) { max_length = tmp_length; }
 	}
 	
-	// get Pairing matrix for path, TODO only initialize once for the whole program!
+	// get Pairing matrix for paths, TODO only initialize once for the whole program!
 	Pairing p(max_length+1);
 	
 	// iterate over all ear decomposition iterations 
@@ -56,6 +56,9 @@ ProbabilityMatrix::ProbabilityMatrix (Graph& g) {
 			}
 		}
 	}
+	
+	// for last ear, which is a cycle, add two times the same articulaiton point (begin and end!)
+	
 	
 	// to store inner Articulation Points
 	std::set< Vertex > Ai;
@@ -72,7 +75,7 @@ ProbabilityMatrix::ProbabilityMatrix (Graph& g) {
 		MyKey mykey;					// helper to recursively build the posibilities
 		std::set<Vertex> ap = Ak[k];			// need to send a copy of the current Artikulation Points
 		// now fill the key_combinations with all kinds of bases
-		calculate_combinations(ap, mykey, key_combinations);
+		calculate_combinations(g, ap, mykey, key_combinations);
 		
 		for (auto thiskey : key_combinations) {
 			unsigned long long probability = get_probability(thiskey, *ear, ap, Ai, p, k);
@@ -100,7 +103,7 @@ ProbabilityMatrix::ProbabilityMatrix (Graph& g) {
 	}
 }
 
-void ProbabilityMatrix::calculate_combinations(std::set<Vertex>& ap, MyKey& mykey, std::vector<MyKey>& key_combinations) {
+void ProbabilityMatrix::calculate_combinations(Graph& g, std::set<Vertex>& ap, MyKey& mykey, std::vector<MyKey>& key_combinations) {
 	
 	if (ap.size() > 0) {
 		std::set<Vertex>::iterator it=ap.begin();
@@ -108,9 +111,9 @@ void ProbabilityMatrix::calculate_combinations(std::set<Vertex>& ap, MyKey& myke
 		ap.erase(it);
 		
 		for ( unsigned int b = 0; b < A_Size; b++ ) {
-			mykey.insert(std::make_pair(v,b));
+			mykey.insert(std::make_pair(boost::get(boost::vertex_color_t(), g, v), b));
 			// recursion starts here
-			calculate_combinations(ap, mykey, key_combinations);
+			calculate_combinations(g, ap, mykey, key_combinations);
 			
 			if (ap.size() == 0) {
 				// remember our generated key
@@ -150,7 +153,7 @@ unsigned long long ProbabilityMatrix::get_probability ( MyKey mykey, Graph& g, s
 		} else {
 			// these articulation points are not in this particular ear, therefore we need to look their probability up
 			// from last time. so lets generate a key therefore			
-			lastkey.insert(std::make_pair(v,mykey[v]));
+			lastkey.insert(std::make_pair(boost::get(boost::vertex_color_t(), g, v), mykey[boost::get(boost::vertex_color_t(), g, v)]));
 		}
 	}
 	
@@ -177,12 +180,13 @@ unsigned long long ProbabilityMatrix::get_probability ( MyKey mykey, Graph& g, s
 	
 	// calculate sum of sum for all bases colored X (= internal aps)
 	// adds base combinatoric to the sub_probabilities and to the lastkey
-	make_sum_of_sum(ai, mykey, lastkey, sub_probabilities, p, k, max_number_of_sequences);
+	make_sum_of_sum(g, ai, mykey, lastkey, sub_probabilities, p, k, max_number_of_sequences);
 		
 	return max_number_of_sequences;
 }
 
-void ProbabilityMatrix::make_sum_of_sum(	std::set<Vertex>& ai, 
+void ProbabilityMatrix::make_sum_of_sum(	Graph& g,
+						std::set<Vertex>& ai, 
 						MyKey& mykey, MyKey& lastkey, 
 						std::vector<SubProbability>& sub_probabilities, 
 						Pairing& p,
@@ -196,9 +200,9 @@ void ProbabilityMatrix::make_sum_of_sum(	std::set<Vertex>& ai,
 		ai.erase(it);
 		
 		for ( unsigned int b = 0; b < A_Size; b++ ) {
-			lastkey.insert(std::make_pair(v,b));
+			lastkey.insert(std::make_pair(boost::get(boost::vertex_color_t(), g, v), b));
 			// recursion starts here
-			make_sum_of_sum(ai, mykey, lastkey, sub_probabilities, p, k, max_number_of_sequences);
+			make_sum_of_sum(g, ai, mykey, lastkey, sub_probabilities, p, k, max_number_of_sequences);
 			
 			if (ai.size() == 0) {
 				// do the actual calculation here!
@@ -259,11 +263,11 @@ std::pair<Vertex, int> ProbabilityMatrix::get_length_to_next_ap(Graph& g, Vertex
 		}
 		// if the current vertex is a internal articulation point, return length and this vertex
 		if (ai.find(start) != ai.end()) {
-			return std::make_pair(start, length);
+			return std::make_pair(boost::get(boost::vertex_color_t(), g, start), length);
 		}
 	}
 	// return final length and vertex
-	return std::make_pair(start, length);
+	return std::make_pair(boost::get(boost::vertex_color_t(), g, start), length);
 }
 
 unsigned long long ProbabilityMatrix::get(unsigned int k, unsigned int a, unsigned int b) {
@@ -328,7 +332,7 @@ void color_graph (Graph& graph) {
 
 void color_blocks (Graph& g) {
 	// start with filling the matrix
-	ProbabilityMatrix pm(g);
+	//ProbabilityMatrix pm(g);
 	
 	// backtracing
 }
