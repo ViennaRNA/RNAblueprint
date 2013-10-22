@@ -398,7 +398,7 @@ int degree_in_ear (Vertex& v, Graph& g, int k) {
 	}
 	return degree;
 }
-
+// TODO this is doing wrong, no idea why. need to debug!
 void parts_between_articulation_points_to_subgraphs (Graph& g, int k) {
 	
 	// vertex to start our walk
