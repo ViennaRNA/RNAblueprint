@@ -1,25 +1,28 @@
 # vars
 CC = g++
 LL = g++
-EXE = RNAdesign
+EXE = testRNAdesign
+ARGS = --log_level=test_suite
 LIBS = -lstdc++
-LDFLAGS = -lboost_program_options
+LDFLAGS = -lboost_unit_test_framework
 DEFS =
 WARN = -Wall
 OPTI = -g
 STD  = -std=c++11
 CCFLAGS = $(WARN) $(STD) $(OPTI) $(DEFS) $(LIBS)
-CSRC = common.cc graphcommon.cc printgraph.cc decompose.cc treestatistics.cc parsestruct.cc pathcoloring.cc graphcoloring.cc main.cc
+CTSRC = main.cc test_pathcoloring.cc
+CPSRC = ../common.cc ../graphcommon.cc ../printgraph.cc ../decompose.cc ../treestatistics.cc ../parsestruct.cc ../pathcoloring.cc ../graphcoloring.cc
+CSRC = $(CTSRC) $(CPSRC)
 COBJ = $(CSRC:.cc=.o)
 # rules
 all: $(EXE)
-	@echo RNAdesign has been compiled
+	@echo testRNAdesign has been compiled
 $(EXE): $(COBJ)
 	$(CC) $(CCFLAGS) $(LDFLAGS) -o $(EXE) $(COBJ) 
 .cc.o:
 	$(CC) -c $(CCFLAGS) $< -o $@
 run:	$(EXE)
-	./$(EXE)
+	./$(EXE) $(ARGS)
 clean:
 	rm -f $(COBJ)
 	rm -f $(EXE)

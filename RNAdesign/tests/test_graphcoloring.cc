@@ -13,7 +13,7 @@
 #include "test_common.h"
 
 // include headers containing functions to test
-#include "../pathcoloring.h"
+#include "../graphcoloring.h"
 
 // define heads
 namespace PathColoring {
@@ -31,50 +31,7 @@ namespace PathColoring {
 	void reset (Graph& g);
 }
 
-BOOST_AUTO_TEST_SUITE(PathColoring)
-
-TestCase::TestCase(int first, int last, int length, int nos, Sequence sequence) {
-	this->first = first;
-	this->last = last;
-	this->length = length;
-	this->nos = nos;
-	this->sequence = sequence;
-}
-
-BOOST_AUTO_TEST_CASE(generatePathSeq) {
-	// set random generator to a static seed;
-	rand_gen.seed(1);
-	
-	std::vector < TestCase > testcases;
-	testcases.push_back(TestCase(G, G, 2, 2, {G, U, G}));
-	testcases.push_back(TestCase(X, G, 3, 5, {C, G, U, G}));
-	testcases.push_back(TestCase(C, X, 4, 5, {C, G, C, G, U}));
-	testcases.push_back(TestCase(X, X, 1, 6, {A, U}));
-	testcases.push_back(TestCase(X, X, 5, 42, {A, U, A, U, G, C}));
-	testcases.push_back(TestCase(-1,A, 6, 5, {A, U, G, U, A, U}));
-	testcases.push_back(TestCase(-1,G, 6, 13, {G, U, G, C, G, U}));
-	testcases.push_back(TestCase(-1,X, 4, 8, {G, C, G, U}));
-	
-	for (auto t : testcases) {
-		// Variables needed for this function
-		int nos;
-		Sequence sequence;
-		// tell the user what is going on right now
-		std::stringstream ss;
-		ss << "Checking Sequence (" << enum_to_char(t.first) << ", " 
-			<< enum_to_char(t.last) << ", " << t.length << ")";
-		BOOST_TEST_MESSAGE(ss.str());
-		
-		if (t.first >= 0) {
-			nos = generate_path_seq (sequence, t.first, t.last, t.length);
-		} else {
-			nos = generate_cycle_seq (sequence, t.last, t.length);
-		}
-		// do the comarison of the results
-		BOOST_CHECK(sequence == t.sequence);	
-		BOOST_CHECK(nos == t.nos);
-	}
-}
+BOOST_AUTO_TEST_SUITE(GraphColoring)
 
 Sequence get_vertex_colors(Graph& g) {
 	Sequence sequence;
