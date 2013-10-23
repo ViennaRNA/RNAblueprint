@@ -7,8 +7,8 @@
 *
 */
 
-#ifndef BOOSTTEST_H
-#define BOOSTTEST_H
+#ifndef TESTCOMMON_H
+#define TESTCOMMON_H
 
 // include common header with graph definition and global variables
 #include "../common.h"
@@ -20,9 +20,5 @@
 #include <boost/test/unit_test.hpp>
 
 // typedefs
-
-//declare global variables
-bool debug = false;
-std::string outfile;
 
 #endif
