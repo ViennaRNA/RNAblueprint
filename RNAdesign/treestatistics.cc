@@ -10,7 +10,8 @@
 // include header
 #include "treestatistics.h"
 
-
+// include boost macro
+#include <boost/graph/iteration_macros.hpp>
 
 void do_spanning_tree_stat (Graph& g, int num_trees) {
 		

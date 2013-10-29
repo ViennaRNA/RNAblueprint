@@ -16,7 +16,7 @@
 #include "../graphcoloring.h"
 
 // define heads
-namespace PathColoring {
+namespace Decompose {
 	class TestCase {
 		public:
 			TestCase(int first, int last, int length, int nos, Sequence sequence);
