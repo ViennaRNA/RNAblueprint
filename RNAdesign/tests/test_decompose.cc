@@ -13,23 +13,12 @@
 #include "test_common.h"
 
 // include headers containing functions to test
-#include "../graphcoloring.h"
+#include "../decompose.h"
+
+// include boost components
+#include <boost/graph/iteration_macros.hpp>
 
 // define heads
-namespace PathColoring {
-	class TestCase {
-		public:
-			TestCase(int first, int last, int length, int nos, Sequence sequence);
-			int first;
-			int last;
-			int length;
-			int nos;
-			Sequence sequence;
-	};
-	
-	Sequence get_vertex_colors(Graph& g);
-	void reset (Graph& g);
-}
 
 BOOST_AUTO_TEST_SUITE(Decompose)
 
@@ -41,73 +30,84 @@ Sequence get_vertex_colors(Graph& g) {
 	return sequence;
 }
 
-void reset (Graph& g) {
-	// reset color
-	BGL_FORALL_VERTICES_T(v, g, Graph) {
-		g[v].base = X;
-	}
-}
-
-BOOST_AUTO_TEST_CASE(colorPathGraph) {
-	// set random generator to a static seed;
-	rand_gen.seed(1);
-	// create a graph
-	Graph g(10);
+Graph createGraph() {
+	Graph g(14);
 	int vertex_name = 0;	
 	BGL_FORALL_VERTICES_T(v, g, Graph) {
 		boost::put(boost::vertex_color_t(), g, v, vertex_name++);
 	}
-	for (unsigned int i = 0; i < boost::num_vertices(g)-1; i++) {
+	
+	// create a path between 0 and 10
+	for (unsigned int i = 0; i < 10; i++) {
 		boost::add_edge(boost::vertex(i,g), boost::vertex(i+1,g), g);
 	}
 	
-	// color this graph!
-	BOOST_TEST_MESSAGE("color path-graph");
-	color_path_cycle_graph (g);
-	//print_graph(g, out, "path");
-	Sequence sequence {U, G, C, G, U, A, U, G, U, A};
-	BOOST_CHECK(sequence == get_vertex_colors(g));
+	// create a block
+	boost::add_edge(boost::vertex(0,g), boost::vertex(11,g), g);
+	boost::add_edge(boost::vertex(2,g), boost::vertex(11,g), g);
+	boost::add_edge(boost::vertex(6,g), boost::vertex(11,g), g);
+	// add a connected component
+	boost::add_edge(boost::vertex(12,g), boost::vertex(13,g), g);
 	
-	// color first base and try all over again
-	BOOST_TEST_MESSAGE("path_starts_A");
-	reset(g);
-	g[boost::vertex(0,g)].base = A;
-	color_path_cycle_graph (g);
-	Sequence sequence1 {A, U, G, U, G, U, G, U, G, C};
-	BOOST_CHECK(sequence1 == get_vertex_colors(g));
+	/* graph looks like this now (block plus path as biconnected component and connected component):
+		5---6---7---8---9---10
+		|   |   |
+		4  11---0
+		|   |   |
+		3---2---1      12---13
+	*/
+	return g;
+}
+
+
+BOOST_AUTO_TEST_CASE(connectedComponents) {
+
+	// create a graph
+	Graph g = createGraph();
+	BOOST_TEST_MESSAGE("decompose connected components");
+	connected_components_to_subgraphs(g);
 	
-	// color first base and try all over again
-	BOOST_TEST_MESSAGE("path_ends_U");
-	reset(g);
-	g[boost::vertex(boost::num_vertices(g),g)].base = U;
-	color_path_cycle_graph (g);
-	Sequence sequence2 {C, G, U, G, U, A, U, G, U, A};
-	BOOST_CHECK(sequence2 == get_vertex_colors(g));
+	int number_of_children = 0;
 	
-	// color both ends and try all over again
-	BOOST_TEST_MESSAGE("path_ends_AG");
-	reset(g);
-	g[boost::vertex(0,g)].base = A;
-	g[boost::vertex(boost::num_vertices(g),g)].base = G;
-	color_path_cycle_graph (g);
-	Sequence sequence3 {A, U, G, C, G, U, G, U, A, U};
-	BOOST_CHECK(sequence3 == get_vertex_colors(g));
+	Graph::children_iterator child, child_end;
+	for (boost::tie(child, child_end) = g.children(); child != child_end; ++child) {
+		number_of_children++;
+		// for the smaller connected component (12---13)
+		if (boost::num_vertices(*child) == 2) {
+			// check if both vertices exist and are labeled right
+			BOOST_CHECK(boost::get(boost::vertex_color_t(), *child, 0) == 12);
+			BOOST_CHECK(boost::get(boost::vertex_color_t(), *child, 1) == 13);
+			// check if just one edge exists here
+			BOOST_CHECK(boost::num_edges(*child) == 1);
+		}
+	}
+	// check if it is just 2 connected components
+	BOOST_CHECK(number_of_children == 2);
+}
+
+BOOST_AUTO_TEST_CASE(biconnectedComponents) {
+
+/*
+	BOOST_TEST_MESSAGE("decompose biconnected components");
+	biconnected_components_to_subgraphs(g);
 	
-	// make a cycle and color this cycle!
-	BOOST_TEST_MESSAGE("cycle");
-	reset(g);
-	boost::add_edge(boost::vertex(0,g), boost::vertex(boost::num_vertices(g)-1,g), g);
-	color_path_cycle_graph (g);
-	Sequence sequence4 {C, G, C, G, C, G, C, G, U, G};
-	BOOST_CHECK(sequence4 == get_vertex_colors(g));
+	int number_of_children = 0;
 	
-	// set one base and color again this cycle
-	BOOST_TEST_MESSAGE("cycle_starts_G");
-	reset(g);
-	g[boost::vertex(5,g)].base = G;
-	color_path_cycle_graph (g);
-	Sequence sequence5 {C, G, C, G, U, G, U, G, C, G};
-	BOOST_CHECK(sequence5 == get_vertex_colors(g));
+	Graph::children_iterator child, child_end;
+	for (boost::tie(child, child_end) = g.children(); child != child_end; ++child) {
+		number_of_children++;
+		// for the smaller connected component (12---13)
+		if (boost::num_vertices(*child) == 2) {
+			// check if both vertices exist and are labeled right
+			BOOST_CHECK(boost::get(boost::vertex_color_t(), *child, 0) == 12);
+			BOOST_CHECK(boost::get(boost::vertex_color_t(), *child, 1) == 13);
+			// check if just one edge exists here
+			BOOST_CHECK(boost::num_edges(*child) == 1);
+		}
+	}
+	// check if it is just 2 connected components
+	BOOST_CHECK(number_of_children == 2);
+*/
 }
 
 BOOST_AUTO_TEST_SUITE_END()
