@@ -19,6 +19,23 @@
 #include <boost/graph/iteration_macros.hpp>
 
 // define heads
+<<<<<<< HEAD
+=======
+namespace Decompose {
+	class TestCase {
+		public:
+			TestCase(int first, int last, int length, int nos, Sequence sequence);
+			int first;
+			int last;
+			int length;
+			int nos;
+			Sequence sequence;
+	};
+	
+	Sequence get_vertex_colors(Graph& g);
+	void reset (Graph& g);
+}
+>>>>>>> 30105234d0a84fdf40003a593b66b603e2079a67
 
 BOOST_AUTO_TEST_SUITE(Decompose)
 
