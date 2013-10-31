@@ -52,8 +52,11 @@ void decompose_graph(Graph& graph, std::ostream* out, int num_trees, bool ramach
 // get a vector of all vertices with their component id. finds connected components with DFS
 void connected_components_to_subgraphs(Graph& g);
 
-// finds connected components with DFS
+// finds biconnected components with DFS
 void biconnected_components_to_subgraphs(Graph& g);
+
+// starts at a degree>3 articulation point and walks along a path to connect it to one component
+void merge_biconnected_paths(Graph& g, Vertex p, Vertex v, boost::property_map < Graph, boost::edge_component_t >::type& component, std::vector<Vertex>& art_points, int& nc);
 
 // do a schieber ear decomposition without any statistics
 void schieber_ear_decomposition (Graph& g);

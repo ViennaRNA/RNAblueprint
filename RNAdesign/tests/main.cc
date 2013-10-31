@@ -15,5 +15,5 @@
 
 #include "test_common.h"
 
-bool debug = false;
+bool debug = true;
 std::string outfile;

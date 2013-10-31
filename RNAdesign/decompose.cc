@@ -147,38 +147,71 @@ void biconnected_components_to_subgraphs(Graph& g) {
 	}
 	
 	if (debug) {
-		// get graph and iterate over its edges to print connected components table
-		typename Graph::edge_iterator ei, ei_end;
-		for (boost::tie(ei, ei_end) = boost::edges(g); ei != ei_end; ++ei) {
-			std::cerr << *ei << "\t" <<  "(" << boost::get(boost::vertex_color_t(), g, boost::source(*ei, g)) << "," 
-			<< boost::get(boost::vertex_color_t(), g, boost::target(*ei, g))<< ")" 
-			<< "\tcomponent: " << component[*ei] << std::endl;
+		// iterate over all graph edges to print connected components table
+		BGL_FORALL_EDGES_T(e, g, Graph) {
+			std::cerr << e << "\t" <<  "(" << boost::get(boost::vertex_color_t(), g, boost::source(e, g)) << "," 
+			<< boost::get(boost::vertex_color_t(), g, boost::target(e, g))<< ")" 
+			<< "\tcomponent: " << component[e] << std::endl;
 		}
 	}
 	
-	// now need to merge biconnected components that are separated by a articulation point that has a degree == 2 ?!
-	
-	// write biconnected components into subgraphs:
-	for (unsigned int i = 0; i != num; i++) {
-		// for each bicomponent number generate a new subgraph
-		Graph& subg = g.create_subgraph();
-		//boost::put(&graph_properties::level, g, "biconnected_component");
-		// iterate over edges of graph
-		//Graph rg = g.root();
-		typename Graph::edge_iterator ei, ei_end;
-		for (boost::tie(ei, ei_end) = boost::edges(g); ei != ei_end; ++ei) {
-			if (i == component[*ei]) {
-				// add vertex into current subgraph if not present already
-				if (!subg.find_vertex(boost::get(boost::vertex_color_t(), g, boost::target(*ei, g))).second) {
-					boost::add_vertex(boost::get(boost::vertex_color_t(), g, boost::target(*ei, g)), subg);
-				}
-				if (!subg.find_vertex(boost::get(boost::vertex_color_t(), g, boost::source(*ei,g))).second) {
-					boost::add_vertex(boost::get(boost::vertex_color_t(), g, boost::source(*ei,g)), subg);
+	// now need to merge biconnected components that are separated by a articulation point that has a degree == 2 !
+	for (auto v : art_points) {
+		if (boost::degree(v, g) > 2) {
+			BGL_FORALL_ADJ_T(v, adj, g, Graph) {
+				if ((boost::degree(adj, g) == 2) 
+				&& (std::find(art_points.begin(), art_points.end(), adj) != art_points.end())) {
+					int nc = -1;
+					merge_biconnected_paths(g, v, adj, component, art_points, nc);
 				}
 			}
 		}
 	}
 	
+	// write biconnected components into subgraphs:
+	for (unsigned int i = 0; i != num; i++) {
+		// only create a subgraph if there is really an edge associated to this component (as we merged many components before)
+		bool exists = false;
+		BGL_FORALL_EDGES_T(e, g, Graph) {
+			if (i == component[e])
+				exists = true;
+		}
+		if (!exists)
+			continue;
+		
+		// for this bicomponent number generate a new subgraph
+		Graph& subg = g.create_subgraph();
+		//boost::put(&graph_properties::level, g, "biconnected_component");
+		// iterate over edges of graph
+		//Graph rg = g.root();
+		BGL_FORALL_EDGES_T(e, g, Graph) {
+			if (i == component[e]) {
+				// add vertex into current subgraph if not present already
+				if (!subg.find_vertex(boost::get(boost::vertex_color_t(), g, boost::target(e, g))).second) {
+					boost::add_vertex(boost::get(boost::vertex_color_t(), g, boost::target(e, g)), subg);
+				}
+				if (!subg.find_vertex(boost::get(boost::vertex_color_t(), g, boost::source(e,g))).second) {
+					boost::add_vertex(boost::get(boost::vertex_color_t(), g, boost::source(e,g)), subg);
+				}
+			}
+		}
+	}
+	
+}
+
+void merge_biconnected_paths(Graph& g, Vertex p, Vertex v, boost::property_map < Graph, boost::edge_component_t >::type& component, std::vector<Vertex>& art_points, int& nc) {
+	BGL_FORALL_OUTEDGES_T(v, e, g, Graph) {
+		if (nc == -1)
+			nc = component[e];
+		else
+			component[e] = nc;
+	}
+	
+	BGL_FORALL_ADJ_T(v, adj, g, Graph) {
+		if ((adj != p) && (boost::degree(adj, g) == 2) 
+		&& (std::find(art_points.begin(), art_points.end(), adj) != art_points.end()))
+			merge_biconnected_paths(g, v, adj, component, art_points, nc);
+	}
 }
 
 void schieber_ear_decomposition (Graph& g) {
