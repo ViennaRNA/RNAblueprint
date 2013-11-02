@@ -205,4 +205,8 @@ BOOST_AUTO_TEST_CASE(schieberEarDecomposition) {
 	BOOST_CHECK(number_of_children == 3);
 }
 
+BOOST_AUTO_TEST_CASE(partsBetweenArticulationPoints) {
+	// TODO write a testfunction for partsbetween articulation points and fix this function!
+}
+
 BOOST_AUTO_TEST_SUITE_END()
