@@ -1,5 +1,4 @@
-/* This program reads secundary RNA structures in dot-bracket and
-* builds a graph for a latter ear-decomposition and bipartitness-check
+/* C++ Unit test common header file
 *
 * Created on: 23.10.2013
 * Author: Stefan Hammer <s.hammer@univie.ac.at>
@@ -15,10 +14,14 @@
 
 // include standard library parts
 #include <sstream>
+#include <unordered_set>
 
 // include boost components
 #include <boost/test/unit_test.hpp>
 
 // typedefs
+
+// functions
+// std::unordered_set<int> getVertexSet(Graph g);
 
 #endif

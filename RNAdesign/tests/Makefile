@@ -10,7 +10,7 @@ WARN = -Wall
 OPTI = -g
 STD  = -std=c++11
 CCFLAGS = $(WARN) $(STD) $(OPTI) $(DEFS) $(LIBS)
-CTSRC = main.cc test_pathcoloring.cc test_graphcoloring.cc test_decompose.cc
+CTSRC = main.cc test_pathcoloring.cc test_graphcoloring.cc test_decompose.cc test_parsestruct.cc
 CPSRC = ../common.cc ../graphcommon.cc ../printgraph.cc ../decompose.cc ../treestatistics.cc ../parsestruct.cc ../pathcoloring.cc ../graphcoloring.cc
 CSRC = $(CTSRC) $(CPSRC)
 COBJ = $(CSRC:.cc=.o)

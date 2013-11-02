@@ -17,7 +17,6 @@
 #include "../printgraph.h"
 
 // include std components
-#include <unordered_set>
 
 // include boost components
 #include <boost/graph/iteration_macros.hpp>
@@ -66,7 +65,7 @@ Graph createGraph(int type) {
 		boost::add_edge(boost::vertex(12,g), boost::vertex(13,g), g);
 	}
 	
-	/* graph looks like this now (block plus path as biconnected component and connected component):
+	/* full graph looks like this now (block plus path as biconnected component and connected component):
 		5---6---7---9---10---11
 		|   |   |
 		4   8---0
@@ -74,6 +73,14 @@ Graph createGraph(int type) {
 		3---2---1       12---13
 	*/
 	return g;
+}
+
+std::unordered_set<int> getVertexSet(Graph g) {
+	std::unordered_set<int> result;
+	BGL_FORALL_VERTICES(v, g, Graph) {
+			result.insert(boost::get(boost::vertex_color_t(), g, v));
+		}
+	return result;
 }
 
 
@@ -100,14 +107,6 @@ BOOST_AUTO_TEST_CASE(connectedComponents) {
 	}
 	// check if it is just 2 connected components
 	BOOST_CHECK(number_of_children == 2);
-}
-
-std::unordered_set<int> getVertexSet(Graph g) {
-	std::unordered_set<int> result;
-	BGL_FORALL_VERTICES(v, g, Graph) {
-			result.insert(boost::get(boost::vertex_color_t(), g, v));
-		}
-	return result;
 }
 
 BOOST_AUTO_TEST_CASE(biconnectedComponents) {
