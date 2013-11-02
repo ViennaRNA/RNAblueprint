@@ -134,6 +134,7 @@ BOOST_AUTO_TEST_CASE(biconnectedComponents) {
 	}
 	// check if it is just 2 connected components
 	BOOST_CHECK(number_of_children == 2);
+	
 	// ---------------------------------------------------------------
 	// do another one with 2 paths connected on the block
 	Graph h = createGraph(BC);
@@ -165,12 +166,15 @@ BOOST_AUTO_TEST_CASE(biconnectedComponents) {
 			BOOST_CHECK(boost::num_edges(*child) == 2);
 		}
 	}
-	// check if it is just 2 connected components
+	// check if it is just 3 connected components
 	BOOST_CHECK(number_of_children == 3);
 }
 
 BOOST_AUTO_TEST_CASE(schieberEarDecomposition) {
 
+	// set random generator to a static seed;
+	rand_gen.seed(1);
+	
 	// create a graph
 	Graph g = createGraph(ED);
 	BOOST_TEST_MESSAGE("decompose connected components");
@@ -181,17 +185,25 @@ BOOST_AUTO_TEST_CASE(schieberEarDecomposition) {
 	Graph::children_iterator child, child_end;
 	for (boost::tie(child, child_end) = g.children(); child != child_end; ++child) {
 		number_of_children++;
-		// for the smaller connected component (12---13)
+		// print_graph(*child, &std::cout, "ed");
+		// for the smallest ear (6---8)
 		if (boost::num_vertices(*child) == 2) {
 			// check if both vertices exist and are labeled right
-			BOOST_CHECK(boost::get(boost::vertex_color_t(), *child, 0) == 12);
-			BOOST_CHECK(boost::get(boost::vertex_color_t(), *child, 1) == 13);
+			std::unordered_set<int> testcase {6, 8};			
+			BOOST_CHECK(getVertexSet(*child) == testcase);
 			// check if just one edge exists here
 			BOOST_CHECK(boost::num_edges(*child) == 1);
+		// for the last cycle
+		} else if (boost::num_vertices(*child) == 4) {
+			// check if both vertices exist and are labeled right
+			std::unordered_set<int> testcase1 {1, 0, 2, 8};			
+			BOOST_CHECK(getVertexSet(*child) == testcase1);
+			// check if just one edge exists here
+			BOOST_CHECK(boost::num_edges(*child) == 4);
 		}
 	}
 	// check if it is just 2 connected components
-	BOOST_CHECK(number_of_children == 2);
+	BOOST_CHECK(number_of_children == 3);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
