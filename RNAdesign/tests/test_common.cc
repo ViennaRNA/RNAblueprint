@@ -9,7 +9,7 @@
 #include "test_common.h"
 
 /*
-std::unordered_set<int> getVertexSet(Graph g) {
+std::unordered_set<int> getVertexSet(Graph& g) {
 	std::unordered_set<int> result;
 	BGL_FORALL_VERTICES(v, g, Graph) {
 			result.insert(boost::get(boost::vertex_color_t(), g, v));
@@ -17,3 +17,5 @@ std::unordered_set<int> getVertexSet(Graph g) {
 	return result;
 }
 */
+
+

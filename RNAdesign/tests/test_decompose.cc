@@ -16,8 +16,6 @@
 #include "../decompose.h"
 #include "../printgraph.h"
 
-// include std components
-
 // include boost components
 #include <boost/graph/iteration_macros.hpp>
 
@@ -75,11 +73,11 @@ Graph createGraph(int type) {
 	return g;
 }
 
-std::unordered_set<int> getVertexSet(Graph g) {
+std::unordered_set<int> getVertexSet(Graph& g) {
 	std::unordered_set<int> result;
 	BGL_FORALL_VERTICES(v, g, Graph) {
-			result.insert(boost::get(boost::vertex_color_t(), g, v));
-		}
+		result.insert((int) boost::get(boost::vertex_color_t(), g, v));
+	}
 	return result;
 }
 
@@ -192,6 +190,10 @@ BOOST_AUTO_TEST_CASE(schieberEarDecomposition) {
 			BOOST_CHECK(getVertexSet(*child) == testcase);
 			// check if just one edge exists here
 			BOOST_CHECK(boost::num_edges(*child) == 1);
+			// check if this is the ear number 0 for all edges
+			BGL_FORALL_EDGES(e, *child, Graph) {
+				BOOST_CHECK((*child)[e].ear == 0);
+			}
 		// for the last cycle
 		} else if (boost::num_vertices(*child) == 4) {
 			// check if both vertices exist and are labeled right
@@ -199,14 +201,21 @@ BOOST_AUTO_TEST_CASE(schieberEarDecomposition) {
 			BOOST_CHECK(getVertexSet(*child) == testcase1);
 			// check if just one edge exists here
 			BOOST_CHECK(boost::num_edges(*child) == 4);
+			// check if this is the ear number 0 for all edges
+			BGL_FORALL_EDGES(e, *child, Graph) {
+				BOOST_CHECK((*child)[e].ear == 2);
+			}
 		}
 	}
-	// check if it is just 2 connected components
+	// check if it is just 3 connected components
 	BOOST_CHECK(number_of_children == 3);
 }
 
 BOOST_AUTO_TEST_CASE(partsBetweenArticulationPoints) {
-	// TODO write a testfunction for partsbetween articulation points and fix this function!
+	// TODO write a testfunction for parts between articulation points and fix this function!
+	// parts_between_articulation_points_to_subgraphs (Graph& g, int k);
+	
+	
 }
 
 BOOST_AUTO_TEST_SUITE_END()
