@@ -82,13 +82,12 @@ void decompose_graph(Graph& graph, std::ostream* out, int num_trees, bool ramach
 						Graph::children_iterator ear, ear_end;
 						for (boost::tie(ear, ear_end) = (*bc).children(); ear != ear_end; ++ear) {
 							
-							parts_between_articulation_points_to_subgraphs (*ear, k);
+							parts_between_articulation_points_to_subgraphs (*ear, k++);
 							if (debug) {
 								*out << "parts between articulation points of ear:" << std::endl;
 								// print the just created subgraphs
 								print_subgraphs(*ear, out, "articulatoin-point-parts");
 							}
-							k++;
 						}
 					}
 				}
@@ -434,63 +433,68 @@ int degree_in_ear (Vertex& v, Graph& g, int k) {
 // TODO this is doing wrong, no idea why. need to debug!
 void parts_between_articulation_points_to_subgraphs (Graph& g, int k) {
 	
-	// vertex to start our walk
+	// reset edge colors
+	BGL_FORALL_EDGES_T(e, g, Graph) {
+		g[e].color = 0;
+	}
+	
+	// find vertex to start our walk
 	Vertex start;
+	Vertex firstAi; // in case of a cycle take this as start!
 	bool is_cycle = true;
 	BGL_FORALL_VERTICES_T(v, g, Graph) {
-		//reset color
+		// reset color
 		g[v].color = 0;
 		// if degree is one, it is an end
 		if (degree_in_ear(v, g, k) == 1) {
 			start = v;
 			is_cycle = false;
-			// taint start vertex
-			g[start].color = 1;
+			break;
+		} else if (g[v].Ai == k) {
+			firstAi = v;
 		}
 	}
-	// in case of a cycle, we just assign a random start and taint it 2
+	// in case of the last cycle, we find a Ai to start and taint it 2
 	if (is_cycle) {
-		start = boost::vertex((boost::num_vertices(g)-1), g);
+		start = firstAi;
 		g[start].color = 2;
 	}
 	
-	// create a new subgraph
-	Graph& subg = g.create_subgraph();
+	if (debug) { std::cerr << "start is: " << boost::get(boost::vertex_color_t(), g, start) << std::endl; }
+	// create a new subgraph and a
+	// pointer which always points to the newest subgraph added
+	Graph *subgptr = &g.create_subgraph();
 	// add start vertex to subgraph
-	boost::add_vertex(boost::get(boost::vertex_color_t(), g, start), subg);
+	boost::add_vertex(boost::get(boost::vertex_color_t(), g, start), *subgptr);
 	// bool to see if we reached our end
 	bool end_reached = false;
 	
 	while(!end_reached) {
-		std::cerr << "start is: " << boost::get(boost::vertex_color_t(), g, start) << std::endl;
-		BGL_FORALL_ADJ_T(start, adj, g, Graph) {
+		BGL_FORALL_OUTEDGES_T(start, edge, g, Graph) {
 			// if this edge does not belong to our ear, continue to next one
-			if (g[boost::edge(start,adj,g).first].ear != k) {
+			if (g[edge].ear != k) {
 				continue;
 			}
 			
 			// if this vertex is unvisited, do all the magic
-			if (g[adj].color == 0) {
-				g[adj].color = 1;
+			if (g[edge].color == 0) {
+				g[edge].color = 1;
 				end_reached = false;
-				start = adj;
+				start = boost::target(edge, g);
+				if (debug) { std::cerr << "start is: " << boost::get(boost::vertex_color_t(), g, start) << std::endl; }
 				// add to subgraph
-				boost::add_vertex(boost::get(boost::vertex_color_t(), g, start), subg);
+				boost::add_vertex(boost::get(boost::vertex_color_t(), g, start), *subgptr);
 				break;
-			} else if (g[adj].color == 2) {
-				// add to subgraph to close the cycle
-				start = adj;
-				boost::add_vertex(boost::get(boost::vertex_color_t(), g, start), subg);
-				end_reached = true;
 			} else {
 				end_reached = true;
 			}
 		}
 		// if the current vertex is a internal articulation point, create new subgraph and add this point again
 		// we have to exclude path ends, and cycle ends
-		if ((g[start].Ai > 0) && (degree_in_ear(start, g, k) == 2) && (g[start].color !=2)) {
-			subg = g.create_subgraph();
-			boost::add_vertex(boost::get(boost::vertex_color_t(), g, start), subg);
+		if ((g[start].Ai > 0) && (degree_in_ear(start, g, k) == 2) && (g[start].color != 2)) {
+			subgptr = &g.create_subgraph();
+			if (debug) { std::cerr << "ai on v " << boost::get(boost::vertex_color_t(), g, start) << " is: " << g[start].Ai << std::endl; }
+			boost::add_vertex(boost::get(boost::vertex_color_t(), g, start), *subgptr);
 		}
 	}
 }

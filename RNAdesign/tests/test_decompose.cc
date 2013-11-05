@@ -169,12 +169,11 @@ BOOST_AUTO_TEST_CASE(biconnectedComponents) {
 
 BOOST_AUTO_TEST_CASE(schieberEarDecomposition) {
 
-	// set random generator to a static seed;
-	rand_gen.seed(1);
-	
 	// create a graph
 	Graph g = createGraph(ED);
 	BOOST_TEST_MESSAGE("decompose connected components");
+	// set random generator to a static seed;
+	rand_gen.seed(1);
 	schieber_ear_decomposition(g);
 	
 	int number_of_children = 0;
@@ -209,13 +208,100 @@ BOOST_AUTO_TEST_CASE(schieberEarDecomposition) {
 	}
 	// check if it is just 3 connected components
 	BOOST_CHECK(number_of_children == 3);
+	
+	// check if Ak is labeled right for those two vertices
+	std::set< int > testcase { 0 };
+	std::set< int > Ak = g[g.find_vertex(boost::get(boost::vertex_color_t(), g, 6)).first].Ak;
+	BOOST_CHECK(Ak == testcase);
+	Ak = g[g.find_vertex(boost::get(boost::vertex_color_t(), g, 8)).first].Ak;
+	BOOST_CHECK(Ak == testcase);
+	std::set< int > testcase1 { 1 };
+	Ak = g[g.find_vertex(boost::get(boost::vertex_color_t(), g, 2)).first].Ak;
+	BOOST_CHECK(Ak == testcase1);
+	
+	// check if Ai is labeled right
+	int Ai = g[g.find_vertex(boost::get(boost::vertex_color_t(), g, 6)).first].Ai;
+	BOOST_CHECK(Ai == 1);
 }
 
 BOOST_AUTO_TEST_CASE(partsBetweenArticulationPoints) {
-	// TODO write a testfunction for parts between articulation points and fix this function!
-	// parts_between_articulation_points_to_subgraphs (Graph& g, int k);
+
 	
+	// create a graph
+	Graph g = createGraph(ED);
+	BOOST_TEST_MESSAGE("parts between articulation points to subgraphs");
+	// set random generator to a static seed;
+	rand_gen.seed(2);
+	schieber_ear_decomposition(g);
+	// print_subgraphs(g, &std::cout, "ears");
+	// now the decomposed graph looks different than above, as the random generator went further
+	// However, lets call our method on all children:
+	int number_of_children = 0;
+	int k = 0;
+	Graph::children_iterator ear, ear_end;
+	for (boost::tie(ear, ear_end) = g.children(); ear != ear_end; ++ear) {
+		parts_between_articulation_points_to_subgraphs (*ear, k);
+		// print_subgraphs(*ear, &std::cout, "ear-parts");
+		// there should be sugraphs for all ears now representing the paths and cycles between Ak and Ai
+		// or in case of no Ak or Ai, the whole ear is another sugraph
+		Graph::children_iterator child, child_end;
+		for (boost::tie(child, child_end) = (*ear).children(); child != child_end; ++child) {
+			
+			// Now check if everything worked out!
+			number_of_children++;
+			
+			// for the ear number one everything should still be in one part
+			if (boost::num_vertices(*child) == 2 && k == 1) {
+				// check if both vertices exist and are labeled right
+				std::unordered_set<int> testcase {6, 8};			
+				BOOST_CHECK(getVertexSet(*child) == testcase);
+				// check if just one edge exists here
+				BOOST_CHECK(boost::num_edges(*child) == 1);
+				// check if this is the ear number 0 for all edges
+				BGL_FORALL_EDGES(e, *child, Graph) {
+					BOOST_CHECK((*child)[e].ear == 1);
+				}
+			// for ear number one there should be 3 vertices in a path
+			} else if (boost::num_vertices(*child) == 3 && k == 1) {
+				// check if both vertices exist and are labeled right
+				std::unordered_set<int> testcase {0, 6, 7};			
+				BOOST_CHECK(getVertexSet(*child) == testcase);
+				// check if just one edge exists here
+				BOOST_CHECK(boost::num_edges(*child) == 2);
+				// check if this is the ear number 0 for all edges
+				BGL_FORALL_EDGES(e, *child, Graph) {
+					BOOST_CHECK((*child)[e].ear == 1);
+				}
+			// the other part of the ear number one
+			} else if (boost::num_vertices(*child) == 5) {
+				// check if both vertices exist and are labeled right
+				std::unordered_set<int> testcase {2, 3, 4, 5, 6};			
+				BOOST_CHECK(getVertexSet(*child) == testcase);
+				// check if just one edge exists here
+				BOOST_CHECK(boost::num_edges(*child) == 4);
+				// check if this is the ear number 0 for all edges
+				BGL_FORALL_EDGES(e, *child, Graph) {
+					BOOST_CHECK((*child)[e].ear == 0);
+				}
+			// for the last cycle all should go one subgraph deeper
+			} else if (boost::num_vertices(*child) == 3 && k == 2) {
+				// check if both vertices exist and are labeled right
+				std::unordered_set<int> testcase1 {1, 0, 2};			
+				BOOST_CHECK(getVertexSet(*child) == testcase1);
+				// check if just one edge exists here
+				BOOST_CHECK(boost::num_edges(*child) == 2);
+				// check if this is the ear number 0 for all edges
+				BGL_FORALL_EDGES(e, *child, Graph) {
+					BOOST_CHECK((*child)[e].ear == 2);
+				}
+			}
+		}
+		
+		k++;
+	}
 	
+	// check if it is exactly 4 subgraphs in total
+	BOOST_CHECK(number_of_children == 6);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
