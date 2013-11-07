@@ -19,7 +19,7 @@ PCOBJ = $(PCSRC:.cc=.o)
 TEXE = tests/testRNAdesign
 TARGS = --log_level=test_suite
 TLDFLAGS = -lboost_unit_test_framework
-TCSRC = tests/main.cc tests/test_pathcoloring.cc tests/test_graphcoloring.cc tests/test_decompose.cc tests/test_parsestruct.cc
+TCSRC = tests/main.cc tests/test_pathcoloring.cc tests/test_graphcoloring.cc tests/test_decompose.cc tests/test_parsestruct.cc tests/test_random_gen.cc
 TCOBJ = $(TCSRC:.cc=.o)
 
 # rules

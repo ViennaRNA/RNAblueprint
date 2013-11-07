@@ -43,6 +43,7 @@ TestCase::TestCase(int first, int last, int length, int nos, Sequence sequence) 
 
 BOOST_AUTO_TEST_CASE(generatePathSeq) {
 	// set random generator to a static seed;
+
 	rand_gen.seed(1);
 	
 	std::vector < TestCase > testcases;
