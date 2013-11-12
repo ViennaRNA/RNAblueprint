@@ -24,6 +24,9 @@
 // typedefs
 typedef std::unordered_map < int, int > MyKey;
 
+// overload << operator to print maps with any content
+std::ostream& operator<< (std::ostream& os, MyKey& m);
+
 // class definitions
 // Class with cusom hash function for the ProbabilityMatrix
 class MyKeyHash {
@@ -51,7 +54,7 @@ class ProbabilityMatrix {
 		// remember my as number of ears
 		unsigned int my;
 		// to keep track of current Ak Ai we need to update them before glueing an ear
-		void updateCurrentAkAi (Graph& g, Graph& ear, int k, std::set<Vertex>& currentAk, std::set<Vertex>& currentAi);
+		void updateCurrentAkAi (Graph& g, int k, std::set<Vertex>& currentAk, std::set<Vertex>& currentAi);
 		// calculate all the key probabilities and start more from there
 		void calculate_probabilities (std::set<Vertex>& ap, MyKey& k);
 		// calculates all base combinations for current articulation points (recursion)
@@ -72,5 +75,6 @@ void color_blocks (Graph& g);
 
 // reset the bases of the graph to X
 void reset_colors(Graph& g);
+
 
 #endif

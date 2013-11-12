@@ -91,6 +91,15 @@ std::ostream& operator<< (std::ostream& os, std::map<U, V>& m) {
 	return os;
 }
 
+// overload << operator to print sets with any content
+template <typename W>
+std::ostream& operator<< (std::ostream& os, std::set<W>& s) {
+	for (auto elem : s) {
+        	os << elem << ", ";
+	}
+	return os;
+}
+
 // overload << operator to print deques with sequence information
 std::ostream& operator<< (std::ostream& os, Sequence& sequence);
 

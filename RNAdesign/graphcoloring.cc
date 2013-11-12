@@ -50,7 +50,13 @@ ProbabilityMatrix::ProbabilityMatrix (Graph& g) {
 	for (boost::tie(ear, ear_end) = (g).children(); ear != ear_end; ++ear) {
 		
 		// before doing anything, update current Ak and Ai
-		updateCurrentAkAi (g, *ear, k, currentAk, currentAi);
+		updateCurrentAkAi (*ear, k, currentAk, currentAi);
+		
+		if (debug) { 
+			std::cerr << "Current k: " << k << std::endl
+				<< "currentAk:" << std::endl << currentAk << std::endl
+				<< "currentAi:" << std::endl << currentAi << std::endl;
+		}
 		
 		// Nk[A6][A10][A1] = sum(AUGC in inner Ap = 9) P[A6][x9][3 pathlength] * P[x9][A10][1] * Nk-1 [x9][A1]
 		
@@ -62,7 +68,9 @@ ProbabilityMatrix::ProbabilityMatrix (Graph& g) {
 		
 		// calculate the probabilities for every key and if not zero, add to matrix
 		for (auto thiskey : key_combinations) {
+			if (debug) { std::cerr << "Calculating probablity for key: " << std::endl << thiskey; }
 			unsigned long long probability = get_probability(thiskey, *ear, currentAk, currentAi, p, k);
+			if (debug) { std::cerr << probability << std::endl; }
 			if (probability != 0)
 				n[k][thiskey] = probability;
 		}
@@ -72,26 +80,20 @@ ProbabilityMatrix::ProbabilityMatrix (Graph& g) {
 	}
 }
 
-void ProbabilityMatrix::updateCurrentAkAi (Graph& g, Graph& ear, int k, std::set<Vertex>& currentAk, std::set<Vertex>& currentAi) {
-	// Ak are already stored in graph as a vertex properties
-	// write vertex property into currentAk
-	BGL_FORALL_VERTICES_T(v, ear, Graph) {
+void ProbabilityMatrix::updateCurrentAkAi (Graph& g, int k, std::set<Vertex>& currentAk, std::set<Vertex>& currentAi) {
+	// Ak and Ai are already stored in graph as a vertex properties
+	// write vertex property into currentAk and currentAi
+	currentAi.clear();
+	
+	BGL_FORALL_VERTICES_T(v, g, Graph) {
 		if (g[v].Ak.find(k) != g[v].Ak.end()) {
 			currentAk.insert(v);
-		}
-	}
-	
-	// Ai are already stored in graph as vertex property
-	// write into currentAi
-	currentAi.clear();
-	BGL_FORALL_VERTICES_T(v, ear, Graph) {
-		if (g[v].Ai == k) {
+		} else if ((k > 0) && (g[v].Ai == k)) {
 			currentAi.insert(v);
 			// we need to keep Ak from previous glued ears, except those that became Ai this time!
 			currentAk.erase(v);
 		}
-	}
-		
+	}		
 }
 
 void ProbabilityMatrix::calculate_combinations (Graph& g, std::set<Vertex>& Ak, MyKey& mykey, std::vector<MyKey>& key_combinations) {
@@ -296,4 +298,12 @@ void reset_colors(Graph& g) {
 	BGL_FORALL_VERTICES_T(v, g, Graph) {
 		g[v].base = X;
 	}
+}
+
+// overload << operator to print maps with any content
+std::ostream& operator<< (std::ostream& os, MyKey& m) {
+	for (typename MyKey::iterator it = m.begin(); it != m.end(); it++) {
+        	os << "(" << it->first << "," << it->second << ")" << std::endl;
+	}
+	return os;
 }
