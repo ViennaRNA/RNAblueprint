@@ -42,27 +42,24 @@ struct SubProbability {
 class ProbabilityMatrix {
 	public:
 		ProbabilityMatrix (Graph& g);
-		unsigned long long get(unsigned int k, unsigned int a, unsigned int b);		// k... ear (k), a Ak# (Vertex), b... Base
-		unsigned long long get(unsigned int k, unsigned int a);				// sum of all Bases of this Ak
+		unsigned long long get(unsigned int k, MyKey mykey);		// k... ear (k), mykey... key of Aks (12/A) (4/C) ()...
 	private:
 		// vector of k (ears), map of possibilities saved by key
 		std::vector< std::unordered_map < MyKey , unsigned long long , MyKeyHash> > n;
-		// structure to remember Ak (attachment vertices)
-		std::map<int, std::set<Vertex> > Ak;
-		// biggest ear number
-		unsigned int my = 0;
 		// My custom hash key used for n
 		friend class MyKeyHash;
+		// remember my as number of ears
+		unsigned int my;
+		// to keep track of current Ak Ai we need to update them before glueing an ear
+		void updateCurrentAkAi (Graph& g, Graph& ear, int k, std::set<Vertex>& currentAk, std::set<Vertex>& currentAi);
 		// calculate all the key probabilities and start more from there
-		void calculate_probabilities(std::set<Vertex>& ap, MyKey& k);
+		void calculate_probabilities (std::set<Vertex>& ap, MyKey& k);
 		// calculates all base combinations for current articulation points (recursion)
-		void calculate_combinations(Graph& g, std::set<Vertex>& ap, MyKey& mykey, std::vector<MyKey>& key_combinations);
+		void calculate_combinations (Graph& g, std::set<Vertex>& Ak, MyKey& mykey, std::vector<MyKey>& key_combinations);
 		// actually calculate the probability for the given key
-		unsigned long long get_probability ( MyKey mykey, Graph& g, std::set<Vertex> ap, std::set<Vertex>& ai, Pairing& p, unsigned int k);
-		// this function walks through an ear and returns the lengths and the stop articulation vertex (internal or final one)
-		std::pair<Vertex, int> get_length_to_next_ap(Graph& g, Vertex start, std::set<Vertex>& ai);
+		unsigned long long get_probability ( MyKey mykey, Graph& g, std::set<Vertex>& Ak, std::set<Vertex>& Ai, Pairing& p, unsigned int k);
 		// recursion to get base combinations done in (sum over AUGC in 6) of (sum over AUGC in 10) of ...
-		void make_sum_of_sum( Graph& g, std::set<Vertex>& ai, MyKey& mykey, MyKey& lastkey, std::vector<SubProbability>& sub_probabilities, Pairing& p, unsigned int k, unsigned long long& max_number_of_sequences);
+		void make_sum_of_sum( Graph& g, std::set<Vertex>& Ai, MyKey& mykey, MyKey& lastkey, std::vector<SubProbability>& sub_probabilities, Pairing& p, unsigned int k, unsigned long long& max_number_of_sequences);
 		// get the color of either mykey or lastkey.
 		int get_color_from_key(MyKey& mykey, MyKey& lastkey, Vertex v);
 };

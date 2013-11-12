@@ -27,95 +27,86 @@ std::size_t MyKeyHash::operator() (const MyKey& k) const {
 
 
 ProbabilityMatrix::ProbabilityMatrix (Graph& g) {
-	// get number of ears in this ear decomposition
-	BGL_FORALL_EDGES_T(e, g, Graph) {
-		if (my < (unsigned int) g[e].ear) { my = g[e].ear; }
-	}
-	my++; // my is not the biggest ear index but the total number of ears!
 	
-	// get maximal length of an ear
-	unsigned int max_length;
-	for (unsigned int k = 0; k < my; k++) {
-		unsigned int tmp_length = 0;
-		BGL_FORALL_EDGES_T(e, g, Graph) {
-			if ((unsigned int) g[e].ear == k) { tmp_length++; }
-		}
-		if (max_length < tmp_length) { max_length = tmp_length; }
-	}
+	// structure to remember current Ak (attachment vertices)
+	std::set<Vertex> currentAk;
+	// to store current inner Articulation Points
+	std::set<Vertex> currentAi;
+	// now start at the outermost ear
+	unsigned int k = 0;
 	
+	int max_length = 0;
+	Graph::children_iterator ear, ear_end;
+	for (boost::tie(ear, ear_end) = (g).children(); ear != ear_end; ++ear) {
+		int length = boost::num_edges(*ear);
+		if (max_length < length)
+			max_length = length;
+	}
+
 	// get Pairing matrix for paths, TODO only initialize once for the whole program!
 	Pairing p(max_length+1);
 	
-	// iterate over all ear decomposition iterations 
-	for (unsigned int k = 0; k < my; k++) {
-		// Ak are already stored in graph as a vertex properties
-		// write vertex property into Ak[k]
-		BGL_FORALL_VERTICES_T(v, g, Graph) {
-			if (g[v].Ak.find(k) != g[v].Ak.end()) {
-				Ak[k].insert(v);
-			}
-		}
-	}
-	
-	// for last ear, which is a cycle, add two times the same articulaiton point (begin and end!)
-	
-	
-	// to store inner Articulation Points
-	std::set< Vertex > Ai;
-	// now start at the outermost ear
-	unsigned int k = 0;
-
-	
 	// start at the outermost ear and process inwards
-	Graph::children_iterator ear, ear_end;
 	for (boost::tie(ear, ear_end) = (g).children(); ear != ear_end; ++ear) {
+		
+		// before doing anything, update current Ak and Ai
+		updateCurrentAkAi (g, *ear, k, currentAk, currentAi);
+		
 		// Nk[A6][A10][A1] = sum(AUGC in inner Ap = 9) P[A6][x9][3 pathlength] * P[x9][A10][1] * Nk-1 [x9][A1]
 		
-		std::vector<MyKey> key_combinations;		// this is what we want to fill next
+		std::vector<MyKey> key_combinations;		// this is what we want to fill in the recursion
 		MyKey mykey;					// helper to recursively build the posibilities
-		std::set<Vertex> ap = Ak[k];			// need to send a copy of the current Artikulation Points
+		std::set<Vertex> cAk = currentAk;		// create a copy for recursion
 		// now fill the key_combinations with all kinds of bases
-		calculate_combinations(g, ap, mykey, key_combinations);
+		calculate_combinations(g, cAk, mykey, key_combinations);
 		
+		// calculate the probabilities for every key and if not zero, add to matrix
 		for (auto thiskey : key_combinations) {
-			unsigned long long probability = get_probability(thiskey, *ear, ap, Ai, p, k);
+			unsigned long long probability = get_probability(thiskey, *ear, currentAk, currentAi, p, k);
 			if (probability != 0)
 				n[k][thiskey] = probability;
 		}
 		
-		// iterate over articulation points of this ear
-		// find out if this Aks are still Ak of next ear or if they are internal then (-> push into Ai)
-		Ai.clear();
-		for (auto v : Ak[k]) {
-			if (Ak[k+1].find(v) == Ak[k+1].end()) {				// vertices are no Aps in next k
-				BGL_FORALL_OUTEDGES_T(v, e, g, Graph) {			// look at all edges
-					if (g[e].ear == (int) k+1) {				// if next ear is glued here this will be internal
-						Ai.insert(v);
-					} else {					// else it is still an external next k
-						Ak[k+1].insert(v);
-					}
-				}
-			}
-		}
-		
 		// now going to next ear!
-		k++;
+		my = ++k;
 	}
 }
 
-void ProbabilityMatrix::calculate_combinations(Graph& g, std::set<Vertex>& ap, MyKey& mykey, std::vector<MyKey>& key_combinations) {
+void ProbabilityMatrix::updateCurrentAkAi (Graph& g, Graph& ear, int k, std::set<Vertex>& currentAk, std::set<Vertex>& currentAi) {
+	// Ak are already stored in graph as a vertex properties
+	// write vertex property into currentAk
+	BGL_FORALL_VERTICES_T(v, ear, Graph) {
+		if (g[v].Ak.find(k) != g[v].Ak.end()) {
+			currentAk.insert(v);
+		}
+	}
 	
-	if (ap.size() > 0) {
-		std::set<Vertex>::iterator it=ap.begin();
+	// Ai are already stored in graph as vertex property
+	// write into currentAi
+	currentAi.clear();
+	BGL_FORALL_VERTICES_T(v, ear, Graph) {
+		if (g[v].Ai == k) {
+			currentAi.insert(v);
+			// we need to keep Ak from previous glued ears, except those that became Ai this time!
+			currentAk.erase(v);
+		}
+	}
+		
+}
+
+void ProbabilityMatrix::calculate_combinations (Graph& g, std::set<Vertex>& Ak, MyKey& mykey, std::vector<MyKey>& key_combinations) {
+	
+	if (Ak.size() > 0) {
+		std::set<Vertex>::iterator it=Ak.begin();
 		Vertex v = *it;
-		ap.erase(it);
+		Ak.erase(it);
 		
 		for ( unsigned int b = 0; b < A_Size; b++ ) {
 			mykey.insert(std::make_pair(boost::get(boost::vertex_color_t(), g, v), b));
 			// recursion starts here
-			calculate_combinations(g, ap, mykey, key_combinations);
+			calculate_combinations(g, Ak, mykey, key_combinations);
 			
-			if (ap.size() == 0) {
+			if (Ak.size() == 0) {
 				// remember our generated key
 				key_combinations.push_back(mykey);
 			}
@@ -123,11 +114,11 @@ void ProbabilityMatrix::calculate_combinations(Graph& g, std::set<Vertex>& ap, M
 			mykey.erase(v);
 		}
 		// add current vertex again
-		ap.insert(v);
+		Ak.insert(v);
 	}
 }
 
-unsigned long long ProbabilityMatrix::get_probability ( MyKey mykey, Graph& g, std::set<Vertex> ap, std::set<Vertex>& ai, Pairing& p, unsigned int k) {
+unsigned long long ProbabilityMatrix::get_probability ( MyKey mykey, Graph& g, std::set<Vertex>& Ak, std::set<Vertex>& Ai, Pairing& p, unsigned int k) {
 	
 	// v--return this--v v--recursion get_sum_of_sum--v v--let's call them sub_probabilities--v   v--prob. last_ear--v
 	// Nk[A6][A10][A1]  =   sum(AUGC in inner Ap = 9)   P[A6][x9][3 pathlength] * P[x9][A10][1] * Nk-1 [x9][A1]
@@ -139,54 +130,55 @@ unsigned long long ProbabilityMatrix::get_probability ( MyKey mykey, Graph& g, s
 	// container to store all sub-probabilities
 	std::vector<SubProbability> sub_probabilities;
 	
-	// reset the color of this graph to be able to run our walk_through.
-	BGL_FORALL_VERTICES_T(v, g, Graph) {
-		g[v].color = 0;
-	}
-	// get end points of path (ear)
-	std::array<Vertex, 2> start_end;
-	int i = 0;
-	for ( auto v : ap ) {
-		if (g.find_vertex(v).second) {
-			start_end[i] = v;
-			i++;
-		} else {
+	
+	// start to build last key
+	for (auto v : Ak) {
+		if (!g.find_vertex(v).second) {
 			// these articulation points are not in this particular ear, therefore we need to look their probability up
 			// from last time. so lets generate a key therefore			
 			lastkey.insert(std::make_pair(boost::get(boost::vertex_color_t(), g, v), mykey[boost::get(boost::vertex_color_t(), g, v)]));
 		}
 	}
 	
-	// now building this sub_probabilities (no base combinatoric yet!)
-	// function will start at one end and go through to get all lengths and end-points
-	Vertex nextVertex = start_end[0];
-	
-	while (nextVertex != start_end[1]) {
-		int length = 0;
+	// now building this sub_probabilities
+	Graph::children_iterator part, part_end;
+	for (boost::tie(part, part_end) = (g).children(); part != part_end; ++part) {
 		
 		// add to sub_probabilities for this start/end and length
 		sub_probabilities.push_back(SubProbability());
 		SubProbability &sub_probability = sub_probabilities.back();
-		// start vertex first
-		sub_probability.start = nextVertex;
-		
-		// get length and vertex descriptor to next articulation point (inner)
-		std::tie(nextVertex, length) = get_length_to_next_ap(g, nextVertex, ai);
-		
-		// now end vertex and length
-		sub_probability.end = nextVertex;
-		sub_probability.length = length;
+		// begin, end and length go into sub_probability
+		int i = 0;
+		BGL_FORALL_VERTICES_T(v, *part, Graph) {
+			if (boost::degree(v, *part) == 1) {
+				if (i == 0)
+					sub_probability.start = boost::get(boost::vertex_color_t(), *part, v);
+				else
+					sub_probability.end = boost::get(boost::vertex_color_t(), *part, v);
+				i++;
+			}
+		}
+		sub_probability.length = boost::num_edges(*part);
 	}
 	
 	// calculate sum of sum for all bases colored X (= internal aps)
 	// adds base combinatoric to the sub_probabilities and to the lastkey
-	make_sum_of_sum(g, ai, mykey, lastkey, sub_probabilities, p, k, max_number_of_sequences);
+	if (k > 0) {
+		make_sum_of_sum(g, Ai, mykey, lastkey, sub_probabilities, p, k, max_number_of_sequences);
+	} else {
+		for (auto sub_probability : sub_probabilities) {
+			int startBase = get_color_from_key(mykey, lastkey, sub_probability.start);
+			int endBase = get_color_from_key(mykey, lastkey, sub_probability.end);
+			// get probability and multiply it
+			max_number_of_sequences += p.get(startBase, endBase, sub_probability.length);
+		}
+	}
 		
 	return max_number_of_sequences;
 }
 
 void ProbabilityMatrix::make_sum_of_sum(	Graph& g,
-						std::set<Vertex>& ai, 
+						std::set<Vertex>& Ai, 
 						MyKey& mykey, MyKey& lastkey, 
 						std::vector<SubProbability>& sub_probabilities, 
 						Pairing& p,
@@ -194,17 +186,17 @@ void ProbabilityMatrix::make_sum_of_sum(	Graph& g,
 						unsigned long long& max_number_of_sequences) 
 {
 	
-	if (ai.size() > 0) {
-		std::set<Vertex>::iterator it=ai.begin();
+	if (Ai.size() > 0) {
+		std::set<Vertex>::iterator it=Ai.begin();
 		Vertex v = *it;
-		ai.erase(it);
+		Ai.erase(it);
 		
 		for ( unsigned int b = 0; b < A_Size; b++ ) {
 			lastkey.insert(std::make_pair(boost::get(boost::vertex_color_t(), g, v), b));
 			// recursion starts here
-			make_sum_of_sum(g, ai, mykey, lastkey, sub_probabilities, p, k, max_number_of_sequences);
+			make_sum_of_sum(g, Ai, mykey, lastkey, sub_probabilities, p, k, max_number_of_sequences);
 			
-			if (ai.size() == 0) {
+			if (Ai.size() == 0) {
 				// do the actual calculation here!
 				unsigned long long multiplied_probabilities;
 				
@@ -217,7 +209,7 @@ void ProbabilityMatrix::make_sum_of_sum(	Graph& g,
 				}
 	
 				// now add probability for last_ear
-				multiplied_probabilities *= n[k][lastkey];
+				multiplied_probabilities *= n[k-1][lastkey];
 				// now add all the multiplied probabilities to the total to get sum over all (AUGC) in X
 				max_number_of_sequences += multiplied_probabilities;
 			}
@@ -225,7 +217,7 @@ void ProbabilityMatrix::make_sum_of_sum(	Graph& g,
 			lastkey.erase(v);
 		}
 		// add current vertex again
-		ai.insert(v);
+		Ai.insert(v);
 	}
 }
 
@@ -241,59 +233,21 @@ int ProbabilityMatrix::get_color_from_key(MyKey& mykey, MyKey& lastkey, Vertex v
 	}
 }
 
-std::pair<Vertex, int> ProbabilityMatrix::get_length_to_next_ap(Graph& g, Vertex start, std::set<Vertex>& ai) {
-	// go throught the path (ear) and color everything 1 to avoid getting back
-	// if i went forward, count length plus one, color 1 and if the reached vertex is a internal articulation point or
-	// the other end, return the length and the vertex
-	g[start].color = 1;
-	bool end_reached = false;
-	int length = 0;
-	
-	while(!end_reached) {
-		BGL_FORALL_ADJ_T(start, adj, g, Graph) {
-			if (g[adj].color == 0) {
-				g[adj].color = 1;
-				end_reached = false;
-				length++;
-				start = adj;
-				break;
-			} else {
-				end_reached = true;
-			}
-		}
-		// if the current vertex is a internal articulation point, return length and this vertex
-		if (ai.find(start) != ai.end()) {
-			return std::make_pair(boost::get(boost::vertex_color_t(), g, start), length);
-		}
+unsigned long long ProbabilityMatrix::get(unsigned int k, MyKey mykey) {
+	if (k > my) {
+		std::cerr << "Requested a value in probability matrix where k is out of range: " << k << std::endl;
+		exit(1);
 	}
-	// return final length and vertex
-	return std::make_pair(boost::get(boost::vertex_color_t(), g, start), length);
-}
-
-unsigned long long ProbabilityMatrix::get(unsigned int k, unsigned int a, unsigned int b) {
-//	if ((k > my) || (b > A_Size-1)) {
-//		std::cerr << "Requested a value in probability matrix which is out of range: p[" << k << "][" << a << "][" << b << "]" << std::endl;
-//		exit(1);
-//	}
 	
 	unsigned long long rvalue;
 	// important for map: if you request with [] an entry will be created for unexisting ones.
-//	if (n[k].find(a) != n[k].end()) {
-//		rvalue = n[k][a][b];
-//	} else {
-//		rvalue = 0;
-//	}
+	if (n[k].find(mykey) != n[k].end()) {
+		rvalue = n[k][mykey];
+	} else {
+		rvalue = 0;
+	}
 	
 	return rvalue;
-}
-
-unsigned long long ProbabilityMatrix::get(unsigned int k, unsigned int a) {
-	// return the sum of all probabilities of articulation point
-	unsigned long long sum = 0;
-//	for (unsigned int i = 0; i < A_Size; i++) {
-//		sum += get(k, a, i);
-//	}
-	return sum;
 }
 
 void color_graph (Graph& graph) {
@@ -332,9 +286,10 @@ void color_graph (Graph& graph) {
 
 void color_blocks (Graph& g) {
 	// start with filling the matrix
-	//ProbabilityMatrix pm(g);
+	ProbabilityMatrix pm(g);
 	
 	// backtracing
+	
 }
 
 void reset_colors(Graph& g) {
