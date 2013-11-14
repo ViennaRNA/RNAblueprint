@@ -64,7 +64,7 @@ class ProbabilityMatrix {
 		// recursion to get base combinations done in (sum over AUGC in 6) of (sum over AUGC in 10) of ...
 		void make_sum_of_sum( Graph& g, std::set<Vertex>& Ai, MyKey& mykey, MyKey& lastkey, std::vector<SubProbability>& sub_probabilities, Pairing& p, unsigned int k, unsigned long long& max_number_of_sequences);
 		// get the color of either mykey or lastkey.
-		int get_color_from_key(MyKey& mykey, MyKey& lastkey, Vertex v);
+		int get_color_from_key(Graph& g, MyKey& mykey, MyKey& lastkey, Vertex v);
 };
 
 // color the root graph!

@@ -52,3 +52,21 @@ std::ostream& operator<< (std::ostream& os, Sequence& sequence) {
 	}
 	return os;
 }
+
+std::ostream& operator<< (std::ostream& os, std::pair<Graph, Vertex>& p) {
+	Graph g = p.first;
+	Vertex v = p.second;
+       	os << boost::get(boost::vertex_color_t(), g, v);
+	return os;
+}
+
+std::ostream& operator<< (std::ostream& os, std::pair<Graph, std::set<Vertex>>& p) {
+	Graph g = p.first;
+	std::set<Vertex> s = p.second;
+	
+	for (auto elem : s) {
+		std::pair<Graph, Vertex> printpair = std::make_pair(g, elem);
+        	os << printpair << ", ";
+	}
+	return os;
+}

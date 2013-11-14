@@ -16,7 +16,7 @@
 #include "../graphcoloring.h"
 
 // define heads
-namespace PathColoring {
+namespace GraphColoring {
 	class TestCase {
 		public:
 			TestCase(int first, int last, int length, int nos, Sequence sequence);
