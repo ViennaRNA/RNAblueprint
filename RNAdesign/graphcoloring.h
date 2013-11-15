@@ -36,8 +36,8 @@ class MyKeyHash {
 
 // struct definitions
 struct SubProbability {
-		Vertex start;
-		Vertex end;
+		int start;
+		int end;
 		int length;	
 	};
 
@@ -52,7 +52,7 @@ class ProbabilityMatrix {
 		// My custom hash key used for n
 		friend class MyKeyHash;
 		// remember my as number of ears
-		unsigned int my;
+		unsigned int my = 0;
 		// to keep track of current Ak Ai we need to update them before glueing an ear
 		void updateCurrentAkAi (Graph& g, int k, std::set<Vertex>& currentAk, std::set<Vertex>& currentAi);
 		// calculate all the key probabilities and start more from there
@@ -64,7 +64,7 @@ class ProbabilityMatrix {
 		// recursion to get base combinations done in (sum over AUGC in 6) of (sum over AUGC in 10) of ...
 		void make_sum_of_sum( Graph& g, std::set<Vertex>& Ai, MyKey& mykey, MyKey& lastkey, std::vector<SubProbability>& sub_probabilities, Pairing& p, unsigned int k, unsigned long long& max_number_of_sequences);
 		// get the color of either mykey or lastkey.
-		int get_color_from_key(Graph& g, MyKey& mykey, MyKey& lastkey, Vertex v);
+		int get_color_from_key (MyKey& mykey, MyKey& lastkey, int vertex);
 };
 
 // color the root graph!

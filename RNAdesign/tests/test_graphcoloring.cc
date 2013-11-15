@@ -16,22 +16,32 @@
 #include "../graphcoloring.h"
 
 // define heads
-namespace GraphColoring {
-	class TestCase {
-		public:
-			TestCase(int first, int last, int length, int nos, Sequence sequence);
-			int first;
-			int last;
-			int length;
-			int nos;
-			Sequence sequence;
-	};
-	
-	Sequence get_vertex_colors(Graph& g);
-	void reset (Graph& g);
-}
-
 BOOST_AUTO_TEST_SUITE(GraphColoring)
+
+class compound_test {
+public:
+    void test_construction() {
+        BOOST_CHECK_THROW( new class_under_test( -1 ) );
+
+        v = new class_under_test( 1 );
+
+        BOOST_CHECK( v is valid );
+        ...
+    }
+
+    void test_access_methods() {
+        BOOST_CHECK_EQUAL( v->get_value(), 1 );
+        ...
+    }
+private:
+    class_under_test* v;
+};
+...
+
+boost::shared_ptr<compound_test> instance( new compound_test );
+Ts>add( BOOST_CLASS_TEST_CASE( &compound_test::constructor, instance ) );
+Ts>add( BOOST_CLASS_TEST_CASE( &compound_test::test_access_methods, instance ) );
+
 
 Sequence get_vertex_colors(Graph& g) {
 	Sequence sequence;
