@@ -17,12 +17,13 @@
 // include standard library parts
 #include <unordered_map>
 #include <functional>
+#include <iomanip>
 
 // include boost components
 #include <boost/functional/hash.hpp>
 
 // typedefs
-typedef std::unordered_map < int, int > MyKey;
+typedef std::map < int, int > MyKey;
 
 // overload << operator to print maps with any content
 std::ostream& operator<< (std::ostream& os, MyKey& m);
@@ -45,12 +46,12 @@ struct SubProbability {
 class ProbabilityMatrix {
 	public:
 		ProbabilityMatrix (Graph& g);
-		unsigned long long get(unsigned int k, MyKey mykey);		// k... ear (k), mykey... key of Aks (12/A) (4/C) ()...
-	private:
-		// vector of k (ears), map of possibilities saved by key
-		std::vector< std::unordered_map < MyKey , unsigned long long , MyKeyHash> > n;
+		unsigned long long get(MyKey mykey);		// mykey... key of Aks (12/A) (4/C) ()...
 		// My custom hash key used for n
 		friend class MyKeyHash;
+	private:
+		// map of possibilities saved by key
+		std::unordered_map < MyKey , unsigned long long , MyKeyHash> n;
 		// remember my as number of ears
 		unsigned int my = 0;
 		// to keep track of current Ak Ai we need to update them before glueing an ear
