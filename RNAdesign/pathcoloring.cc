@@ -165,7 +165,7 @@ unsigned long long generate_path_seq (Sequence& sequence, int first, int last, i
 			}
 		}
 		
-		// get a random number between 0 and the max number of seq [0,nos).
+		// get a random number between 0 and 1.
 		float random = dist(rand_gen);
 		
 		// stochastically take one of the posibilities
