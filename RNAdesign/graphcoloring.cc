@@ -361,23 +361,18 @@ void color_blocks (Graph& g) {
 	// TODO Initialize just once!
 	ProbabilityMatrix pm(g);
 	
-	// backtracing - start at the outermost ear!
-	unsigned int k = pm.get_my()-1;
-	Graph::children_iterator ear, ear_end;
-	std::vector<Graph::children_iterator> iter;
-	for (boost::tie(ear, ear_end) = g.children(); ear != ear_end; ++ear) {
-		iter.push_back(ear);
-	}
-	
-	for (auto rit = iter.rbegin(); rit!= iter.rend(); ++rit) {
-		Graph::children_iterator ear = *rit;
+	// backtracing - start at the outermost ear!	
+	for (unsigned int k = pm.get_my()-1; k > 0; --k) {
 		if (debug) { std::cerr << "Start Backtracing at ear " << k << std::endl; }
 		// get the current Articulation Points
 		std::set<Vertex> Ai = pm.get_Ai(k);
+		/*std::cerr << "got Ai" << std::endl;
+		for (auto v : Ai) { std::cerr << v << std::endl; }
 		if (debug) { 
 			auto printpair = std::make_pair(g, Ai);
+			std::cerr << "got printpair"<< std::endl;
 			std::cerr << "Ais are: " << printpair << std::endl; 
-		}
+		}*/
 		// translate the Ai set into set of ints (no vertex descriptors!)
 		std::set<int> cAi;
 		for (auto ap : Ai) {
@@ -395,22 +390,24 @@ void color_blocks (Graph& g) {
 				std::cerr << "v " << v << ": " << enum_to_char(g[lv].base) << std::endl;
 			}
 		}
-		
-		// now let's color all the vertices in between
+	}
+	
+	// iterate again over all ears to color the vertices between the articulation points
+	Graph::children_iterator ear, ear_end;
+	for (boost::tie(ear, ear_end) = g.children(); ear != ear_end; ++ear) {
+		// now let's color all the vertices on the parts children
 		Graph::children_iterator part, part_end;
 		for (boost::tie(part, part_end) = (*ear).children(); part != part_end; ++part) {
 			
-			if (debug) { std::cerr << "Coloring a part of the ear: "; 
+			if (debug) { std::cerr << "Coloring a part of the ear: ";
 				BGL_FORALL_VERTICES_T(v, *part, Graph) {
 					auto printpair = std::make_pair(*part, v);
 					std::cerr << printpair << " ";
 				}
-			std::cerr << std::endl;
+				std::cerr << std::endl;
 			}
 			color_path_cycle_graph (*part);
 		}
-		
-		k--;
 	}
 }
 
