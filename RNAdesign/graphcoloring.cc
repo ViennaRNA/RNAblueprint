@@ -58,8 +58,8 @@ ProbabilityMatrix::ProbabilityMatrix (Graph& g) {
 		// before doing anything, update current Ak and Ai
 		updateCurrentAkAi (*ear, k, currentAk, currentAi);
 		
-		// best is to remember the currentAks at this point
-		Ais.push_back(currentAi);
+		// best is to remember the currentAis at this point
+		Aks.push_back(currentAk);
 		
 		if (debug) { 
 			auto printpairAk = std::make_pair(*ear, currentAk);
@@ -107,6 +107,11 @@ ProbabilityMatrix::ProbabilityMatrix (Graph& g) {
 		
 		// now going to next ear!
 		k++;
+		if (debug) {
+			for (auto thiskey : key_combinations) {
+				std::cerr << thiskey << " = " << get(thiskey) << std::endl;
+			}
+		}
 	}
 }
 
@@ -190,26 +195,16 @@ unsigned long long ProbabilityMatrix::get_probability ( MyKey mykey, Graph& g, s
 				<< sub_probability.length << "-- ("
 				<< sub_probability.end << ")\t*\t";
 		}
-		std::cerr << "N(last ear)" << std::endl;
+		std::cerr << "N(" << lastkey << ")" << std::endl;
 	}
 	
 	// calculate sum of sum for all bases colored X (= internal aps)
 	// adds base combinatoric to the sub_probabilities and to the lastkey
-	if (k > 0) {
+	if (Ai.size() == 0) {
+		max_number_of_sequences += calculate_probability (mykey, lastkey, sub_probabilities, p);
+	} else {
 		if (debug) { std::cerr << "Make sum of sum: " << k << std::endl; }
 		make_sum_of_sum(g, Ai, mykey, lastkey, sub_probabilities, p, k, max_number_of_sequences);
-	} else {
-		if (debug) { std::cerr << "Only get path probabililty, because k is " << k << std::endl; }
-		for (auto sub_probability : sub_probabilities) {
-			int startBase = get_color_from_key(mykey, lastkey, sub_probability.start);
-			int endBase = get_color_from_key(mykey, lastkey, sub_probability.end);
-			// get probability and multiply it
-			max_number_of_sequences += p.get(sub_probability.length, startBase, endBase);
-			
-			if (debug) { std::cerr << "P(" << enum_to_char(startBase) << ", " 
-						<< enum_to_char(endBase) << ", " << sub_probability.length << ") = " 
-						<< max_number_of_sequences << std::endl; }
-		}
 	}
 		
 	return max_number_of_sequences;
@@ -235,30 +230,7 @@ void ProbabilityMatrix::make_sum_of_sum(	Graph& g,
 			make_sum_of_sum(g, Ai, mykey, lastkey, sub_probabilities, p, k, max_number_of_sequences);
 			
 			if (Ai.size() == 0) {
-				// do the actual calculation here!
-				unsigned long long multiplied_probabilities = 1;
-				
-				// calculate product of sub probabilities
-				for (auto sub_probability : sub_probabilities) {
-					int startBase = get_color_from_key(mykey, lastkey, sub_probability.start);
-					int endBase = get_color_from_key(mykey, lastkey, sub_probability.end);
-					// get probability and multiply it
-					multiplied_probabilities *= p.get(sub_probability.length, startBase, endBase);
-					
-					if (debug) { std::cerr << "P(" << enum_to_char(startBase) << ", " 
-						<< enum_to_char(endBase) << ", " << sub_probability.length << ") = " 
-						<< p.get(sub_probability.length, startBase, endBase) << "\t*\t"; }
-				}
-	
-				// now add probability for last_ear
-				unsigned long long last_probability = get(lastkey);
-				if (debug) { std::cerr << "N{" << lastkey << "} = "
-						<< last_probability << std::endl; }
-				
-				multiplied_probabilities *= last_probability;
-				// now add all the multiplied probabilities to the total to get sum over all (AUGC) in X
-				if (debug) { std::cerr << "+ " << multiplied_probabilities << std::endl; }
-				max_number_of_sequences += multiplied_probabilities;
+				max_number_of_sequences += calculate_probability (mykey, lastkey, sub_probabilities, p);
 			}
 			// remove current vertex again to make space for a new base
 			lastkey.erase(v);
@@ -280,6 +252,62 @@ int ProbabilityMatrix::get_color_from_key (MyKey& mykey, MyKey& lastkey, int ver
 	}
 }
 
+unsigned long long ProbabilityMatrix::calculate_probability (	MyKey& mykey, MyKey& lastkey, 
+								std::vector<SubProbability>& sub_probabilities, 
+								Pairing& p)
+{
+	// do the actual calculation here!
+	unsigned long long multiplied_probabilities = 1;
+	
+	// calculate product of sub probabilities
+	for (auto sub_probability : sub_probabilities) {
+		int startBase = get_color_from_key(mykey, lastkey, sub_probability.start);
+		int endBase = get_color_from_key(mykey, lastkey, sub_probability.end);
+		// get probability and multiply it
+		multiplied_probabilities *= p.get(sub_probability.length, startBase, endBase);
+		
+		if (debug) { std::cerr << "P(" << enum_to_char(startBase) << ", " 
+			<< enum_to_char(endBase) << ", " << sub_probability.length << ") = " 
+			<< p.get(sub_probability.length, startBase, endBase) << "\t*\t"; }
+	}
+	// for k = 0 we should not look up lastkey, as there is no lastkey!
+	if (lastkey.size() != 0) {
+		// now add probability for last_ear
+		unsigned long long last_probability = get(lastkey);
+		if (debug) { std::cerr << "N{" << lastkey << "} = "
+				<< last_probability; }
+	
+		multiplied_probabilities *= last_probability;
+	}
+	
+	if (debug) { std::cerr << "\t=\t" << multiplied_probabilities << std::endl; }
+	return multiplied_probabilities;
+}
+
+void ProbabilityMatrix::calculate_combinations (std::set<int>& Ak, MyKey& mykey, std::vector<MyKey>& key_combinations) {
+	
+	if (Ak.size() > 0) {
+		std::set<int>::iterator it = Ak.begin();
+		int vertex = *it;
+		Ak.erase(it);
+		
+		for ( unsigned int b = 0; b < A_Size; b++ ) {
+			mykey.insert(std::make_pair(vertex, b));
+			// recursion starts here
+			calculate_combinations(Ak, mykey, key_combinations);
+			
+			if (Ak.size() == 0) {
+				// remember our generated key
+				key_combinations.push_back(mykey);
+			}
+			// remove current vertex again to make space for a new base
+			mykey.erase(vertex);
+		}
+		// add current vertex again
+		Ak.insert(vertex);
+	}
+}
+
 unsigned long long ProbabilityMatrix::get (MyKey mykey) {
 
 	unsigned long long returnvalue;
@@ -296,26 +324,39 @@ unsigned long long ProbabilityMatrix::get (MyKey mykey) {
 	return returnvalue;
 }
 
-unsigned long long ProbabilityMatrix::get (std::set<int> Ak) {
+unsigned long long ProbabilityMatrix::get_sum (MyKey mykey, std::vector<MyKey>& key_combinations) {
 	MyKey tempkey;				// helper to build all combinations
-	std::vector<MyKey> key_combinations;	// this is what we want to fill now
-
+	std::set<int> cAk;			// to get all combinations of keys we need a list of articulation points
+	for (auto elem : mykey) {
+		if (elem.second == X) {
+			cAk.insert(elem.first);		// store to get all key combinations
+			mykey.erase(elem.first);	// delete to in the end get a list of static key-elements
+		}
+	}
 	// now lets calculate all combinations of keys for our points
-	calculate_combinations (Ak, tempkey, key_combinations);
+	if (cAk.size() != 0) {
+		calculate_combinations (cAk, tempkey, key_combinations);
+	} else {
+		key_combinations.push_back(MyKey());
+	}
+	
+	// need to add the static key-elements in mykey to our keys in the key_combinations
+	for (std::vector<MyKey>::iterator it = key_combinations.begin(); it != key_combinations.end(); ++it) {
+		(*it).insert(mykey.begin(), mykey.end());
+		//std::cerr << *it << " = " << get(*it) << std::endl;
+	}
 	
 	// now get the sum of all probabililties
 	unsigned long long sum = 0;
 	for (auto thiskey : key_combinations) {
-		//std::cerr << "get prob for key: " << thiskey << " = " << get(thiskey) << std::endl;
 		sum += get(thiskey);
 	}
-	
 	return sum;
 }
 
-std::set<Vertex> ProbabilityMatrix::get_Ai (unsigned int k) { 
+std::set<Vertex> ProbabilityMatrix::get_Ak (unsigned int k) { 
 	if (k < my) {
-		return Ais[k];
+		return Aks[k];
 	} else { 
 		std::cerr << "k can't be bigger than my!" << std::endl;
 		exit(1); 
@@ -361,47 +402,48 @@ void color_blocks (Graph& g) {
 	// TODO Initialize just once!
 	ProbabilityMatrix pm(g);
 	
-	// backtracing - start at the outermost ear!	
+	// reverse iterate again over all ears to color Aks and all vertices in between
 	for (unsigned int k = pm.get_my()-1; k > 0; --k) {
 		if (debug) { std::cerr << "Start Backtracing at ear " << k << std::endl; }
 		// get the current Articulation Points
-		std::set<Vertex> Ai = pm.get_Ai(k);
-		/*std::cerr << "got Ai" << std::endl;
-		for (auto v : Ai) { std::cerr << v << std::endl; }
-		if (debug) { 
-			auto printpair = std::make_pair(g, Ai);
-			std::cerr << "got printpair"<< std::endl;
-			std::cerr << "Ais are: " << printpair << std::endl; 
-		}*/
-		// translate the Ai set into set of ints (no vertex descriptors!)
-		std::set<int> cAi;
-		for (auto ap : Ai) {
-			cAi.insert(boost::get(boost::vertex_color_t(), g.root(), ap));
+		std::set<Vertex> Ak = pm.get_Ak(k);
+		
+		// translate the Ak set into set of ints (no vertex descriptors!)
+		MyKey thiskey;
+		for (auto ap : Ak) {
+			int vertex = boost::get(boost::vertex_color_t(), g.root(), ap);
+			int color = (g.root())[ap].base;
+			thiskey.insert(std::make_pair(vertex, color));
 		}
 		// now do the random coloring of our points
-		MyKey coloredkey = color_articulation_points(pm, cAi);
-		if (debug) { std::cerr << "Got a colored key: " << coloredkey << std::endl; }
+		if (debug) { std::cerr << "Try to color this key: " << thiskey << std::endl; }
+		MyKey colorkey = color_articulation_points(pm, thiskey);
+		if (debug) { std::cerr << "Got a colored key: " << colorkey << std::endl; }
 		
 		// put colors onto graph
-		for (auto v : Ai) {
+		for (auto v : Ak) {
 			Vertex lv = g.global_to_local(v);
-			g[lv].base = coloredkey[boost::get(boost::vertex_color_t(), g, lv)];
+			if (g[lv].base == X) {
+				g[lv].base = colorkey[boost::get(boost::vertex_color_t(), g, lv)];
+			} else if (g[lv].base != colorkey[boost::get(boost::vertex_color_t(), g, lv)]) {
+				std::cerr << "ERROR: Tried to change a already assigned base of an articulation point." << std::endl;
+				exit(1);
+			}
 			if (debug) {
 				std::cerr << "v " << v << ": " << enum_to_char(g[lv].base) << std::endl;
 			}
 		}
 	}
 	
-	// iterate again over all ears to color the vertices between the articulation points
+	// now let's color all the vertices on the parts children
 	Graph::children_iterator ear, ear_end;
 	for (boost::tie(ear, ear_end) = g.children(); ear != ear_end; ++ear) {
-		// now let's color all the vertices on the parts children
 		Graph::children_iterator part, part_end;
 		for (boost::tie(part, part_end) = (*ear).children(); part != part_end; ++part) {
 			
 			if (debug) { std::cerr << "Coloring a part of the ear: ";
 				BGL_FORALL_VERTICES_T(v, *part, Graph) {
-					auto printpair = std::make_pair(*part, v);
+					auto printpair = std::make_pair(*part, (*part).local_to_global(v));
 					std::cerr << printpair << " ";
 				}
 				std::cerr << std::endl;
@@ -411,58 +453,34 @@ void color_blocks (Graph& g) {
 	}
 }
 
-MyKey color_articulation_points(ProbabilityMatrix& pm, std::set<int>& Ai) {
+MyKey color_articulation_points (ProbabilityMatrix& pm, MyKey& colorkey) {
+
+	MyKey returnkey;
 	
 	// delare random number distribution and get a random number
 	std::uniform_real_distribution<float> dist(0, 1);
 	// get a random number between 0 and 1.
 	float random = dist(rand_gen);
 	if (debug) { std::cerr << "Got a random number: " << random << std::endl; }
-	unsigned long long sum_of_possibilities = pm.get(Ai);
+	
+	// now get all kombinations of keys and the sum of all possibilities
+	std::vector<MyKey> key_combinations;	// this is what we want to fill now
+	unsigned long long sum_of_possibilities = pm.get_sum(colorkey, key_combinations);
 	if (debug) { std::cerr << "Sum of all possibilities is: " << sum_of_possibilities << std::endl; }
 	
-	MyKey tempkey;				// helper to build all combinations
-	std::vector<MyKey> key_combinations;	// this is what we want to fill now
-	// now lets calculate all combinations of keys for our points
-	calculate_combinations (Ai, tempkey, key_combinations);
-		
 	// stochastically take one of the posibilities
-	// start at the probability of first possible key and add each other key probability as long as the random number is bigger.
+	// start at the probability of first possible key and add each other key probability 
+	// as long as the random number is bigger.
 	unsigned long long sum = 0;
 	for (auto thiskey : key_combinations) {
 		sum += pm.get(thiskey);
 		// if the random number is bigger than our probability, take this base as the first base!
 		if (random*sum_of_possibilities < sum) {
-			return thiskey;
+			returnkey = thiskey;
+			break;
 		}
 	}
-	std::cerr << "WARNING: Could not get a random combination of articulation-point-colors. Something is wrong!"
-		<< std::endl;
-	return MyKey();
-}
-
-void calculate_combinations (std::set<int>& Ak, MyKey& mykey, std::vector<MyKey>& key_combinations) {
-	
-	if (Ak.size() > 0) {
-		std::set<int>::iterator it = Ak.begin();
-		int vertex = *it;
-		Ak.erase(it);
-		
-		for ( unsigned int b = 0; b < A_Size; b++ ) {
-			mykey.insert(std::make_pair(vertex, b));
-			// recursion starts here
-			calculate_combinations(Ak, mykey, key_combinations);
-			
-			if (Ak.size() == 0) {
-				// remember our generated key
-				key_combinations.push_back(mykey);
-			}
-			// remove current vertex again to make space for a new base
-			mykey.erase(vertex);
-		}
-		// add current vertex again
-		Ak.insert(vertex);
-	}
+	return returnkey;
 }
 
 void reset_colors(Graph& g) {

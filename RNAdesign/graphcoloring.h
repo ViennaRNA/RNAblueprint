@@ -49,11 +49,11 @@ class ProbabilityMatrix {
 		ProbabilityMatrix (Graph& g);
 		// get probability for mykey... key of Aks (12/A) (4/C) ()...
 		unsigned long long get(MyKey mykey);
-		// get sum of probabilities for all Ak of this ear
-		unsigned long long get(std::set<int> Ak);
+		// get sum of probabilities
+		unsigned long long get_sum (MyKey mykey, std::vector<MyKey>& key_combinations);
 		// get all the articulation points for a specific ear
-		std::set<Vertex> get_Ai (unsigned int k);
-		// get biggest ear number
+		std::set<Vertex> get_Ak (unsigned int k);
+		// return my of this graph
 		unsigned int get_my() { return my; }
 		// My custom hash key used for n
 		friend class MyKeyHash;
@@ -63,7 +63,7 @@ class ProbabilityMatrix {
 		// remember my as number of ears
 		unsigned int my = 0;
 		// remember all the Articulation points for every ear
-		std::vector<std::set<Vertex> > Ais;
+		std::vector<std::set<Vertex> > Aks;
 		// to keep track of current Ak Ai we need to update them before glueing an ear
 		void updateCurrentAkAi (Graph& g, int k, std::set<Vertex>& currentAk, std::set<Vertex>& currentAi);
 		// calculate all the key probabilities and start more from there
@@ -72,10 +72,12 @@ class ProbabilityMatrix {
 		unsigned long long get_probability ( MyKey mykey, Graph& g, std::set<Vertex>& Ak, std::set<Vertex>& Ai, Pairing& p, unsigned int k);
 		// recursion to get base combinations done in (sum over AUGC in 6) of (sum over AUGC in 10) of ...
 		void make_sum_of_sum( Graph& g, std::set<Vertex>& Ai, MyKey& mykey, MyKey& lastkey, std::vector<SubProbability>& sub_probabilities, Pairing& p, unsigned int k, unsigned long long& max_number_of_sequences);
+		// do the actual calculation of the multiplied probabilities in the sum_of_sum
+		unsigned long long calculate_probability (MyKey& mykey, MyKey& lastkey, std::vector<SubProbability>& sub_probabilities, Pairing& p);
 		// get the color of either mykey or lastkey.
 		int get_color_from_key (MyKey& mykey, MyKey& lastkey, int vertex);
-		// get sum of probabilities
-		unsigned long long get_sum (MyKey mykey);
+		// calculates all base combinations for current articulation points (recursion)
+		void calculate_combinations (std::set<int>& Ak, MyKey& mykey, std::vector<MyKey>& key_combinations);
 };
 
 // color the root graph!
@@ -85,10 +87,7 @@ void color_graph (Graph& graph);
 void color_blocks (Graph& g);
 
 // color Articulation Points of this ear
-MyKey color_articulation_points(ProbabilityMatrix& pm, std::set<int>& Ak);
-
-// calculates all base combinations for current articulation points (recursion)
-void calculate_combinations (std::set<int>& Ak, MyKey& mykey, std::vector<MyKey>& key_combinations);
+MyKey color_articulation_points(ProbabilityMatrix& pm, MyKey& colorkey);
 
 // reset the bases of the graph to X
 void reset_colors(Graph& g);
