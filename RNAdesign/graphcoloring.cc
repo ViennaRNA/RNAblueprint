@@ -128,7 +128,7 @@ void ProbabilityMatrix::updateCurrentAkAi (Graph& g, int k, std::set<Vertex>& cu
 			// we need to keep Ak from previous glued ears, except those that became Ai this time!
 			currentAk.erase(g.local_to_global(v));
 		}
-	}		
+	}
 }
 
 unsigned long long ProbabilityMatrix::get_probability ( MyKey mykey, Graph& g, std::set<Vertex>& Ak, std::set<Vertex>& Ai, Pairing& p, unsigned int k) {
