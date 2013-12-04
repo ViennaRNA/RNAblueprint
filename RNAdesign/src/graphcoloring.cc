@@ -129,6 +129,15 @@ void ProbabilityMatrix::updateCurrentAkAi (Graph& g, int k, std::set<Vertex>& cu
 			currentAk.erase(g.local_to_global(v));
 		}
 	}
+	
+	// for the last cycle, Ak is zero, so we need to "define" one Ai as Ak!
+	if (currentAk.size() == 0) {
+		auto first = currentAi.begin();
+		// push the first Ai to Ak
+		currentAk.insert(*first);
+		// erase it in Ai
+		currentAi.erase(first);
+	}	
 }
 
 unsigned long long ProbabilityMatrix::get_probability ( MyKey mykey, Graph& g, std::set<Vertex>& Ak, std::set<Vertex>& Ai, Pairing& p, unsigned int k) {
