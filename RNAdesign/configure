@@ -4083,6 +4083,7 @@ fi
 
 
 # use the C++ compiler for the following checks
+CFLAGS="-std=c++11"
 ac_ext=cpp
 ac_cpp='$CXXCPP $CPPFLAGS'
 ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'

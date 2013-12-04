@@ -16,6 +16,7 @@ AC_PROG_CC
 AM_INIT_AUTOMAKE([1.9])
 
 # use the C++ compiler for the following checks
+CFLAGS="-std=c++11"
 AC_LANG([C++])
 
 # Checks for header files.
