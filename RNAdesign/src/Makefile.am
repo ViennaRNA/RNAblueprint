@@ -1,4 +1,4 @@
-# this is example-file: src/Makefile.am
+# this is: src/Makefile.am
 
 # the program to build (the names of the final binaries)
 bin_PROGRAMS = RNAdesign
@@ -13,4 +13,14 @@ RNAdesign_SOURCES =	main.cc \
 			parsestruct.cc \
 			pathcoloring.cc \
 			graphcoloring.cc
+nodist_include_HEADERS = common.h \
+			graphcoloring.h \
+			main.h \
+			pathcoloring.h \
+			struct2graph.h \
+			decompose.h \
+			graphcommon.h \
+			parsestruct.h \
+			printgraph.h \
+			treestatistics.h
 

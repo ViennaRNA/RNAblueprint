@@ -9,8 +9,6 @@ AC_CONFIG_SRCDIR([src/main.cc])
 # include m4 local macros
 AC_CONFIG_MACRO_DIRS([m4])
 
-# Checks for programs
-
 # check for C++ compiler
 AC_PROG_CXX
 AC_PROG_CC
@@ -63,6 +61,9 @@ AC_CHECK_HEADERS([boost/program_options.hpp])
 AC_CHECK_HEADERS([boost/graph/graphml.hpp])
 AC_CHECK_HEADERS([boost/graph/graph_utility.hpp])
 AC_CHECK_HEADERS([boost/graph/iteration_macros.hpp])
+
+# for test framework
+AC_CHECK_HEADERS([boost/test/included/unit_test.hpp])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_TYPE_SIZE_T
