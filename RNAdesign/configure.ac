@@ -1,10 +1,13 @@
-# this is example-file: configure.ac
+# RNAdesign: configure.ac
 
 # initial information about the project
 AC_INIT([RNAdesign],[0.1],[s.hammer@univie.ac.at])
 
 # check if the source folder is correct
 AC_CONFIG_SRCDIR([src/main.cc])
+
+# include m4 local macros
+AC_CONFIG_MACRO_DIRS([m4])
 
 # Checks for programs
 
@@ -17,7 +20,16 @@ AM_INIT_AUTOMAKE([1.9])
 
 # use the C++ compiler for the following checks
 AC_LANG([C++])
-AM_CXXFLAGS="-std=c++11 $AM_CXXFLAGS"
+
+# C++11 dependent program!
+AX_CXX_COMPILE_STDCXX_11([noext],[mandatory])
+CPPFLAGS="-std=c++11 $CPPFLAGS"
+
+# add standard library
+LIBS="-lstdc++ $LIBS"
+
+# add boost_program_options
+LIBS="-lboost_program_options $LIBS"
 
 # Checks for header files.
 AC_HEADER_STDC
@@ -76,7 +88,7 @@ else
 fi
 
 ##########################################################################
-# adding the RNA library (e.g. with static name 'libRNA.a')
+# adding the RNA library (with static name 'libRNA.a')
 ##########################################################################
 
 # adding the lib to the files to link

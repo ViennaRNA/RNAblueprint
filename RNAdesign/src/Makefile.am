@@ -11,5 +11,6 @@ RNAdesign_SOURCES =	main.cc \
 			decompose.cc \
 			treestatistics.cc \
 			parsestruct.cc \
-			pathcoloring.cc
+			pathcoloring.cc \
+			graphcoloring.cc
 

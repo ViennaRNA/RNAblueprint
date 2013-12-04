@@ -15,6 +15,7 @@
 #include <vector>
 #include <array>
 #include <set>
+#include <iostream>
 
 // include boost components
 #include <boost/lexical_cast.hpp>
