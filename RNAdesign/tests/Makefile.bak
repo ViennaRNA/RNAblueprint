@@ -3,7 +3,7 @@ CC = g++
 LL = g++
 EXE = testRNAdesign
 ARGS = --log_level=test_suite
-LIBS = -lstdc++
+LIBS = -lstdc++ -I../src/
 LDFLAGS = -lboost_unit_test_framework
 DEFS =
 WARN = -Wall

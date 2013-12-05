@@ -21,15 +21,10 @@ AC_LANG([C++])
 
 # C++11 dependent program!
 AX_CXX_COMPILE_STDCXX_11([noext],[mandatory])
-CPPFLAGS="-std=c++11 $CPPFLAGS"
 
-# add standard library
-LIBS="-lstdc++ $LIBS"
+# Check lib boost_program_options
+AC_CHECK_LIB([boost_program_options],[_init])
 
-# add boost_program_options
-LIBS="-lboost_program_options $LIBS"
-
-##########################################################################
 # debug compilation support
 ##########################################################################
 
@@ -49,12 +44,17 @@ else
     AM_CXXFLAGS="$AM_CXXFLAGS -O3"
 fi
 
-##########################################################################
-# adding the RNA library (with static name 'libRNA.a')
+# adding the RNA library and its dependencies (static name 'libRNA.a')
 ##########################################################################
 
-# adding the lib to the files to link
-LIBS="-lRNA -lm $LIBS"
+# Check for OpenMP and prepare flags
+AC_OPENMP
+AC_SUBST(OPENMP_CFLAGS)
+
+# Checks for libraries.
+AC_CHECK_LIB([m], [exp],
+	[LIBS="-lm $LIBS"],
+	AC_MSG_ERROR([libMath not found!]))
 
 # introduce the optional configure parameter for a non-standard install prefix of RNAlib
 AC_ARG_WITH([RNAlib],
@@ -70,9 +70,20 @@ if test $RNAlibPATHSET = 1 ; then
     AM_LDFLAGS="$AM_LDFLAGS -L$with_RNAlib/lib64 -L$with_RNAlib/lib"
 fi
 
-##########################################################################
+# Checks for ViennaRNA library.
+# LIBS="-lRNA $LIBS"
+OLD_LDFLAGS=$LDFLAGS
+LDFLAGS="-lgomp $LDFLAGS"
+AC_CHECK_LIB([RNA],[fold],
+	[LIBS="-lRNA $LIBS"],
+	AC_MSG_ERROR([libRNA not found!]))
+LDFLAGS=$OLD_LDFLAGS
 
 # Checks for header files.
+##########################################################################
+OLD_CXXFLAGS=$CXXFLAGS
+CPPFLAGS="-std=c++11 $CPPFLAGS"
+
 AC_HEADER_STDC
 AC_CHECK_HEADERS([iostream])
 AC_CHECK_HEADERS([sstream])
@@ -107,7 +118,7 @@ AC_CHECK_HEADERS([boost/graph/iteration_macros.hpp])
 AC_CHECK_HEADERS([boost/test/included/unit_test.hpp])
 
 AC_CHECK_HEADERS([ViennaRNA/fold.h])
-
+CPPFLAGS=$OLD_CPPFLAGS
 # Checks for typedefs, structures, and compiler characteristics.
 AC_TYPE_SIZE_T
 
@@ -120,6 +131,7 @@ AC_SUBST([LIBS])
 # files to generate via autotools (.am or .in source files)
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_FILES([src/Makefile])
+AC_CONFIG_FILES([tests/Makefile])
 
 # generate the final Makefile etc.
 AC_OUTPUT

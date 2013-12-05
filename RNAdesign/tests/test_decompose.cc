@@ -13,8 +13,8 @@
 #include "test_common.h"
 
 // include headers containing functions to test
-#include "../decompose.h"
-#include "../printgraph.h"
+#include "decompose.h"
+#include "printgraph.h"
 
 // include boost components
 #include <boost/graph/iteration_macros.hpp>

@@ -13,11 +13,11 @@
 #include "test_common.h"
 
 // include headers containing functions to test
-#include "../graphcoloring.h"
+#include "graphcoloring.h"
 
 // define heads
 BOOST_AUTO_TEST_SUITE(GraphColoring)
-
+/*
 class compound_test {
 public:
     void test_construction() {
@@ -41,7 +41,7 @@ private:
 boost::shared_ptr<compound_test> instance( new compound_test );
 Ts>add( BOOST_CLASS_TEST_CASE( &compound_test::constructor, instance ) );
 Ts>add( BOOST_CLASS_TEST_CASE( &compound_test::test_access_methods, instance ) );
-
+*/
 
 Sequence get_vertex_colors(Graph& g) {
 	Sequence sequence;

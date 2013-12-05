@@ -10,7 +10,7 @@
 #define TESTCOMMON_H
 
 // include common header with graph definition and global variables
-#include "../common.h"
+#include "common.h"
 
 // include standard library parts
 #include <sstream>

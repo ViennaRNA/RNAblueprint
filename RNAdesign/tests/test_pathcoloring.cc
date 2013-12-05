@@ -13,7 +13,7 @@
 #include "test_common.h"
 
 // include headers containing functions to test
-#include "../pathcoloring.h"
+#include "pathcoloring.h"
 
 // define heads
 namespace PathColoring {

@@ -13,7 +13,7 @@
 #include "test_common.h"
 
 // include headers containing functions to test
-#include "../parsestruct.h"
+#include "parsestruct.h"
 
 // include std components
 
