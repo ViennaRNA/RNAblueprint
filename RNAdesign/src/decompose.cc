@@ -305,11 +305,11 @@ void ear_decomposition (Graph& g, std::map<Vertex, Vertex>& parents, std::vector
 		g[e].ear = 0;
 	}
 	
-	// now start at the biggest distance, at the biggest lexmin crossedge and make walks from the vertices to the lca
+	// now start at the smallest distance, at the biggest lexmin crossedge and make walks from the vertices to the lca
 	// old values will be overwritten, therefore you get all the ears correctly
 	int ear = 0;
-	for (std::map<int, std::map<Edge, Vertex> >::reverse_iterator it=delca.rbegin(); it!=delca.rend(); ++it) {
-		for (std::map<Edge, Vertex>::reverse_iterator iit=(it->second).rbegin(); iit!=(it->second).rend(); ++iit) {
+	for (std::map<int, std::map<Edge, Vertex> >::iterator it=delca.begin(); it!=delca.end(); ++it) {
+		for (std::map<Edge, Vertex>::iterator iit=(it->second).begin(); iit!=(it->second).end(); ++iit) {
 			Vertex r = iit->second;
 			g[iit->first].ear = ear;
 			//std::cerr << "lca is: " << r << "; coloring ear: " << ear << std::endl;

@@ -50,7 +50,7 @@ ProbabilityMatrix::ProbabilityMatrix (Graph& g) {
 	if (debug) { std::cerr << "My is: " << my << std::endl; }
 
 	// get Pairing matrix for paths, TODO only initialize once for the whole program!
-	Pairing p(max_length+1);
+	p = new Pairing(max_length+1);
 	
 	// start at the outermost ear and process inwards
 	for (boost::tie(ear, ear_end) = (g).children(); ear != ear_end; ++ear) {
@@ -96,7 +96,7 @@ ProbabilityMatrix::ProbabilityMatrix (Graph& g) {
 					<< "Calculating probablity for key: " << thiskey << std::endl;
 			}
 			
-			unsigned long long probability = get_probability(thiskey, *ear, currentAk, currentAi, p, k);
+			unsigned long long probability = get_probability(thiskey, *ear, currentAk, currentAi, k);
 			
 			if (debug) { std::cerr << "= " << probability << std::endl; }
 			
@@ -113,6 +113,10 @@ ProbabilityMatrix::ProbabilityMatrix (Graph& g) {
 			}
 		}
 	}
+}
+
+ProbabilityMatrix::~ProbabilityMatrix() {
+	delete p;
 }
 
 void ProbabilityMatrix::updateCurrentAkAi (Graph& g, int k, std::set<Vertex>& currentAk, std::set<Vertex>& currentAi) {
@@ -140,7 +144,7 @@ void ProbabilityMatrix::updateCurrentAkAi (Graph& g, int k, std::set<Vertex>& cu
 	}	
 }
 
-unsigned long long ProbabilityMatrix::get_probability ( MyKey mykey, Graph& g, std::set<Vertex>& Ak, std::set<Vertex>& Ai, Pairing& p, unsigned int k) {
+unsigned long long ProbabilityMatrix::get_probability ( MyKey mykey, Graph& g, std::set<Vertex>& Ak, std::set<Vertex>& Ai, unsigned int k) {
 	
 	// v--return this--v v--recursion get_sum_of_sum--v v--let's call them sub_probabilities--v   v--prob. last_ear--v
 	// Nk[A6][A10][A1]  =   sum(AUGC in inner Ap = 9)   P[A6][x9][3 pathlength] * P[x9][A10][1] * Nk-1 [x9][A1]
@@ -197,6 +201,10 @@ unsigned long long ProbabilityMatrix::get_probability ( MyKey mykey, Graph& g, s
 		}
 		sub_probability.length = boost::num_edges(*part);
 	}
+	// remember for later when we have no graph (at backtracing)
+	if (parts.size() == k) {
+		parts.push_back(sub_probabilities);
+	}
 	
 	if (debug) {
 		for (auto sub_probability : sub_probabilities) {
@@ -210,10 +218,10 @@ unsigned long long ProbabilityMatrix::get_probability ( MyKey mykey, Graph& g, s
 	// calculate sum of sum for all bases colored X (= internal aps)
 	// adds base combinatoric to the sub_probabilities and to the lastkey
 	if (Ai.size() == 0) {
-		max_number_of_sequences += calculate_probability (mykey, lastkey, sub_probabilities, p);
+		max_number_of_sequences += calculate_probability (mykey, lastkey, sub_probabilities);
 	} else {
 		if (debug) { std::cerr << "Make sum of sum: " << k << std::endl; }
-		make_sum_of_sum(g, Ai, mykey, lastkey, sub_probabilities, p, k, max_number_of_sequences);
+		make_sum_of_sum(g, Ai, mykey, lastkey, sub_probabilities, k, max_number_of_sequences);
 	}
 		
 	return max_number_of_sequences;
@@ -222,8 +230,7 @@ unsigned long long ProbabilityMatrix::get_probability ( MyKey mykey, Graph& g, s
 void ProbabilityMatrix::make_sum_of_sum(	Graph& g,
 						std::set<Vertex>& Ai, 
 						MyKey& mykey, MyKey& lastkey, 
-						std::vector<SubProbability>& sub_probabilities, 
-						Pairing& p,
+						std::vector<SubProbability>& sub_probabilities,
 						unsigned int k,
 						unsigned long long& max_number_of_sequences)
 {
@@ -236,10 +243,10 @@ void ProbabilityMatrix::make_sum_of_sum(	Graph& g,
 		for ( unsigned int b = 0; b < A_Size; b++ ) {
 			lastkey.insert(std::make_pair(boost::get(boost::vertex_color_t(), g.root(), v), b));
 			// recursion starts here
-			make_sum_of_sum(g, Ai, mykey, lastkey, sub_probabilities, p, k, max_number_of_sequences);
+			make_sum_of_sum(g, Ai, mykey, lastkey, sub_probabilities, k, max_number_of_sequences);
 			
 			if (Ai.size() == 0) {
-				max_number_of_sequences += calculate_probability (mykey, lastkey, sub_probabilities, p);
+				max_number_of_sequences += calculate_probability (mykey, lastkey, sub_probabilities);
 			}
 			// remove current vertex again to make space for a new base
 			lastkey.erase(v);
@@ -262,8 +269,7 @@ int ProbabilityMatrix::get_color_from_key (MyKey& mykey, MyKey& lastkey, int ver
 }
 
 unsigned long long ProbabilityMatrix::calculate_probability (	MyKey& mykey, MyKey& lastkey, 
-								std::vector<SubProbability>& sub_probabilities, 
-								Pairing& p)
+								std::vector<SubProbability>& sub_probabilities)
 {
 	// do the actual calculation here!
 	unsigned long long multiplied_probabilities = 1;
@@ -273,11 +279,11 @@ unsigned long long ProbabilityMatrix::calculate_probability (	MyKey& mykey, MyKe
 		int startBase = get_color_from_key(mykey, lastkey, sub_probability.start);
 		int endBase = get_color_from_key(mykey, lastkey, sub_probability.end);
 		// get probability and multiply it
-		multiplied_probabilities *= p.get(sub_probability.length, startBase, endBase);
+		multiplied_probabilities *= p->get(sub_probability.length, startBase, endBase);
 		
 		if (debug) { std::cerr << "P(" << enum_to_char(startBase) << ", " 
 			<< enum_to_char(endBase) << ", " << sub_probability.length << ") = " 
-			<< p.get(sub_probability.length, startBase, endBase) << "\t*\t"; }
+			<< p->get(sub_probability.length, startBase, endBase) << "\t*\t"; }
 	}
 	// for k = 0 we should not look up lastkey, as there is no lastkey!
 	if (lastkey.size() != 0) {
@@ -290,6 +296,7 @@ unsigned long long ProbabilityMatrix::calculate_probability (	MyKey& mykey, MyKe
 	}
 	
 	if (debug) { std::cerr << "\t=\t" << multiplied_probabilities << std::endl; }
+	
 	return multiplied_probabilities;
 }
 
@@ -333,7 +340,7 @@ unsigned long long ProbabilityMatrix::get (MyKey mykey) {
 	return returnvalue;
 }
 
-unsigned long long ProbabilityMatrix::get_sum (MyKey mykey, std::vector<MyKey>& key_combinations) {
+unsigned long long ProbabilityMatrix::get_sum (int k, MyKey mykey, std::vector<MyKey>& key_combinations, std::unordered_map < MyKey , unsigned long long , MyKeyHash>& probabilities) {
 	MyKey tempkey;				// helper to build all combinations
 	std::set<int> cAk;			// to get all combinations of keys we need a list of articulation points
 	for (auto elem : mykey) {
@@ -358,7 +365,18 @@ unsigned long long ProbabilityMatrix::get_sum (MyKey mykey, std::vector<MyKey>& 
 	// now get the sum of all probabililties
 	unsigned long long sum = 0;
 	for (auto thiskey : key_combinations) {
-		sum += get(thiskey);
+		// TODO this was sum += get(thiskey) before however we need to take the path probabilities between the Aks ito account and
+		// multiply them. therefoer we need the calculate_probabaility function, which wants this stupid variables
+		// at the moment I still need to find a way to create a lastkey where all already colored bases are inside.
+		// the program will fail atm because of this
+		if (k+1 == (int) my) {
+			probabilities[thiskey] = get(thiskey);
+			sum += get(thiskey);
+		} else {
+			unsigned long long thisprob = calculate_probability (thiskey, thiskey, parts[k+1]);
+			probabilities[thiskey] = thisprob;
+			sum += thisprob;
+		}
 	}
 	return sum;
 }
@@ -412,7 +430,7 @@ void color_blocks (Graph& g) {
 	ProbabilityMatrix pm(g);
 	
 	// reverse iterate again over all ears to color Aks and all vertices in between
-	for (unsigned int k = pm.get_my()-1; k > 0; --k) {
+	for (int k = pm.get_my()-1; k >= 0; k--) {
 		if (debug) { std::cerr << "Start Backtracing at ear " << k << std::endl; }
 		// get the current Articulation Points
 		std::set<Vertex> Ak = pm.get_Ak(k);
@@ -426,7 +444,7 @@ void color_blocks (Graph& g) {
 		}
 		// now do the random coloring of our points
 		if (debug) { std::cerr << "Try to color this key: " << thiskey << std::endl; }
-		MyKey colorkey = color_articulation_points(pm, thiskey);
+		MyKey colorkey = color_articulation_points(k, pm, thiskey);
 		if (debug) { std::cerr << "Got a colored key: " << colorkey << std::endl; }
 		
 		// put colors onto graph
@@ -462,7 +480,7 @@ void color_blocks (Graph& g) {
 	}
 }
 
-MyKey color_articulation_points (ProbabilityMatrix& pm, MyKey& colorkey) {
+MyKey color_articulation_points (int k, ProbabilityMatrix& pm, MyKey& colorkey) {
 
 	MyKey returnkey;
 	
@@ -474,7 +492,8 @@ MyKey color_articulation_points (ProbabilityMatrix& pm, MyKey& colorkey) {
 	
 	// now get all kombinations of keys and the sum of all possibilities
 	std::vector<MyKey> key_combinations;	// this is what we want to fill now
-	unsigned long long sum_of_possibilities = pm.get_sum(colorkey, key_combinations);
+	std::unordered_map < MyKey , unsigned long long , MyKeyHash> probabilities;
+	unsigned long long sum_of_possibilities = pm.get_sum(k, colorkey, key_combinations, probabilities);
 	if (debug) { std::cerr << "Sum of all possibilities is: " << sum_of_possibilities << std::endl; }
 	
 	// stochastically take one of the posibilities
@@ -482,7 +501,7 @@ MyKey color_articulation_points (ProbabilityMatrix& pm, MyKey& colorkey) {
 	// as long as the random number is bigger.
 	unsigned long long sum = 0;
 	for (auto thiskey : key_combinations) {
-		sum += pm.get(thiskey);
+		sum += probabilities[thiskey];
 		// if the random number is bigger than our probability, take this base as the first base!
 		if (random*sum_of_possibilities < sum) {
 			returnkey = thiskey;
