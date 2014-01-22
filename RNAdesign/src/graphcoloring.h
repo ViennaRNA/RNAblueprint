@@ -50,7 +50,7 @@ class ProbabilityMatrix {
 		// get probability for mykey... key of Aks (12/A) (4/C) ()...
 		unsigned long long get(MyKey mykey);
 		// get sum of probabilities
-		unsigned long long get_sum (int k, MyKey mykey, std::vector<MyKey>& key_combinations, std::unordered_map < MyKey , unsigned long long , MyKeyHash>& probabilities);
+		unsigned long long get_sum (int k, MyKey mykey, MyKey lastkey, std::vector<MyKey>& key_combinations, std::unordered_map < MyKey , unsigned long long , MyKeyHash>& probabilities);
 		// get all the articulation points for a specific ear
 		std::set<Vertex> get_Ak (unsigned int k);
 		// return my of this graph
@@ -92,7 +92,7 @@ void color_graph (Graph& graph);
 void color_blocks (Graph& g);
 
 // color Articulation Points of this ear
-MyKey color_articulation_points(int k, ProbabilityMatrix& pm, MyKey& colorkey);
+MyKey color_articulation_points(int k, ProbabilityMatrix& pm, MyKey& colorkey, MyKey& lastkey);
 
 // reset the bases of the graph to X
 void reset_colors(Graph& g);

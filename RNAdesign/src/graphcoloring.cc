@@ -340,7 +340,7 @@ unsigned long long ProbabilityMatrix::get (MyKey mykey) {
 	return returnvalue;
 }
 
-unsigned long long ProbabilityMatrix::get_sum (int k, MyKey mykey, std::vector<MyKey>& key_combinations, std::unordered_map < MyKey , unsigned long long , MyKeyHash>& probabilities) {
+unsigned long long ProbabilityMatrix::get_sum (int k, MyKey mykey, MyKey lastkey, std::vector<MyKey>& key_combinations, std::unordered_map < MyKey , unsigned long long , MyKeyHash>& probabilities) {
 	MyKey tempkey;				// helper to build all combinations
 	std::set<int> cAk;			// to get all combinations of keys we need a list of articulation points
 	for (auto elem : mykey) {
@@ -365,15 +365,15 @@ unsigned long long ProbabilityMatrix::get_sum (int k, MyKey mykey, std::vector<M
 	// now get the sum of all probabililties
 	unsigned long long sum = 0;
 	for (auto thiskey : key_combinations) {
-		// TODO this was sum += get(thiskey) before however we need to take the path probabilities between the Aks ito account and
-		// multiply them. therefoer we need the calculate_probabaility function, which wants this stupid variables
+		// TODO this was sum += get(thiskey) before however we need to take the path probabilities between the Aks into account and
+		// multiply them. therefore we need the calculate_probabaility function, which wants this stupid variables
 		// at the moment I still need to find a way to create a lastkey where all already colored bases are inside.
 		// the program will fail atm because of this
 		if (k+1 == (int) my) {
 			probabilities[thiskey] = get(thiskey);
 			sum += get(thiskey);
 		} else {
-			unsigned long long thisprob = calculate_probability (thiskey, thiskey, parts[k+1]);
+			unsigned long long thisprob = calculate_probability (thiskey, lastkey, parts[k+1]);
 			probabilities[thiskey] = thisprob;
 			sum += thisprob;
 		}
@@ -428,6 +428,8 @@ void color_blocks (Graph& g) {
 	// start with filling the matrix
 	// TODO Initialize just once!
 	ProbabilityMatrix pm(g);
+	// remember the current key for the next ear.
+	MyKey lastkey;
 	
 	// reverse iterate again over all ears to color Aks and all vertices in between
 	for (int k = pm.get_my()-1; k >= 0; k--) {
@@ -444,7 +446,9 @@ void color_blocks (Graph& g) {
 		}
 		// now do the random coloring of our points
 		if (debug) { std::cerr << "Try to color this key: " << thiskey << std::endl; }
-		MyKey colorkey = color_articulation_points(k, pm, thiskey);
+		MyKey colorkey = color_articulation_points(k, pm, thiskey, lastkey);
+		// remember colorkey for next ear iteration
+		lastkey = colorkey;
 		if (debug) { std::cerr << "Got a colored key: " << colorkey << std::endl; }
 		
 		// put colors onto graph
@@ -480,7 +484,7 @@ void color_blocks (Graph& g) {
 	}
 }
 
-MyKey color_articulation_points (int k, ProbabilityMatrix& pm, MyKey& colorkey) {
+MyKey color_articulation_points (int k, ProbabilityMatrix& pm, MyKey& colorkey, MyKey& lastkey) {
 
 	MyKey returnkey;
 	
@@ -493,7 +497,7 @@ MyKey color_articulation_points (int k, ProbabilityMatrix& pm, MyKey& colorkey) 
 	// now get all kombinations of keys and the sum of all possibilities
 	std::vector<MyKey> key_combinations;	// this is what we want to fill now
 	std::unordered_map < MyKey , unsigned long long , MyKeyHash> probabilities;
-	unsigned long long sum_of_possibilities = pm.get_sum(k, colorkey, key_combinations, probabilities);
+	unsigned long long sum_of_possibilities = pm.get_sum(k, colorkey, lastkey, key_combinations, probabilities);
 	if (debug) { std::cerr << "Sum of all possibilities is: " << sum_of_possibilities << std::endl; }
 	
 	// stochastically take one of the posibilities
