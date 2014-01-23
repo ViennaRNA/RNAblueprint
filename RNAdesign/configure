@@ -4520,7 +4520,7 @@ else
   as_fn_error $? "libRNA not found!" "$LINENO" 5
 fi
 
-LDFLAGS=$OLD_LDFLAGS
+#LDFLAGS=$OLD_LDFLAGS
 
 # Checks for header files.
 ##########################################################################

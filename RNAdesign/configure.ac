@@ -77,7 +77,7 @@ LDFLAGS="-lgomp $LDFLAGS"
 AC_CHECK_LIB([RNA],[fold],
 	[LIBS="-lRNA $LIBS"],
 	AC_MSG_ERROR([libRNA not found!]))
-LDFLAGS=$OLD_LDFLAGS
+#LDFLAGS=$OLD_LDFLAGS
 
 # Checks for header files.
 ##########################################################################

@@ -12,7 +12,8 @@ RNAdesign_SOURCES =	main.cc \
 			treestatistics.cc \
 			parsestruct.cc \
 			pathcoloring.cc \
-			graphcoloring.cc
+			graphcoloring.cc \
+			energy.cc
 nodist_include_HEADERS = common.h \
 			graphcoloring.h \
 			main.h \
@@ -22,5 +23,6 @@ nodist_include_HEADERS = common.h \
 			graphcommon.h \
 			parsestruct.h \
 			printgraph.h \
-			treestatistics.h
+			treestatistics.h \
+			energy.h
 

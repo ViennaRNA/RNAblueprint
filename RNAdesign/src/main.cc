@@ -13,6 +13,7 @@
 #include "printgraph.h"
 #include "decompose.h"
 #include "graphcoloring.h"
+#include "energy.h"
 
 // boost components
 #include <boost/graph/iteration_macros.hpp>
@@ -82,8 +83,13 @@ int main(int ac, char* av[]) {
 	}
 	
 	while (number_of_designs > 0) {
-		color_graph(graph);					// color the graph!
-		*out << get_sequence(graph) << std::endl;		// extract the sequence from the graph
+		color_graph(graph);						// color the graph!
+		std::string sequence = get_sequence(graph);			// extract the sequence from the graph
+		*out << sequence;
+		for (auto s : structures) {
+			*out << "\t" << energy_of_structure(sequence, s);	// calculate the energies
+		}			
+		*out << std::endl;		
 		number_of_designs--;
 	}
 	

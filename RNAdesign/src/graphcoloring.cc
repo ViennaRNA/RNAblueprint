@@ -365,7 +365,7 @@ unsigned long long ProbabilityMatrix::get_sum (int k, MyKey mykey, MyKey lastkey
 	// now get the sum of all probabililties
 	unsigned long long sum = 0;
 	for (auto thiskey : key_combinations) {
-		// TODO this was sum += get(thiskey) before however we need to take the path probabilities between the Aks into account and
+		// this was sum += get(thiskey) before however we need to take the path probabilities between the Aks into account and
 		// multiply them. therefore we need the calculate_probabaility function, which wants this stupid variables
 		// at the moment I still need to find a way to create a lastkey where all already colored bases are inside.
 		// the program will fail atm because of this
