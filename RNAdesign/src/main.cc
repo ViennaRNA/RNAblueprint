@@ -82,14 +82,19 @@ int main(int ac, char* av[]) {
 		std::cerr << "....,....1....,....2....,....3....,....4....,....5....,....6....,....7....,....8" << std::endl;
 	}
 	
+	
+	
 	while (number_of_designs > 0) {
 		color_graph(graph);						// color the graph!
 		std::string sequence = get_sequence(graph);			// extract the sequence from the graph
 		*out << sequence;
 		for (auto s : structures) {
 			*out << "\t" << energy_of_structure(sequence, s);	// calculate the energies
-		}			
-		*out << std::endl;		
+		}
+		*out << std::endl;
+		std::string mfe_structure;
+		float mfe = fold(sequence, mfe_structure);
+		*out << mfe_structure << "\t" << mfe << std::endl;
 		number_of_designs--;
 	}
 	

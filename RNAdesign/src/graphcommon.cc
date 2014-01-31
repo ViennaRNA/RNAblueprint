@@ -70,3 +70,6 @@ bool is_bipartite_graph(Graph& g, Vertex startVertex, Edge& ed) {
 	boost::breadth_first_search(g, startVertex, boost::visitor(vis));
 	return exit;
 }
+
+
+

@@ -7,8 +7,8 @@
 *
 */
 
-#ifndef ENERGY_H
-#define ENERGY_H
+#ifndef ENERGY_OPTIMIZATION_H
+#define ENERGY_OPTIMIZATION_H
 
 // include common header with graph definition and global variables
 #include "common.h"
@@ -21,9 +21,7 @@
 // typedefs
 
 // functions
-float energy_of_structure (std::string& sequence, std::string& structure);
 
-float fold (std::string& sequence, std::string& structure);
 
 
 

@@ -67,11 +67,20 @@ void ear_decomposition (Graph& g, std::map<Vertex, Vertex>& parents, std::vector
 // get boost random spanning tree for schieber ear decomposition
 void get_random_spanning_tree (Graph& g, std::map<Vertex, Vertex>& parents, std::vector<Edge>& crossedges, Vertex start);
 
-// given all the parents of a spanning_tree, find the lca a crossedge (helper for schieber ear decomposition)
-std::pair<Vertex, int> get_lca_distance(Graph& g, std::map<Vertex, Vertex>& parents, Edge e, Vertex r);
+// given all the parents of a spanning_tree, find the lca of a crossedge (helper for schieber ear decomposition)
+Vertex get_lca(Graph& g, std::map<Vertex, Vertex>& parents, Edge& e, Vertex& r);
 
-// do a walk in the spanning tree starting at v and ending at the root r -> return a vector with the walk  (helper for schieber ear decomposition)
-std::vector<Vertex> make_tree_walk(std::map<Vertex, Vertex>& parents, Vertex v, Vertex r);
+// recursion function for the get_lca_distance function
+Vertex lca_recursion(Graph& g, std::map<Vertex, Vertex>& parents, Edge& e, Vertex u, Vertex v, Vertex& r);
+
+// Get the distance from one vertex to another (mostly root) in the spanning tree
+int get_distance(Graph& g, std::map<Vertex, Vertex>& parents, Vertex v, Vertex r);
+
+// return the distance of a edge to the root (smallest distance of vertices)
+int get_distance(Graph& g, std::map<Vertex, Vertex>& parents, Edge e, Vertex r);
+
+// return a iterator poiting to the parent of a certain vertex in the spannin gtree
+Vertex get_parent(std::map<Vertex, Vertex>& parents, Vertex v);
 
 // identify articulation points and add them as graph property Ak
 void color_articulation_points (Graph& g);
