@@ -72,4 +72,6 @@ bool is_bipartite_graph(Graph& g, Vertex startVertex, Edge& ed) {
 }
 
 
-
+void open_ear_decomposition (Graph& g) {
+	
+}
