@@ -368,7 +368,6 @@ unsigned long long ProbabilityMatrix::get_sum (int k, MyKey mykey, MyKey lastkey
 		// this was sum += get(thiskey) before however we need to take the path probabilities between the Aks into account and
 		// multiply them. therefore we need the calculate_probabaility function, which wants this stupid variables
 		// at the moment I still need to find a way to create a lastkey where all already colored bases are inside.
-		// the program will fail atm because of this
 		if (k+1 == (int) my) {
 			probabilities[thiskey] = get(thiskey);
 			sum += get(thiskey);
@@ -494,7 +493,7 @@ MyKey color_articulation_points (int k, ProbabilityMatrix& pm, MyKey& colorkey, 
 	float random = dist(rand_gen);
 	if (debug) { std::cerr << "Got a random number: " << random << std::endl; }
 	
-	// now get all kombinations of keys and the sum of all possibilities
+	// now get all combinations of keys and the sum of all possibilities
 	std::vector<MyKey> key_combinations;	// this is what we want to fill now
 	std::unordered_map < MyKey , unsigned long long , MyKeyHash> probabilities;
 	unsigned long long sum_of_possibilities = pm.get_sum(k, colorkey, lastkey, key_combinations, probabilities);

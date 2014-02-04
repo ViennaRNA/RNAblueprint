@@ -71,7 +71,86 @@ bool is_bipartite_graph(Graph& g, Vertex startVertex, Edge& ed) {
 	return exit;
 }
 
-
-void open_ear_decomposition (Graph& g) {
+void open_ear_decomposition (Graph& g, Vertex startVertex, ear_t& ear) {
 	
+	
+	// map of ear decomposition properties for all vertices as key
+	ear_propertymap_t p;
+	
+	// time starts at 0
+	unsigned int counter = 0;
+
+	if (debug) { std::cout << "StartVertex is: " << startVertex << std::endl; }
+	// Algorithm from Ramachandran (1992) Parallel Open Ear Decomposition with Applications, page 8/9
+	ear_dfs(g, startVertex, p, ear, counter);
+	
+	// print out all data-structures at the end
+	if (debug) { 
+		std::cerr << "index\tcolor\tporder\tparent\tlow\tear" << std::endl;
+		for (ear_propertymap_t::iterator it = p.begin(); it != p.end(); it++) {
+			std::cerr << it->first << "\t" << 
+        		it->second.color << "\t" <<
+        		it->second.preorder << "\t" <<
+        		it->second.parent << "\t" <<
+        		it->second.low << "\t" <<
+        		it->second.ear.first << "," <<
+        		it->second.ear.second << std::endl;
+		}
+		std::cerr << "index\tear" << std::endl;
+		for (ear_t::iterator it = ear.begin(); it != ear.end(); it++) {
+			std::cerr << it->first.first << "," <<
+			it->first.second << "\t" <<
+			it->second.first << "," <<
+			it->second.second << std::endl;
+		}
+		std::cerr << "counter: " << counter << std::endl;	
+	}
 }
+
+void ear_dfs(Graph& g, Vertex v, ear_propertymap_t& p, ear_t& ear, unsigned int& counter) {
+	
+	enum { WHITE, BLACK, GRAY };
+	if (debug) { std::cout << "v is: " << v << std::endl; }
+	
+	// start ear decomposition
+	p[v].color = GRAY;
+	p[v].preorder = counter;
+	counter++;
+	p[v].low = boost::num_vertices(g);
+	p[v].ear = std::make_pair(boost::num_vertices(g), boost::num_vertices(g));
+	
+	// get neighbouring vertices
+	typename Graph::out_edge_iterator ei, ei_end;
+	for (boost::tie(ei, ei_end) = boost::out_edges(v, g);  ei != ei_end; ++ei)
+	{
+		if (debug) { std::cerr << boost::target(*ei, g) <<" is neighbour through edge: " << *ei << std::endl; }
+		Vertex w = boost::target(*ei, g);
+		if (debug) { std::cout << "w is: " << w << std::endl; }
+		
+		if (p[w].color == WHITE) {
+			if (debug) { std::cout << "w is white" << std::endl; }
+			p[w].parent = v;
+			// start new iteration here
+			ear_dfs(g, w, p, ear, counter);
+			//TODO: cast low vertex to integer a good idea?
+			if ((int) p[w].low >= p[w].preorder) {
+				ear[std::make_pair(p[w].parent, w)] = std::make_pair(std::numeric_limits<int>::max(), std::numeric_limits<int>::max());
+			} else {
+				ear[std::make_pair(p[w].parent, w)] = p[w].ear;
+			}
+				p[v].low = std::min((int) p[v].low, (int) p[w].low);
+				p[v].ear = lexmin(p[v].ear, p[w].ear);
+		} else if (p[w].color == GRAY) {
+			if (debug) { std::cout << "w is gray" << std::endl; }
+			if (w != p[w].parent) {
+				if (debug) { std::cout << "found a crossedge: " << v << w << std::endl; }
+				//TODO: casting vertex in low to integer a bad idea?
+				p[v].low = boost::vertex(std::min((int) p[v].low, p[w].preorder), g);
+				ear[std::make_pair(w, v)] = std::make_pair(boost::vertex(p[w].preorder, g), boost::vertex(p[v].preorder, g));
+				p[v].ear = lexmin(p[v].ear, ear[std::make_pair(w, v)]);
+			}
+		}
+	}
+	if (debug) { std::cout << "finishing vertex " << v << std::endl; }
+}
+

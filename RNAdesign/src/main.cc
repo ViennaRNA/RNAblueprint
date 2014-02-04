@@ -31,7 +31,6 @@ int main(int ac, char* av[]) {
 	unsigned int number_of_designs = 4;
 	if (vm.count("stat-trees")) { num_trees = vm["stat-trees"].as<int>(); }
 	if (vm.count("num")) { number_of_designs = vm["num"].as<unsigned int>(); }
-	bool ramachandran = vm["ramachandran"].as<bool>();
 	bool no_bipartite_check = vm["noBipartiteCheck"].as<bool>();
 	bool verbose = vm["verbose"].as<bool>();
 	
@@ -74,7 +73,7 @@ int main(int ac, char* av[]) {
 	}
 	
 	decompose_graph(graph, out, num_trees, 				// decompose the graph into its connected components, biconnected
-		ramachandran, no_bipartite_check);			// components and decompose blocks via ear decomposition
+		no_bipartite_check);					// components and decompose blocks via ear decomposition
 	
 	print_graph(graph, out, "colored-graph");
 	
@@ -150,8 +149,7 @@ boost::program_options::variables_map init_options(int ac, char* av[]) {
 		("in,i", po::value<std::string>(), "input file which contains the structures [string]")
 		("out,o", po::value<std::string>(&outfile), "write all (sub)graphs to gml files starting with given name (only works with -d) [string]")
 		("seed,s", po::value<unsigned long>(), "random number generator seed [unsigned long]")
-		("num,n", po::value<unsigned int>(), "number of designs (default: 4) [unsigned int]")
-		("ramachandran,r", po::bool_switch()->default_value(false)->zero_tokens(), "Use the Ramachandran ear decomposition algorithmus")
+		("num,n", po::value<unsigned int>(), "number of designs (default: 4) [unsigned int]") 
 		("stat-trees,t", po::value<int>(), "only do ear-decomposition statistics: define amount of different spanning trees for every root to calculate [int]")
 		("noBipartiteCheck,b", po::bool_switch()->default_value(false)->zero_tokens(), "Don't check if input dependency graph is bipartite")
 	;
