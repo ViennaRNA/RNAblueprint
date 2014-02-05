@@ -73,7 +73,7 @@ bool is_bipartite_graph(Graph& g, Vertex startVertex, Edge& ed) {
 
 void open_ear_decomposition (Graph& g, Vertex startVertex, ear_t& ear) {
 	
-	
+	if (debug) { std::cerr << "Starting ramachandran ear decomposition" << std::endl; }
 	// map of ear decomposition properties for all vertices as key
 	ear_propertymap_t p;
 	
@@ -120,12 +120,8 @@ void ear_dfs(Graph& g, Vertex v, ear_propertymap_t& p, ear_t& ear, unsigned int&
 	p[v].ear = std::make_pair(boost::num_vertices(g), boost::num_vertices(g));
 	
 	// get neighbouring vertices
-	typename Graph::out_edge_iterator ei, ei_end;
-	for (boost::tie(ei, ei_end) = boost::out_edges(v, g);  ei != ei_end; ++ei)
-	{
-		if (debug) { std::cerr << boost::target(*ei, g) <<" is neighbour through edge: " << *ei << std::endl; }
-		Vertex w = boost::target(*ei, g);
-		if (debug) { std::cout << "w is: " << w << std::endl; }
+	BGL_FORALL_ADJ_T(v, w, g, Graph) {
+		if (debug) { std::cout << "w is: " << boost::get(boost::vertex_color_t(), g, wmin) << std::endl; }
 		
 		if (p[w].color == WHITE) {
 			if (debug) { std::cout << "w is white" << std::endl; }

@@ -134,14 +134,14 @@ void ProbabilityMatrix::updateCurrentAkAi (Graph& g, int k, std::set<Vertex>& cu
 		}
 	}
 	
-	// for the last cycle, Ak is zero, so we need to "define" one Ai as Ak!
+	/* for the last cycle, Ak is zero, so we need to "define" one Ai as Ak!
 	if (currentAk.size() == 0) {
 		auto first = currentAi.begin();
 		// push the first Ai to Ak
 		currentAk.insert(*first);
 		// erase it in Ai
 		currentAi.erase(first);
-	}	
+	}*/	
 }
 
 unsigned long long ProbabilityMatrix::get_probability ( MyKey mykey, Graph& g, std::set<Vertex>& Ak, std::set<Vertex>& Ai, unsigned int k) {
@@ -368,14 +368,14 @@ unsigned long long ProbabilityMatrix::get_sum (int k, MyKey mykey, MyKey lastkey
 		// this was sum += get(thiskey) before however we need to take the path probabilities between the Aks into account and
 		// multiply them. therefore we need the calculate_probabaility function, which wants this stupid variables
 		// at the moment I still need to find a way to create a lastkey where all already colored bases are inside.
-		if (k+1 == (int) my) {
+		/*if (k+1 == (int) my) {
 			probabilities[thiskey] = get(thiskey);
 			sum += get(thiskey);
-		} else {
+		} else {*/
 			unsigned long long thisprob = calculate_probability (thiskey, lastkey, parts[k+1]);
 			probabilities[thiskey] = thisprob;
 			sum += thisprob;
-		}
+		//}
 	}
 	return sum;
 }
@@ -431,7 +431,7 @@ void color_blocks (Graph& g) {
 	MyKey lastkey;
 	
 	// reverse iterate again over all ears to color Aks and all vertices in between
-	for (int k = pm.get_my()-1; k >= 0; k--) {
+	for (int k = pm.get_my()-2; k >= 0; k--) {
 		if (debug) { std::cerr << "Start Backtracing at ear " << k << std::endl; }
 		// get the current Articulation Points
 		std::set<Vertex> Ak = pm.get_Ak(k);

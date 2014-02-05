@@ -45,5 +45,7 @@ int degree_in_ear (Vertex& v, Graph& g, int k);
 
 // create subgraphs for paths between articulation points (for easier coloring afterwards)
 void parts_between_articulation_points_to_subgraphs (Graph& g, int k);
+// recursion for parts function
+void parts_recursion (Graph& g, Vertex& start, int& k, Graph* subgptr);
 
 #endif
