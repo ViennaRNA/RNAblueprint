@@ -110,7 +110,7 @@ void open_ear_decomposition (Graph& g, Vertex startVertex, ear_t& ear) {
 void ear_dfs(Graph& g, Vertex v, ear_propertymap_t& p, ear_t& ear, unsigned int& counter) {
 	
 	enum { WHITE, BLACK, GRAY };
-	if (debug) { std::cout << "v is: " << v << std::endl; }
+	if (debug) { std::cout << "v is: " << g.local_to_global(v) << std::endl; }
 	
 	// start ear decomposition
 	p[v].color = GRAY;
@@ -121,7 +121,7 @@ void ear_dfs(Graph& g, Vertex v, ear_propertymap_t& p, ear_t& ear, unsigned int&
 	
 	// get neighbouring vertices
 	BGL_FORALL_ADJ_T(v, w, g, Graph) {
-		if (debug) { std::cout << "w is: " << boost::get(boost::vertex_color_t(), g, wmin) << std::endl; }
+		if (debug) { std::cout << "w is: " << g.local_to_global(w) << std::endl; }
 		
 		if (p[w].color == WHITE) {
 			if (debug) { std::cout << "w is white" << std::endl; }
@@ -139,7 +139,8 @@ void ear_dfs(Graph& g, Vertex v, ear_propertymap_t& p, ear_t& ear, unsigned int&
 		} else if (p[w].color == GRAY) {
 			if (debug) { std::cout << "w is gray" << std::endl; }
 			if (w != p[w].parent) {
-				if (debug) { std::cout << "found a crossedge: " << v << w << std::endl; }
+				if (debug) { std::cout << "found a crossedge: (" << g.local_to_global(v) << ","
+							<< g.local_to_global(w) << ")" << std::endl; }
 				//TODO: casting vertex in low to integer a bad idea?
 				p[v].low = boost::vertex(std::min((int) p[v].low, p[w].preorder), g);
 				ear[std::make_pair(w, v)] = std::make_pair(boost::vertex(p[w].preorder, g), boost::vertex(p[v].preorder, g));
@@ -147,6 +148,6 @@ void ear_dfs(Graph& g, Vertex v, ear_propertymap_t& p, ear_t& ear, unsigned int&
 			}
 		}
 	}
-	if (debug) { std::cout << "finishing vertex " << v << std::endl; }
+	if (debug) { std::cout << "finishing vertex " << g.local_to_global(v) << std::endl; }
 }
 

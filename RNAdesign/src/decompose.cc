@@ -190,7 +190,6 @@ void biconnected_components_to_subgraphs(Graph& g) {
 			}
 		}
 	}
-	
 }
 
 void merge_biconnected_paths(Graph& g, Vertex p, Vertex v, boost::property_map < Graph, boost::edge_component_t >::type& component, std::vector<Vertex>& art_points, int& nc) {
@@ -235,20 +234,20 @@ void ramachandran_ear_decomposition (Graph& g) {
 			Graph& subg = g.create_subgraph();
 			ear_nr++;
 			//boost::put(&graph_properties::level, g, "decomposed_ears");
-			if (debug) { 	std::cerr << "New subgraph for ear (" << it->second.first << "," 
-						<< it->second.second << ")" << std::endl 
+			if (debug) { 	std::cerr << "New subgraph for ear (" << g.local_to_global(it->second.first) << "," 
+						<< g.local_to_global(it->second.second) << ")" << std::endl 
 						<< "Vertices will be included in subgraph: "; }
 			for (ear_t::iterator ti = it; ti != ear.end(); ti++) {
 				if (ti->second == it->second) {
 					found.push_back(ti->second);
 					// add vertex into current subgraph if not present already
-					if (!subg.find_vertex(ti->first.first).second) {
-						boost::add_vertex(ti->first.first, subg);
-						if (debug) { std::cerr << " " << ti->first.first; }
+					if (!subg.find_vertex(g.local_to_global(ti->first.first)).second) {
+						boost::add_vertex(g.local_to_global(ti->first.first), subg);
+						if (debug) { std::cerr << " " << g.local_to_global(ti->first.first); }
 					}
-					if (!subg.find_vertex(ti->first.second).second) {
-						boost::add_vertex(ti->first.second, subg);
-						if (debug) { std::cerr << " " << ti->first.second; }
+					if (!subg.find_vertex(g.local_to_global(ti->first.second)).second) {
+						boost::add_vertex(g.local_to_global(ti->first.second), subg);
+						if (debug) { std::cerr << " " << g.local_to_global(ti->first.second); }
 					}
 					// lable edge properly
 					g[boost::edge(ti->first.first, ti->first.second, g).first].ear = ear_nr;
@@ -304,7 +303,7 @@ void parts_between_articulation_points_to_subgraphs (Graph& g, int k) {
 	
 	// find vertex to start our walk
 	Vertex start = boost::graph_traits<Graph>::null_vertex();
-	if (debug) { std::cerr << "Find startVertex of ear..." << std::endl; }
+	if (debug) { std::cerr << "Find startVertex of ear... k=" << k << std::endl; }
 	BGL_FORALL_VERTICES_T(v, g, Graph) {
 		// if degree is one, it is an end we can start with
 		if (degree_in_ear(v, g, k) == 1) {
