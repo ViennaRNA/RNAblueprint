@@ -35,7 +35,7 @@ ProbabilityMatrix::ProbabilityMatrix (Graph& g) {
 	// to store current inner Articulation Points
 	std::set<Vertex> currentAi;
 	// now start at the outermost ear
-	unsigned int k = 0;
+	unsigned int k = 1;
 	
 	int max_length = 0;
 	Graph::children_iterator ear, ear_end;
@@ -127,21 +127,21 @@ void ProbabilityMatrix::updateCurrentAkAi (Graph& g, int k, std::set<Vertex>& cu
 	BGL_FORALL_VERTICES_T(v, g, Graph) {
 		if (g[v].Ak.find(k) != g[v].Ak.end()) {
 			currentAk.insert(g.local_to_global(v));
-		} else if ((k > 0) && (g[v].Ai == k)) {
+		} else if ((k > 1) && (g[v].Ai == k)) {
 			currentAi.insert(g.local_to_global(v));
 			// we need to keep Ak from previous glued ears, except those that became Ai this time!
 			currentAk.erase(g.local_to_global(v));
 		}
 	}
 	
-	/* for the last cycle, Ak is zero, so we need to "define" one Ai as Ak!
+	// for the last cycle, Ak is zero, so we need to "define" one Ai as Ak!
 	if (currentAk.size() == 0) {
 		auto first = currentAi.begin();
 		// push the first Ai to Ak
 		currentAk.insert(*first);
 		// erase it in Ai
 		currentAi.erase(first);
-	}*/	
+	}	
 }
 
 unsigned long long ProbabilityMatrix::get_probability ( MyKey mykey, Graph& g, std::set<Vertex>& Ak, std::set<Vertex>& Ai, unsigned int k) {

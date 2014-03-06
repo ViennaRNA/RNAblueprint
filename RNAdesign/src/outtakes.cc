@@ -429,3 +429,244 @@ void parts_between_articulation_points_to_subgraphs (Graph& g, int k) {
 	}
 }
 
+
+
+
+
+
+
+void ramachandran_ear_decomposition (Graph& g) {
+	// blocks need to be decomposed into path. this can be done by Ear Decomposition
+	
+	// start Vertex
+	Vertex startVertex = boost::vertex((boost::num_vertices(g)-1), g);
+	
+	// map of ear structure.
+	ear_t ear;
+	int ear_nr = -1;
+	
+	// do the actual ramachandran ear decomposition
+	open_ear_decomposition (g, startVertex, ear);
+	
+	// create subgraphs from decomposed ears
+	std::vector<edge_t> found;
+	for (ear_t::iterator it = ear.begin(); it != ear.end(); it++) {
+		// sort the vertex pair by ascending index name
+		if (it->second.first > it->second.second) {
+			it->second = std::make_pair(it->second.second, it->second.first);
+		}
+		
+		if (!(std::find(found.begin(), found.end(), it->second) != found.end())) {
+			// for each ear create a new subgraph
+			Graph& subg = g.create_subgraph();
+			ear_nr++;
+			//boost::put(&graph_properties::level, g, "decomposed_ears");
+			if (debug) { 	std::cerr << "New subgraph for ear (" << g.local_to_global(it->second.first) << "," 
+						<< g.local_to_global(it->second.second) << ")" << std::endl 
+						<< "Vertices will be included in subgraph: "; }
+			for (ear_t::iterator ti = it; ti != ear.end(); ti++) {
+				if (ti->second == it->second) {
+					found.push_back(ti->second);
+					// add vertex into current subgraph if not present already
+					if (!subg.find_vertex(g.local_to_global(ti->first.first)).second) {
+						boost::add_vertex(g.local_to_global(ti->first.first), subg);
+						if (debug) { std::cerr << " " << g.local_to_global(ti->first.first); }
+					}
+					if (!subg.find_vertex(g.local_to_global(ti->first.second)).second) {
+						boost::add_vertex(g.local_to_global(ti->first.second), subg);
+						if (debug) { std::cerr << " " << g.local_to_global(ti->first.second); }
+					}
+					// lable edge properly
+					g[boost::edge(ti->first.first, ti->first.second, g).first].ear = ear_nr;
+				}
+			}
+			if (debug) { 	std::cerr << std::endl; }
+		}
+	}
+	// detect Articulation Points and push them into the graph as vertex property Ak
+	color_articulation_points (g);
+}
+
+void color_articulation_points (Graph& g) {
+	if (debug) { std::cerr << "Write articulation point labels into graph object..." << std::endl; }
+	// start at the outermost ear and process inwards
+	int k = 0;
+	Graph::children_iterator ear, ear_end;
+	for (boost::tie(ear, ear_end) = g.children(); ear != ear_end; ++ear) {
+		
+		BGL_FORALL_VERTICES_T(v, *ear, Graph) {
+			// if degree is 1, then it is a end of ear_path and therefore a articulation point of this ear.
+			if (degree_in_ear(v, *ear, k) < 2) {
+				(*ear)[v].Ak.insert(k);
+			} else {
+				// if this vertex was an articulation point before and is no end point, add it to inner articulation points.
+				if ((*ear)[v].Ak.size() > 0 ) {
+					(*ear)[v].Ai = k;
+				}
+			}
+		}
+		// goto next ear
+		k++;
+	}
+}
+
+// typedefs for ramachandran ear decomposition
+typedef std::pair<Vertex, Vertex> edge_t;
+typedef std::map<edge_t, edge_t> ear_t;
+// struct to remember coloring, time, parents of a vertex
+struct property {
+	int color;
+	int preorder;
+	Vertex parent;
+	Vertex low;
+	edge_t ear;
+};
+typedef std::map<Vertex, property> ear_propertymap_t;
+
+void open_ear_decomposition (Graph& g, Vertex startVertex, ear_t& ear);
+
+void ear_dfs(Graph& g, Vertex v, ear_propertymap_t& p, ear_t& ear, unsigned int& counter);
+
+// lexmin implementation for pairs of any type
+template <typename T>
+std::pair<T, T>& lexmin(std::pair<T, T>& a, std::pair<T, T>& b) {
+	if (a.first == b.first) {
+		return !(b.second<a.second)?a:b;
+	} else {
+		return !(b.first<a.first)?a:b;
+	}
+}
+
+void open_ear_decomposition (Graph& g, Vertex startVertex, ear_t& ear) {
+	
+	if (debug) { std::cerr << "Starting ramachandran ear decomposition" << std::endl; }
+	// map of ear decomposition properties for all vertices as key
+	ear_propertymap_t p;
+	
+	// time starts at 0
+	unsigned int counter = 0;
+
+	if (debug) { std::cout << "StartVertex is: " << startVertex << std::endl; }
+	// Algorithm from Ramachandran (1992) Parallel Open Ear Decomposition with Applications, page 8/9
+	ear_dfs(g, startVertex, p, ear, counter);
+	
+	// print out all data-structures at the end
+	if (debug) { 
+		std::cerr << "index\tcolor\tporder\tparent\tlow\tear" << std::endl;
+		for (ear_propertymap_t::iterator it = p.begin(); it != p.end(); it++) {
+			std::cerr << it->first << "\t" << 
+        		it->second.color << "\t" <<
+        		it->second.preorder << "\t" <<
+        		it->second.parent << "\t" <<
+        		it->second.low << "\t" <<
+        		it->second.ear.first << "," <<
+        		it->second.ear.second << std::endl;
+		}
+		std::cerr << "index\tear" << std::endl;
+		for (ear_t::iterator it = ear.begin(); it != ear.end(); it++) {
+			std::cerr << it->first.first << "," <<
+			it->first.second << "\t" <<
+			it->second.first << "," <<
+			it->second.second << std::endl;
+		}
+		std::cerr << "counter: " << counter << std::endl;	
+	}
+}
+
+void ear_dfs(Graph& g, Vertex v, ear_propertymap_t& p, ear_t& ear, unsigned int& counter) {
+	
+	enum { WHITE, BLACK, GRAY };
+	if (debug) { std::cout << "v is: " << g.local_to_global(v) << std::endl; }
+	
+	// start ear decomposition
+	p[v].color = GRAY;
+	p[v].preorder = counter;
+	counter++;
+	p[v].low = boost::num_vertices(g);
+	p[v].ear = std::make_pair(boost::num_vertices(g), boost::num_vertices(g));
+	
+	// get neighbouring vertices
+	BGL_FORALL_ADJ_T(v, w, g, Graph) {
+		if (debug) { std::cout << "w is: " << g.local_to_global(w) << std::endl; }
+		
+		if (p[w].color == WHITE) {
+			if (debug) { std::cout << "w is white" << std::endl; }
+			p[w].parent = v;
+			// start new iteration here
+			ear_dfs(g, w, p, ear, counter);
+			//TODO: cast low vertex to integer a good idea?
+			if ((int) p[w].low >= p[w].preorder) {
+				ear[std::make_pair(p[w].parent, w)] = std::make_pair(std::numeric_limits<int>::max(), std::numeric_limits<int>::max());
+			} else {
+				ear[std::make_pair(p[w].parent, w)] = p[w].ear;
+			}
+				p[v].low = std::min((int) p[v].low, (int) p[w].low);
+				p[v].ear = lexmin(p[v].ear, p[w].ear);
+		} else if (p[w].color == GRAY) {
+			if (debug) { std::cout << "w is gray" << std::endl; }
+			if (w != p[w].parent) {
+				if (debug) { std::cout << "found a crossedge: (" << g.local_to_global(v) << ","
+							<< g.local_to_global(w) << ")" << std::endl; }
+				//TODO: casting vertex in low to integer a bad idea?
+				p[v].low = boost::vertex(std::min((int) p[v].low, p[w].preorder), g);
+				ear[std::make_pair(w, v)] = std::make_pair(boost::vertex(p[w].preorder, g), boost::vertex(p[v].preorder, g));
+				p[v].ear = lexmin(p[v].ear, ear[std::make_pair(w, v)]);
+			}
+		}
+	}
+	if (debug) { std::cout << "finishing vertex " << g.local_to_global(v) << std::endl; }
+}
+
+
+
+// include boost components
+#include <boost/graph/breadth_first_search.hpp>
+
+// do a Breadth First Search to test for bipartite property
+bool is_bipartite_graph(Graph& g, Vertex startVertex, Edge& ed);
+
+bool is_bipartite_graph(Graph& g, Vertex startVertex, Edge& ed) {
+	// This is a Breadth First Search which checks if the graph is bipartit. 
+	// If not, returns false and the fills the conflicting edge into the edge_descriptor
+	
+	if (debug) { 	std::cerr << "StartVertex is: " << startVertex << std::endl; 
+			std::cerr << "Number of vertices: " << boost::num_vertices(g) << std::endl; }
+	
+	// exit value (if bipartite = true, else false)
+	bool exit = true;
+	// Define A BGL visitor for the BFS algorithm
+	class my_bfs_visitor : public boost::default_bfs_visitor {
+		public:
+		my_bfs_visitor(Edge& ed, bool& exit) : m_ed(ed), m_exit(exit) {}
+		Edge& m_ed;
+		bool& m_exit;
+		enum { WHITE, BLACK, GRAY, RED };
+		void tree_edge(Edge e, Graph g) const {
+			if (debug) { std::cout << "Detecting Tree edge: " << e << std::endl; }
+			Vertex u = boost::source(e, g);
+			Vertex v = boost::target(e, g);
+			if (g[u].bipartite_color == RED) {
+				g[v].bipartite_color = BLACK;
+			} else {
+				g[v].bipartite_color = RED;
+			}
+		}
+		void non_tree_edge(Edge e, Graph g) const {
+			if (debug) { std::cout << "Detecting Non-Tree edge: " << e << std::endl; }
+			Vertex u = boost::source(e, g);
+			Vertex v = boost::target(e, g);
+			if (g[u].bipartite_color == g[v].bipartite_color) {
+				if (debug) { std::cerr << "u and v have the same color -> not bipartite!" << std::endl; }
+				m_ed = boost::edge(u,v,g).first;
+				// return false if graph is not bipartite
+				m_exit = false;
+			}
+		}
+	};
+	
+	my_bfs_visitor vis(ed, exit);
+	// Do a BGL BFS!
+	// http://www.boost.org/doc/libs/1_53_0/libs/graph/doc/breadth_first_search.html
+	boost::breadth_first_search(g, startVertex, boost::visitor(vis));
+	return exit;
+}

@@ -35,8 +35,8 @@ void decompose_graph(Graph& graph, std::ostream* out, int num_trees, bool no_bip
 			Vertex s = boost::vertex(0, *cc);
 			// generate a edge_descriptor for the case that the graph is not bipartite
 			Edge ed;
-			if (!is_bipartite_graph(*cc, s, ed)) {
-				std::cerr << "Graph is not bipartite! Conflict detected on edge " << ed << std::endl;
+			if (!boost::is_bipartite(*cc)) {
+				std::cerr << "Graph is not bipartite! No solution exists therefore." << std::endl;
 				exit(1);
 			}
 		}
@@ -60,31 +60,26 @@ void decompose_graph(Graph& graph, std::ostream* out, int num_trees, bool no_bip
 				// calculate the max degree of this graph (biconnected component)
 				int max_degree = get_min_max_degree(*bc).second;
 				if (max_degree > 2) {
-					// only for statistics start at all vertices as root for DFS
-					//if (num_trees > 0) {
-					//	do_spanning_tree_stat(*bc, num_trees);
-					//} else {
-						// ear_decomposition (Ramachandran (1992))
-						ramachandran_ear_decomposition(*bc);
-						
+					// do the ear decomposition and create to subgraphs
+					ear_decomposition_to_subgraphs(*bc);
+
+					if (debug) {
+						*out << "subgraphs ear decomposition:" << std::endl;
+						// print the just created subgraphs
+						print_subgraphs(*bc, out, "decomposed-ear");
+					}
+					// now lets push parts between articulation points of an ear to subgraphs
+					int k = 1;
+					Graph::children_iterator ear, ear_end;
+					for (boost::tie(ear, ear_end) = (*bc).children(); ear != ear_end; ++ear) {
+
+						parts_between_articulation_points_to_subgraphs (*ear, k++);
 						if (debug) {
-							*out << "subgraphs ear decomposition:" << std::endl;
+							*out << "parts between articulation points of ear:" << std::endl;
 							// print the just created subgraphs
-							print_subgraphs(*bc, out, "decomposed-ear");
+							print_subgraphs(*ear, out, "articulation-point-parts");
 						}
-						// now lets push parts between articulation points of an ear to subgraphs
-						int k = 0;
-						Graph::children_iterator ear, ear_end;
-						for (boost::tie(ear, ear_end) = (*bc).children(); ear != ear_end; ++ear) {
-							
-							parts_between_articulation_points_to_subgraphs (*ear, k++);
-							if (debug) {
-								*out << "parts between articulation points of ear:" << std::endl;
-								// print the just created subgraphs
-								print_subgraphs(*ear, out, "articulation-point-parts");
-							}
-						}
-					//}
+					}
 				}
 			}
 		}
@@ -208,78 +203,67 @@ void merge_biconnected_paths(Graph& g, Vertex p, Vertex v, boost::property_map <
 	}
 }
 
-void ramachandran_ear_decomposition (Graph& g) {
+void ear_decomposition_to_subgraphs (Graph& g) {
 	// blocks need to be decomposed into path. this can be done by Ear Decomposition
 	
-	// start Vertex
-	Vertex startVertex = boost::vertex((boost::num_vertices(g)-1), g);
-	
-	// map of ear structure.
-	ear_t ear;
-	int ear_nr = -1;
-	
-	// do the actual ramachandran ear decomposition
-	open_ear_decomposition (g, startVertex, ear);
+	// predecessor map
+	boost::vector_property_map<Vertex> pred(boost::num_vertices(g));
+	// get a random spanning tree
+	boost::random_spanning_tree(g, rand_gen, boost::predecessor_map(pred));
+	// ear map (this is what we want to fill!)
+	auto em = boost::get(&edge_property::ear, g);
+  
+	// run the ear decomposition
+	int num = boost::ear_decomposition(g, pred, em);
+	// print the EarMap
+	if (debug) {
+		BGL_FORALL_EDGES_T(e, g, Graph) {
+			std::cout << "(" << boost::source(e, g) << "/" << boost::target(e, g) << "): " << g[e].ear << std::endl;
+		}
+	}
 	
 	// create subgraphs from decomposed ears
-	std::vector<edge_t> found;
-	for (ear_t::iterator it = ear.begin(); it != ear.end(); it++) {
-		// sort the vertex pair by ascending index name
-		if (it->second.first > it->second.second) {
-			it->second = std::make_pair(it->second.second, it->second.first);
-		}
-		
-		if (!(std::find(found.begin(), found.end(), it->second) != found.end())) {
-			// for each ear create a new subgraph
-			Graph& subg = g.create_subgraph();
-			ear_nr++;
-			//boost::put(&graph_properties::level, g, "decomposed_ears");
-			if (debug) { 	std::cerr << "New subgraph for ear (" << g.local_to_global(it->second.first) << "," 
-						<< g.local_to_global(it->second.second) << ")" << std::endl 
-						<< "Vertices will be included in subgraph: "; }
-			for (ear_t::iterator ti = it; ti != ear.end(); ti++) {
-				if (ti->second == it->second) {
-					found.push_back(ti->second);
-					// add vertex into current subgraph if not present already
-					if (!subg.find_vertex(g.local_to_global(ti->first.first)).second) {
-						boost::add_vertex(g.local_to_global(ti->first.first), subg);
-						if (debug) { std::cerr << " " << g.local_to_global(ti->first.first); }
-					}
-					if (!subg.find_vertex(g.local_to_global(ti->first.second)).second) {
-						boost::add_vertex(g.local_to_global(ti->first.second), subg);
-						if (debug) { std::cerr << " " << g.local_to_global(ti->first.second); }
-					}
-					// lable edge properly
-					g[boost::edge(ti->first.first, ti->first.second, g).first].ear = ear_nr;
+	
+	for (int i = 1; i != num+1; ++i) {
+		// for each ear create a new subgraph
+		Graph& subg = g.create_subgraph();
+		// label internal property map
+		// g[ep.first].ear = ep.second;
+		BGL_FORALL_EDGES_T(e, g, Graph) {
+			if (g[e].ear == i) {
+				if (!subg.find_vertex(g.local_to_global(boost::source(e, g))).second) {
+					boost::add_vertex(g.local_to_global(boost::source(e, g)), subg);
+				}
+				if (!subg.find_vertex(g.local_to_global(boost::target(e, g))).second) {
+					boost::add_vertex(g.local_to_global(boost::target(e, g)), subg);
 				}
 			}
-			if (debug) { 	std::cerr << std::endl; }
 		}
 	}
 	// detect Articulation Points and push them into the graph as vertex property Ak
-	color_articulation_points (g);
+	color_attachment_points (g);
 }
 
-void color_articulation_points (Graph& g) {
-	if (debug) { std::cerr << "Write articulation point labels into graph object..." << std::endl; }
-	// start at the outermost ear and process inwards
-	int k = 0;
-	Graph::children_iterator ear, ear_end;
-	for (boost::tie(ear, ear_end) = g.children(); ear != ear_end; ++ear) {
-		
-		BGL_FORALL_VERTICES_T(v, *ear, Graph) {
-			// if degree is 1, then it is a end of ear_path and therefore a articulation point of this ear.
-			if (degree_in_ear(v, *ear, k) < 2) {
-				(*ear)[v].Ak.insert(k);
-			} else {
-				// if this vertex was an articulation point before and is no end point, add it to inner articulation points.
-				if ((*ear)[v].Ak.size() > 0 ) {
-					(*ear)[v].Ai = k;
-				}
+void color_attachment_points (Graph& g) {
+	if (debug) { std::cerr << "Write attachment point labels into graph object..." << std::endl
+			<< "Vertex | Attachment Points | Internal Attachment Point" << std::endl; }
+	
+	BGL_FORALL_VERTICES_T(v, g, Graph) {
+		std::list<int> ears;
+		BGL_FORALL_OUTEDGES(v, e, g, Graph) {
+			ears.push_back(g[e].ear);
+		}
+		ears.sort();
+		ears.unique();
+		if (ears.size() > 1) {
+			g[v].Ai = ears.front();
+			for (auto it = std::next(ears.begin()); it != ears.end(); ++it) {
+				g[v].Ak.insert(*it);
 			}
 		}
-		// goto next ear
-		k++;
+		if (debug) {
+			std::cout << g.local_to_global(v) << "\t" << g[v].Ak << "\t" << g[v].Ai << std::endl;
+		}
 	}
 }
 
@@ -302,54 +286,62 @@ void parts_between_articulation_points_to_subgraphs (Graph& g, int k) {
 	}
 	
 	// find vertex to start our walk
-	Vertex start = boost::graph_traits<Graph>::null_vertex();
-	if (debug) { std::cerr << "Find startVertex of ear... k=" << k << std::endl; }
+	Vertex start;
+	Vertex firstAi; // in case of a cycle take this as start!
+	bool is_cycle = true;
 	BGL_FORALL_VERTICES_T(v, g, Graph) {
-		// if degree is one, it is an end we can start with
+		// reset color
+		g[v].color = 0;
+		// if degree is one, it is an end
 		if (degree_in_ear(v, g, k) == 1) {
 			start = v;
+			is_cycle = false;
 			break;
+		} else if (g[v].Ai == k) {
+			firstAi = v;
 		}
 	}
-	// something went wrong while searching for the ear-start
-	if (start == boost::graph_traits<Graph>::null_vertex()) { std::cerr << "The start of the ear could not be found" << std::endl; exit(1); }
+	// in case of the last cycle, we find a Ai to start and taint it 2
+	if (is_cycle) {
+		start = firstAi;
+		g[start].color = 2;
+	}
+	
 	if (debug) { std::cerr << "start is: " << boost::get(boost::vertex_color_t(), g, start) << std::endl; }
 	// create a new subgraph and a
 	// pointer which always points to the newest subgraph added
 	Graph *subgptr = &g.create_subgraph();
 	// add start vertex to subgraph
 	boost::add_vertex(boost::get(boost::vertex_color_t(), g, start), *subgptr);
-	if (debug) { std::cerr << "Calling recursion..." << std::endl; }
-	parts_recursion (g, start, k, subgptr);
-
-}
-
-void parts_recursion (Graph& g, Vertex& start, int& k, Graph* subgptr) {
+	// bool to see if we reached our end
+	bool end_reached = false;
 	
-	if (debug) { std::cerr << "start is: " << boost::get(boost::vertex_color_t(), g, start) << std::endl; }
-	
-	BGL_FORALL_OUTEDGES_T(start, edge, g, Graph) {
-		// if this edge does not belong to our ear, continue to next one
-		// or if edge was visited before, continue too
-		if ((g[edge].ear != k) || (g[edge].color == 1)) {
-			continue;
-		} else {
-			if (debug) { std::cerr << "Visiting new edge: " << edge << std::endl; }
-			g[edge].color = 1;
-			start = boost::target(edge, g);
-			boost::add_vertex(boost::get(boost::vertex_color_t(), g, start), *subgptr);
-		
-			// if the current vertex is a internal articulation point, create new subgraph and add this point again
-			// we have to exclude path ends
-			if ((g[start].Ai > 0) && (degree_in_ear(start, g, k) == 2)) {
-				subgptr = &g.create_subgraph();
-				if (debug) { std::cerr << "ai on v " << boost::get(boost::vertex_color_t(), g, start) << " is: " << g[start].Ai << std::endl; }
-				boost::add_vertex(boost::get(boost::vertex_color_t(), g, start), *subgptr);
+	while(!end_reached) {
+		BGL_FORALL_OUTEDGES_T(start, edge, g, Graph) {
+			// if this edge does not belong to our ear, continue to next one
+			if (g[edge].ear != k) {
+				continue;
 			}
-		
 			
-			parts_recursion (g, start, k, subgptr);
+			// if this vertex is unvisited, do all the magic
+			if (g[edge].color == 0) {
+				g[edge].color = 1;
+				end_reached = false;
+				start = boost::target(edge, g);
+				if (debug) { std::cerr << "start is: " << boost::get(boost::vertex_color_t(), g, start) << std::endl; }
+				// add to subgraph
+				boost::add_vertex(boost::get(boost::vertex_color_t(), g, start), *subgptr);
+				break;
+			} else {
+				end_reached = true;
+			}
+		}
+		// if the current vertex is a internal articulation point, create new subgraph and add this point again
+		// we have to exclude path ends, and cycle ends
+		if ((g[start].Ai > 0) && (degree_in_ear(start, g, k) == 2) && (g[start].color != 2)) {
+			subgptr = &g.create_subgraph();
+			if (debug) { std::cerr << "ai on v " << boost::get(boost::vertex_color_t(), g, start) << " is: " << g[start].Ai << std::endl; }
+			boost::add_vertex(boost::get(boost::vertex_color_t(), g, start), *subgptr);
 		}
 	}
 }
-

@@ -47,6 +47,9 @@ fi
 # adding the RNA library and its dependencies (static name 'libRNA.a')
 ##########################################################################
 
+AM_CXXFLAGS="$AM_CXXFLAGS -I/scratch/jango/boost"
+AM_LDFLAGS="$AM_LDFLAGS -L/scratch/jango/boost/stage/lib"
+
 # Check for OpenMP and prepare flags
 AC_OPENMP
 AC_SUBST(OPENMP_CFLAGS)

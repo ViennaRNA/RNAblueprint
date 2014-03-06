@@ -15,12 +15,19 @@
 
 // include standard library parts
 #include <limits>
+#include <iterator>
+#include <list>
 
 // include boost components
+#include <boost/graph/bipartite.hpp>
 #include <boost/graph/connected_components.hpp>
 #include <boost/graph/biconnected_components.hpp>
 #include <boost/graph/breadth_first_search.hpp>
 #include <boost/graph/random_spanning_tree.hpp>
+#include <boost/property_map/shared_array_property_map.hpp>
+#include <boost/graph/ear_decomposition.hpp>
+#include <boost/property_map/property_map.hpp>
+#include <boost/property_map/vector_property_map.hpp>
 
 // does the graph decomposition, and calls the coloring of the subgraphs
 void decompose_graph(Graph& graph, std::ostream* out, int num_trees, bool no_bipartite_check);
@@ -35,17 +42,15 @@ void biconnected_components_to_subgraphs(Graph& g);
 void merge_biconnected_paths(Graph& g, Vertex p, Vertex v, boost::property_map < Graph, boost::edge_component_t >::type& component, std::vector<Vertex>& art_points, int& nc);
 
 // ear decomposition of blocks
-void ramachandran_ear_decomposition(Graph& g);
+void ear_decomposition_to_subgraphs (Graph& g);
 
 // identify articulation points and add them as graph property Ak
-void color_articulation_points (Graph& g);
+void color_attachment_points (Graph& g);
 
 // in an ear graph just get the degree of edges participating in this ear
 int degree_in_ear (Vertex& v, Graph& g, int k);
 
-// create subgraphs for paths between articulation points (for easier coloring afterwards)
-void parts_between_articulation_points_to_subgraphs (Graph& g, int k);
 // recursion for parts function
-void parts_recursion (Graph& g, Vertex& start, int& k, Graph* subgptr);
+void parts_between_articulation_points_to_subgraphs (Graph& g, int k);
 
 #endif
