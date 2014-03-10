@@ -281,67 +281,38 @@ void parts_between_articulation_points_to_subgraphs (Graph& g, int k) {
 	
 	if (debug) { std::cerr << "Paths between articulation points to subgraph..." << std::endl; }
 	// reset edge colors
-	BGL_FORALL_EDGES_T(e, g, Graph) {
-		g[e].color = 0;
-	}
+	BGL_FORALL_EDGES_T(e, g, Graph) { g[e].color = 0; }
+	BGL_FORALL_VERTICES_T(v, g, Graph) { g[v].color = 0; }
 	
-	// find vertex to start our walk
-	Vertex start;
-	Vertex firstAi; // in case of a cycle take this as start!
-	bool is_cycle = true;
+	// start at all vertices and add to subgraph as long as it is no Ak or Ik.
 	BGL_FORALL_VERTICES_T(v, g, Graph) {
-		// reset color
-		g[v].color = 0;
-		// if degree is one, it is an end
-		if (degree_in_ear(v, g, k) == 1) {
-			start = v;
-			is_cycle = false;
-			break;
-		} else if (g[v].Ai == k) {
-			firstAi = v;
+		if ((g[v].Ak.find(k) == g[v].Ak.end()) && (g[v].Ai != k) && g[v].color == 0) {
+			Graph *subgptr = &g.create_subgraph();
+			parts_recursion(g, subgptr, v, k);
 		}
 	}
-	// in case of the last cycle, we find a Ai to start and taint it 2
-	if (is_cycle) {
-		start = firstAi;
-		g[start].color = 2;
-	}
-	
-	if (debug) { std::cerr << "start is: " << boost::get(boost::vertex_color_t(), g, start) << std::endl; }
-	// create a new subgraph and a
-	// pointer which always points to the newest subgraph added
-	Graph *subgptr = &g.create_subgraph();
-	// add start vertex to subgraph
-	boost::add_vertex(boost::get(boost::vertex_color_t(), g, start), *subgptr);
-	// bool to see if we reached our end
-	bool end_reached = false;
-	
-	while(!end_reached) {
-		BGL_FORALL_OUTEDGES_T(start, edge, g, Graph) {
-			// if this edge does not belong to our ear, continue to next one
-			if (g[edge].ear != k) {
-				continue;
-			}
-			
-			// if this vertex is unvisited, do all the magic
-			if (g[edge].color == 0) {
-				g[edge].color = 1;
-				end_reached = false;
-				start = boost::target(edge, g);
-				if (debug) { std::cerr << "start is: " << boost::get(boost::vertex_color_t(), g, start) << std::endl; }
-				// add to subgraph
-				boost::add_vertex(boost::get(boost::vertex_color_t(), g, start), *subgptr);
-				break;
-			} else {
-				end_reached = true;
-			}
+	// the above approach does not cover parts with edge-length 1
+	BGL_FORALL_EDGES_T(e, g, Graph) {
+		if ((g[e].color == 0) && (g[e].ear == k)) {
+			g[e].color = 1;
+			Graph& subg = g.create_subgraph();
+			boost::add_vertex(boost::get(boost::vertex_color_t(), g, boost::source(e,g)), subg);
+			boost::add_vertex(boost::get(boost::vertex_color_t(), g, boost::target(e,g)), subg);
 		}
-		// if the current vertex is a internal articulation point, create new subgraph and add this point again
-		// we have to exclude path ends, and cycle ends
-		if ((g[start].Ai > 0) && (degree_in_ear(start, g, k) == 2) && (g[start].color != 2)) {
-			subgptr = &g.create_subgraph();
-			if (debug) { std::cerr << "ai on v " << boost::get(boost::vertex_color_t(), g, start) << " is: " << g[start].Ai << std::endl; }
-			boost::add_vertex(boost::get(boost::vertex_color_t(), g, start), *subgptr);
+	}
+}
+
+void parts_recursion(Graph& g, Graph * subgptr, Vertex v, int k) {
+	// add vertex to subgraph
+	boost::add_vertex(boost::get(boost::vertex_color_t(), g, v), *subgptr);
+	g[v].color = 1;
+	
+	if ((g[v].Ak.find(k) == g[v].Ak.end()) && (g[v].Ai != k)) {
+		BGL_FORALL_OUTEDGES_T(v, e, g, Graph) {
+			if ((g[e].ear == k) && (g[e].color == 0)) {
+				g[e].color = 1;
+				parts_recursion(g, subgptr, boost::target(e, g), k);
+			}
 		}
 	}
 }

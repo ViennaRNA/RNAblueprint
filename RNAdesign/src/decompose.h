@@ -50,7 +50,10 @@ void color_attachment_points (Graph& g);
 // in an ear graph just get the degree of edges participating in this ear
 int degree_in_ear (Vertex& v, Graph& g, int k);
 
-// recursion for parts function
+// now create subgraphs for the parts between Ak and Iks
 void parts_between_articulation_points_to_subgraphs (Graph& g, int k);
+
+// recursion for parts function
+void parts_recursion(Graph& g, Graph * subgptr, Vertex v, int k);
 
 #endif

@@ -60,13 +60,13 @@ class ProbabilityMatrix {
 		~ProbabilityMatrix();
 	private:
 		// map of possibilities saved by key
-		std::unordered_map < MyKey , unsigned long long , MyKeyHash> n;
+		std::unordered_map< MyKey , unsigned long long , MyKeyHash> n;
 		// remember my as number of ears
 		unsigned int my = 0;
 		// remember all the Articulation points for every ear
 		std::vector<std::set<Vertex> > Aks;
 		// remember parts of ears (between Artikulation points)
-		std::vector<std::vector<SubProbability>> parts;
+		std::vector<std::vector<SubProbability> > parts;
 		// also remember pairing matrix
 		Pairing *p = NULL;
 		// to keep track of current Ak Ai we need to update them before glueing an ear
