@@ -51,7 +51,7 @@ ProbabilityMatrix::ProbabilityMatrix (Graph& g) {
 
 	// get Pairing matrix for paths, TODO only initialize once for the whole program!
 	p = new Pairing(max_length+1);
-	
+
 	// start at the outermost ear and process inwards
 	for (boost::tie(ear, ear_end) = (g).children(); ear != ear_end; ++ear) {
 		
@@ -61,7 +61,7 @@ ProbabilityMatrix::ProbabilityMatrix (Graph& g) {
 		// best is to remember the currentAis at this point
 		Aks.push_back(currentAk);
 		
-		if (debug) { 
+		if (debug) {
 			auto printpairAk = std::make_pair(*ear, currentAk);
 			auto printpairAi = std::make_pair(*ear, currentAi);
 			std::cerr << "===========================================" << std::endl
@@ -93,7 +93,7 @@ ProbabilityMatrix::ProbabilityMatrix (Graph& g) {
 		for (auto thiskey : key_combinations) {
 			if (debug) {
 				std::cerr << "-------------------------------------------" << std::endl 
-					<< "Calculating probablity for key: " << thiskey << std::endl;
+					<< "Calculating probability for key: " << thiskey << std::endl;
 			}
 			
 			unsigned long long probability = get_probability(thiskey, *ear, currentAk, currentAi, k);
@@ -120,6 +120,7 @@ ProbabilityMatrix::~ProbabilityMatrix() {
 }
 
 void ProbabilityMatrix::updateCurrentAkAi (Graph& g, int k, std::set<Vertex>& currentAk, std::set<Vertex>& currentAi) {
+	if (debug) { std::cerr << "Updating Ak and Ik for ear " << k << std::endl; }
 	// Ak and Ai are already stored in graph as a vertex properties
 	// write vertex property into currentAk and currentAi
 	currentAi.clear();
@@ -127,7 +128,7 @@ void ProbabilityMatrix::updateCurrentAkAi (Graph& g, int k, std::set<Vertex>& cu
 	BGL_FORALL_VERTICES_T(v, g, Graph) {
 		if (g[v].Ak.find(k) != g[v].Ak.end()) {
 			currentAk.insert(g.local_to_global(v));
-		} else if ((k > 1) && (g[v].Ai == k)) {
+		} else if (g[v].Ai == k) {
 			currentAi.insert(g.local_to_global(v));
 			// we need to keep Ak from previous glued ears, except those that became Ai this time!
 			currentAk.erase(g.local_to_global(v));
@@ -202,7 +203,7 @@ unsigned long long ProbabilityMatrix::get_probability ( MyKey mykey, Graph& g, s
 		sub_probability.length = boost::num_edges(*part);
 	}
 	// remember for later when we have no graph (at backtracing)
-	if (parts.size() == k) {
+	if (parts.size() == k-1) {
 		parts.push_back(sub_probabilities);
 	}
 	
@@ -368,21 +369,22 @@ unsigned long long ProbabilityMatrix::get_sum (int k, MyKey mykey, MyKey lastkey
 		// this was sum += get(thiskey) before however we need to take the path probabilities between the Aks into account and
 		// multiply them. therefore we need the calculate_probabaility function, which wants this stupid variables
 		// at the moment I still need to find a way to create a lastkey where all already colored bases are inside.
-		/*if (k+1 == (int) my) {
+		if (k == (int) my) {
 			probabilities[thiskey] = get(thiskey);
 			sum += get(thiskey);
-		} else {*/
-			unsigned long long thisprob = calculate_probability (thiskey, lastkey, parts[k+1]);
+		} else {
+			if (debug) { std::cerr << thiskey << std::endl; }
+			unsigned long long thisprob = calculate_probability (thiskey, lastkey, parts[k-1]);
 			probabilities[thiskey] = thisprob;
 			sum += thisprob;
-		//}
+		}
 	}
 	return sum;
 }
 
 std::set<Vertex> ProbabilityMatrix::get_Ak (unsigned int k) { 
-	if (k < my) {
-		return Aks[k];
+	if (k <= my) {
+		return Aks[k-1];
 	} else { 
 		std::cerr << "k can't be bigger than my!" << std::endl;
 		exit(1); 
@@ -431,7 +433,7 @@ void color_blocks (Graph& g) {
 	MyKey lastkey;
 	
 	// reverse iterate again over all ears to color Aks and all vertices in between
-	for (int k = pm.get_my()-2; k >= 0; k--) {
+	for (int k = pm.get_my(); k > 0; k--) {
 		if (debug) { std::cerr << "Start Backtracing at ear " << k << std::endl; }
 		// get the current Articulation Points
 		std::set<Vertex> Ak = pm.get_Ak(k);

@@ -256,8 +256,8 @@ void color_attachment_points (Graph& g) {
 		ears.sort();
 		ears.unique();
 		if (ears.size() > 1) {
-			g[v].Ai = ears.front();
-			for (auto it = std::next(ears.begin()); it != ears.end(); ++it) {
+			g[v].Ai = ears.back();
+			for (auto it = ears.begin(); it != std::prev(ears.end()); ++it) {
 				g[v].Ak.insert(*it);
 			}
 		}
