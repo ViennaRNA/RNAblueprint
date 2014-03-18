@@ -101,12 +101,6 @@ std::ostream& operator<< (std::ostream& os, std::set<W>& s) {
 	return os;
 }
 
-// overload << operator to print vertices with names only
-std::ostream& operator<< (std::ostream& os, std::pair<Graph, Vertex>& p);
-
-// overload << operator to print sets of vertices
-std::ostream& operator<< (std::ostream& os, std::pair<Graph, std::set<Vertex>>& p);
-
 // overload << operator to print deques with sequence information
 std::ostream& operator<< (std::ostream& os, Sequence& sequence);
 

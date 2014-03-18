@@ -74,3 +74,14 @@ void print_subgraphs(Graph& g, std::ostream* out, std::string nametag) {
 	if (debug) { std::cerr << "Printed all subgraphs." << std::endl; }
 }
 
+void print_vertices(Graph& g, std::string nametag) {
+	if (debug) {
+		std::cerr << nametag << ": ";
+		BGL_FORALL_VERTICES_T(v, g, Graph) {
+			std::cerr << boost::get(boost::vertex_color_t(), g, v) << "(" <<
+				enum_to_char(g[v].base) << ") ";
+		}
+		std::cerr << std::endl;
+	}
+}
+

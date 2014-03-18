@@ -130,7 +130,7 @@ unsigned long long generate_path_seq (Sequence& sequence, int first, int last, i
 	Pairing p(length+1);		//TODO initialize only once for the whole program as ist is static content!
 	// set maximum possible number of sequences for first....last
 	unsigned long long max_number_of_sequences = p.get(length, first, last);
-	// delare random number distribution and get a random number
+	// declare random number distribution and get a random number
 	std::uniform_real_distribution<float> dist(0, 1);
 	// number of possible sequences at each possible step
 	unsigned long long number_of_sequences = 0;
@@ -143,13 +143,13 @@ unsigned long long generate_path_seq (Sequence& sequence, int first, int last, i
 		length--;
 	}
 	
-	if (debug) {
+	/*if (debug) {
 		std::cerr << "Max Number of Sequences is: " << max_number_of_sequences << std::endl;
 		std::cerr << "Length is: " << length << std::endl;
 		std::cerr << "Sequence is: " << sequence << std::endl;
 		std::cerr << "First is: " << enum_to_char(first) << std::endl;
 		std::cerr << "Last is: " << enum_to_char(last) << std::endl;
-	}
+	}*/
 	
 	while (length >= 0) {
 		if (first == X) {
@@ -179,7 +179,7 @@ unsigned long long generate_path_seq (Sequence& sequence, int first, int last, i
 				// our new begin is the chosen base.
 				first = base;
 				length--;
-				// dont forget to exit the loop, otherwise will always be first = C;
+				// don't forget to exit the loop, otherwise will always be first = C;
 				break;
 			}
 		}
@@ -189,7 +189,7 @@ unsigned long long generate_path_seq (Sequence& sequence, int first, int last, i
 			exit(1);
 		}
 		
-		if (debug) {
+		/*if (debug) {
 			std::cerr << "Number of Sequences is: " << number_of_sequences << std::endl;
 			std::cerr << "Random is: " << random*number_of_sequences << std::endl;
 			std::cerr << "Possibilities is: " << posibilities << std::endl;
@@ -198,7 +198,7 @@ unsigned long long generate_path_seq (Sequence& sequence, int first, int last, i
 			std::cerr << "First is: " << enum_to_char(first) << std::endl;
 			std::cerr << "Last is: " << enum_to_char(last) << std::endl;
 			std::cerr << "Length is: " << length << std::endl;
-		}
+		}*/
 	}
 	return max_number_of_sequences;
 }
@@ -222,7 +222,7 @@ unsigned long long generate_cycle_seq (Sequence& sequence, int first, int length
 		Fibonacci fibo(length+1);
 		// max number of sequences is
 		max_number_of_sequences = 2*(fibo.get(length + 1)+fibo.get(length - 1)); // is same as 2* Lucas (length)
-		// delare random number distribution and get a random number
+		// declare random number distribution and get a random number
 		std::uniform_real_distribution<float> dist(0, 1);
 		float random = dist(rand_gen);
 		
@@ -271,9 +271,6 @@ unsigned long long color_path_cycle_graph (Graph& g) {
 	Sequence sequence;
 	
 	BGL_FORALL_VERTICES_T(v, g, Graph) {
-		
-		if(debug) { std::cerr << boost::get(boost::vertex_color_t(), g, g.local_to_global(v)); }
-		
 		// remember ends of the path
 		if (boost::out_degree(v, g) == 1) {
 			ends.push_back(v);
@@ -295,6 +292,7 @@ unsigned long long color_path_cycle_graph (Graph& g) {
 		}
 		// call generate_path_seq and color the vertices accordingly
 		max_number_of_sequences = generate_path_seq (sequence, g[ends[0]].base, g[ends[1]].base, length);
+		if (debug) { std::cerr << "Sequence is: " << sequence << std::endl; }
 		// assign this sequence of bases to the graph
 		sequencestring_to_graph(g, ends[0], sequence);
 			
@@ -303,11 +301,13 @@ unsigned long long color_path_cycle_graph (Graph& g) {
 		if (colored_bases.size() == 1) {
 			// start to color at exact this vertex
 			max_number_of_sequences = generate_cycle_seq (sequence, g[colored_bases[0]].base, length);
+			if (debug) { std::cerr << "Sequence is: " << sequence << std::endl; }
 			// assign this sequence of bases to the graph
 			sequencestring_to_graph(g, colored_bases[0], sequence);
 		} else if (colored_bases.size() == 0) {
 			// start to color at any vertex with X
 			max_number_of_sequences = generate_cycle_seq (sequence, g[boost::vertex(0, g)].base, length);
+			if (debug) { std::cerr << "Sequence is: " << sequence << std::endl; }
 			// assign this sequence of bases to the graph
 			sequencestring_to_graph(g, boost::vertex(0, g), sequence);
 		} else {
@@ -317,6 +317,7 @@ unsigned long long color_path_cycle_graph (Graph& g) {
 	} else if (length == 0 && boost::num_vertices(g) == 1) {
 		// its a single vertex!
 		max_number_of_sequences = generate_path_seq (sequence, g[boost::vertex(0, g)].base, X, length);
+		if (debug) { std::cerr << "Sequence is: " << sequence << std::endl; }
 		sequencestring_to_graph(g, boost::vertex(0, g), sequence);
 	} else {
 		// this is no path  - more than two "ends"

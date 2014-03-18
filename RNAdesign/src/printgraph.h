@@ -29,4 +29,7 @@ void print_graph(Graph& g, std::ostream* out, std::string nametag);
 // print all the subgraphs as GML (iterator over subgraphs)
 void print_subgraphs(Graph& g, std::ostream* out, std::string nametag);
 
+// print all the vertex indices of a graph/subgraph
+void print_vertices(Graph& g, std::string nametag);
+
 #endif

@@ -39,7 +39,7 @@ int main(int ac, char* av[]) {
 	std::vector<std::string> structures;
 	
 	if (vm.count("in")) {
-		if (debug) { std::cerr << "will read graphml file given in the options." << std::endl; }
+		if (debug) { std::cerr << "will read structure file given in the options." << std::endl; }
 			std::ifstream* infile = new std::ifstream(vm["in"].as<std::string>(), std::ifstream::in);
 		if (infile->is_open()) {
 			structures = read_input(infile);

@@ -11,10 +11,12 @@ RNAdesign_SOURCES =	main.cc \
 			decompose.cc \
 			parsestruct.cc \
 			pathcoloring.cc \
+			probability_matrix.cc \
 			graphcoloring.cc \
 			energy.cc \
 			energy_optimization.cc
 nodist_include_HEADERS = common.h \
+			probability_matrix.h \
 			graphcoloring.h \
 			main.h \
 			pathcoloring.h \

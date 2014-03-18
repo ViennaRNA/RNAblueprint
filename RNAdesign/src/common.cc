@@ -52,22 +52,3 @@ std::ostream& operator<< (std::ostream& os, Sequence& sequence) {
 	}
 	return os;
 }
-
-std::ostream& operator<< (std::ostream& os, std::pair<Graph, Vertex>& p) {
-	Graph g = p.first;
-	Vertex v = p.second;
-	// no matter which subgraph we got, we need to always take the root as we have global vertex_descriptors stored
-       	os << boost::get(boost::vertex_color_t(), g.root(), v);
-	return os;
-}
-
-std::ostream& operator<< (std::ostream& os, std::pair<Graph, std::set<Vertex> >& p) {
-	Graph g = p.first;
-	std::set<Vertex> s = p.second;
-	
-	for (auto elem : s) {
-		auto printpair = std::make_pair(g, elem);
-        	os << printpair << ", ";
-	}
-	return os;
-}
