@@ -271,6 +271,9 @@ unsigned long long color_path_cycle_graph (Graph& g) {
 	Sequence sequence;
 	
 	BGL_FORALL_VERTICES_T(v, g, Graph) {
+		
+		if(debug) { std::cerr << boost::get(boost::vertex_color_t(), g, g.local_to_global(v)); }
+		
 		// remember ends of the path
 		if (boost::out_degree(v, g) == 1) {
 			ends.push_back(v);

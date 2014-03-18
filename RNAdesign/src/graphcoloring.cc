@@ -109,9 +109,25 @@ ProbabilityMatrix::ProbabilityMatrix (Graph& g) {
 		k++;
 		if (debug) {
 			for (auto thiskey : key_combinations) {
-				std::cerr << thiskey << " = " << get(thiskey) << std::endl;
+				unsigned long long value = get(thiskey);
+				if (value != 0) {
+					std::cerr << thiskey << " = " << value << std::endl;
+				}
 			}
 		}
+	}
+	
+	if (debug) {
+		std::cerr << "Sub probabilities remembered are: " << std::endl;
+			for (auto part : parts) { 
+				for (auto sub_probability : part) { std::cerr << "(" << sub_probability.start << ") --" 
+					<< sub_probability.length << "-- ("
+					<< sub_probability.end << "); ";
+				}
+				std::cerr << std::endl;
+			}
+		std::cerr << "Aks remembered are: " << std::endl;
+			for (auto Ak : Aks) { std::cerr << Ak << std::endl; }
 	}
 }
 
@@ -203,9 +219,7 @@ unsigned long long ProbabilityMatrix::get_probability ( MyKey mykey, Graph& g, s
 		sub_probability.length = boost::num_edges(*part);
 	}
 	// remember for later when we have no graph (at backtracing)
-	if (parts.size() == k-1) {
-		parts.push_back(sub_probabilities);
-	}
+	if (parts.size() == k-1) parts.push_back(sub_probabilities);
 	
 	if (debug) {
 		for (auto sub_probability : sub_probabilities) {
@@ -374,7 +388,7 @@ unsigned long long ProbabilityMatrix::get_sum (int k, MyKey mykey, MyKey lastkey
 			sum += get(thiskey);
 		} else {
 			if (debug) { std::cerr << thiskey << std::endl; }
-			unsigned long long thisprob = calculate_probability (thiskey, lastkey, parts[k-1]);
+			unsigned long long thisprob = calculate_probability (lastkey, thiskey, parts[k]);
 			probabilities[thiskey] = thisprob;
 			sum += thisprob;
 		}
@@ -489,7 +503,7 @@ MyKey color_articulation_points (int k, ProbabilityMatrix& pm, MyKey& colorkey, 
 
 	MyKey returnkey;
 	
-	// delare random number distribution and get a random number
+	// declare random number distribution and get a random number
 	std::uniform_real_distribution<float> dist(0, 1);
 	// get a random number between 0 and 1.
 	float random = dist(rand_gen);
