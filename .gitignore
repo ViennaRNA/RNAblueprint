@@ -1,2 +1,11 @@
-struct2graph/*.o
-*.o
+*Makefile
+*Makefile.in
+autom4te.cache/
+config.log
+config.status
+configure
+nbproject/
+*/.deps/
+*RNAdesign
+*.[oa]
+test-driver
