@@ -30,7 +30,7 @@
 #include <boost/property_map/vector_property_map.hpp>
 
 // does the graph decomposition, and calls the coloring of the subgraphs
-void decompose_graph(Graph& graph, std::ostream* out, int num_trees, bool no_bipartite_check);
+bool decompose_graph(Graph& graph);
 
 // get a vector of all vertices with their component id. finds connected components with DFS
 void connected_components_to_subgraphs(Graph& g);

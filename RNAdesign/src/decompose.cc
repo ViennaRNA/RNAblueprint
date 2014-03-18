@@ -10,14 +10,14 @@
 // include header
 #include "decompose.h"
 #include "printgraph.h"
-#include "treestatistics.h"
 #include "graphcommon.h"
 
 // include boost components
 #include <boost/graph/iteration_macros.hpp>
 
-void decompose_graph(Graph& graph, std::ostream* out, int num_trees, bool no_bipartite_check) {
-
+bool decompose_graph(Graph& graph) {
+	std::ostream* out = &std::cerr;
+	
 	connected_components_to_subgraphs(graph);	// get connected components and make subgraphs
 
 	if (debug) {
@@ -29,16 +29,14 @@ void decompose_graph(Graph& graph, std::ostream* out, int num_trees, bool no_bip
 	// iterate over all subgraphs (connected components)
 	Graph::children_iterator cc, cc_end;
 	for (boost::tie(cc, cc_end) = graph.children(); cc != cc_end; ++cc) {
-		if (!no_bipartite_check) {
-			// check if subgraph is bipartite with a simple BFS
-			// generate the vertex 0 as vertex_descriptor
-			Vertex s = boost::vertex(0, *cc);
-			// generate a edge_descriptor for the case that the graph is not bipartite
-			Edge ed;
-			if (!boost::is_bipartite(*cc)) {
-				std::cerr << "Graph is not bipartite! No solution exists therefore." << std::endl;
-				exit(1);
-			}
+	    
+		// check if subgraph is bipartite with a simple BFS
+		// generate the vertex 0 as vertex_descriptor
+		Vertex s = boost::vertex(0, *cc);
+		// generate a edge_descriptor for the case that the graph is not bipartite
+		if (!boost::is_bipartite(*cc)) {
+			std::cerr << "Graph is not bipartite! No solution exists therefore." << std::endl;
+			return false;
 		}
 		
 		// calculate the max degree of this graph
@@ -84,6 +82,8 @@ void decompose_graph(Graph& graph, std::ostream* out, int num_trees, bool no_bip
 			}
 		}
 	}
+	// return that the dependency graph is bipartite
+	return true;
 }
 
 void connected_components_to_subgraphs(Graph& g) {

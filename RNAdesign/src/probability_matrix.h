@@ -45,7 +45,7 @@ struct SubProbability {
 		int length;	
 	};
         
-        // Class to get Pairing numbers
+// Class to get Pairing numbers
 class ProbabilityMatrix {
 	public:
 		ProbabilityMatrix (Graph& g);

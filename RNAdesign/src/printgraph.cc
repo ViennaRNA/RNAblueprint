@@ -42,7 +42,7 @@ void print_graph (Graph& g, std::ostream* out, std::string nametag) {
 	dp.property("name", boost::get(boost::vertex_color_t(), g));
 	dp.property("ear", boost::get(&edge_property::ear, g));
 	
-	if (outfile != "") {
+	/*if (outfile != "") {
 		std::stringstream filename;
 		filename << outfile << "-" << nametag << ".graphml";
 		std::ofstream graphfile(filename.str());
@@ -54,12 +54,12 @@ void print_graph (Graph& g, std::ostream* out, std::string nametag) {
 		} else {
 			std::cerr << " Unable to create graphml file!" << std::endl;
 		}
-	} else {
+	} else {*/
 		*out << std::endl;
 		boost::write_graphml(*out, g, dp, true);
 		*out << std::endl;
 		std::cerr << "created graphml!" << std::endl;
-	}
+	//}
 }
 
 void print_subgraphs(Graph& g, std::ostream* out, std::string nametag) {

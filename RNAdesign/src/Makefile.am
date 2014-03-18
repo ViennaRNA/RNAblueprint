@@ -13,6 +13,7 @@ RNAdesign_SOURCES =	main.cc \
 			pathcoloring.cc \
 			probability_matrix.cc \
 			graphcoloring.cc \
+			dependency_graph.cc \
 			energy.cc \
 			energy_optimization.cc
 nodist_include_HEADERS = common.h \
@@ -25,6 +26,7 @@ nodist_include_HEADERS = common.h \
 			graphcommon.h \
 			parsestruct.h \
 			printgraph.h \
+			dependency_graph.h \
 			energy.h \
 			energy_optimization.h
 

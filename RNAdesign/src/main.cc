@@ -9,18 +9,14 @@
 
 // include header
 #include "main.h"
-#include "parsestruct.h"
-#include "printgraph.h"
-#include "decompose.h"
-#include "graphcoloring.h"
 #include "energy.h"
+#include "dependency_graph.h"
 
 // boost components
 #include <boost/graph/iteration_macros.hpp>
 
 //declare global variables
 bool debug = false;
-std::string outfile;
 
 //! main program starts here
 int main(int ac, char* av[]) {
@@ -31,19 +27,28 @@ int main(int ac, char* av[]) {
 	unsigned int number_of_designs = 4;
 	if (vm.count("stat-trees")) { num_trees = vm["stat-trees"].as<int>(); }
 	if (vm.count("num")) { number_of_designs = vm["num"].as<unsigned int>(); }
-	bool no_bipartite_check = vm["noBipartiteCheck"].as<bool>();
 	bool verbose = vm["verbose"].as<bool>();
 	
-	// input handling ( we read from std:in per default and switch to a file if it is given in the --in option
+	// initialize mersenne twister with our seed
+	unsigned long seed = std::chrono::system_clock::now().time_since_epoch().count();
+	if (vm.count("seed")) {
+		seed = vm["seed"].as<unsigned long>();
+	}
+	rand_gen.seed(seed);
+	if (verbose) {
+		std::cerr << "Using this seed: " << seed << std::endl;
+	}
+	
+	// input handling ( we read from std::in per default and switch to a file if it is given in the --in option
 	// std::in will provide a pseudo interface to enter structures directly!
 	std::vector<std::string> structures;
 	
 	if (vm.count("in")) {
-		if (debug) { std::cerr << "will read structure file given in the options." << std::endl; }
 			std::ifstream* infile = new std::ifstream(vm["in"].as<std::string>(), std::ifstream::in);
 		if (infile->is_open()) {
 			structures = read_input(infile);
 			infile->close();
+			std::cerr << "....,....1....,....2....,....3....,....4....,....5....,....6....,....7....,....8" << std::endl;
 		} else {
 			std::cerr << "Unable to open file";
 			return 1;
@@ -54,46 +59,33 @@ int main(int ac, char* av[]) {
 		structures = read_input(&std::cin);			// read infile into array
 	}
 	
-	std::ostream* out = &std::cout;					// out stream
-	
-	// initialize mersenne twister with our seed
-	unsigned long seed = std::chrono::system_clock::now().time_since_epoch().count();
-	if (vm.count("seed")) {
-		seed = vm["seed"].as<unsigned long>();
-	}
-	rand_gen.seed(seed);
-	if (verbose) {
-		*out << "Using this seed: " << seed << std::endl;
+	std::ostream* out = &std::cout;
+	if (vm.count("out")) {
+		out = new std::ofstream(vm["out"].as<std::string>(), std::ofstream::out);
 	}
 	
-	Graph graph = parse_structures(structures);			// generate graph from input vector
-	if (debug) {
-		*out << "dependency graph:";
-		print_graph(graph, out, "root-graph");			// print the graph as GML to a ostream
-	}
+	DependencyGraph dependency_graph(structures);
 	
-	decompose_graph(graph, out, num_trees, 				// decompose the graph into its connected components, biconnected
-		no_bipartite_check);					// components and decompose blocks via ear decomposition
-	
-	print_graph(graph, out, "colored-graph");
-	
-	if (vm.count("in")) {
-		std::cerr << "....,....1....,....2....,....3....,....4....,....5....,....6....,....7....,....8" << std::endl;
+	if (!dependency_graph.is_bipartite()) { 
+		std::cerr << "Impossible to find a solution for this input: Dependency graph is not bipartite!" << std::endl;
+		exit(1);
 	}
 	
 	
 	
 	while (number_of_designs > 0) {
-		color_graph(graph);						// color the graph!
-		std::string sequence = get_sequence(graph);			// extract the sequence from the graph
-		*out << sequence;
+		Sequence sequence = dependency_graph.mutate();		// color the graph and get the sequence
+		std::stringstream stream;
+		stream << sequence;
+		std::string seq = stream.str();
+		*out << sequence << std::endl;
 		for (auto s : structures) {
-			*out << "\t" << energy_of_structure(sequence, s);	// calculate the energies
+			*out << s << "\t" << energy_of_structure(seq, s) << std::endl;	// calculate the energies
 		}
-		*out << std::endl;
+		*out << "mfe: " << std::endl;
 		std::string mfe_structure;
-		float mfe = fold(sequence, mfe_structure);
-		*out << mfe_structure << "\t" << mfe << std::endl;
+		float mfe = fold(seq, mfe_structure);
+		*out << mfe_structure << "\t" << mfe << std::endl << std::endl;
 		number_of_designs--;
 	}
 	
@@ -147,11 +139,10 @@ boost::program_options::variables_map init_options(int ac, char* av[]) {
 	po::options_description config("Program options");
 	config.add_options()
 		("in,i", po::value<std::string>(), "input file which contains the structures [string]")
-		("out,o", po::value<std::string>(&outfile), "write all (sub)graphs to gml files starting with given name (only works with -d) [string]")
+		("out,o", po::value<std::string>(), "output file which contains the sequences [string]")
 		("seed,s", po::value<unsigned long>(), "random number generator seed [unsigned long]")
 		("num,n", po::value<unsigned int>(), "number of designs (default: 4) [unsigned int]") 
 		("stat-trees,t", po::value<int>(), "only do ear-decomposition statistics: define amount of different spanning trees for every root to calculate [int]")
-		("noBipartiteCheck,b", po::bool_switch()->default_value(false)->zero_tokens(), "Don't check if input dependency graph is bipartite")
 	;
 	
 	po::positional_options_description p;
@@ -168,19 +159,7 @@ boost::program_options::variables_map init_options(int ac, char* av[]) {
 		std::cout << cmdline_options << "\n";
 		exit(1);
 	}
-	if (vm.count("out")) {
-		if (debug) { std::cerr << "graphml files will be written to file." << std::endl; }
-	}
 	
 	return vm;
-}
-
-std::string get_sequence(Graph& g) {
-	std::string sequence(boost::num_vertices(g), 'X');
-	
-	BGL_FORALL_VERTICES_T(v, g, Graph) {
-		sequence[boost::get(boost::vertex_color_t(), g, v)] = enum_to_char(g[v].base);
-	}
-	return sequence;
 }
 
