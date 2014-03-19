@@ -38,7 +38,7 @@ class MyKeyHash {
 		std::size_t operator() (const MyKey& k) const;
 };
 
-// struct definitions
+// structure definitions
 struct SubProbability {
 		int start;
 		int end;
@@ -57,6 +57,8 @@ class ProbabilityMatrix {
 		std::set<Vertex> get_Ak (unsigned int k);
 		// return my of this graph
 		unsigned int get_my() { return my; }
+		// get number of sequences/solutions
+		unsigned long long number_of_sequences() { return nos; }
 		// My custom hash key used for n
 		friend class MyKeyHash;
 		~ProbabilityMatrix();
@@ -65,10 +67,12 @@ class ProbabilityMatrix {
 		std::unordered_map< MyKey , unsigned long long , MyKeyHash> n;
 		// remember my as number of ears
 		unsigned int my = 0;
-		// remember all the Articulation points for every ear
+		// remember all the attachment points for every ear
 		std::vector<std::set<Vertex> > Aks;
-		// remember parts of ears (between Artikulation points)
+		// remember parts of ears (between attachment points)
 		std::vector<std::vector<SubProbability> > parts;
+		// max number of sequences/solutions in this pairing matrix
+		unsigned long long nos = 0;
 		// also remember pairing matrix
 		Pairing *p = NULL;
 		// to keep track of current Ak Ai we need to update them before glueing an ear
@@ -83,7 +87,7 @@ class ProbabilityMatrix {
 		unsigned long long calculate_probability (MyKey& mykey, MyKey& lastkey, std::vector<SubProbability>& sub_probabilities);
 		// get the color of either mykey or lastkey.
 		int get_color_from_key (MyKey& mykey, MyKey& lastkey, int vertex);
-		// calculates all base combinations for current articulation points (recursion)
+		// calculates all base combinations for current attachment points (recursion)
 		void calculate_combinations (std::set<int>& Ak, MyKey& mykey, std::vector<MyKey>& key_combinations);
 };
 

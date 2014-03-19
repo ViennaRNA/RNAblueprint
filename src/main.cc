@@ -71,20 +71,18 @@ int main(int ac, char* av[]) {
 		exit(1);
 	}
 	
-	
+	if (debug) { std::cerr << "Size of solution space: " << dependency_graph.number_of_sequences() << std::endl; }
 	
 	while (number_of_designs > 0) {
-		Sequence sequence = dependency_graph.mutate();		// color the graph and get the sequence
-		std::stringstream stream;
-		stream << sequence;
-		std::string seq = stream.str();
+		dependency_graph.mutate();		// color the graph and get the sequence
+		std::string sequence = dependency_graph.get_sequence_string();
 		*out << sequence << std::endl;
 		for (auto s : structures) {
-			*out << s << "\t" << energy_of_structure(seq, s) << std::endl;	// calculate the energies
+			*out << s << "\t" << energy_of_structure(sequence, s) << std::endl;	// calculate the energies
 		}
 		*out << "mfe: " << std::endl;
 		std::string mfe_structure;
-		float mfe = fold(seq, mfe_structure);
+		float mfe = fold(sequence, mfe_structure);
 		*out << mfe_structure << "\t" << mfe << std::endl << std::endl;
 		number_of_designs--;
 	}

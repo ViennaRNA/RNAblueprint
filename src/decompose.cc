@@ -66,16 +66,16 @@ bool decompose_graph(Graph& graph) {
 						// print the just created subgraphs
 						print_subgraphs(*bc, out, "decomposed-ear");
 					}
-					// now lets push parts between articulation points of an ear to subgraphs
+					// now lets push parts between attachment points of an ear to subgraphs
 					int k = 1;
 					Graph::children_iterator ear, ear_end;
 					for (boost::tie(ear, ear_end) = (*bc).children(); ear != ear_end; ++ear) {
 
-						parts_between_articulation_points_to_subgraphs (*ear, k++);
+						parts_between_attachment_points_to_subgraphs (*ear, k++);
 						if (debug) {
-							*out << "parts between articulation points of ear:" << std::endl;
+							*out << "parts between attachment points of ear:" << std::endl;
 							// print the just created subgraphs
-							print_subgraphs(*ear, out, "articulation-point-parts");
+							print_subgraphs(*ear, out, "attachment-point-parts");
 						}
 					}
 				}
@@ -240,7 +240,7 @@ void ear_decomposition_to_subgraphs (Graph& g) {
 			}
 		}
 	}
-	// detect Articulation Points and push them into the graph as vertex property Ak
+	// detect attachment points and push them into the graph as vertex property Ak
 	color_attachment_points (g);
 }
 
@@ -277,9 +277,9 @@ int degree_in_ear (Vertex& v, Graph& g, int k) {
 	return degree;
 }
 
-void parts_between_articulation_points_to_subgraphs (Graph& g, int k) {
+void parts_between_attachment_points_to_subgraphs (Graph& g, int k) {
 	
-	if (debug) { std::cerr << "Paths between articulation points to subgraph..." << std::endl; }
+	if (debug) { std::cerr << "Paths between attachment points to subgraph..." << std::endl; }
 	// reset edge colors
 	BGL_FORALL_EDGES_T(e, g, Graph) { g[e].color = 0; }
 	BGL_FORALL_VERTICES_T(v, g, Graph) { g[v].color = 0; }

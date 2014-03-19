@@ -24,17 +24,11 @@
 
 // include boost components
 
-// color the root graph!
-void color_graph (Graph& graph);
-
 // function to do the coloring of the ear decomposition
-void color_blocks (Graph& g);
+void color_blocks (Graph& g, ProbabilityMatrix& pm);
 
 // color Articulation Points of this ear
 MyKey color_articulation_points(int k, ProbabilityMatrix& pm, MyKey& colorkey, MyKey& lastkey);
-
-// reset the bases of the graph to X
-void reset_colors(Graph& g);
 
 
 #endif

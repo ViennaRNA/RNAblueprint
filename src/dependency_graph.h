@@ -11,6 +11,25 @@
 #define	DEPENDENCY_GRAPH_H
 
 #include "common.h"
+#include "graphcoloring.h"
+
+#include <sstream>
+
+enum GraphTypes {PATH, BLOCK};
+
+class GraphComponent {
+	public:
+		GraphComponent(Graph& g, int t);
+		unsigned long long number_of_sequences() { return nos; }
+		void mutate(int position);
+		void mutate();
+		~GraphComponent();
+	private:
+		Graph& subgraph;
+		unsigned long long nos = 0;
+		ProbabilityMatrix * pm = NULL;
+		int type;
+};
 
 class DependencyGraph {
 	public:
@@ -18,14 +37,16 @@ class DependencyGraph {
 		unsigned long long number_of_sequences() { return nos; }
 		bool is_bipartite() { return bipartite; }
 		Sequence get_sequence();
-		Sequence mutate (int position);
-		Sequence mutate ();
+		std::string get_sequence_string();
+		Sequence mutate(int position);
+		Sequence mutate();
+		void reset_colors();
 		~DependencyGraph();
 	private:
 		Graph graph;
 		bool bipartite;			// if dependency graph is bipartite and a therefore a solution exists
 		unsigned long long nos = 0;	// number of sequences/solutions
-		//std::list<&Graph> graph_components;
+		std::list< GraphComponent* > graph_components;
 		
 		
 };

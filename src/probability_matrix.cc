@@ -28,6 +28,8 @@ std::size_t MyKeyHash::operator() (const MyKey& k) const {
 
 ProbabilityMatrix::ProbabilityMatrix (Graph& g) {
 	
+	if (debug) { std::cerr << "Initializing ProbabilityMatrix..." << std::endl; }
+	
 	// structure to remember current Ak (attachment vertices)
 	std::set<Vertex> currentAk;
 	// to store current inner Articulation Points
@@ -99,10 +101,14 @@ ProbabilityMatrix::ProbabilityMatrix (Graph& g) {
 			if (probability != 0) {
 				n[thiskey] = probability;
 			}
+			
+			// remember max number of sequences/solutions
+			if (k == my) {
+				nos += probability;
+			}
 		}
 		
-		// now going to next ear!
-		k++;
+		
 		if (debug) {
 			for (auto thiskey : key_combinations) {
 				unsigned long long value = get(thiskey);
@@ -111,6 +117,8 @@ ProbabilityMatrix::ProbabilityMatrix (Graph& g) {
 				}
 			}
 		}
+		// now going to next ear!
+		k++;
 	}
 	
 	if (debug) {

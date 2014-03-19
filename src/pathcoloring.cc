@@ -250,6 +250,7 @@ unsigned long long generate_cycle_seq (Sequence& sequence, int first, int length
 }
 
 unsigned long long color_path_cycle_graph (Graph& g) {
+	
 	unsigned long long max_number_of_sequences = 0;
 	
 	// check if given graph is indeed a path with max_degree = 2 and two ends with degree = 1;

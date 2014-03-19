@@ -74,7 +74,7 @@ void print_subgraphs(Graph& g, std::ostream* out, std::string nametag) {
 	if (debug) { std::cerr << "Printed all subgraphs." << std::endl; }
 }
 
-void print_vertices(Graph& g, std::string nametag) {
+void print_all_vertex_names(Graph& g, std::string nametag) {
 	if (debug) {
 		std::cerr << nametag << ": ";
 		BGL_FORALL_VERTICES_T(v, g, Graph) {

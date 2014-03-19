@@ -10,54 +10,9 @@
 // include header
 #include "graphcoloring.h"
 
-void color_graph (Graph& graph) {
-	// INPUT: root graph
-	// reset bases to X
-	reset_colors(graph);
-	
-	Graph::children_iterator cc, cc_end;
-	for (boost::tie(cc, cc_end) = graph.children(); cc != cc_end; ++cc) {
-		// connected components
-		if (get_min_max_degree(*cc).second <= 2) {
-			// color connected components here
-			print_vertices(*cc, "Coloring a connected component");
-			color_path_cycle_graph (*cc);
-                        
-		} else {
-			Graph::children_iterator bc, bc_end;
-			for (boost::tie(bc, bc_end) = (*cc).children(); bc != bc_end; ++bc) {
-				auto min_max_degree = get_min_max_degree(*bc);
-				// biconnected components (color blocks first!)
-				if (min_max_degree.second > 2) {
-					// blocks
-					// color blocks here
-					print_vertices(*bc, "Coloring a block");
-					color_blocks(*bc);
-				} else if (min_max_degree.first == 2 && min_max_degree.second == 2) {
-					// color biconnected cycles here
-					print_vertices(*bc, "Coloring a biconnected cycle");
-					color_path_cycle_graph (*bc);
-				}
-			}
-			
-			for (boost::tie(bc, bc_end) = (*cc).children(); bc != bc_end; ++bc) {
-				auto min_max_degree = get_min_max_degree(*bc);
-				
-				if (min_max_degree.first == 1 && min_max_degree.second == 2) {
-					// biconnected component paths
-					// color paths here
-					print_vertices(*bc, "Coloring a biconnected path");
-					color_path_cycle_graph (*bc);
-				}
-			}
-		}
-	}
-}
-
-void color_blocks (Graph& g) {
-	// start with filling the matrix
-	// TODO Initialize just once!
-	ProbabilityMatrix pm(g);
+void color_blocks (Graph& g, ProbabilityMatrix& pm) {
+	// number of sequences to debug
+	if (debug) { std::cerr << "Number of sequences for this block: " << pm.number_of_sequences() << std::endl; }
 	// remember the current key for the next ear.
 	MyKey lastkey;
 	
@@ -102,7 +57,7 @@ void color_blocks (Graph& g) {
 		Graph::children_iterator part, part_end;
 		for (boost::tie(part, part_end) = (*ear).children(); part != part_end; ++part) {
 			
-			print_vertices(*part, "Coloring a part of the ear");
+			print_all_vertex_names(*part, "Coloring a part of the ear");
 			color_path_cycle_graph (*part);
 		}
 	}
@@ -137,10 +92,4 @@ MyKey color_articulation_points (int k, ProbabilityMatrix& pm, MyKey& colorkey, 
 		}
 	}
 	return returnkey;
-}
-
-void reset_colors(Graph& g) {
-	BGL_FORALL_VERTICES_T(v, g, Graph) {
-		g[v].base = X;
-	}
 }
