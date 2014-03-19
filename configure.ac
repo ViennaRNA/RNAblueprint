@@ -20,7 +20,7 @@ AM_INIT_AUTOMAKE([1.9])
 AC_LANG([C++])
 
 # C++11 dependent program!
-AX_CXX_COMPILE_STDCXX_11([noext],[mandatory])
+AX_CXX_COMPILE_STDCXX_11()
 
 # Check lib boost_program_options
 AC_CHECK_LIB([boost_program_options],[_init])
