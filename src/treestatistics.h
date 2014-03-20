@@ -1,11 +1,11 @@
 /* This program reads secundary RNA structures in dot-bracket and
-* builds a graph for a latter ear-decomposition and bipartitness-check
-*
-* Created on: 25.03.2013
-* Author: Stefan Hammer <s.hammer@univie.ac.at>
-* License: GPLv3
-*
-*/
+ * builds a graph for a latter ear-decomposition and bipartitness-check
+ *
+ * Created on: 25.03.2013
+ * Author: Stefan Hammer <s.hammer@univie.ac.at>
+ * License: GPLv3
+ *
+ */
 
 #ifndef TREESTATISTICS_H
 #define TREESTATISTICS_H
@@ -26,7 +26,7 @@
 void do_spanning_tree_stat (Graph& g, int num_trees);
 
 // calculate spanning tree properties for coloring
-std::pair< unsigned int, unsigned int > calculate_alpha_beta(Graph& g, std::vector<Edge>& crossedges, std::map<int, std::vector<Vertex> >& Ak);
+std::pair< unsigned int, unsigned int > calculate_alpha_beta (Graph& g, std::vector<Edge>& crossedges, std::map<int, std::vector<Vertex> >& Ak);
 
 // color ak points in the graph without subgraphs
 void color_Ak_points (Graph& g);

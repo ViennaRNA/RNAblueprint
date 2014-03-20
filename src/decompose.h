@@ -1,11 +1,11 @@
 /* This program reads secundary RNA structures in dot-bracket and
-* builds a graph for a latter ear-decomposition and bipartitness-check
-*
-* Created on: 25.03.2013
-* Author: Stefan Hammer <s.hammer@univie.ac.at>
-* License: GPLv3
-*
-*/
+ * builds a graph for a latter ear-decomposition and bipartitness-check
+ *
+ * Created on: 25.03.2013
+ * Author: Stefan Hammer <s.hammer@univie.ac.at>
+ * License: GPLv3
+ *
+ */
 
 #ifndef DECOMPOSE_H
 #define DECOMPOSE_H
@@ -30,16 +30,16 @@
 #include <boost/property_map/vector_property_map.hpp>
 
 // does the graph decomposition, and calls the coloring of the subgraphs
-bool decompose_graph(Graph& graph);
+bool decompose_graph (Graph& graph);
 
 // get a vector of all vertices with their component id. finds connected components with DFS
-void connected_components_to_subgraphs(Graph& g);
+void connected_components_to_subgraphs (Graph& g);
 
 // finds biconnected components with DFS
-void biconnected_components_to_subgraphs(Graph& g);
+void biconnected_components_to_subgraphs (Graph& g);
 
 // starts at a degree>3 articulation point and walks along a path to connect it to one component
-void merge_biconnected_paths(Graph& g, Vertex p, Vertex v, boost::property_map < Graph, boost::edge_component_t >::type& component, std::vector<Vertex>& art_points, int& nc);
+void merge_biconnected_paths (Graph& g, Vertex p, Vertex v, boost::property_map < Graph, boost::edge_component_t >::type& component, std::vector<Vertex>& art_points, int& nc);
 
 // ear decomposition of blocks
 void ear_decomposition_to_subgraphs (Graph& g);
@@ -54,6 +54,6 @@ int degree_in_ear (Vertex& v, Graph& g, int k);
 void parts_between_attachment_points_to_subgraphs (Graph& g, int k);
 
 // recursion for parts function
-void parts_recursion(Graph& g, Graph * subgptr, Vertex v, int k);
+void parts_recursion (Graph& g, Graph * subgptr, Vertex v, int k);
 
 #endif

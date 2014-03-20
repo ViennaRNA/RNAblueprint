@@ -1,11 +1,11 @@
 /* This program reads secundary RNA structures in dot-bracket and
-* builds a graph for a latter ear-decomposition and bipartitness-check
-*
-* Created on: 13.08.2013
-* Author: Stefan Hammer <s.hammer@univie.ac.at>
-* License: GPLv3
-*
-*/
+ * builds a graph for a latter ear-decomposition and bipartitness-check
+ *
+ * Created on: 13.08.2013
+ * Author: Stefan Hammer <s.hammer@univie.ac.at>
+ * License: GPLv3
+ *
+ */
 
 #ifndef GRAPHCOLORING_H
 #define GRAPHCOLORING_H
@@ -28,7 +28,7 @@
 void color_blocks (Graph& g, ProbabilityMatrix& pm);
 
 // color Articulation Points of this ear
-MyKey color_articulation_points(int k, ProbabilityMatrix& pm, MyKey& colorkey, MyKey& lastkey);
+MyKey color_articulation_points (int k, ProbabilityMatrix& pm, MyKey& colorkey, MyKey& lastkey);
 
 
 #endif
