@@ -83,6 +83,13 @@ rnaMatrix Pairing::multiply (rnaMatrix A, rnaMatrix B) {
 
 unsigned long long Pairing::get (unsigned int l, unsigned int b1, unsigned int b2) {
 
+  // check if the requested length is bigger than our initialisation or that a base bigger than 3 is requested
+  // -> to avoid segfaults or unknown behaviour!
+  if ((l > length) || (b1 > A_Size - 1) || (b2 > A_Size - 1)) {
+    std::cerr << "Requested a value in pairing matrix which is out of range: p[" << l << "][" << b1 << "][" << b2 << "]" << std::endl;
+    exit(1);
+  }
+  
   // if we request a probability for an unknown (X) character at one or both ends, 
   // return the sum of the probabilities for all characters at this position
   if ((b1 == X) || (b2 == X)) {
@@ -93,15 +100,9 @@ unsigned long long Pairing::get (unsigned int l, unsigned int b1, unsigned int b
     } else if (b2 == X) {
       return get(l, b1);
     }
+  } else {
+    return p[l][b1][b2];
   }
-
-  // check if the requested length is bigger than our initilisation or that a base bigger than 3 is requested
-  // -> to avoid segfaults or unknown behaviour!
-  if ((l > length) || (b1 > A_Size - 1) || (b2 > A_Size - 1)) {
-    std::cerr << "Requested a value in pairing matrix which is out of range: p[" << l << "][" << b1 << "][" << b2 << "]" << std::endl;
-    exit(1);
-  }
-  return p[l][b1][b2];
 }
 
 unsigned long long Pairing::get (unsigned int l, unsigned int b1) {
@@ -166,7 +167,7 @@ unsigned long long generate_path_seq (Sequence& sequence, int first, int last, i
     // get a random number between 0 and 1.
     float random = dist(rand_gen);
 
-    // stochastically take one of the posibilities
+    // stochastically take one of the possibilities
     // start at the probability of first possible character and add each other base probability as long long as the random number is bigger.
     unsigned long long sum = 0;
     for (auto base : posibilities) {

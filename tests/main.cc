@@ -16,4 +16,3 @@
 #include "test_common.h"
 
 bool debug = false;
-std::string outfile;

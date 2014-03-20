@@ -13,7 +13,6 @@
 #include "test_common.h"
 
 // include headers containing functions to test
-#include "decompose.h"
 
 BOOST_AUTO_TEST_SUITE(RandomGenerator)
 

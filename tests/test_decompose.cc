@@ -166,14 +166,14 @@ BOOST_AUTO_TEST_CASE(biconnectedComponents) {
 	BOOST_CHECK(number_of_children == 3);
 }
 
-BOOST_AUTO_TEST_CASE(schieberEarDecomposition) {
+BOOST_AUTO_TEST_CASE(EarDecomposition) {
 
 	// create a graph
 	Graph g = createGraph(ED);
 	BOOST_TEST_MESSAGE("decompose connected components");
 	// set random generator to a static seed;
 	rand_gen.seed(1);
-	schieber_ear_decomposition(g);
+	ear_decomposition_to_subgraphs(g);
 	
 	int number_of_children = 0;
 	
@@ -242,10 +242,10 @@ BOOST_AUTO_TEST_CASE(partsBetweenArticulationPoints) {
 	
 	// create a graph
 	Graph g = createGraph(ED);
-	BOOST_TEST_MESSAGE("parts between articulation points to subgraphs");
+	BOOST_TEST_MESSAGE("parts between attachment points to subgraphs");
 	// set random generator to a static seed;
 	rand_gen.seed(1);
-	schieber_ear_decomposition(g);
+	ear_decomposition_to_subgraphs(g);
 	// print_subgraphs(g, &std::cout, "ears");
 	// now the decomposed graph looks different than above, as the random generator went further
 	// However, lets call our method on all children:
@@ -253,7 +253,7 @@ BOOST_AUTO_TEST_CASE(partsBetweenArticulationPoints) {
 	int k = 0;
 	Graph::children_iterator ear, ear_end;
 	for (boost::tie(ear, ear_end) = g.children(); ear != ear_end; ++ear) {
-		parts_between_articulation_points_to_subgraphs (*ear, k);
+		parts_between_attachment_points_to_subgraphs (*ear, k);
 		// print_subgraphs(*ear, &std::cout, "ear-parts");
 		// there should be sugraphs for all ears now representing the paths and cycles between Ak and Ai
 		// or in case of no Ak or Ai, the whole ear is another sugraph

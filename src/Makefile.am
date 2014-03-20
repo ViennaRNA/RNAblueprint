@@ -21,7 +21,6 @@ nodist_include_HEADERS = common.h \
 			graphcoloring.h \
 			main.h \
 			pathcoloring.h \
-			struct2graph.h \
 			decompose.h \
 			graphcommon.h \
 			parsestruct.h \
