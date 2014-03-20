@@ -1,10 +1,10 @@
 /* C++ Unit test common header file
-*
-* Created on: 23.10.2013
-* Author: Stefan Hammer <s.hammer@univie.ac.at>
-* License: GPLv3
-*
-*/
+ *
+ * Created on: 23.10.2013
+ * Author: Stefan Hammer <s.hammer@univie.ac.at>
+ * License: GPLv3
+ *
+ */
 
 #ifndef TESTCOMMON_H
 #define TESTCOMMON_H

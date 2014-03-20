@@ -89,7 +89,7 @@ unsigned long long Pairing::get (unsigned int l, unsigned int b1, unsigned int b
     std::cerr << "Requested a value in pairing matrix which is out of range: p[" << l << "][" << b1 << "][" << b2 << "]" << std::endl;
     exit(1);
   }
-  
+
   // if we request a probability for an unknown (X) character at one or both ends, 
   // return the sum of the probabilities for all characters at this position
   if ((b1 == X) || (b2 == X)) {

@@ -1,11 +1,12 @@
 *Makefile
 *Makefile.in
 autom4te.cache/
-config.log
 config.status
 configure
 nbproject/
 */.deps/
 *RNAdesign
 *.[oa]
+*.log
+*.trs
 test-driver
