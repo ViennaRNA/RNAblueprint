@@ -1,5 +1,5 @@
-/* This program reads secundary RNA structures in dot-bracket and
- * builds a graph for a latter ear-decomposition and bipartitness-check
+/* RNAdesign
+ * A program for designing RNA molecules.
  *
  * Created on: 25.03.2013
  * Author: Stefan Hammer <s.hammer@univie.ac.at>
