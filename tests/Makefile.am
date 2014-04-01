@@ -32,7 +32,8 @@ nodist_include_HEADERS = test_common.h \
                         $(top_srcdir)/src/printgraph.h \
                         $(top_srcdir)/src/dependency_graph.h
 
-testRNAdesign_LDADD = $(LDADD) -lboost_unit_test_framework
-testRNAdesign_CPPFLAGS = -I$(top_srcdir)/src
+testRNAdesign_CPPFLAGS = $(BOOST_CPPFLAGS) -I$(top_srcdir)/src
+testRNAdesign_LDFLAGS = $(BOOST_THREADS_LDFLAGS) $(BOOST_UNIT_TEST_FRAMEWORK_LDFLAGS)
+testRNAdesign_LDADD = $(LDADD) $(BOOST_THREAD_LIBS) $(BOOST_UNIT_TEST_FRAMEWORK_LIBS)
 
 TESTS = testRNAdesign

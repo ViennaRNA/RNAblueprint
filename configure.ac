@@ -13,6 +13,9 @@ AC_CONFIG_MACRO_DIR([m4])
 AC_PROG_CXX
 AC_PROG_CC
 
+# Libtool for Libraries
+AC_PROG_LIBTOOL
+
 # automake initialisation (mandatory) and check for minimal automake API version 1.9
 AM_INIT_AUTOMAKE([1.9])
 
@@ -22,17 +25,19 @@ AC_LANG([C++])
 # C++11 dependent program!
 AX_CXX_COMPILE_STDCXX_11
 
-# use libtool for libraries
-AC_PROG_LIBTOOL
-
 # Require Boost Library
-AX_BOOST_REQUIRE([1.55])
-AX_BOOST_SYSTEM
-AX_BOOST_FILESYSTEM([mt])
-AM_CXXFLAGS=¨$AM_CXXFLAGS BOOST_CPPFLAGS¨
+# https://raw.githubusercontent.com/tsuna/boost.m4/master/README
+##########################################################################
+
+BOOST_REQUIRE([1.55])
+#BOOST_SYSTEM
+#BOOST_FILESYSTEM
 
 # Check lib boost_program_options
-AC_CHECK_LIB([boost_program_options],[_init])
+BOOST_PROGRAM_OPTIONS([s])
+BOOST_GRAPH([s])
+BOOST_TEST([s])
+#AC_CHECK_LIB([boost_program_options],[_init])
 
 # debug compilation support
 ##########################################################################
@@ -112,20 +117,9 @@ AC_CHECK_HEADERS([random])
 
 AC_CHECK_HEADERS([boost/lexical_cast.hpp])
 AC_CHECK_HEADERS([boost/config.hpp])
-AC_CHECK_HEADERS([boost/graph/subgraph.hpp])
-AC_CHECK_HEADERS([boost/graph/adjacency_list.hpp])
-AC_CHECK_HEADERS([boost/graph/connected_components.hpp])
-AC_CHECK_HEADERS([boost/graph/biconnected_components.hpp])
-AC_CHECK_HEADERS([boost/graph/breadth_first_search.hpp])
-AC_CHECK_HEADERS([boost/graph/random_spanning_tree.hpp])
 AC_CHECK_HEADERS([boost/functional/hash.hpp])
 AC_CHECK_HEADERS([boost/iterator/reverse_iterator.hpp])
-AC_CHECK_HEADERS([boost/program_options.hpp])
-AC_CHECK_HEADERS([boost/graph/graphml.hpp])
-AC_CHECK_HEADERS([boost/graph/graph_utility.hpp])
-AC_CHECK_HEADERS([boost/graph/iteration_macros.hpp])
 AC_CHECK_HEADERS([boost/graph/ear-decomposition.hpp])
-AC_CHECK_HEADERS([boost/test/included/unit_test.hpp])
 
 AC_CHECK_HEADERS([ViennaRNA/fold.h])
 CPPFLAGS=$OLD_CPPFLAGS

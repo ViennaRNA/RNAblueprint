@@ -29,3 +29,6 @@ nodist_include_HEADERS = common.h \
 			energy.h \
 			energy_optimization.h
 
+RNAdesign_CPPFLAGS = $(BOOST_CPPFLAGS)
+RNAdesign_LDFLAGS = $(BOOST_THREADS_LDFLAGS) $(BOOST_PROGRAM_OPTIONS_LDFLAGS)
+RNAdesign_LDADD = $(LDADD) $(BOOST_THREAD_LIBS) $(BOOST_PROGRAM_OPTIONS_LIBS)
