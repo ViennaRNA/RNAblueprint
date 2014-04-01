@@ -16,8 +16,9 @@ AC_PROG_CC
 # Libtool for Libraries
 AC_PROG_LIBTOOL
 
-# automake initialisation (mandatory) and check for minimal automake API version 1.9
-AM_INIT_AUTOMAKE([1.9])
+# automake initialisation (mandatory)
+AC_PREREQ([2.59])
+AM_INIT_AUTOMAKE([1.9 subdir-objects])
 
 # use the C++ compiler for the following checks
 AC_LANG([C++])

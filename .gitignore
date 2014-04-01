@@ -10,3 +10,15 @@ nbproject/
 *.log
 *.trs
 test-driver
+aclocal.m4
+INSTALL
+missing
+compile
+config.guess
+config.sub
+ltmain.sh
+m4/libtool.m4
+m4/ltoptions.m4
+m4/ltsugar.m4
+m4/ltversion.m4
+m4/lt~obsolete.m4
