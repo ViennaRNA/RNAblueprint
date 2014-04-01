@@ -22,6 +22,15 @@ AC_LANG([C++])
 # C++11 dependent program!
 AX_CXX_COMPILE_STDCXX_11
 
+# use libtool for libraries
+AC_PROG_LIBTOOL
+
+# Require Boost Library
+AX_BOOST_REQUIRE([1.55])
+AX_BOOST_SYSTEM
+AX_BOOST_FILESYSTEM([mt])
+AM_CXXFLAGS=¨$AM_CXXFLAGS BOOST_CPPFLAGS¨
+
 # Check lib boost_program_options
 AC_CHECK_LIB([boost_program_options],[_init])
 
@@ -46,9 +55,6 @@ fi
 
 # adding the RNA library and its dependencies (static name 'libRNA.a')
 ##########################################################################
-
-AM_CXXFLAGS="$AM_CXXFLAGS -I/scratch/jango/boost"
-AM_LDFLAGS="$AM_LDFLAGS -L/scratch/jango/boost/stage/lib"
 
 # Check for OpenMP and prepare flags
 AC_OPENMP
@@ -118,6 +124,7 @@ AC_CHECK_HEADERS([boost/program_options.hpp])
 AC_CHECK_HEADERS([boost/graph/graphml.hpp])
 AC_CHECK_HEADERS([boost/graph/graph_utility.hpp])
 AC_CHECK_HEADERS([boost/graph/iteration_macros.hpp])
+AC_CHECK_HEADERS([boost/graph/ear-decomposition.hpp])
 AC_CHECK_HEADERS([boost/test/included/unit_test.hpp])
 
 AC_CHECK_HEADERS([ViennaRNA/fold.h])
