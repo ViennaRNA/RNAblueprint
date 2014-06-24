@@ -3,6 +3,11 @@
 # the program to build (the names of the final binaries)
 check_PROGRAMS = testRNAdesign
 
+# additional include pathes necessary to compile the C++ programs
+testRNAdesign_CPPFLAGS = -I$(top_srcdir)/lib $(BOOST_CPPFLAGS) @AM_CXXFLAGS@
+testRNAdesign_LDFLAGS = $(BOOST_THREADS_LDFLAGS) $(BOOST_PROGRAM_OPTIONS_LDFLAGS)
+testRNAdesign_LDADD = $(LDADD) $(top_builddir)/lib/libRNAdesign.a $(BOOST_THREAD_LIBS) $(BOOST_PROGRAM_OPTIONS_LIBS) $(AM_LDFLAGS)
+
 # list of sources for the 'testRNAdesign' binary
 testRNAdesign_SOURCES =	main.cc \
 			test_decompose.cc \
@@ -10,21 +15,8 @@ testRNAdesign_SOURCES =	main.cc \
 			test_common.cc \
 			test_parsestruct.cc \
 			test_graphcoloring.cc \
-			test_pathcoloring.cc \
-			$(top_builddir)/src/common.h \
-                        $(top_builddir)/src/probability_matrix.h \
-                        $(top_builddir)/src/graphcoloring.h \
-                        $(top_builddir)/src/pathcoloring.h \
-                        $(top_builddir)/src/decompose.h \
-                        $(top_builddir)/src/graphcommon.h \
-                        $(top_builddir)/src/parsestruct.h \
-                        $(top_builddir)/src/printgraph.h \
-                        $(top_builddir)/src/dependency_graph.h
-
+			test_pathcoloring.cc
+			
 nodist_include_HEADERS = test_common.h
-
-testRNAdesign_CPPFLAGS = $(BOOST_CPPFLAGS) -I$(top_srcdir)/src
-testRNAdesign_LDFLAGS = $(BOOST_THREADS_LDFLAGS) $(BOOST_UNIT_TEST_FRAMEWORK_LDFLAGS)
-testRNAdesign_LDADD = $(LDADD) $(BOOST_THREAD_LIBS) $(BOOST_UNIT_TEST_FRAMEWORK_LIBS)
 
 TESTS = testRNAdesign

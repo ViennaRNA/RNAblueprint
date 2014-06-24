@@ -12,6 +12,7 @@ AC_CONFIG_MACRO_DIR([m4])
 # check for C++ compiler
 AC_PROG_CXX
 AC_PROG_CC
+LT_INIT
 
 # Libtool for Libraries
 AC_PROG_LIBTOOL
@@ -135,6 +136,7 @@ AC_SUBST([LIBS])
 
 # files to generate via autotools (.am or .in source files)
 AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([lib/Makefile])
 AC_CONFIG_FILES([src/Makefile])
 AC_CONFIG_FILES([tests/Makefile])
 
