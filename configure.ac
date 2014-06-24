@@ -3,6 +3,10 @@
 # initial information about the project
 AC_INIT([RNAdesign],[0.1],[s.hammer@univie.ac.at])
 
+# automake initialisation (mandatory)
+AC_PREREQ([2.59])
+AM_INIT_AUTOMAKE([1.9 subdir-objects])
+
 # check if the source folder is correct
 AC_CONFIG_SRCDIR([src/main.cc])
 
@@ -10,16 +14,12 @@ AC_CONFIG_SRCDIR([src/main.cc])
 AC_CONFIG_MACRO_DIR([m4])
 
 # check for C++ compiler
+# AC_PROG_INSTALL
 AC_PROG_CXX
 AC_PROG_CC
-LT_INIT
-
-# Libtool for Libraries
+AC_PROG_CPP
 AC_PROG_LIBTOOL
-
-# automake initialisation (mandatory)
-AC_PREREQ([2.59])
-AM_INIT_AUTOMAKE([1.9 subdir-objects])
+AC_SUBST(LIBTOOL_DEPS)
 
 # use the C++ compiler for the following checks
 AC_LANG([C++])

@@ -4,7 +4,7 @@
 lib_LIBRARIES = libRNAdesign.a
 
 # where to install the headers on the system
-libRNAdesign_adir = $(top_builddir)/lib
+libRNAdesign_adir = $(includedir)/RNAdesign
 
 # additional include pathes necessary to compile the C++ library
 AM_CPPFLAGS = $(BOOST_CPPFLAGS) @AM_CXXFLAGS@

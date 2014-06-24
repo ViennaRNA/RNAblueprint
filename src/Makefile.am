@@ -14,7 +14,7 @@ RNAdesign_SOURCES =	\
 			energy.cc \
 			energy_optimization.cc
 			
-nodist_include_HEADERS = \
+noinst_HEADERS = \
 			main.h \
 			energy.h \
 			energy_optimization.h

@@ -17,6 +17,6 @@ testRNAdesign_SOURCES =	main.cc \
 			test_graphcoloring.cc \
 			test_pathcoloring.cc
 			
-nodist_include_HEADERS = test_common.h
+noinst_HEADERS = test_common.h
 
 TESTS = testRNAdesign
