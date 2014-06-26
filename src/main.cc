@@ -10,13 +10,13 @@
 // include header
 #include "main.h"
 #include "energy.h"
-#include "dependency_graph.h"
 
 // boost components
 #include <boost/graph/iteration_macros.hpp>
 
 //declare global variables
 bool debug = false;
+std::mt19937 rand_gen;
 
 //! main program starts here
 
@@ -69,7 +69,7 @@ int main (int ac, char* av[]) {
     out = new std::ofstream(vm["out"].as<std::string>(), std::ofstream::out);
   }
 
-  DependencyGraph dependency_graph(structures);
+  design::DependencyGraph dependency_graph(structures);
 
   if (!dependency_graph.is_bipartite()) {
     std::cerr << "Impossible to find a solution for this input: Dependency graph is not bipartite!" << std::endl;
@@ -82,7 +82,7 @@ int main (int ac, char* av[]) {
 
   while (number_of_designs > 0) {
     dependency_graph.mutate(); // color the graph and get the sequence
-    std::string sequence = dependency_graph.get_sequence_string();
+    std::string sequence = dependency_graph.get_sequence();
     *out << sequence << std::endl;
     for (auto s : structures) {
       *out << s << "\t" << energy_of_structure(sequence, s) << std::endl; // calculate the energies

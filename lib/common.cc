@@ -10,45 +10,51 @@
 // include header
 #include "common.h"
 
-std::mt19937 rand_gen;
+namespace design {
+  namespace detail {
+    
+    bool debug = true;
+    std::mt19937 rand_gen;
 
-char enum_to_char (int intletter) {
-  char charletter;
-  switch (intletter) {
-    case A: charletter = 'A';
-      break;
-    case G: charletter = 'G';
-      break;
-    case C: charletter = 'C';
-      break;
-    case U: charletter = 'U';
-      break;
-    case X: charletter = 'X';
-      break;
-  }
-  return charletter;
-}
+    char enum_to_char (int intletter) {
+      char charletter;
+      switch (intletter) {
+        case A: charletter = 'A';
+          break;
+        case G: charletter = 'G';
+          break;
+        case C: charletter = 'C';
+          break;
+        case U: charletter = 'U';
+          break;
+        case X: charletter = 'X';
+          break;
+      }
+      return charletter;
+    }
 
-int char_to_enum (char charletter) {
-  int intletter;
-  switch (charletter) {
-    case 'A': intletter = A;
-      break;
-    case 'G': intletter = G;
-      break;
-    case 'C': intletter = C;
-      break;
-    case 'U': intletter = U;
-      break;
-    case 'X': intletter = X;
-      break;
-  }
-  return intletter;
-}
+    int char_to_enum (char charletter) {
+      int intletter;
+      switch (charletter) {
+        case 'A': intletter = A;
+          break;
+        case 'G': intletter = G;
+          break;
+        case 'C': intletter = C;
+          break;
+        case 'U': intletter = U;
+          break;
+        case 'X': intletter = X;
+          break;
+      }
+      return intletter;
+    }
 
-std::ostream& operator<< (std::ostream& os, Sequence& sequence) {
-  for (auto base : sequence) {
-    os << enum_to_char(base);
+    std::ostream& operator<< (std::ostream& os, Sequence& sequence) {
+      for (auto base : sequence) {
+        os << enum_to_char(base);
+      }
+      return os;
+    }
   }
-  return os;
 }

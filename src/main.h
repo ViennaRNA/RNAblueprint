@@ -10,8 +10,8 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-// include common header with graph definition and global variables
-#include "common.h"
+// include library DependencyGraph
+#include "RNAdesign.h"
 
 // include standard library parts
 #include <iostream>
@@ -21,6 +21,8 @@
 
 // include boost components
 #include <boost/program_options.hpp>
+
+
 
 // initialise boost command line option parser
 boost::program_options::variables_map init_options (int ac, char* av[]);

@@ -15,6 +15,8 @@
 // include headers containing functions to test
 #include "pathcoloring.h"
 
+using namespace design::detail;
+
 // define heads
 namespace PathColoring {
 

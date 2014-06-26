@@ -10,14 +10,17 @@
 #ifndef PARSESTRUCT_H
 #define PARSESTRUCT_H
 
-// include common header with graph definition and global variables
-#include "common.h"
+    // include common header with graph definition and global variables
+    #include "common.h"
 
-// include standard library parts
+    // include standard library parts
 
-// include boost components
+    // include boost components
 
-// parse the input string into a graph
-Graph parse_structures (std::vector<std::string> structures);
-
+namespace design {
+  namespace detail {
+    // parse the input string into a graph
+    Graph parse_structures (std::vector<std::string> structures);
+  }
+}
 #endif

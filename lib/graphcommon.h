@@ -16,7 +16,10 @@
 // include standard library parts
 #include <limits>
 
-// get max degree of a graph
-std::pair <int, int> get_min_max_degree (Graph& g);
-
+namespace design {
+  namespace detail {
+    // get max degree of a graph
+    std::pair <int, int> get_min_max_degree (Graph& g);
+  }
+}
 #endif

@@ -12,6 +12,8 @@
 // include header
 #include "test_common.h"
 
+using namespace design::detail;
+
 // include headers containing functions to test
 
 BOOST_AUTO_TEST_SUITE (RandomGenerator)

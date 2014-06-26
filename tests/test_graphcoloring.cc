@@ -17,6 +17,8 @@
 
 // define heads
 
+using namespace design::detail;
+
 BOOST_AUTO_TEST_SUITE (GraphColoring)
 /*
 class compound_test {

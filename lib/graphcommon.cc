@@ -10,18 +10,22 @@
 // include header
 #include "graphcommon.h"
 
-std::pair <int, int> get_min_max_degree (Graph& g) {
-  int max_degree = 0;
-  int min_degree = std::numeric_limits<int>::max();
+namespace design {
+  namespace detail {
+    
+    std::pair <int, int> get_min_max_degree (Graph& g) {
+      int max_degree = 0;
+      int min_degree = std::numeric_limits<int>::max();
 
-  BGL_FORALL_VERTICES_T(v, g, Graph) {
-    int current_degree = boost::out_degree(v, g);
-    if (current_degree > max_degree) {
-      max_degree = current_degree;
-    } else if (current_degree < min_degree) {
-      min_degree = current_degree;
+      BGL_FORALL_VERTICES_T(v, g, Graph) {
+        int current_degree = boost::out_degree(v, g);
+        if (current_degree > max_degree) {
+          max_degree = current_degree;
+        } else if (current_degree < min_degree) {
+          min_degree = current_degree;
+        }
+      }
+      return std::make_pair(min_degree, max_degree);
     }
   }
-  return std::make_pair(min_degree, max_degree);
 }
-

@@ -24,11 +24,15 @@
 
 // include boost components
 
-// function to do the coloring of the ear decomposition
-void color_blocks (Graph& g, ProbabilityMatrix& pm);
 
-// color Articulation Points of this ear
-MyKey color_articulation_points (int k, ProbabilityMatrix& pm, MyKey& colorkey, MyKey& lastkey);
+namespace design {
+  namespace detail {
+    // function to do the coloring of the ear decomposition
+    void color_blocks (Graph& g, ProbabilityMatrix& pm);
 
+    // color Articulation Points of this ear
+    MyKey color_articulation_points (int k, ProbabilityMatrix& pm, MyKey& colorkey, MyKey& lastkey);
+  }
+}
 
 #endif

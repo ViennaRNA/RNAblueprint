@@ -15,52 +15,56 @@
 
 #include <sstream>
 
-enum GraphTypes {
-  PATH, BLOCK
-};
+namespace design {
+  namespace detail {
+    
+    enum GraphTypes {
+      PATH, BLOCK
+    };
 
-class GraphComponent {
-public:
-  GraphComponent (Graph& g, int t);
+    class GraphComponent {
+    public:
+      GraphComponent (Graph& g, int t);
 
-  unsigned long long number_of_sequences () {
-    return nos;
+      unsigned long long number_of_sequences () {
+        return nos;
+      }
+      void mutate (int position);
+      void mutate ();
+      ~GraphComponent ();
+    private:
+      Graph& subgraph;
+      unsigned long long nos = 0;
+      ProbabilityMatrix * pm = NULL;
+      int type;
+    };
+
+    class DependencyGraph {
+    public:
+      DependencyGraph (std::vector<std::string> structures);
+
+      unsigned long long number_of_sequences () {
+        return nos;
+      }
+
+      bool is_bipartite () {
+        return bipartite;
+      }
+      Sequence get_sequence ();
+      std::string get_sequence_string ();
+      void mutate (int position);
+      void mutate ();
+      void reset_colors ();
+      ~DependencyGraph ();
+    private:
+      Graph graph;
+      bool bipartite; // if dependency graph is bipartite and a therefore a solution exists
+      unsigned long long nos = 0; // number of sequences/solutions
+      std::list< GraphComponent* > graph_components;
+
+
+    };
   }
-  void mutate (int position);
-  void mutate ();
-  ~GraphComponent ();
-private:
-  Graph& subgraph;
-  unsigned long long nos = 0;
-  ProbabilityMatrix * pm = NULL;
-  int type;
-};
-
-class DependencyGraph {
-public:
-  DependencyGraph (std::vector<std::string> structures);
-
-  unsigned long long number_of_sequences () {
-    return nos;
-  }
-
-  bool is_bipartite () {
-    return bipartite;
-  }
-  Sequence get_sequence ();
-  std::string get_sequence_string ();
-  Sequence mutate (int position);
-  Sequence mutate ();
-  void reset_colors ();
-  ~DependencyGraph ();
-private:
-  Graph graph;
-  bool bipartite; // if dependency graph is bipartite and a therefore a solution exists
-  unsigned long long nos = 0; // number of sequences/solutions
-  std::list< GraphComponent* > graph_components;
-
-
-};
-
+}
 #endif	/* DEPENDENCY_GRAPH_H */
 

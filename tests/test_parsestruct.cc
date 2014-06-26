@@ -22,6 +22,8 @@
 
 // define heads
 
+using namespace design::detail;
+
 BOOST_AUTO_TEST_SUITE (ParseStruct)
 
 /* put this in
