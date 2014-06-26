@@ -8,6 +8,5 @@ dist_doc_DATA= \
   doc/*.pdf \
   doc/*.ps
 
-
 # the subdirectories of the project to go into
 SUBDIRS = lib src tests

@@ -14,9 +14,16 @@
 // include header
 #include "common.h"
 #include "dependency_graph.h"
-
+/*
+ * RNA design library
+ * @autor Stefan Hammer
+ */
 namespace design {
   
+  /*
+   * Dependency Graph which holds all structural constraints
+   * This graph is used to generate valid sequences compatible to the input structures
+   */
   class DependencyGraph {
   public:
     DependencyGraph(std::vector<std::string> structures);
