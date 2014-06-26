@@ -10,7 +10,9 @@ libRNAdesign_adir = $(includedir)/RNAdesign
 AM_CPPFLAGS = $(BOOST_CPPFLAGS) @AM_CXXFLAGS@
 
 # the list of header files that belong to the library
-libRNAdesign_a_HEADERS = \
+libRNAdesign_a_HEADERS = RNAdesign.h
+
+noinst_HEADERS = \
       common.h \
 			probability_matrix.h \
 			graphcoloring.h \
@@ -24,6 +26,7 @@ libRNAdesign_a_HEADERS = \
 # the sources to add to the library and to add to the source distribution
 libRNAdesign_a_SOURCES =	\
       $(libRNAdesign_a_HEADERS) \
+      RNAdesign.cc \
 			common.cc \
 			graphcommon.cc \
 			printgraph.cc \

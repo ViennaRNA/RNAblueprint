@@ -13,6 +13,9 @@ AC_CONFIG_SRCDIR([src/main.cc])
 # include m4 local macros
 AC_CONFIG_MACRO_DIR([m4])
 
+# init docygen
+DX_INIT_DOXYGEN($PACKAGE_NAME, doxygen.cfg)
+
 # check for C++ compiler
 # AC_PROG_INSTALL
 AC_PROG_CXX
