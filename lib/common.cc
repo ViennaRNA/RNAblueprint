@@ -13,8 +13,10 @@
 namespace design {
   namespace detail {
     
-    bool debug = true;
+    bool debug = false;
+    bool * debug_ptr = &debug;
     std::mt19937 rand_gen;
+    std::mt19937 * rand_gen_ptr = &rand_gen;
 
     char enum_to_char (int intletter) {
       char charletter;

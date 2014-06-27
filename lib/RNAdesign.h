@@ -19,6 +19,12 @@
  * @autor Stefan Hammer
  */
 namespace design {
+  /*
+   * Initialize the Library
+   * Set the debug boolean to true if you want to get verbose output to std:err
+   * Set the random generator for stochastic processes in the library
+   */
+  void initialize_library(bool debug, std::mt19937 rand_gen);
   
   /*
    * Dependency Graph which holds all structural constraints

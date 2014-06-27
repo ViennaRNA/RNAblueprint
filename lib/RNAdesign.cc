@@ -11,6 +11,11 @@
 
 namespace design {
   
+  void initialize_library(bool debug, std::mt19937 rand_gen) {
+    *detail::debug_ptr = debug;
+    *detail::rand_gen_ptr = rand_gen;
+  }
+  
   DependencyGraph::DependencyGraph(std::vector<std::string> structures) {
     g = new detail::DependencyGraph(structures);
   }

@@ -16,7 +16,7 @@
 
 //declare global variables
 bool debug = false;
-std::mt19937 rand_gen;
+extern std::mt19937 rand_gen;
 
 //! main program starts here
 
@@ -39,10 +39,12 @@ int main (int ac, char* av[]) {
   if (vm.count("seed")) {
     seed = vm["seed"].as<unsigned long>();
   }
+  std::mt19937 rand_gen;
   rand_gen.seed(seed);
   if (verbose) {
     std::cerr << "Using this seed: " << seed << std::endl;
   }
+  design::initialize_library(debug, rand_gen);
 
   // input handling ( we read from std::in per default and switch to a file if it is given in the --in option
   // std::in will provide a pseudo interface to enter structures directly!

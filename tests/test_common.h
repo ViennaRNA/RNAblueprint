@@ -11,6 +11,7 @@
 
 // include common header with graph definition and global variables
 #include "common.h"
+#include "RNAdesign.h"
 
 // include standard library parts
 #include <sstream>
@@ -22,7 +23,5 @@
 // typedefs
 
 // functions
-// TODO put getvertexset into a shared file (at the moment there are linker issues)
-// std::unordered_set<int> getVertexSet(Graph g);
 
 #endif

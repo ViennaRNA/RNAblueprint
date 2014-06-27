@@ -15,6 +15,7 @@
 // include headers containing functions to test
 #include "pathcoloring.h"
 
+using namespace design;
 using namespace design::detail;
 
 // define heads
@@ -47,7 +48,7 @@ TestCase::TestCase (int first, int last, int length, int nos, Sequence sequence)
 BOOST_AUTO_TEST_CASE (generatePathSeq) {
   // set random generator to a static seed;
 
-  rand_gen.seed(1);
+  initialize_library(false, *(new std::mt19937(1)) );
 
   std::vector < TestCase > testcases;
   testcases.push_back(TestCase(G, G, 2, 2,{G, U, G}));
@@ -74,7 +75,7 @@ BOOST_AUTO_TEST_CASE (generatePathSeq) {
     } else {
       nos = generate_cycle_seq(sequence, t.last, t.length);
     }
-    // do the comarison of the results
+    // do the comparison of the results
     BOOST_CHECK(sequence == t.sequence);
     BOOST_CHECK(nos == t.nos);
   }
@@ -99,7 +100,7 @@ void reset (Graph& g) {
 
 BOOST_AUTO_TEST_CASE (colorPathGraph) {
   // set random generator to a static seed;
-  rand_gen.seed(1);
+  initialize_library(false, *(new std::mt19937(1)) );
   // create a graph
   Graph g(10);
   int vertex_name = 0;

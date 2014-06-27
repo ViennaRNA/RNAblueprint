@@ -20,7 +20,7 @@
 #include <boost/graph/iteration_macros.hpp>
 
 // define heads
-
+using namespace design;
 using namespace design::detail;
 
 BOOST_AUTO_TEST_SUITE (Decompose)
@@ -178,7 +178,7 @@ BOOST_AUTO_TEST_CASE (EarDecomposition) {
   Graph g = createGraph(ED);
   BOOST_TEST_MESSAGE("decompose connected components");
   // set random generator to a static seed;
-  rand_gen.seed(1);
+  initialize_library(false, *(new std::mt19937(1)) );
   ear_decomposition_to_subgraphs(g);
 
   int number_of_children = 0;
@@ -252,7 +252,7 @@ BOOST_AUTO_TEST_CASE (partsBetweenArticulationPoints) {
   Graph g = createGraph(ED);
   BOOST_TEST_MESSAGE("parts between attachment points to subgraphs");
   // set random generator to a static seed;
-  rand_gen.seed(1);
+  initialize_library(false, *(new std::mt19937(1)) );
   ear_decomposition_to_subgraphs(g);
   // print_subgraphs(g, &std::cout, "ears");
   // now the decomposed graph looks different than above, as the random generator went further

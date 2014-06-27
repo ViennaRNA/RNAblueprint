@@ -35,7 +35,7 @@ namespace design {
       // components and decompose blocks via ear decomposition
       bipartite = decompose_graph(graph);
 
-      // now fill the vector in right color-ordering and self initialize pm, nos, etc.
+      // now fill the vector in right coloring-order and self initialize pm, nos, etc.
       Graph::children_iterator cc, cc_end;
       for (boost::tie(cc, cc_end) = graph.children(); cc != cc_end; ++cc) {
         // connected components
@@ -56,7 +56,7 @@ namespace design {
               graph_components.push_back(new GraphComponent(*bc, PATH));
             }
           }
-
+          // iterate again to find remaining paths
           for (boost::tie(bc, bc_end) = (*cc).children(); bc != bc_end; ++bc) {
             auto min_max_degree = get_min_max_degree(*bc);
 

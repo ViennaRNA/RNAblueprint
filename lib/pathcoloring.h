@@ -58,8 +58,8 @@ namespace design {
     // same for cycles (just a wrapper)
     unsigned long long generate_cycle_seq (std::deque< int >& sequence, int first, int length);
 
-    // function that takes a path or cycle (in form of a graph), meassures its length, first and last base assignment, 
-    // calls generate_path/cycle_seq, and assignes all the colors to the Graph
+    // function that takes a path or cycle (in form of a graph), measures its length, first and last base assignment, 
+    // calls generate_path/cycle_seq, and assigns all the colors to the Graph using sequencestring_to_graph
     unsigned long long color_path_cycle_graph (Graph& g);
 
     // this function takes a sequence of bases and assigns them to a graph (must be a path or a cycle!)
