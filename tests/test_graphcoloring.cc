@@ -59,7 +59,7 @@ void reset (Graph& g) {
   // reset color
 
   BGL_FORALL_VERTICES_T(v, g, Graph) {
-    g[v].base = X;
+    g[v].base = N;
   }
 }
 

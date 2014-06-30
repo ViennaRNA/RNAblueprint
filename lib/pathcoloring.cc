@@ -30,10 +30,10 @@ namespace design {
       // Definition:
       // length 1: p[A][U][1] = 1, p[U][A][1] = 1, p[G][C][1] = 1, p[C][G][1] = 1, p[U][G][1] = 1, p[G][U][1] = 1
       // if length greater than 2, we don't care about the first letter any more -> x
-      // length n: 	p[X][A][n] = p[X][U][n-1]
-      //		p[X][C][n] = p[X][G][n-1]
-      //		p[X][G][n] = p[X][U][n-1] + p[X][C][n-1]
-      //		p[X][U][n] = p[X][A][n-1] + p[X][G][n-1]
+      // length n: 	p[N][A][n] = p[N][U][n-1]
+      //		p[N][C][n] = p[N][G][n-1]
+      //		p[N][G][n] = p[N][U][n-1] + p[N][C][n-1]
+      //		p[N][U][n] = p[N][A][n-1] + p[N][G][n-1]
 
       // fill standard pairing matrix (pathlength = 1)
       p[1][A][U] = 1;
@@ -86,50 +86,49 @@ namespace design {
 
     unsigned long long Pairing::get (unsigned int l, unsigned int b1, unsigned int b2) {
 
-      // check if the requested length is bigger than our initialisation or that a base bigger than 3 is requested
-      // -> to avoid segfaults or unknown behaviour!
-      if ((l > length) || (b1 > A_Size - 1) || (b2 > A_Size - 1)) {
-        std::cerr << "Requested a value in pairing matrix which is out of range: p[" << l << "][" << b1 << "][" << b2 << "]" << std::endl;
-        exit(1);
-      }
-
-      // if we request a probability for an unknown (X) character at one or both ends, 
+      // if we request a probability for an unknown (N) character at one or both ends, 
       // return the sum of the probabilities for all characters at this position
-      if ((b1 == X) || (b2 == X)) {
-        if ((b1 == X) && (b2 == X)) {
-          return get(l);
-        } else if (b1 == X) {
-          return get(l, b2);
-        } else if (b2 == X) {
-          return get(l, b1);
+      
+      //std::cerr << "b1 is " << enum_to_char(b1) << b1 << ", b2 is " << enum_to_char(b2) << b2 << std::endl;
+      
+      if ((b1 >= A_Size) || (b2 >= A_Size)) {
+        if ((b1 >= A_Size) && (b2 >= A_Size)) {
+          //std::cerr << "b1>=Abet; b2>=Abet" << std::endl;
+          unsigned long long sum = 0;
+          for (auto i : base_conversion[b2]) {
+            sum += get(l, b1, i);
+          }
+          return sum;
+          
+        } else if (b1 >= A_Size) {
+          //std::cerr << "b1>=Abet" << std::endl;
+          unsigned long long sum = 0;
+          for (auto i : base_conversion[b1]) {
+            sum += get(l, i, b2);
+          }
+          return sum;
+          
+        } else if (b2 >= A_Size) {
+          //std::cerr << "b2>=Abet" << std::endl;
+          return get(l, b2, b1);
         }
       } else {
+        //std::cerr << "b1<Abet; b2<Abet" << std::endl;
+        if ((l > length) || (b1 >= A_Size) || (b2 >= A_Size)) {
+          // check if the requested length is bigger than our initialization or that a base bigger than 3 is requested
+          // -> to avoid segfaults or unknown behavior!
+          std::cerr << "Requested a value in pairing matrix which is out of range: p[" << l << "][" << b1 << "][" << b2 << "]" << std::endl;
+          exit(1);
+        }
+        
         return p[l][b1][b2];
       }
-    }
-
-    unsigned long long Pairing::get (unsigned int l, unsigned int b1) {
-      // return the sum of all probabilities of the possible characters at position 2
-      unsigned long long sum = 0;
-      for (unsigned int i = 0; i < A_Size; i++) {
-        sum += get(l, b1, i);
-      }
-      return sum;
-    }
-
-    unsigned long long Pairing::get (unsigned int l) {
-      // return the sum of all probabilities of the possible characters at position 1 and 2
-      unsigned long long sum = 0;
-      for (unsigned int i = 0; i < A_Size; i++) {
-        sum += get(l, i);
-      }
-      return sum;
     }
 
     unsigned long long generate_path_seq (Sequence& sequence, int first, int last, int length) {
 
       // pairing matrix for every length
-      Pairing p(length + 1); //TODO initialize only once for the whole program as ist is static content!
+      Pairing p(length + 1); //TODO initialize only once for the whole program as static content!
       // set maximum possible number of sequences for first....last
       unsigned long long max_number_of_sequences = p.get(length, first, last);
       // declare random number distribution and get a random number
@@ -140,7 +139,7 @@ namespace design {
       std::vector< int > posibilities;
 
       // set the first base
-      if (first != X) {
+      if (first < A_Size) {
         sequence.push_back(first);
         length--;
       }
@@ -154,16 +153,17 @@ namespace design {
       }*/
 
       while (length >= 0) {
-        if (first == X) {
+        if (first >= A_Size) {
           number_of_sequences = p.get(length, first, last);
+          first = N;
         } else {
           number_of_sequences = p.get(length + 1, first, last);
         }
         // look in paring matrix for next possible character and remember them
         posibilities.clear();
-        for (int i = 0; i < A_Size; i++) {
+        for (auto i : base_conversion[ N ]) {
           if (p.get(1, first, i) >= 1) {
-            posibilities.push_back(i);
+            posibilities.push_back(i); 
           }
         }
 
@@ -208,48 +208,46 @@ namespace design {
     unsigned long long generate_cycle_seq (Sequence& sequence, int first, int length) {
 
       // max number of sequences to return
-      long long max_number_of_sequences = 0;
+      unsigned long long max_number_of_sequences = 0;
       // check if length is even number
       if (length % 2 != 0) {
         std::cerr << std::endl << "Length of the cycle to color is an odd number. This can't be!" << std::endl;
         exit(1);
       }
 
-      if (first != X) {
+      if (first < A_Size) {
         // return a path with same begin and end, but then remove the last character again -> cycle!
         max_number_of_sequences = generate_path_seq(sequence, first, first, length);
-        sequence.pop_back();
+        
       } else {
-        // initialize fibonacci numbers
-        Fibonacci fibo(length + 1);
-        // max number of sequences is
-        max_number_of_sequences = 2 * (fibo.get(length + 1) + fibo.get(length - 1)); // is same as 2* Lucas (length)
+        
+        Pairing p(length + 1); //TODO initialize only once for the whole program as static content!
         // declare random number distribution and get a random number
         std::uniform_real_distribution<float> dist(0, 1);
-        float random = dist(rand_gen);
-
-        if (debug) {
-          std::cerr << random << std::endl;
+        
+        for (auto i : base_conversion[ first ]) {
+          max_number_of_sequences += p.get(length, i, i);
         }
-
-        // if random number is smaller than fibo(n-1)/2Lucas(n) -> add an A and color the rest with U,U,n-2
-        if (random * max_number_of_sequences < fibo.get(length - 1)) {
-          sequence.push_back(A);
-          generate_path_seq(sequence, U, U, length - 2);
-          // if random number is smaller than fibo(n-1)/Lucas(n) -> add an C and color the rest with G,G,n-2
-        } else if (random * max_number_of_sequences / 2 < fibo.get(length - 1)) {
-          sequence.push_back(C);
-          generate_path_seq(sequence, G, G, length - 2);
-          // else -> change random number, choose either G or U and color the rest with G/U,X,n-1
-        } else {
-          random -= 2 * fibo.get(length - 1) / max_number_of_sequences;
-          if (random * max_number_of_sequences < fibo.get(length + 1)) {
-            generate_path_seq(sequence, U, X, length - 1);
-          } else {
-            generate_path_seq(sequence, G, X, length - 1);
+        
+        // get a random number between 0 and 1.
+        float random = dist(rand_gen);
+        // stochastically take one of the possibilities
+        // start at the probability of first possible character and add each other base probability as long long as the random number is bigger.
+        unsigned long long sum = 0;
+        for (auto base : base_conversion[ first ]) {
+          sum += p.get(length, base, base);
+          // if the random number is bigger than our probability, take this base as the first base!
+          if (random * max_number_of_sequences < sum) {
+            // our new begin is the chosen base.
+            first = base;
+            // don't forget to exit the loop, otherwise will always be first = C;
+            break;
           }
         }
+        generate_path_seq(sequence, first, first, length);
       }
+      
+      sequence.pop_back();
       return max_number_of_sequences;
     }
 
@@ -270,7 +268,7 @@ namespace design {
       // find out the length of the path
       unsigned int length = boost::num_edges(g);
 
-      // find out the degree of the first and the last base and the base of all non 'X' colored
+      // find out the degree of the first and the last base and the base of all non 'N' colored
       std::vector< Vertex > ends;
       std::vector< Vertex > colored_bases;
       Sequence sequence;
@@ -279,8 +277,8 @@ namespace design {
         // remember ends of the path
         if (boost::out_degree(v, g) == 1) {
           ends.push_back(v);
-        } else if (g[v].base != X) {
-          // remember non X bases which are no ends
+        } else if (g[v].base != N) {
+          // remember non N bases which are no ends
           colored_bases.push_back(v);
         }
 
@@ -314,7 +312,7 @@ namespace design {
           // assign this sequence of bases to the graph
           sequencestring_to_graph(g, colored_bases[0], sequence);
         } else if (colored_bases.size() == 0) {
-          // start to color at any vertex with X
+          // start to color at any vertex with N
           max_number_of_sequences = generate_cycle_seq(sequence, g[boost::vertex(0, g)].base, length);
           if (debug) {
             std::cerr << "Sequence is: " << sequence << std::endl;
@@ -327,7 +325,7 @@ namespace design {
         }
       } else if (length == 0 && boost::num_vertices(g) == 1) {
         // its a single vertex!
-        max_number_of_sequences = generate_path_seq(sequence, g[boost::vertex(0, g)].base, X, length);
+        max_number_of_sequences = generate_path_seq(sequence, g[boost::vertex(0, g)].base, N, length);
         if (debug) {
           std::cerr << "Sequence is: " << sequence << std::endl;
         }
@@ -349,7 +347,7 @@ namespace design {
       }
 
       // check if we are going to overwrite an already existing assignment with a different one.
-      if (g[vertex].base != X) {
+      if (g[vertex].base != N) {
         if (g[vertex].base != sequence.front()) {
           std::cerr << "Tried to color following vertex with a base, but it is already colored with another one! "
               << boost::get(boost::vertex_color_t(), g, vertex) << "/" << enum_to_char(g[vertex].base) << ", new color: " << enum_to_char(sequence.front()) << std::endl;

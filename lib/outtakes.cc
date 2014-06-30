@@ -760,3 +760,52 @@ bool is_bipartite_graph (Graph& g, Vertex startVertex, Edge& ed) {
   boost::breadth_first_search(g, startVertex, boost::visitor(vis));
   return exit;
 }
+
+
+    unsigned long long generate_cycle_seq (Sequence& sequence, int first, int length) {
+
+      // max number of sequences to return
+      unsigned long long max_number_of_sequences = 0;
+      // check if length is even number
+      if (length % 2 != 0) {
+        std::cerr << std::endl << "Length of the cycle to color is an odd number. This can't be!" << std::endl;
+        exit(1);
+      }
+
+      if (first < A_Size) {
+        // return a path with same begin and end, but then remove the last character again -> cycle!
+        max_number_of_sequences = generate_path_seq(sequence, first, first, length);
+        sequence.pop_back();
+      } else {
+        // initialize fibonacci numbers
+        Fibonacci fibo(length + 1);
+        // max number of sequences is
+        max_number_of_sequences = 2 * (fibo.get(length + 1) + fibo.get(length - 1)); // is same as 2* Lucas (length)
+        // declare random number distribution and get a random number
+        std::uniform_real_distribution<float> dist(0, 1);
+        float random = dist(rand_gen);
+
+        if (debug) {
+          std::cerr << random << std::endl;
+        }
+
+        // if random number is smaller than fibo(n-1)/2Lucas(n) -> add an A and color the rest with U,U,n-2
+        if (random * max_number_of_sequences < fibo.get(length - 1)) {
+          sequence.push_back(A);
+          generate_path_seq(sequence, U, U, length - 2);
+          // if random number is smaller than fibo(n-1)/Lucas(n) -> add an C and color the rest with G,G,n-2
+        } else if (random * max_number_of_sequences / 2 < fibo.get(length - 1)) {
+          sequence.push_back(C);
+          generate_path_seq(sequence, G, G, length - 2);
+          // else -> change random number, choose either G or U and color the rest with G/U,N,n-1
+        } else {
+          random -= 2 * fibo.get(length - 1) / max_number_of_sequences;
+          if (random * max_number_of_sequences < fibo.get(length + 1)) {
+            generate_path_seq(sequence, U, N, length - 1);
+          } else {
+            generate_path_seq(sequence, G, N, length - 1);
+          }
+        }
+      }
+      return max_number_of_sequences;
+    }

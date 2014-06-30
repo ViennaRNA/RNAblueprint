@@ -11,6 +11,7 @@
 
 // include header
 #include "test_common.h"
+#include "common.h"
 
 using namespace design::detail;
 
@@ -42,6 +43,24 @@ BOOST_AUTO_TEST_CASE (rand_test1) {
     BOOST_CHECK(random == 0.417022f);
   }
 
+}
+
+BOOST_AUTO_TEST_CASE (rand_library) {
+  BOOST_TEST_MESSAGE("test random number generator in library");
+  design::initialize_library(true, *(new std::mt19937(1)) );
+  
+  std::uniform_real_distribution<float> dist(0, 1);
+  float random = dist(design::detail::rand_gen);
+  BOOST_CHECK(random == 0.417022f);
+}
+
+BOOST_AUTO_TEST_CASE (rand_library1) {
+  BOOST_TEST_MESSAGE("test random number generator in library again");
+  design::initialize_library(true, *(new std::mt19937(1)) );
+  
+  std::uniform_real_distribution<float> dist(0, 1);
+  float random = dist(design::detail::rand_gen);
+  BOOST_CHECK(random == 0.417022f);
 }
 
 BOOST_AUTO_TEST_SUITE_END ()

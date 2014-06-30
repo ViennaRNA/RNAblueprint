@@ -15,6 +15,7 @@
 #include <string>
 #include <vector>
 #include <array>
+#include <unordered_map>
 #include <set>
 #include <iostream>
 #include <utility>
@@ -51,8 +52,42 @@ namespace design {
     #define A_Size 4
     // Encode Bases to enums
 
+    /*
+      A = adenine
+      C = cytosine
+      G = guanine
+      T = thymine
+      R = G A (purine)
+      Y = T C (pyrimidine)
+      K = G T (keto)
+      M = A C (amino)
+      S = G C (strong bonds)
+      W = A T (weak bonds)
+      B = G T C (all but A)
+      D = G A T (all but C)
+      H = A C T (all but G)
+      V = G C A (all but T)
+      N = A G C T (any)
+    */
+    
+    // it is important that 0-3 are the basic bases
     enum bases {
-      A, U, G, C, X
+      A, C, G, U, R, Y, K, M, S, W, B, D, H, V, N
+    };
+    
+    static std::unordered_map<int, std::set<int> >  base_conversion = 
+    {
+      { R, { G, A } },
+      { Y, { U, C } },
+      { K, { G, U } },
+      { M, { A, C } },
+      { S, { G, C } },
+      { W, { A, U } },
+      { B, { G, U, C } },
+      { D, { G, A, U } },
+      { H, { A, C, U } },
+      { V, { G, C, A } },
+      { N, { A, G, C, U } }
     };
 
     // Typedef for sequences of enums
@@ -65,7 +100,7 @@ namespace design {
       int color = 0;
       std::set< int > Ak;
       int Ai = 0;
-      int base = X;
+      int base = N;
     };
 
     struct edge_property {

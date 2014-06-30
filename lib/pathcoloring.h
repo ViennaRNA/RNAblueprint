@@ -43,9 +43,6 @@ namespace design {
     public:
       Pairing (unsigned int length);
       unsigned long long get (unsigned int l, unsigned int b1, unsigned int b2);
-      unsigned long long get (unsigned int l, unsigned int b1);
-      unsigned long long get (unsigned int l);
-      //matrix< unsigned int, 4, 4 > getMatrix(unsigned int l) { return p[l]; };
     private:
       std::vector< rnaMatrix > p;
       rnaMatrix multiply (rnaMatrix a, rnaMatrix b);

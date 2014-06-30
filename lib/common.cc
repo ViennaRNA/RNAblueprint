@@ -17,19 +17,39 @@ namespace design {
     bool * debug_ptr = &debug;
     std::mt19937 rand_gen;
     std::mt19937 * rand_gen_ptr = &rand_gen;
-
+    //A, C, G, U, R, Y, K, M, S, W, B, D, H, V, N
     char enum_to_char (int intletter) {
       char charletter;
       switch (intletter) {
         case A: charletter = 'A';
           break;
-        case G: charletter = 'G';
-          break;
         case C: charletter = 'C';
+          break;
+        case G: charletter = 'G';
           break;
         case U: charletter = 'U';
           break;
-        case X: charletter = 'X';
+        case R: charletter = 'R';
+          break;
+        case Y: charletter = 'Y';
+          break;
+        case K: charletter = 'K';
+          break;
+        case M: charletter = 'M';
+          break;
+        case S: charletter = 'S';
+          break;
+        case W: charletter = 'W';
+          break;
+        case B: charletter = 'B';
+          break;
+        case D: charletter = 'D';
+          break;
+        case H: charletter = 'H';
+          break;
+        case V: charletter = 'V';
+          break;
+        case N: charletter = 'N';
           break;
       }
       return charletter;
@@ -38,15 +58,35 @@ namespace design {
     int char_to_enum (char charletter) {
       int intletter;
       switch (charletter) {
-        case 'A': intletter = A;
+        case 'A': charletter = A;
           break;
-        case 'G': intletter = G;
+        case 'C': charletter = C;
           break;
-        case 'C': intletter = C;
+        case 'G': charletter = G;
           break;
-        case 'U': intletter = U;
+        case 'U': charletter = U;
           break;
-        case 'X': intletter = X;
+        case 'R': charletter = R;
+          break;
+        case 'Y': charletter = Y;
+          break;
+        case 'K': charletter = K;
+          break;
+        case 'M': charletter = M;
+          break;
+        case 'S': charletter = S;
+          break;
+        case 'W': charletter = W;
+          break;
+        case 'B': charletter = B;
+          break;
+        case 'D': charletter = D;
+          break;
+        case 'H': charletter = H;
+          break;
+        case 'V': charletter = V;
+          break;
+        case 'N': charletter = N;
           break;
       }
       return intletter;

@@ -79,7 +79,7 @@ namespace design {
     }
 
     Sequence DependencyGraph::get_sequence () {
-      Sequence sequence(boost::num_vertices(graph), X);
+      Sequence sequence(boost::num_vertices(graph), N);
 
       BGL_FORALL_VERTICES_T(v, graph, Graph) {
         sequence[boost::get(boost::vertex_color_t(), graph, v)] = graph[v].base;
@@ -97,7 +97,7 @@ namespace design {
     }
 
     void DependencyGraph::mutate () {
-      // reset all the colors to X
+      // reset all the colors to N
       reset_colors();
       // TODO replace with a good mutation function
       for (auto component : graph_components) {
@@ -113,7 +113,7 @@ namespace design {
     void DependencyGraph::reset_colors () {
 
       BGL_FORALL_VERTICES_T(v, graph, Graph) {
-        graph[v].base = X;
+        graph[v].base = N;
       }
     }
 

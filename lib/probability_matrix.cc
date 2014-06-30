@@ -247,7 +247,7 @@ namespace design {
         std::cerr << "N(" << lastkey << ")" << std::endl;
       }
 
-      // calculate sum of sum for all bases colored X (= internal aps)
+      // calculate sum of sum for all bases colored N (= internal aps)
       // adds base combinatoric to the sub_probabilities and to the lastkey
       if (Ai.size() == 0) {
         max_number_of_sequences += calculate_probability(mykey, lastkey, sub_probabilities);
@@ -382,7 +382,7 @@ namespace design {
       MyKey tempkey; // helper to build all combinations
       std::set<int> cAk; // to get all combinations of keys we need a list of articulation points
       for (auto elem : mykey) {
-        if (elem.second == X) {
+        if (elem.second == N) {
           cAk.insert(elem.first); // store to get all key combinations
           mykey.erase(elem.first); // delete to in the end get a list of static key-elements
         }

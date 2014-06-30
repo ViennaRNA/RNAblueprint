@@ -50,7 +50,7 @@ namespace design {
         // put colors onto graph
         for (auto v : Ak) {
           Vertex lv = g.global_to_local(v);
-          if (g[lv].base == X) {
+          if (g[lv].base == N) {
             g[lv].base = colorkey[boost::get(boost::vertex_color_t(), g, lv)];
           } else if (g[lv].base != colorkey[boost::get(boost::vertex_color_t(), g, lv)]) {
             std::cerr << "ERROR: Tried to change a already assigned base of an articulation point." << std::endl;
