@@ -320,6 +320,7 @@ namespace design {
           // assign this sequence of bases to the graph
           sequencestring_to_graph(g, boost::vertex(0, g), sequence);
         } else {
+          //TODO in this case, split the path, cycle at the constraints and color in between with fixed ends.
           std::cerr << std::endl << "This cycle already is partly colored in between. I can't color this!" << std::endl;
           exit(1);
         }
