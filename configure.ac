@@ -124,7 +124,7 @@ AC_CHECK_HEADERS([boost/lexical_cast.hpp])
 AC_CHECK_HEADERS([boost/config.hpp])
 AC_CHECK_HEADERS([boost/functional/hash.hpp])
 AC_CHECK_HEADERS([boost/iterator/reverse_iterator.hpp])
-AC_CHECK_HEADERS([boost/graph/ear-decomposition.hpp])
+AC_CHECK_HEADERS([boost/graph/ear_decomposition.hpp])
 
 AC_CHECK_HEADERS([ViennaRNA/fold.h])
 CPPFLAGS=$OLD_CPPFLAGS
