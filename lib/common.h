@@ -1,4 +1,4 @@
-/* This program reads secundary RNA structures in dot-bracket and
+/* This program reads secondary RNA structures in dot-bracket and
  * builds a graph for a latter ear-decomposition and bipartitness-check.
  *
  * Created on: 25.03.2013
