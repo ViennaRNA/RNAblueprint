@@ -43,10 +43,6 @@ namespace design {
     //Global variables
     extern bool debug;
     extern bool * debug_ptr;
-    
-    // random number generator
-    extern std::mt19937 rand_gen;
-    extern std::mt19937 * rand_gen_ptr;
 
     // define size of the alphabet
     #define A_Size 4

@@ -34,7 +34,8 @@ namespace design {
   namespace detail {
     
     // does the graph decomposition, and calls the coloring of the subgraphs
-    bool decompose_graph (Graph& graph);
+    template <typename RG>
+    bool decompose_graph (Graph& graph, RG* rand_ptr);
 
     // get a vector of all vertices with their component id. finds connected components with DFS
     void connected_components_to_subgraphs (Graph& g);
@@ -46,7 +47,8 @@ namespace design {
     void merge_biconnected_paths (Graph& g, Vertex p, Vertex v, boost::property_map < Graph, boost::edge_component_t >::type& component, std::vector<Vertex>& art_points, int& nc);
 
     // ear decomposition of blocks
-    void ear_decomposition_to_subgraphs (Graph& g);
+    template <typename RG>
+    void ear_decomposition_to_subgraphs (Graph& g, RG* rand_ptr);
 
     // identify attachment points and add them as graph property Ak
     void color_attachment_points (Graph& g);

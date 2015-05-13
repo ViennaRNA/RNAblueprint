@@ -13,7 +13,8 @@
 namespace design {
   namespace detail {
     
-    void color_blocks (Graph& g, ProbabilityMatrix& pm) {
+    template <typename RG>
+    void color_blocks (Graph& g, ProbabilityMatrix& pm, RG* rand_ptr) {
       // number of sequences to debug
       if (debug) {
         std::cerr << "Number of sequences for this block: " << pm.number_of_sequences() << std::endl;
@@ -40,7 +41,7 @@ namespace design {
         if (debug) {
           std::cerr << "Try to color this key: " << thiskey << std::endl;
         }
-        MyKey colorkey = color_articulation_points(k, pm, thiskey, lastkey);
+        MyKey colorkey = color_articulation_points(k, pm, thiskey, lastkey, rand_ptr);
         // remember colorkey for next ear iteration
         lastkey = colorkey;
         if (debug) {
@@ -69,19 +70,20 @@ namespace design {
         for (boost::tie(part, part_end) = (*ear).children(); part != part_end; ++part) {
 
           print_all_vertex_names(*part, "Coloring a part of the ear");
-          color_path_cycle_graph(*part);
+          color_path_cycle_graph(*part, rand_ptr);
         }
       }
     }
-
-    MyKey color_articulation_points (int k, ProbabilityMatrix& pm, MyKey& colorkey, MyKey& lastkey) {
+    
+    template <typename RG>
+    MyKey color_articulation_points (int k, ProbabilityMatrix& pm, MyKey& colorkey, MyKey& lastkey, RG* rand_ptr) {
 
       MyKey returnkey;
 
       // declare random number distribution and get a random number
       std::uniform_real_distribution<float> dist(0, 1);
       // get a random number between 0 and 1.
-      float random = dist(rand_gen);
+      float random = dist(*rand_ptr);
       if (debug) {
         std::cerr << "Got a random number: " << random << std::endl;
       }

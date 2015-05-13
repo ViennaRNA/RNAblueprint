@@ -50,14 +50,17 @@ namespace design {
     };
 
     // fills the string sequence with random bases, given the first and the last base and the intended length; returns the number of possible solutions
-    unsigned long long generate_path_seq (std::deque< int >& sequence, int first, int last, int length);
+    template <typename RG>
+    unsigned long long generate_path_seq (std::deque< int >& sequence, int first, int last, int length, RG* rand_ptr);
 
     // same for cycles (just a wrapper)
-    unsigned long long generate_cycle_seq (std::deque< int >& sequence, int first, int length);
+    template <typename RG>
+    unsigned long long generate_cycle_seq (std::deque< int >& sequence, int first, int length, RG* rand_ptr);
 
     // function that takes a path or cycle (in form of a graph), measures its length, first and last base assignment, 
     // calls generate_path/cycle_seq, and assigns all the colors to the Graph using sequencestring_to_graph
-    unsigned long long color_path_cycle_graph (Graph& g);
+    template <typename RG>
+    unsigned long long color_path_cycle_graph (Graph& g, RG* rand_ptr);
 
     // this function takes a sequence of bases and assigns them to a graph (must be a path or a cycle!)
     void sequencestring_to_graph (Graph& g, Vertex vertex, std::deque< int >& sequence);

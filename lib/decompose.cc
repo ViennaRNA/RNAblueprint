@@ -17,8 +17,8 @@
 
 namespace design {
   namespace detail {
-    
-    bool decompose_graph (Graph& graph) {
+    template <typename RG>
+    bool decompose_graph (Graph& graph, RG* rand_ptr) {
       std::ostream* out = &std::cerr;
 
       connected_components_to_subgraphs(graph); // get connected components and make subgraphs
@@ -64,7 +64,7 @@ namespace design {
             int max_degree = get_min_max_degree(*bc).second;
             if (max_degree > 2) {
               // do the ear decomposition and create to subgraphs
-              ear_decomposition_to_subgraphs(*bc);
+              ear_decomposition_to_subgraphs(*bc, rand_ptr);
 
               if (debug) {
                 *out << "subgraphs ear decomposition:" << std::endl;
@@ -217,14 +217,14 @@ namespace design {
           merge_biconnected_paths(g, v, adj, component, art_points, nc);
       }
     }
-
-    void ear_decomposition_to_subgraphs (Graph& g) {
+    template <typename RG>
+    void ear_decomposition_to_subgraphs (Graph& g, RG* rand_ptr) {
       // blocks need to be decomposed into path. this can be done by Ear Decomposition
 
       // predecessor map
       boost::vector_property_map<Vertex> pred(boost::num_vertices(g));
       // get a random spanning tree
-      boost::random_spanning_tree(g, rand_gen, boost::predecessor_map(pred));
+      boost::random_spanning_tree(g, *rand_ptr, boost::predecessor_map(pred));
       // ear map (this is what we want to fill!)
       auto em = boost::get(&edge_property::ear, g);
 

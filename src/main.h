@@ -24,7 +24,7 @@
 
 
 
-// initialise boost command line option parser
+// initialize boost command line option parser
 boost::program_options::variables_map init_options (int ac, char* av[]);
 
 // read the input file into a string

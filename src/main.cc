@@ -16,7 +16,6 @@
 
 //declare global variables
 bool debug = false;
-extern std::mt19937 rand_gen;
 
 //! main program starts here
 
@@ -44,7 +43,7 @@ int main (int ac, char* av[]) {
   if (verbose) {
     std::cerr << "Using this seed: " << seed << std::endl;
   }
-  design::initialize_library(debug, rand_gen);
+  design::initialize_library(debug);
 
   // input handling ( we read from std::in per default and switch to a file if it is given in the --in option
   // std::in will provide a pseudo interface to enter structures directly!
@@ -71,7 +70,7 @@ int main (int ac, char* av[]) {
     out = new std::ofstream(vm["out"].as<std::string>(), std::ofstream::out);
   }
 
-  design::DependencyGraph dependency_graph(structures);
+  design::DependencyGraph<std::vector<std::string>, std::mt19937> dependency_graph(structures, rand_gen);
 
   if (!dependency_graph.is_bipartite()) {
     std::cerr << "Impossible to find a solution for this input: Dependency graph is not bipartite!" << std::endl;
@@ -120,7 +119,7 @@ std::vector<std::string> read_input (std::istream* in) {
   if (debug) {
     std::cerr << "Read following structures:" << std::endl;
   }
-  // check if structures have equeal length
+  // check if structures have equal length
   unsigned int length = 0;
   for (auto elem : structures) {
     if (debug) {

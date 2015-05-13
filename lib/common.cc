@@ -15,8 +15,7 @@ namespace design {
     
     bool debug = false;
     bool * debug_ptr = &debug;
-    std::mt19937 rand_gen;
-    std::mt19937 * rand_gen_ptr = &rand_gen;
+    
     //A, C, G, U, R, Y, K, M, S, W, B, D, H, V, N
     char enum_to_char (int intletter) {
       char charletter;

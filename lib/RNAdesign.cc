@@ -11,36 +11,5 @@
 
 namespace design {
   
-  void initialize_library(bool debug, std::mt19937 rand_gen) {
-    *detail::debug_ptr = debug;
-    *detail::rand_gen_ptr = rand_gen;
-  }
-  
-  DependencyGraph::DependencyGraph(std::vector<std::string> structures) {
-    g = new detail::DependencyGraph(structures);
-  }
-  
-  DependencyGraph::~DependencyGraph() {
-    delete g;
-  }
-    
-  bool DependencyGraph::is_bipartite() {
-    return g->is_bipartite ();
-  }
-  
-  std::string DependencyGraph::get_sequence() {
-    return g->get_sequence_string();
-  }
-  
-  void DependencyGraph::mutate () {
-    g->mutate ();
-  }
-  
-  void DependencyGraph::mutate (int position) {
-    g->mutate (position);
-  }
-  
-  unsigned long long DependencyGraph::number_of_sequences () {
-    return g->number_of_sequences ();
-  }
+
 }

@@ -28,10 +28,12 @@
 namespace design {
   namespace detail {
     // function to do the coloring of the ear decomposition
-    void color_blocks (Graph& g, ProbabilityMatrix& pm);
+    template <typename RG>
+    void color_blocks (Graph& g, ProbabilityMatrix& pm, RG* rand_ptr);
 
     // color Articulation Points of this ear
-    MyKey color_articulation_points (int k, ProbabilityMatrix& pm, MyKey& colorkey, MyKey& lastkey);
+    template <typename RG>
+    MyKey color_articulation_points (int k, ProbabilityMatrix& pm, MyKey& colorkey, MyKey& lastkey, RG* rand_ptr);
   }
 }
 

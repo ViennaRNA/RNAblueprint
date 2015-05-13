@@ -124,8 +124,8 @@ namespace design {
         return p[l][b1][b2];
       }
     }
-
-    unsigned long long generate_path_seq (Sequence& sequence, int first, int last, int length) {
+    template <typename RG>
+    unsigned long long generate_path_seq (Sequence& sequence, int first, int last, int length, RG* rand_ptr) {
 
       // pairing matrix for every length
       Pairing p(length + 1); //TODO initialize only once for the whole program as static content!
@@ -168,7 +168,7 @@ namespace design {
         }
 
         // get a random number between 0 and 1.
-        float random = dist(rand_gen);
+        float random = dist(*rand);
 
         // stochastically take one of the possibilities
         // start at the probability of first possible character and add each other base probability as long long as the random number is bigger.
@@ -204,8 +204,8 @@ namespace design {
       }
       return max_number_of_sequences;
     }
-
-    unsigned long long generate_cycle_seq (Sequence& sequence, int first, int length) {
+    template <typename RG>
+    unsigned long long generate_cycle_seq (Sequence& sequence, int first, int length, RG* rand_ptr) {
 
       // max number of sequences to return
       unsigned long long max_number_of_sequences = 0;
@@ -217,7 +217,7 @@ namespace design {
 
       if (first < A_Size) {
         // return a path with same begin and end, but then remove the last character again -> cycle!
-        max_number_of_sequences = generate_path_seq(sequence, first, first, length);
+        max_number_of_sequences = generate_path_seq(sequence, first, first, length, rand_ptr);
         
       } else {
         
@@ -230,7 +230,7 @@ namespace design {
         }
         
         // get a random number between 0 and 1.
-        float random = dist(rand_gen);
+        float random = dist(*rand);
         // stochastically take one of the possibilities
         // start at the probability of first possible character and add each other base probability as long long as the random number is bigger.
         unsigned long long sum = 0;
@@ -244,14 +244,15 @@ namespace design {
             break;
           }
         }
-        generate_path_seq(sequence, first, first, length);
+        generate_path_seq(sequence, first, first, length, rand_ptr);
       }
       
       sequence.pop_back();
       return max_number_of_sequences;
     }
 
-    unsigned long long color_path_cycle_graph (Graph& g) {
+    template <typename RG>
+    unsigned long long color_path_cycle_graph (Graph& g, RG* rand_ptr) {
 
       unsigned long long max_number_of_sequences = 0;
 
@@ -294,7 +295,7 @@ namespace design {
           exit(1);
         }
         // call generate_path_seq and color the vertices accordingly
-        max_number_of_sequences = generate_path_seq(sequence, g[ends[0]].base, g[ends[1]].base, length);
+        max_number_of_sequences = generate_path_seq(sequence, g[ends[0]].base, g[ends[1]].base, length, rand_ptr);
         if (debug) {
           std::cerr << "Sequence is: " << sequence << std::endl;
         }
@@ -305,7 +306,7 @@ namespace design {
         // it is a cycle (all vertices degree 2)
         if (colored_bases.size() == 1) {
           // start to color at exact this vertex
-          max_number_of_sequences = generate_cycle_seq(sequence, g[colored_bases[0]].base, length);
+          max_number_of_sequences = generate_cycle_seq(sequence, g[colored_bases[0]].base, length, rand_ptr);
           if (debug) {
             std::cerr << "Sequence is: " << sequence << std::endl;
           }
@@ -313,7 +314,7 @@ namespace design {
           sequencestring_to_graph(g, colored_bases[0], sequence);
         } else if (colored_bases.size() == 0) {
           // start to color at any vertex with N
-          max_number_of_sequences = generate_cycle_seq(sequence, g[boost::vertex(0, g)].base, length);
+          max_number_of_sequences = generate_cycle_seq(sequence, g[boost::vertex(0, g)].base, length, rand_ptr);
           if (debug) {
             std::cerr << "Sequence is: " << sequence << std::endl;
           }
@@ -326,7 +327,7 @@ namespace design {
         }
       } else if (length == 0 && boost::num_vertices(g) == 1) {
         // its a single vertex!
-        max_number_of_sequences = generate_path_seq(sequence, g[boost::vertex(0, g)].base, N, length);
+        max_number_of_sequences = generate_path_seq(sequence, g[boost::vertex(0, g)].base, N, length, rand_ptr);
         if (debug) {
           std::cerr << "Sequence is: " << sequence << std::endl;
         }
