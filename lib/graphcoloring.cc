@@ -110,5 +110,8 @@ namespace design {
       }
       return returnkey;
     }
+    
+    template void color_blocks<std::mt19937> (Graph&, ProbabilityMatrix&, std::mt19937*);
+    template MyKey color_articulation_points<std::mt19937> (int, ProbabilityMatrix&, MyKey&, MyKey&, std::mt19937*);
   }
 }

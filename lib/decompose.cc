@@ -348,5 +348,8 @@ namespace design {
         }
       }
     }
+    
+    template bool decompose_graph<std::mt19937> (Graph&, std::mt19937*); 
+    template void ear_decomposition_to_subgraphs<std::mt19937> (Graph&, std::mt19937*);
   }
 }

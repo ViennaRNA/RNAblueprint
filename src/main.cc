@@ -70,7 +70,7 @@ int main (int ac, char* av[]) {
     out = new std::ofstream(vm["out"].as<std::string>(), std::ofstream::out);
   }
 
-  design::DependencyGraph<std::vector<std::string>, std::mt19937> dependency_graph(structures, rand_gen);
+  design::DependencyGraph<std::mt19937> dependency_graph(structures, rand_gen);
 
   if (!dependency_graph.is_bipartite()) {
     std::cerr << "Impossible to find a solution for this input: Dependency graph is not bipartite!" << std::endl;

@@ -168,7 +168,7 @@ namespace design {
         }
 
         // get a random number between 0 and 1.
-        float random = dist(*rand);
+        float random = dist(*rand_ptr);
 
         // stochastically take one of the possibilities
         // start at the probability of first possible character and add each other base probability as long long as the random number is bigger.
@@ -230,7 +230,7 @@ namespace design {
         }
         
         // get a random number between 0 and 1.
-        float random = dist(*rand);
+        float random = dist(*rand_ptr);
         // stochastically take one of the possibilities
         // start at the probability of first possible character and add each other base probability as long long as the random number is bigger.
         unsigned long long sum = 0;
@@ -373,5 +373,9 @@ namespace design {
         }
       }
     }
+    
+    template unsigned long long generate_path_seq<std::mt19937> (std::deque< int >&, int, int, int, std::mt19937*);
+    template unsigned long long generate_cycle_seq<std::mt19937> (std::deque< int >&, int, int, std::mt19937*);
+    template unsigned long long color_path_cycle_graph<std::mt19937> (Graph&, std::mt19937*);
   }
 }

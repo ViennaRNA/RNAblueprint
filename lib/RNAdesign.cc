@@ -10,6 +10,39 @@
 #include "RNAdesign.h"
 
 namespace design {
+  void initialize_library(bool debug) {
+    *detail::debug_ptr = debug;
+  }
   
+  template <typename R>
+  DependencyGraph<R>::DependencyGraph(std::vector<std::string> structures, R rand) {
+    g = new detail::DependencyGraph<R>(structures, rand);
+  }
+  template <typename R>
+  DependencyGraph<R>::~DependencyGraph() {
+    delete g;
+  }
+  template <typename R>
+  bool DependencyGraph<R>::is_bipartite() {
+    return g->is_bipartite ();
+  }
+  template <typename R>
+  std::string DependencyGraph<R>::get_sequence() {
+    return g->get_sequence_string();
+  }
+  template <typename R>
+  void DependencyGraph<R>::mutate () {
+    g->mutate ();
+  }
+  template <typename R>
+  void DependencyGraph<R>::mutate (int position) {
+    g->mutate (position);
+  }
+  template <typename R>
+  unsigned long long DependencyGraph<R>::number_of_sequences () {
+    return g->number_of_sequences ();
+  }
+  
+  template class DependencyGraph<std::mt19937>;
 
 }
