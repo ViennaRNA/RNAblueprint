@@ -55,6 +55,9 @@ BOOST_AUTO_TEST_CASE (generatePathSeq) {
   testcases.push_back(TestCase(A, A, 0, 1, {A}));
   testcases.push_back(TestCase(Y, Y, 0, 2, {C}));
   testcases.push_back(TestCase(N, G, 3, 5, {U, G, U, G}));
+  testcases.push_back(TestCase(U, U, 6, 5, {U, G, U, G}));
+  testcases.push_back(TestCase(R, U, 3, 5, {U, G, U, G}));
+  testcases.push_back(TestCase(Y, U, 3, 5, {U, G, U, G}));
   testcases.push_back(TestCase(C, N, 4, 5, {C, G, U, G, U}));
   testcases.push_back(TestCase(N, N, 1, 6, {G, U}));
   testcases.push_back(TestCase(N, N, 5, 42, {G, U, G, U, A, U}));
