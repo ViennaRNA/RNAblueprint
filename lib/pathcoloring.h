@@ -48,6 +48,14 @@ namespace design {
       rnaMatrix multiply (rnaMatrix a, rnaMatrix b);
       unsigned int length;
     };
+    
+    struct Part {
+        int start;
+        int end;
+        int length;
+    };
+    
+    typedef std::vector< Part > Parts;
 
     // fills the string sequence with random bases, given the first and the last base and the intended length; returns the number of possible solutions
     template <typename RG>

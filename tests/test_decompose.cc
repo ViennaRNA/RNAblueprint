@@ -178,8 +178,8 @@ BOOST_AUTO_TEST_CASE (EarDecomposition) {
   Graph g = createGraph(ED);
   BOOST_TEST_MESSAGE("decompose connected components");
   // set random generator to a static seed;
-  initialize_library(false, *(new std::mt19937(1)) );
-  ear_decomposition_to_subgraphs(g);
+  initialize_library(false);
+  ear_decomposition_to_subgraphs(g, new std::mt19937(1) );
 
   int number_of_children = 0;
 
@@ -252,8 +252,8 @@ BOOST_AUTO_TEST_CASE (partsBetweenArticulationPoints) {
   Graph g = createGraph(ED);
   BOOST_TEST_MESSAGE("parts between attachment points to subgraphs");
   // set random generator to a static seed;
-  initialize_library(false, *(new std::mt19937(1)) );
-  ear_decomposition_to_subgraphs(g);
+  initialize_library(false);
+  ear_decomposition_to_subgraphs(g, new std::mt19937(1) );
   // print_subgraphs(g, &std::cout, "ears");
   // now the decomposed graph looks different than above, as the random generator went further
   // However, lets call our method on all children:

@@ -58,6 +58,7 @@ namespace design {
       void mutate (int position);
       void mutate ();
       void reset_colors ();
+      R * rand_ptr;
       ~DependencyGraph ();
     private:
       Graph graph;
@@ -65,7 +66,6 @@ namespace design {
       unsigned long long nos = 0; // number of sequences/solutions
       std::list< GraphComponent<R>* > graph_components;
       R rand;
-      R * rand_ptr;
     };
   }
 }

@@ -64,8 +64,6 @@ void reset (Graph& g) {
 }
 
 BOOST_AUTO_TEST_CASE (colorPathGraph) {
-  // set random generator to a static seed;
-  rand_gen.seed(1);
   // create a graph
   Graph g(10);
   int vertex_name = 0;
@@ -79,7 +77,7 @@ BOOST_AUTO_TEST_CASE (colorPathGraph) {
 
   // color this graph!
   BOOST_TEST_MESSAGE("color path-graph");
-  color_path_cycle_graph(g);
+  color_path_cycle_graph(g, new std::mt19937(1));
   //print_graph(g, out, "path");
   Sequence sequence{U, G, C, G, U, A, U, G, U, A};
   BOOST_CHECK(sequence == get_vertex_colors(g));
@@ -88,7 +86,7 @@ BOOST_AUTO_TEST_CASE (colorPathGraph) {
   BOOST_TEST_MESSAGE("path_starts_A");
   reset(g);
   g[boost::vertex(0, g)].base = A;
-  color_path_cycle_graph(g);
+  color_path_cycle_graph(g, new std::mt19937(1));
   Sequence sequence1{A, U, G, U, G, U, G, U, G, C};
   BOOST_CHECK(sequence1 == get_vertex_colors(g));
 
@@ -96,7 +94,7 @@ BOOST_AUTO_TEST_CASE (colorPathGraph) {
   BOOST_TEST_MESSAGE("path_ends_U");
   reset(g);
   g[boost::vertex(boost::num_vertices(g), g)].base = U;
-  color_path_cycle_graph(g);
+  color_path_cycle_graph(g, new std::mt19937(1));
   Sequence sequence2{C, G, U, G, U, A, U, G, U, A};
   BOOST_CHECK(sequence2 == get_vertex_colors(g));
 
@@ -105,7 +103,7 @@ BOOST_AUTO_TEST_CASE (colorPathGraph) {
   reset(g);
   g[boost::vertex(0, g)].base = A;
   g[boost::vertex(boost::num_vertices(g), g)].base = G;
-  color_path_cycle_graph(g);
+  color_path_cycle_graph(g, new std::mt19937(1));
   Sequence sequence3{A, U, G, C, G, U, G, U, A, U};
   BOOST_CHECK(sequence3 == get_vertex_colors(g));
 
@@ -113,7 +111,7 @@ BOOST_AUTO_TEST_CASE (colorPathGraph) {
   BOOST_TEST_MESSAGE("cycle");
   reset(g);
   boost::add_edge(boost::vertex(0, g), boost::vertex(boost::num_vertices(g) - 1, g), g);
-  color_path_cycle_graph(g);
+  color_path_cycle_graph(g, new std::mt19937(1));
   Sequence sequence4{C, G, C, G, C, G, C, G, U, G};
   BOOST_CHECK(sequence4 == get_vertex_colors(g));
 
@@ -121,7 +119,7 @@ BOOST_AUTO_TEST_CASE (colorPathGraph) {
   BOOST_TEST_MESSAGE("cycle_starts_G");
   reset(g);
   g[boost::vertex(5, g)].base = G;
-  color_path_cycle_graph(g);
+  color_path_cycle_graph(g, new std::mt19937(1));
   Sequence sequence5{C, G, C, G, U, G, U, G, C, G};
   BOOST_CHECK(sequence5 == get_vertex_colors(g));
 }
