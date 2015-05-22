@@ -257,9 +257,96 @@ namespace design {
     unsigned long long color_path_cycle_graph (Graph& g, RG* rand_ptr) {
 
       unsigned long long max_number_of_sequences = 0;
-
       
-      return max_number_of_sequences;
+      // check if given graph is indeed a path with max_degree = 2 and two ends with degree = 1;
+      int max_degree;
+      int min_degree;
+      std::tie(min_degree, max_degree) = get_min_max_degree(g);
+      
+      if (max_degree > 2) {
+        std::cerr << std::endl << "This graph is no cycle or path (max degree > 2). I can't color this!" << std::endl;
+        exit(1);
+      }
+      
+      Vertex start;
+      // start is any path-end
+
+        BGL_FORALL_VERTICES_T(v, g, Graph) {
+            if (boost::out_degree(v, g) == 1) {
+                start = v;
+                break;
+            }
+        }
+        // or any node in case of a circle
+        if (start == boost::graph_traits<Graph>::null_vertex()) {
+            start = boost::vertex(0, g)
+        }
+
+        class color_dfs_visitor : public boost::default_dfs_visitor {
+        public:
+
+            color_dfs_visitor(unsigned long long& max_number_of_sequences) : mnos(max_number_of_sequences) {
+            }
+            unsigned long long& mnos;
+            Pairing p(length + 1);
+            std::map<Vertex, std::map<int, unsigned long long>  nos_map;
+            unsigned int length;
+            Vertex begin;
+
+            void start_vertex(Vertex s, Graph g) const {
+                if (debug) {
+                    std::cerr << "Start vertex: " << s << std::endl;
+                }
+                begin = s;
+            }
+
+            void discover_vertex(Vertex u, Graph g) const {
+                if (debug) {
+                    std::cerr << "Detecting vertex: " << u << std::endl;
+                }
+                
+                unsigned long long nos;
+                
+                if (g[v].base != N) {
+                    for (auto base : base_conversion[ g[v].base ]) {
+                        nos_map[v][base] = p.get(length, begin, base);
+                        // check nos_map if last part was with a fixed end
+                        // if so add last part + numbers for this part
+                        // if not, calculate the combinatorics
+                        // 
+                        // for (auto last : base_conversion[ g[v].base ]) {
+                        // for possibilities of begin = begin_base {
+                        // nos += nos_map[begin][begin_base] * p.get(length, begin_base, last);
+                        //}
+                        // nos_map[v][last] = nos;
+                        // nos = 0;
+                        // }
+                    }
+                    length = 0;
+                } else {
+                    length++;
+                }
+            }
+
+            void forward_or_cross_edge(Edge e, Graph g) const {
+                if (debug) {
+                    std::cerr << "Detecting back-edge: " << e << std::endl;
+                }
+                //Vertex u = boost::source(e, g);
+                //Vertex v = boost::target(e, g);
+                c.push_back(e);
+            }
+        };
+
+        my_dfs_visitor vis(max_number_of_sequences);
+
+        // Do a BGL DFS!
+        // http://www.boost.org/doc/libs/1_53_0/libs/graph/doc/depth_first_search.html
+        // Did not work: http://www.boost.org/doc/libs/1_53_0/libs/graph/doc/undirected_dfs.html
+        // boost::undirected_dfs(g, boost::visitor(vis), vcolorMap, ecolorMap, rootVertex);
+        boost::depth_first_search(g, visitor(vis).root_vertex(start));
+        
+        return max_number_of_sequences;
     }
 /*
       // check if given graph is indeed a path with max_degree = 2 and two ends with degree = 1;

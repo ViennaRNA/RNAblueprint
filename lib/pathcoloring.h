@@ -17,6 +17,7 @@
     #include <sstream>
 
     // include boost components
+    #include <boost/graph/depth_first_search.hpp>
 
 namespace design {
   namespace detail {
