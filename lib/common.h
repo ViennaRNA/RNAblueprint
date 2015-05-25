@@ -73,17 +73,21 @@ namespace design {
     
     static std::unordered_map<int, std::set<int> >  base_conversion = 
     {
-      { R, { G, A } },
-      { Y, { U, C } },
-      { K, { G, U } },
-      { M, { A, C } },
-      { S, { G, C } },
-      { W, { A, U } },
-      { B, { G, U, C } },
-      { D, { G, A, U } },
-      { H, { A, C, U } },
-      { V, { G, C, A } },
-      { N, { A, G, C, U } }
+        { A, { A } },
+        { C, { C } },
+        { G, { G } },
+        { U, { U } },
+        { R, { G, A } },
+        { Y, { U, C } },
+        { K, { G, U } },
+        { M, { A, C } },
+        { S, { G, C } },
+        { W, { A, U } },
+        { B, { G, U, C } },
+        { D, { G, A, U } },
+        { H, { A, C, U } },
+        { V, { G, C, A } },
+        { N, { A, G, C, U } }
     };
 
     // Typedef for sequences of enums

@@ -15,14 +15,18 @@
 
     // include standard library parts
     #include <sstream>
+    #include <unordered_map>
+    #include <memory>
 
     // include boost components
     #include <boost/graph/depth_first_search.hpp>
+    //#include <boost/graph/undirected_dfs.hpp>
 
 namespace design {
   namespace detail {
     // typedefs
     typedef matrix< unsigned long long, A_Size, A_Size > rnaMatrix;
+    typedef std::unordered_map< Vertex, std::unordered_map<int, unsigned long long> > nosMap;
 
     // class definitions
     // Class to get Fibonacci numbers
