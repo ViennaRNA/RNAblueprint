@@ -123,6 +123,9 @@ namespace design {
     template <typename R>
     DependencyGraph<R>::~DependencyGraph () {
       // TODO clean up all the data
+      for (auto component : graph_components) {
+        delete component;
+      }
     }
     template <typename R>
     GraphComponent<R>::GraphComponent (Graph& g, int t, R * r)

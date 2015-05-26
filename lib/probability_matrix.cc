@@ -55,7 +55,7 @@ namespace design {
       }
 
       // get Pairing matrix for paths, TODO only initialize once for the whole program!
-      p = new Pairing(max_length + 1);
+      p = Pairing::Instance(max_length + 1);
 
       // start at the outermost ear and process inwards
       for (boost::tie(ear, ear_end) = (g).children(); ear != ear_end; ++ear) {
@@ -146,7 +146,7 @@ namespace design {
     }
 
     ProbabilityMatrix::~ProbabilityMatrix () {
-      delete p;
+      // cleanup?
     }
 
     void ProbabilityMatrix::updateCurrentAkAi (Graph& g, int k, std::set<Vertex>& currentAk, std::set<Vertex>& currentAi) {
