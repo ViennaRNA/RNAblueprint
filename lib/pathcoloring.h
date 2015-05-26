@@ -16,11 +16,10 @@
     // include standard library parts
     #include <sstream>
     #include <unordered_map>
-    #include <memory>
 
     // include boost components
-    #include <boost/graph/depth_first_search.hpp>
-    //#include <boost/graph/undirected_dfs.hpp>
+    //#include <boost/graph/depth_first_search.hpp>
+    #include <boost/graph/undirected_dfs.hpp>
 
 namespace design {
   namespace detail {

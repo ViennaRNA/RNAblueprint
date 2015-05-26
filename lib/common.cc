@@ -50,6 +50,8 @@ namespace design {
           break;
         case N: charletter = 'N';
           break;
+        default: charletter = '-';
+          break;
       }
       return charletter;
     }
@@ -86,6 +88,8 @@ namespace design {
         case 'V': charletter = V;
           break;
         case 'N': charletter = N;
+          break;
+        default: charletter = -1;
           break;
       }
       return intletter;
