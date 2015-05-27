@@ -13,7 +13,7 @@
 
 // include common header with graph definition and global variables
 #include "common.h"
-#include "pathcoloring.h"
+#include "pairing_matrix.h"
 
 // include standard library parts
 #include <unordered_map>

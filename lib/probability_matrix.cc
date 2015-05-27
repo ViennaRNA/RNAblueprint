@@ -40,12 +40,8 @@ namespace design {
       // now start at the outermost ear
       unsigned int k = 1;
 
-      int max_length = 0;
       Graph::children_iterator ear, ear_end;
       for (boost::tie(ear, ear_end) = (g).children(); ear != ear_end; ++ear) {
-        int length = boost::num_edges(*ear);
-        if (max_length < length)
-          max_length = length;
         // also get my (number of ears)
         my++;
       }
@@ -55,7 +51,7 @@ namespace design {
       }
 
       // get Pairing matrix for paths, TODO only initialize once for the whole program!
-      p = Pairing::Instance(max_length + 1);
+      p = Pairing::Instance();
 
       // start at the outermost ear and process inwards
       for (boost::tie(ear, ear_end) = (g).children(); ear != ear_end; ++ear) {
