@@ -50,7 +50,7 @@ namespace design {
         std::cerr << "My is: " << my << std::endl;
       }
 
-      // get Pairing matrix for paths, TODO only initialize once for the whole program!
+      // get Pairing matrix for paths
       p = Pairing::Instance();
 
       // start at the outermost ear and process inwards
