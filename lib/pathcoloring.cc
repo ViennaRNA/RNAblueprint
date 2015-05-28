@@ -28,6 +28,9 @@ namespace design {
         if (max_degree > 2) {
           std::cerr << std::endl << "This graph is no cycle or path (max degree > 2). I can't color this!" << std::endl;
           exit(1);
+        } else if (min_degree > 1) {
+            std::cerr << std::endl << "cannot color circles this way at the moment. TODO" << std::endl;
+            //TODO get circle coloring right with splitting into 2 paths. one with length 0.
         }
         
         // visitor declaration
