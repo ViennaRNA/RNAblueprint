@@ -87,7 +87,7 @@ namespace design {
       // max number of sequences/solutions in this pairing matrix
       unsigned long long nos = 0;
       // also remember pairing matrix
-      Pairing *p = nullptr;
+      PairingMatrix *p = nullptr;
       // to keep track of current Ak Ai we need to update them before glueing an ear
       void updateCurrentAkAi (Graph& g, int k, std::set<Vertex>& currentAk, std::set<Vertex>& currentAi);
       // calculate all the key probabilities and start more from there

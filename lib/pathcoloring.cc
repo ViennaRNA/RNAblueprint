@@ -33,12 +33,12 @@ namespace design {
         // visitor declaration
         class color_dfs_visitor : public boost::default_dfs_visitor {
         public:
-            color_dfs_visitor(unsigned long long& max_number_of_sequences, RG * rand_ptr, Pairing * pair, std::uniform_real_distribution<float>& d,
+            color_dfs_visitor(unsigned long long& max_number_of_sequences, RG * rand_ptr, PairingMatrix * pair, std::uniform_real_distribution<float>& d,
                                 nosMap& n, std::unordered_map<Vertex, int>& c, int& prev) 
             : mnos(max_number_of_sequences), r_ptr(rand_ptr), p(pair), dist(d), nos_map(n), colors(c), previous(prev) {}
             unsigned long long& mnos;
             RG * r_ptr;
-            Pairing * p;
+            PairingMatrix * p;
             std::uniform_real_distribution<float>& dist;
             nosMap& nos_map;
             std::unordered_map<Vertex, int>& colors;
@@ -140,7 +140,7 @@ namespace design {
             }
         };
         
-        Pairing * p = Pairing::Instance();
+        PairingMatrix * p = PairingMatrix::Instance();
         std::uniform_real_distribution<float> dist(0, 1);
         nosMap nos_map;
         std::unordered_map<Vertex, int> colors;

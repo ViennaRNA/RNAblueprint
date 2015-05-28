@@ -24,7 +24,7 @@
 using namespace design;
 using namespace design::detail;
 
-BOOST_AUTO_TEST_SUITE (PairingMatrix)
+BOOST_AUTO_TEST_SUITE (pairingMatrix)
 
 
 BOOST_AUTO_TEST_CASE (MinimalMatrix) {
@@ -32,7 +32,7 @@ BOOST_AUTO_TEST_CASE (MinimalMatrix) {
     initialize_library(true);
     
     BOOST_TEST_MESSAGE("Creating minimal Matrix and check all content");
-    Pairing * p = Pairing::Instance();
+    PairingMatrix * p = PairingMatrix::Instance();
     
     BOOST_CHECK(p->get(0, A, A) == 1);
     BOOST_CHECK(p->get(0, U, U) == 1);
@@ -56,7 +56,7 @@ BOOST_AUTO_TEST_CASE (ExtendedMatrix) {
     initialize_library(true);
     
     BOOST_TEST_MESSAGE("Creating minimal Matrix and extend to 2");
-    Pairing * p = Pairing::Instance();
+    PairingMatrix * p = PairingMatrix::Instance();
     
     BOOST_CHECK(p->get(2, A, A) == 1);
     BOOST_CHECK(p->get(2, C, C) == 1);
@@ -69,7 +69,7 @@ BOOST_AUTO_TEST_CASE (BigMatrix) {
     initialize_library(true);
     
     BOOST_TEST_MESSAGE("Creating big Matrix and ask for things");
-    Pairing * p = Pairing::Instance();
+    PairingMatrix * p = PairingMatrix::Instance();
     
     BOOST_CHECK(p->get(100, A, A) == 16008811023750101250UL);
     BOOST_CHECK(p->get(56, U, C) == 225851433717UL);

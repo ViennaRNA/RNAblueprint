@@ -23,22 +23,22 @@ namespace design {
             }
         }
 
-        Pairing* Pairing::Instance() {
+        PairingMatrix* PairingMatrix::Instance() {
             if (!_instance) {
                 if (debug) { std::cerr << "Initialize new pairing matrix" << std::endl; }
-                _instance = new Pairing();
+                _instance = new PairingMatrix();
             }
             return _instance;
         }
 
-        Pairing * Pairing::_instance = nullptr;
+        PairingMatrix * PairingMatrix::_instance = nullptr;
 
-        Pairing::~Pairing() {
+        PairingMatrix::~PairingMatrix() {
             delete _instance;
             _instance = nullptr;
         }
 
-        Pairing::Pairing()
+        PairingMatrix::PairingMatrix()
         : p(2), length(1) {
             // Definition:
             // length 1: p[A][U][1] = 1, p[U][A][1] = 1, p[G][C][1] = 1, p[C][G][1] = 1, p[U][G][1] = 1, p[G][U][1] = 1
@@ -78,7 +78,7 @@ namespace design {
             }*/
         }
         
-        void Pairing::extend(int newlength) {
+        void PairingMatrix::extend(int newlength) {
             if (debug) { std::cerr << "Extending pairing matrix from length " << length << " to " << newlength << std::endl; }
             // fill pathlength up to length (can be done with matrix multiplication of the pairing matrix
             for (unsigned int i = length+1; i <= newlength; i++) {
@@ -87,7 +87,7 @@ namespace design {
             length = newlength;
         }
 
-        rnaMatrix Pairing::multiply(rnaMatrix A, rnaMatrix B) {
+        rnaMatrix PairingMatrix::multiply(rnaMatrix A, rnaMatrix B) {
             rnaMatrix C;
             int i, j, k;
             long long sum;
@@ -103,7 +103,7 @@ namespace design {
             return C;
         }
 
-        unsigned long long Pairing::get(unsigned int l, unsigned int b1, unsigned int b2) {
+        unsigned long long PairingMatrix::get(unsigned int l, unsigned int b1, unsigned int b2) {
 
             // if we request a probability for an unknown (N) character at one or both ends, 
             // return the sum of the probabilities for all characters at this position

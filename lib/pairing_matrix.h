@@ -34,16 +34,16 @@ namespace design {
         };
 
         // Class to get Pairing numbers implemented as a Singleton to be unique
-        class Pairing {
+        class PairingMatrix {
         public:
-            static Pairing* Instance();
+            static PairingMatrix* Instance();
             // interface
             unsigned long long get(unsigned int l, unsigned int b1, unsigned int b2);
         protected:
-            Pairing();
-            ~Pairing();
+            PairingMatrix();
+            ~PairingMatrix();
         private:
-            static Pairing * _instance;
+            static PairingMatrix * _instance;
             std::vector< rnaMatrix > p;
             void extend(int newlength);
             rnaMatrix multiply(rnaMatrix a, rnaMatrix b);

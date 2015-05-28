@@ -51,7 +51,7 @@ namespace design {
       }
 
       // get Pairing matrix for paths
-      p = Pairing::Instance();
+      p = PairingMatrix::Instance();
 
       // start at the outermost ear and process inwards
       for (boost::tie(ear, ear_end) = (g).children(); ear != ear_end; ++ear) {
