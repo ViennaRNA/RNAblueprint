@@ -12,7 +12,7 @@
 
 namespace design {
   namespace detail {
-    
+/* 
     template <typename RG>
     void color_blocks (Graph& g, ProbabilityMatrix& pm, RG* rand_ptr) {
       // number of sequences to debug
@@ -20,7 +20,7 @@ namespace design {
         std::cerr << "Number of sequences for this block: " << pm.number_of_sequences() << std::endl;
       }
       // remember the current key for the next ear.
-      MyKey lastkey;
+      ProbabilityKey lastkey;
 
       // reverse iterate again over all ears to color Aks and all vertices in between
       for (int k = pm.get_my(); k > 0; k--) {
@@ -31,7 +31,7 @@ namespace design {
         std::set<Vertex> Ak = pm.get_Ak(k);
 
         // translate the Ak set into set of ints (no vertex descriptors!)
-        MyKey thiskey;
+        ProbabilityKey thiskey;
         for (auto ap : Ak) {
           int vertex = boost::get(boost::vertex_color_t(), g.root(), ap);
           int color = (g.root())[ap].base;
@@ -41,7 +41,7 @@ namespace design {
         if (debug) {
           std::cerr << "Try to color this key: " << thiskey << std::endl;
         }
-        MyKey colorkey = color_articulation_points(k, pm, thiskey, lastkey, rand_ptr);
+        ProbabilityKey colorkey = color_articulation_points(k, pm, thiskey, lastkey, rand_ptr);
         // remember colorkey for next ear iteration
         lastkey = colorkey;
         if (debug) {
@@ -76,9 +76,9 @@ namespace design {
     }
     
     template <typename RG>
-    MyKey color_articulation_points (int k, ProbabilityMatrix& pm, MyKey& colorkey, MyKey& lastkey, RG* rand_ptr) {
+    ProbabilityKey color_articulation_points (int k, ProbabilityMatrix& pm, ProbabilityKey& colorkey, ProbabilityKey& lastkey, RG* rand_ptr) {
 
-      MyKey returnkey;
+      ProbabilityKey returnkey;
 
       // declare random number distribution and get a random number
       std::uniform_real_distribution<float> dist(0, 1);
@@ -89,8 +89,8 @@ namespace design {
       }
 
       // now get all combinations of keys and the sum of all possibilities
-      std::vector<MyKey> key_combinations; // this is what we want to fill now
-      std::unordered_map < MyKey, unsigned long long, MyKeyHash> probabilities;
+      std::vector<ProbabilityKey> key_combinations; // this is what we want to fill now
+      ProbabilityMap probabilities;
       unsigned long long sum_of_possibilities = pm.get_sum(k, colorkey, lastkey, key_combinations, probabilities);
       if (debug) {
         std::cerr << "Sum of all possibilities is: " << sum_of_possibilities << std::endl;
@@ -112,6 +112,7 @@ namespace design {
     }
     
     template void color_blocks<std::mt19937> (Graph&, ProbabilityMatrix&, std::mt19937*);
-    template MyKey color_articulation_points<std::mt19937> (int, ProbabilityMatrix&, MyKey&, MyKey&, std::mt19937*);
+    template ProbabilityKey color_articulation_points<std::mt19937> (int, ProbabilityMatrix&, ProbabilityKey&, ProbabilityKey&, std::mt19937*);
+*/
   }
 }

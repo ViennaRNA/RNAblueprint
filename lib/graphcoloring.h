@@ -24,7 +24,7 @@
 
 // include boost components
 
-
+/*
 namespace design {
   namespace detail {
     // function to do the coloring of the ear decomposition
@@ -33,8 +33,8 @@ namespace design {
 
     // color Articulation Points of this ear
     template <typename RG>
-    MyKey color_articulation_points (int k, ProbabilityMatrix& pm, MyKey& colorkey, MyKey& lastkey, RG* rand_ptr);
+    ProbabilityKey color_articulation_points (int k, ProbabilityMatrix& pm, ProbabilityKey& colorkey, ProbabilityKey& lastkey, RG* rand_ptr);
   }
 }
-
+*/
 #endif

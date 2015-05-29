@@ -139,9 +139,9 @@ namespace design {
         nos = color_path_cycle_graph(subgraph, rand_ptr);
       } else if (type == BLOCK) {
         pm = new ProbabilityMatrix(subgraph);
-        nos = pm->number_of_sequences();
+        //nos = pm->number_of_sequences();
         // initialize coloring
-        color_blocks(subgraph, *pm, rand_ptr);
+        //color_blocks(subgraph, *pm, rand_ptr);
       }
 
       if (debug) {
@@ -155,7 +155,7 @@ namespace design {
       if (type == PATH) {
         color_path_cycle_graph(subgraph, rand_ptr);
       } else if (type == BLOCK) {
-        color_blocks(subgraph, *pm, rand_ptr);
+        //color_blocks(subgraph, *pm, rand_ptr);
       }
 
     }
