@@ -178,7 +178,7 @@ BOOST_AUTO_TEST_CASE (EarDecomposition) {
   Graph g = createGraph(ED);
   BOOST_TEST_MESSAGE("decompose connected components");
   // set random generator to a static seed;
-  initialize_library(false);
+  initialize_library(true);
   ear_decomposition_to_subgraphs(g, new std::mt19937(1) );
 
   int number_of_children = 0;
