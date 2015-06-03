@@ -14,7 +14,7 @@
 #include "parsestruct.h"
 #include "printgraph.h"
 #include "decompose.h"
-#include "graphcoloring.h"
+#include "probability_matrix.h"
 
 // include boost components
 #include <boost/graph/iteration_macros.hpp>

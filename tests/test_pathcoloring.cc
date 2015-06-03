@@ -70,19 +70,9 @@ BOOST_AUTO_TEST_CASE(generateSeq) {
     testcases.push_back(TestCase(C, N, 4, 5,{C, G, U, G, U}));
     testcases.push_back(TestCase(N, N, 1, 6,{U, G}));
     testcases.push_back(TestCase(N, N, 5, 42,{U, A, U, G, U, G}));
-    testcases.push_back(TestCase(-1, A, 5, 5,{A, U, G, U, G, U}));
-    testcases.push_back(TestCase(-1, G, 5, 13,{G, C, G, U, G, U}));
-    testcases.push_back(TestCase(-1, N, 3, 14,{G, U, G, U}));
     testcases.push_back(TestCase(C, R, 1, 1,{C, G}));
     testcases.push_back(TestCase(R, Y, 1, 3,{G, U}));
     testcases.push_back(TestCase(H, A, 2, 1,{A, U, A}));
-    testcases.push_back(TestCase(-1, N, 3, 14,{G, U, G, U}));
-    testcases.push_back(TestCase(-1, A, 3, 2,{A, U, G, U}));
-    testcases.push_back(TestCase(-1, U, 3, 5,{U, G, U, G}));
-    testcases.push_back(TestCase(-1, G, 3, 5,{G, U, G, U}));
-    testcases.push_back(TestCase(-1, C, 3, 2,{C, G, U, G}));
-    testcases.push_back(TestCase(-1, R, 3, 7,{G, U, G, U}));
-    testcases.push_back(TestCase(-1, V, 3, 9,{C, G, U, G}));
 
     for (auto t : testcases) {
         // tell the user what is going on right now
@@ -105,15 +95,11 @@ BOOST_AUTO_TEST_CASE(generateSeq) {
         for (unsigned int i = 0; i < boost::num_vertices(g) - 1; i++) {
             boost::add_edge(boost::vertex(i, g), boost::vertex(i + 1, g), g);
         }
-        // do a circle on some cases
-        if (t.first < 0) {
-            boost::add_edge(boost::vertex(0, g), boost::vertex(boost::num_vertices(g) - 1, g), g);
-            g[boost::vertex(0, g)].base = t.last;
-        } else {
-            // set the sequence constraints
-            g[boost::vertex(0, g)].base = t.first;
-            g[boost::vertex(boost::num_vertices(g) - 1, g)].base = t.last;
-        }
+        
+        // set the sequence constraints
+        g[boost::vertex(0, g)].base = t.first;
+        g[boost::vertex(boost::num_vertices(g) - 1, g)].base = t.last;
+            
         //call the function
         unsigned long long nos = color_path_cycle_graph(g, &rand_gen);
         Sequence sequence = get_vertex_colors(g);

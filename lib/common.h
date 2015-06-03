@@ -27,16 +27,6 @@
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/iteration_macros.hpp>
 
-namespace boost {
-  struct edge_component_t {
-
-    enum {
-      num = 555
-    };
-    typedef edge_property_tag kind;
-  };
-}
-
 namespace design {
   namespace detail {
     
@@ -107,9 +97,17 @@ namespace design {
       int ear = 0;
       int color = 0;
     };
+
+    struct edge_component_t {
+        enum {
+            num = 555
+        };
+        typedef boost::edge_property_tag kind;
+    };
     
     struct graph_property {
         std::string id;
+        
     };
     
     enum graph_property_t {
@@ -121,7 +119,7 @@ namespace design {
     typedef boost::subgraph< 
     boost::adjacency_list< boost::vecS, boost::vecS, boost::undirectedS,
     boost::property< boost::vertex_color_t, int, vertex_property >,
-    boost::property< boost::edge_index_t, int, boost::property < boost::edge_component_t, std::size_t, edge_property> >,
+    boost::property< boost::edge_index_t, int, boost::property < edge_component_t, std::size_t, edge_property> >,
     boost::property< graph_property_t, graph_property> > > Graph;
     typedef Graph::edge_descriptor Edge;
     typedef Graph::vertex_descriptor Vertex;

@@ -138,8 +138,8 @@ namespace design {
             // get list of biconnected components into the component property map
             // http://www.boost.org/doc/libs/1_53_0/libs/graph/doc/biconnected_components.html
             // http://www.boost.org/doc/libs/1_38_0/libs/graph/example/biconnected_components.cpp
-            boost::edge_component_t edge_component;
-            boost::property_map < Graph, boost::edge_component_t >::type component = boost::get(edge_component, g);
+            edge_component_t edge_component;
+            boost::property_map < Graph, edge_component_t >::type component = boost::get(edge_component, g);
             unsigned int num = boost::biconnected_components(g, component);
             if (debug) {
                 std::cerr << "Number of biconnected components: " << num << std::endl;
@@ -211,7 +211,7 @@ namespace design {
             }
         }
 
-        void merge_biconnected_paths(Graph& g, Vertex p, Vertex v, boost::property_map < Graph, boost::edge_component_t >::type& component, std::vector<Vertex>& art_points, int& nc) {
+        void merge_biconnected_paths(Graph& g, Vertex p, Vertex v, boost::property_map < Graph, edge_component_t >::type& component, std::vector<Vertex>& art_points, int& nc) {
             if (debug) {
                 std::cerr << "Merging biconnected paths..." << std::endl;
             }

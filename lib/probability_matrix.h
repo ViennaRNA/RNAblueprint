@@ -50,7 +50,9 @@ namespace design {
         private:
             // map of possibilities saved by key
             ProbabilityMap pm;
-
+            // TODO a function to permute the keys
+            // TODO a function to get maximum number of sequences
+            // TODO a function to "multiply" probability matrixes
         };
         
         // overload << operator to print ProbabilityKeys with any content
@@ -111,8 +113,7 @@ namespace design {
             // calculates all base combinations for current attachment points (recursion)
             void calculate_combinations(std::set<int>& Ak, ProbabilityKey& mykey, std::vector<ProbabilityKey>& key_combinations);
          */
-        
-        
-#endif	/* PROBABILITY_MATRIX_H */
     }
 }
+
+#endif	/* PROBABILITY_MATRIX_H */

@@ -16,7 +16,6 @@ noinst_HEADERS = \
       common.h \
 			pairing_matrix.h \
 			probability_matrix.h \
-			graphcoloring.h \
 			pathcoloring.h \
 			decompose.h \
 			graphcommon.h \
@@ -36,5 +35,4 @@ libRNAdesign_a_SOURCES =	\
 			pathcoloring.cc \
 			pairing_matrix.cc \
 			probability_matrix.cc \
-			graphcoloring.cc \
 			dependency_graph.cc

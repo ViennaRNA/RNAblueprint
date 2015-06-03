@@ -11,7 +11,10 @@
 #define	DEPENDENCY_GRAPH_H
 
 #include "common.h"
-#include "graphcoloring.h"
+#include "pairing_matrix.h"
+#include "probability_matrix.h"
+#include "graphcommon.h"
+#include "pathcoloring.h"
 
 #include <sstream>
 #include <random>
