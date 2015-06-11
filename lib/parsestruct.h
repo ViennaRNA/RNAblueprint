@@ -12,6 +12,7 @@
 
     // include common header with graph definition and global variables
     #include "common.h"
+    #include "graphcommon.h"
 
     // include standard library parts
 

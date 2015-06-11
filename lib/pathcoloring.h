@@ -12,6 +12,7 @@
 
     // include common header with graph definition and global variables
     #include "common.h"
+    #include "graphcommon.h"
     #include "pairing_matrix.h"
 
     // include standard library parts

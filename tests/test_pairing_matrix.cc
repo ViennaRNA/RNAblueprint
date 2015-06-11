@@ -1,4 +1,4 @@
-/* This file is a boost.test unit test and provides tests for parsestruct.cc
+/* This file is a boost.test unit test and provides tests for pairing_matrix.cc
  *
  *
  * Created on: 27.05.2015

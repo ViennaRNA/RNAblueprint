@@ -11,40 +11,16 @@
 #define	DEPENDENCY_GRAPH_H
 
 #include "common.h"
+#include "graphcommon.h"
 #include "pairing_matrix.h"
 #include "probability_matrix.h"
-#include "graphcommon.h"
-#include "pathcoloring.h"
 
 #include <sstream>
 #include <random>
 
 namespace design {
   namespace detail {
-    
-    enum GraphTypes {
-      PATH, BLOCK
-    };
-    
-    template <typename R>
-    class GraphComponent {
-    public:
-      GraphComponent (Graph& g, int t, R * r);
-
-      unsigned long long number_of_sequences () {
-        return nos;
-      }
-      void mutate (int position);
-      void mutate ();
-      ~GraphComponent ();
-    private:
-      Graph& subgraph;
-      unsigned long long nos = 0;
-      ProbabilityMatrix * pm = NULL;
-      int type;
-      R * rand_ptr;
-    };
-    
+       
     template <typename R>
     class DependencyGraph {
     public:
@@ -67,8 +43,8 @@ namespace design {
       Graph graph;
       bool bipartite; // if dependency graph is bipartite and a therefore a solution exists
       unsigned long long nos = 0; // number of sequences/solutions
-      std::list< GraphComponent<R>* > graph_components;
       R rand;
+      void calculate_probabilities(Graph g);
     };
   }
 }

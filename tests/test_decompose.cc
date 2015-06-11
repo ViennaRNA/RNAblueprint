@@ -171,7 +171,7 @@ BOOST_AUTO_TEST_CASE (biconnectedComponents) {
   // check if it is just 3 connected components
   BOOST_CHECK(number_of_children == 3);
 }
-
+/*
 BOOST_AUTO_TEST_CASE (EarDecomposition) {
 
   // create a graph
@@ -327,5 +327,6 @@ BOOST_AUTO_TEST_CASE (partsBetweenArticulationPoints) {
   // check if it is exactly 4 subgraphs in total
   BOOST_CHECK(number_of_children == 6);
 }
+*/
 
 BOOST_AUTO_TEST_SUITE_END ()

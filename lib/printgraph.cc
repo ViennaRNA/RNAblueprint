@@ -21,7 +21,7 @@ namespace design {
       std::map< Vertex, std::string > aps;
       boost::associative_property_map< std::map<Vertex, std::string> > ap_map(aps);
 
-      BGL_FORALL_VERTICES_T(v, g, Graph) {
+      /*BGL_FORALL_VERTICES_T(v, g, Graph) {
         bases.insert(std::make_pair(v, enum_to_char(g[v].base)));
 
         // convert list of articulation points to string
@@ -34,7 +34,7 @@ namespace design {
           ap_string.pop_back();
         } // delete last character
         aps.insert(std::make_pair(v, ap_string));
-      }
+      }*/
 
       // print vertex and edge properties from my self-defined bundled properties
       boost::dynamic_properties dp;
@@ -42,8 +42,8 @@ namespace design {
       //dp.property("color", boost::get(&vertex_property::color, g));
       dp.property("base", base_map);
       //property("base_enum", boost::get(&vertex_property::base, g));
-      dp.property("Ak", ap_map);
-      dp.property("Ai", boost::get(&vertex_property::Ai, g));
+      //dp.property("Ak", ap_map);
+      //dp.property("Ai", boost::get(&vertex_property::Ai, g));
       dp.property("name", boost::get(boost::vertex_color_t(), g));
       dp.property("ear", boost::get(&edge_property::ear, g));
 

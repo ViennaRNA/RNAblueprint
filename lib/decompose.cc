@@ -10,7 +10,6 @@
 // include header
 #include "decompose.h"
 #include "printgraph.h"
-#include "graphcommon.h"
 
 // include boost components
 #include <boost/graph/iteration_macros.hpp>
@@ -275,7 +274,7 @@ namespace design {
         }
 
         void color_attachment_points(Graph& g) {
-            if (debug) {
+            /*if (debug) {
                 std::cerr << "Write attachment point labels into graph object..." << std::endl
                         << "Vertex | Attachment Points | Internal Attachment Point" << std::endl;
             }
@@ -297,7 +296,7 @@ namespace design {
                 if (debug) {
                     std::cout << g.local_to_global(v) << "\t" << g[v].Ak << "\t" << g[v].Ai << std::endl;
                 }
-            }
+            }*/
         }
 
         int degree_in_ear(Vertex& v, Graph& g, int k) {
@@ -327,13 +326,14 @@ namespace design {
             }
 
             // start at all vertices and add to subgraph as long as it is no Ak or Ik.
-
+/*
             BGL_FORALL_VERTICES_T(v, g, Graph) {
                 if ((g[v].Ak.find(k) == g[v].Ak.end()) && (g[v].Ai != k) && g[v].color == 0) {
                     Graph *subgptr = &g.create_subgraph();
                     parts_recursion(g, subgptr, v, k);
                 }
             }
+ * */
             // the above approach does not cover parts with edge-length 1
 
             BGL_FORALL_EDGES_T(e, g, Graph) {
@@ -350,7 +350,7 @@ namespace design {
             // add vertex to subgraph
             boost::add_vertex(boost::get(boost::vertex_color_t(), g, v), *subgptr);
             g[v].color = 1;
-
+/*
             if ((g[v].Ak.find(k) == g[v].Ak.end()) && (g[v].Ai != k)) {
 
                 BGL_FORALL_OUTEDGES_T(v, e, g, Graph) {
@@ -359,7 +359,7 @@ namespace design {
                         parts_recursion(g, subgptr, boost::target(e, g), k);
                     }
                 }
-            }
+            }*/
         }
 
         template bool decompose_graph<std::mt19937> (Graph&, std::mt19937*);

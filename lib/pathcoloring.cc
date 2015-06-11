@@ -9,7 +9,6 @@
 
 // include header
 #include "pathcoloring.h"
-#include "graphcommon.h"
 
 namespace design {
     namespace detail {
@@ -54,7 +53,7 @@ namespace design {
                 
                 mnos = 0;
                 for (auto b : base_conversion[ g[s].base ]) {
-                    nos_map[s][b] = 1;
+                    nos_map[s][b] = p->get(0, b, b);
                     std::cerr << s << ":" << enum_to_char(b) << ":" << nos_map[s][b] << std::endl;
                     mnos += nos_map[s][b];
                 }
