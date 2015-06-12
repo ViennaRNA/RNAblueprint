@@ -19,6 +19,8 @@
 #include <unordered_map>
 #include <functional>
 #include <iomanip>
+#include <algorithm>
+#include <iterator>
 
 // include boost components
 #include <boost/functional/hash.hpp>
@@ -43,24 +45,35 @@ namespace design {
         public:
             ProbabilityMatrix();
             // get probability for ProbabilityKeys... key of Aks (12/A) (4/C) ()...
-            unsigned long long get(ProbabilityKey pk);
+            //unsigned long long get(ProbabilityKey pk);
+            unsigned long long operator[] (ProbabilityKey& pk);
             // fill a nos for a certain key
-            void put(ProbabilityKey pk, unsigned long long nos);
+            void put(ProbabilityKey& pk, unsigned long long nos);            
             // get maximal number of sequences for the whole matrix/subgraph
-            unsigned long long nos();
-            
-            
+            unsigned long long mnos();
+            // get set of special vertices
+            std::set< int > getSpecials() { return specials; };
             // My custom hash key used for n
             friend class ProbabilityKeyHash;
+            friend ProbabilityMatrix operator* (ProbabilityMatrix& x, ProbabilityMatrix& y);
             ~ProbabilityMatrix();
         private:
             // map of possibilities saved by key
             ProbabilityMap pm;
-            // A function to permute the keys
-            std::vector<ProbabilityKey> permute_key(ProbabilityKey pk);
-            void permute_impl(ProbabilityKey::iterator start, ProbabilityKey::iterator end, std::vector<ProbabilityKey>& result);
+            // remember all special points
+            std::set< int > specials;
             // TODO a function to "multiply" probability matrixes
         };
+        
+        
+        // multiply operator overloaded which calculates new pm
+        ProbabilityMatrix operator* (ProbabilityMatrix& x, ProbabilityMatrix& y);
+        
+        
+        // A function to permute the keys if the key contains Letters bigger than the alphabet (eg N, S, Y,...)
+        std::vector<ProbabilityKey> permute_key(ProbabilityKey pk);
+        // helper for permute_key
+        void permute_impl(ProbabilityKey::iterator start, ProbabilityKey::iterator end, std::vector<ProbabilityKey>& result, ProbabilityKey current);
         
         // overload << operator to print ProbabilityKeys with any content
         std::ostream& operator<<(std::ostream& os, ProbabilityKey& m);

@@ -28,102 +28,117 @@
 #include <boost/graph/iteration_macros.hpp>
 
 namespace design {
-  namespace detail {
-    
-    //Global variables
-    extern bool debug;
-    extern bool * debug_ptr;
+    namespace detail {
 
-    // define size of the alphabet
-    #define A_Size 4
-    // Encode Bases to enums
+        //Global variables
+        extern bool debug;
+        extern bool * debug_ptr;
 
-    /*
-      A = adenine
-      C = cytosine
-      G = guanine
-      T = thymine
-      R = G A (purine)
-      Y = T C (pyrimidine)
-      K = G T (keto)
-      M = A C (amino)
-      S = G C (strong bonds)
-      W = A T (weak bonds)
-      B = G T C (all but A)
-      D = G A T (all but C)
-      H = A C T (all but G)
-      V = G C A (all but T)
-      N = A G C T (any)
-    */
-    
-    // it is important that 0-3 are the basic bases
-    enum bases {
-      A, C, G, U, R, Y, K, M, S, W, B, D, H, V, N
-    };
-    
-    static std::unordered_map<int, std::set<int> >  base_conversion = 
-    {
-        { A, { A } },
-        { C, { C } },
-        { G, { G } },
-        { U, { U } },
-        { R, { G, A } },
-        { Y, { U, C } },
-        { K, { G, U } },
-        { M, { A, C } },
-        { S, { G, C } },
-        { W, { A, U } },
-        { B, { G, U, C } },
-        { D, { G, A, U } },
-        { H, { A, C, U } },
-        { V, { G, C, A } },
-        { N, { A, G, C, U } }
-    };
+        // define size of the alphabet
+#define A_Size 4
+        // Encode Bases to enums
 
-    // Typedef for sequences of enums
-    typedef std::deque< int > Sequence;
+        /*
+          A = adenine
+          C = cytosine
+          G = guanine
+          T = thymine
+          R = G A (purine)
+          Y = T C (pyrimidine)
+          K = G T (keto)
+          M = A C (amino)
+          S = G C (strong bonds)
+          W = A T (weak bonds)
+          B = G T C (all but A)
+          D = G A T (all but C)
+          H = A C T (all but G)
+          V = G C A (all but T)
+          N = A G C T (any)
+         */
 
-    // function to make enum a char again and other way round
-    char enum_to_char (int intletter);
-    int char_to_enum (char charletter);
+        // it is important that 0-3 are the basic bases
 
-    // overload << operator to print vectors with any content
+        enum bases {
+            A, C, G, U, R, Y, K, M, S, W, B, D, H, V, N
+        };
 
-    template <typename T>
-    std::ostream& operator<< (std::ostream& os, std::vector<T>& vec) {
-      int i = 0;
-      for (auto elem : vec) {
-        os << "(" << i++ << ") " << elem << std::endl;
-      }
-      return os;
+        static std::unordered_map<int, std::set<int> > base_conversion ={
+            { A,
+                { A}},
+            { C,
+                { C}},
+            { G,
+                { G}},
+            { U,
+                { U}},
+            { R,
+                { G, A}},
+            { Y,
+                { U, C}},
+            { K,
+                { G, U}},
+            { M,
+                { A, C}},
+            { S,
+                { G, C}},
+            { W,
+                { A, U}},
+            { B,
+                { G, U, C}},
+            { D,
+                { G, A, U}},
+            { H,
+                { A, C, U}},
+            { V,
+                { G, C, A}},
+            { N,
+                { A, G, C, U}}
+        };
+
+        // Typedef for sequences of enums
+        typedef std::deque< int > Sequence;
+
+        // function to make enum a char again and other way round
+        char enum_to_char(int intletter);
+        int char_to_enum(char charletter);
+
+        // overload << operator to print vectors with any content
+
+        template <typename T>
+        std::ostream& operator<<(std::ostream& os, std::vector<T>& vec) {
+            int i = 0;
+            for (auto elem : vec) {
+                os << "(" << i++ << ") " << elem << std::endl;
+            }
+            return os;
+        }
+
+        // overload << operator to print maps with any content
+
+        template <typename U, typename V>
+        std::ostream& operator<<(std::ostream& os, std::map<U, V>& m) {
+            for (typename std::map<U, V>::iterator it = m.begin(); it != m.end(); it++) {
+                os << it->first << "," << it->second << std::endl;
+            }
+            return os;
+        }
+
+        // overload << operator to print sets with any content
+
+        template <typename W>
+        std::ostream& operator<<(std::ostream& os, std::set<W>& s) {
+            for (auto elem : s) {
+                os << elem << ", ";
+            }
+            return os;
+        }
+
+        // overload << operator to print deques with sequence information
+        std::ostream& operator<<(std::ostream& os, Sequence& sequence);
+
+        // matrix template
+        template < class T, size_t ROWS, size_t COLS > using matrix = std::array< std::array< T, COLS >, ROWS >;
     }
-
-    // overload << operator to print maps with any content
-
-    template <typename U, typename V>
-    std::ostream& operator<< (std::ostream& os, std::map<U, V>& m) {
-      for (typename std::map<U, V>::iterator it = m.begin(); it != m.end(); it++) {
-        os << it->first << "," << it->second << std::endl;
-      }
-      return os;
-    }
-
-    // overload << operator to print sets with any content
-
-    template <typename W>
-    std::ostream& operator<< (std::ostream& os, std::set<W>& s) {
-      for (auto elem : s) {
-        os << elem << ", ";
-      }
-      return os;
-    }
-
-    // overload << operator to print deques with sequence information
-    std::ostream& operator<< (std::ostream& os, Sequence& sequence);
-
-    // matrix template
-    template < class T, size_t ROWS, size_t COLS > using matrix = std::array< std::array< T, COLS >, ROWS >;
-  }
 }
 
 #endif

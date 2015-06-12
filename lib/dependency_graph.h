@@ -19,34 +19,35 @@
 #include <random>
 
 namespace design {
-  namespace detail {
-       
-    template <typename R>
-    class DependencyGraph {
-    public:
-      DependencyGraph (std::vector<std::string> structures, R rand);
-      unsigned long long number_of_sequences () {
-        return nos;
-      }
+    namespace detail {
 
-      bool is_bipartite () {
-        return bipartite;
-      }
-      Sequence get_sequence ();
-      std::string get_sequence_string ();
-      void mutate (int position);
-      void mutate ();
-      void reset_colors ();
-      R * rand_ptr;
-      ~DependencyGraph ();
-    private:
-      Graph graph;
-      bool bipartite; // if dependency graph is bipartite and a therefore a solution exists
-      unsigned long long nos = 0; // number of sequences/solutions
-      R rand;
-      void calculate_probabilities(Graph g);
-    };
-  }
+        template <typename R>
+        class DependencyGraph {
+        public:
+            DependencyGraph(std::vector<std::string> structures, R rand);
+
+            unsigned long long number_of_sequences() {
+                return nos;
+            }
+
+            bool is_bipartite() {
+                return bipartite;
+            }
+            Sequence get_sequence();
+            std::string get_sequence_string();
+            void mutate(int position);
+            void mutate();
+            void reset_colors();
+            R * rand_ptr;
+            ~DependencyGraph();
+        private:
+            Graph graph;
+            bool bipartite; // if dependency graph is bipartite and a therefore a solution exists
+            unsigned long long nos = 0; // number of sequences/solutions
+            R rand;
+            void calculate_probabilities(Graph g);
+        };
+    }
 }
 #endif	/* DEPENDENCY_GRAPH_H */
 

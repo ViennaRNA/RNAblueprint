@@ -17,8 +17,10 @@
 // include boost components
 #include <boost/graph/iteration_macros.hpp>
 
-namespace design {
-    namespace detail {
+namespace design
+{
+
+    namespace detail{
 
         template <typename R>
         DependencyGraph<R>::DependencyGraph(std::vector<std::string> structures, R _rand)
@@ -40,21 +42,21 @@ namespace design {
 
             // now calculate all the PMs
             calculate_probabilities(graph);
-            
+
         }
-        
+
         template <typename R>
         void DependencyGraph<R>::calculate_probabilities(Graph g) {
-            
+
             Graph::children_iterator cg, cg_end;
             for (boost::tie(cg, cg_end) = g.children(); cg != cg_end; ++cg) {
-                
-                
-                
-                
+
+
+
+
             }
-            
-            
+
+
         }
 
         template <typename R>
