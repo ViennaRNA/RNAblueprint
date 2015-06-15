@@ -325,4 +325,35 @@ BOOST_AUTO_TEST_CASE (MultiplyPM3) {
     BOOST_CHECK(z.mnos() == mnos);
 }
 
+BOOST_AUTO_TEST_CASE (MultiplyPM4) {
+    
+    BOOST_TEST_MESSAGE("Multiply ProbabilityMatrix with empty");
+    
+    ProbabilityMatrix x;
+    ProbabilityMatrix y;
+    ProbabilityMatrix z;
+    
+    ProbabilityKey xkey;
+    for (auto b : base_conversion[N]) {
+        xkey[1] = b;
+        x.put(xkey, 3*b);
+    }
+    
+    z = x * y;
+    
+    ProbabilityKey zkey;
+    unsigned long long mnos = 0;
+    for (auto b : base_conversion[N]) {
+        zkey[1] = b;
+        BOOST_CHECK(z[zkey] == x[zkey]);
+        mnos += z[zkey];
+    }
+    
+    std::cerr << "x:" << std::endl << x << std::endl;
+    std::cerr << "y:" << std::endl << y << std::endl;
+    std::cerr << "z:" << std::endl << z << std::endl;
+    
+    BOOST_CHECK(z.mnos() == mnos);
+}
+
 BOOST_AUTO_TEST_SUITE_END ()

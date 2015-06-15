@@ -43,9 +43,13 @@ namespace design {
                 }
 
                 // calculate the max degree of this graph
-                int max_degree = get_min_max_degree(*cc).second;
+                int max_degree;
+                int min_degree;
+                std::make_pair(max_degree, min_degree) = get_min_max_degree(*cc);
+                
                 if (debug) {
                     std::cerr << "Max degree of subgraph is: " << max_degree << std::endl;
+                    std::cerr << "Min degree of subgraph is: " << min_degree << std::endl;
                 }
 
                 // split further into biconnected components do ear decomposition
@@ -71,12 +75,11 @@ namespace design {
                                 // print the just created subgraphs
                                 print_subgraphs(*bc, out, "decomposed-ear");
                             }
-                            // now lets push parts between attachment points of an ear to subgraphs
-                            int k = 1;
+                            // now lets push parts between special points of an ear to subgraphs
                             Graph::children_iterator ear, ear_end;
                             for (boost::tie(ear, ear_end) = (*bc).children(); ear != ear_end; ++ear) {
-
-                                parts_between_attachment_points_to_subgraphs(*ear, k++);
+                                
+                                parts_between_specials_to_subgraphs(*ear);
                                 if (debug) {
                                     *out << "parts between attachment points of ear:" << std::endl;
                                     // print the just created subgraphs
@@ -85,6 +88,13 @@ namespace design {
                             }
                         }
                     }
+                } else if ((min_degree == 2) && (max_degree == 2)) {
+                    // this is a connected component circle
+                    Vertex r = boost::vertex(boost::num_vertices(*cc), *cc);
+                    (*cc)[s].special = true;
+                    (*cc)[r].special = true;
+                    
+                    parts_between_specials_to_subgraphs(*cc);
                 }
             }
             // return that the dependency graph is bipartite
@@ -112,13 +122,6 @@ namespace design {
                 //boost::property_value<graph_property, graph_property_t>::type& mp(boost::get_property(subg, gpt));
                 //boost::ref_property_map<Graph*, graph_property> graph_propt1(boost::get_property(subg, gpt));
                 //graph_propt1[&subg].id = "connected_component";
-                
-                //template <class GraphProperties, class GraphPropertyTag>
-                //typename property_value<GraphProperties, GraphPropertyTag>::type&
-                //get_property(subgraph& g, GraphPropertyTag);
-                graph_property test = boost::get_property(subg, gpt);
-                test.id = "connected_component";
-                
                 
                 int vertex = 0;
                 // iterate over elements of connected_components
@@ -167,7 +170,9 @@ namespace design {
             // now need to merge biconnected components that are separated by a articulation point that has a degree == 2 !
             for (auto v : art_points) {
                 if (boost::degree(v, g) > 2) {
-
+                    // mark this vertex as special point
+                    g[v].special = true;
+                    
                     BGL_FORALL_ADJ_T(v, adj, g, Graph) {
                         if ((boost::degree(adj, g) == 2)
                                 && (std::find(art_points.begin(), art_points.end(), adj) != art_points.end())) {
@@ -274,29 +279,26 @@ namespace design {
         }
 
         void color_attachment_points(Graph& g) {
-            /*if (debug) {
-                std::cerr << "Write attachment point labels into graph object..." << std::endl
-                        << "Vertex | Attachment Points | Internal Attachment Point" << std::endl;
+            if (debug) {
+                std::cerr << "Color attachment points as special vertices..." << std::endl;
             }
 
             BGL_FORALL_VERTICES_T(v, g, Graph) {
-                std::list<int> ears;
+                int prev_ear = -1;
 
                 BGL_FORALL_OUTEDGES(v, e, g, Graph) {
-                    ears.push_back(g[e].ear);
-                }
-                ears.sort();
-                ears.unique();
-                if (ears.size() > 1) {
-                    g[v].Ai = ears.back();
-                    for (auto it = ears.begin(); it != std::prev(ears.end()); ++it) {
-                        g[v].Ak.insert(*it);
+                    if (prev_ear == -1) {
+                        prev_ear = g[e].ear;
+                    } else if (prev_ear != g[e].ear) {
+                        // set special to true!
+                        g[v].special = true;
+                        if (debug) {
+                            std::cout << "Vertex " << g.local_to_global(v) << " is a attachment point!" << std::endl;
+                        }
+                        break;
                     }
                 }
-                if (debug) {
-                    std::cout << g.local_to_global(v) << "\t" << g[v].Ak << "\t" << g[v].Ai << std::endl;
-                }
-            }*/
+            }
         }
 
         int degree_in_ear(Vertex& v, Graph& g, int k) {
@@ -310,56 +312,43 @@ namespace design {
             return degree;
         }
 
-        void parts_between_attachment_points_to_subgraphs(Graph& g, int k) {
+        void parts_between_specials_to_subgraphs(Graph& g) {
 
             if (debug) {
-                std::cerr << "Paths between attachment points to subgraph..." << std::endl;
+                std::cerr << "Paths between specials to subgraphs..." << std::endl;
             }
             // reset edge colors
 
             BGL_FORALL_EDGES_T(e, g, Graph) {
                 g[e].color = 0;
+                g[boost::source(e, g)].color = 0;
+                g[boost::target(e, g)].color = 0;
             }
-
-            BGL_FORALL_VERTICES_T(v, g, Graph) {
-                g[v].color = 0;
-            }
-
-            // start at all vertices and add to subgraph as long as it is no Ak or Ik.
-/*
-            BGL_FORALL_VERTICES_T(v, g, Graph) {
-                if ((g[v].Ak.find(k) == g[v].Ak.end()) && (g[v].Ai != k) && g[v].color == 0) {
-                    Graph *subgptr = &g.create_subgraph();
-                    parts_recursion(g, subgptr, v, k);
-                }
-            }
- * */
-            // the above approach does not cover parts with edge-length 1
-
+            
+            // start recursion at all vertices of edges
             BGL_FORALL_EDGES_T(e, g, Graph) {
-                if ((g[e].color == 0) && (g[e].ear == k)) {
+                if (g[e].color == 0) {
                     g[e].color = 1;
-                    Graph& subg = g.create_subgraph();
-                    boost::add_vertex(boost::get(boost::vertex_color_t(), g, boost::source(e, g)), subg);
-                    boost::add_vertex(boost::get(boost::vertex_color_t(), g, boost::target(e, g)), subg);
+                    Graph *subgptr = &g.create_subgraph();
+                    parts_recursion(g, subgptr, boost::source(e, g));
+                    parts_recursion(g, subgptr, boost::target(e, g));
                 }
             }
         }
 
-        void parts_recursion(Graph& g, Graph * subgptr, Vertex v, int k) {
+        void parts_recursion(Graph& g, Graph * subgptr, Vertex v) {
             // add vertex to subgraph
             boost::add_vertex(boost::get(boost::vertex_color_t(), g, v), *subgptr);
             g[v].color = 1;
-/*
-            if ((g[v].Ak.find(k) == g[v].Ak.end()) && (g[v].Ai != k)) {
-
+            
+            if (!g[v].special) {
                 BGL_FORALL_OUTEDGES_T(v, e, g, Graph) {
-                    if ((g[e].ear == k) && (g[e].color == 0)) {
+                    if (g[e].color == 0) {
                         g[e].color = 1;
-                        parts_recursion(g, subgptr, boost::target(e, g), k);
+                        parts_recursion(g, subgptr, boost::target(e, g));
                     }
                 }
-            }*/
+            }
         }
 
         template bool decompose_graph<std::mt19937> (Graph&, std::mt19937*);

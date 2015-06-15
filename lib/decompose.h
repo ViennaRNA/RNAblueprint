@@ -58,10 +58,10 @@ namespace design {
     int degree_in_ear (Vertex& v, Graph& g, int k);
 
     // now create subgraphs for the parts between Ak and Iks
-    void parts_between_attachment_points_to_subgraphs (Graph& g, int k);
+    void parts_between_specials_to_subgraphs (Graph& g);
 
     // recursion for parts function
-    void parts_recursion (Graph& g, Graph * subgptr, Vertex v, int k);
+    void parts_recursion (Graph& g, Graph * subgptr, Vertex v);
   }
 }
 #endif

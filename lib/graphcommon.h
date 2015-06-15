@@ -44,6 +44,7 @@ namespace design {
 
         struct graph_property {
             std::string id;
+            bool path = false;
             ProbabilityMatrix pm;
         };
 
@@ -63,6 +64,11 @@ namespace design {
 
         // get max degree of a graph
         std::pair <int, int> get_min_max_degree(Graph& g);
+        
+        // get the vertex descriptor from a vertex_color_t tag
+        Vertex int_to_vertex(int i, Graph g);
+        // get the vertex_color_t tag from a vertex descriptor
+        int vertex_to_int(Vertex v, Graph g);
     }
 }
 #endif
