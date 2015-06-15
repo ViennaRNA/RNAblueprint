@@ -81,7 +81,10 @@ namespace design
                         
                         // check if a vertex becomes internal here
                         if ((*cg)[v].color == boost::degree((*cg).local_to_global(v), (*cg).root())) {
-                            
+                            // remember this PM here
+                            boost::get_property(*cg, gpt).pm = current; // only the first time a internal node is detected, otherwise we overwrite this
+                            // remove internal special vertex from this PM!
+                            // TODO need a function therefore! make_internal(pm, v)
                         }
                     }
                 }
