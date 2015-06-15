@@ -97,16 +97,42 @@ namespace design {
         ProbabilityMatrix operator* (ProbabilityMatrix& x, ProbabilityMatrix& y) {
             ProbabilityMatrix z;
             // get all vertices that are present in both PMs
-            std::set< int > intersection;
-            std::set< int > xSpecial;
-            std::set< int > ySpecial;
-            std::insert_iterator< std::set<int> > insert_it (intersection, intersection.begin());
-            std::set_intersection (xSpecial.begin(), xSpecial.end(), ySpecial.begin(), ySpecial.end(), insert_it);
+            std::set< int > xSpecials = x.getSpecials();
+            std::set< int > ySpecials = y.getSpecials();
+            std::set< int > zSpecials;
+            std::insert_iterator< std::set<int> > insert_it (zSpecials, zSpecials.begin());
+            std::set_union(xSpecials.begin(), xSpecials.end(), ySpecials.begin(), ySpecials.end(), insert_it);
             
-            // remove special vertices that are present in intersection
+            std::cerr << zSpecials << std::endl;
             
             // build all keys needed for new PM
+            ProbabilityKey newkey;
+            for (auto s : zSpecials) {
+                newkey[s] = N; //TODO maybe we could check sequence constraints here?
+            }
+            std::vector<ProbabilityKey> zkeys = permute_key(newkey);
             
+            //std::cerr << zkeys << std::endl;
+            
+            // lookup keys from previous and multiply them to insert into new
+            for (auto zkey : zkeys) {
+                // generate keys for both old PMs
+                ProbabilityKey xkey;
+                for (auto s : xSpecials) {
+                    xkey[s] = zkey[s];
+                }
+                ProbabilityKey ykey;
+                for (auto s : ySpecials) {
+                    ykey[s] = zkey[s];
+                }
+                // read probability for this keys and multiply them
+                // insert this new probability into the new pm z
+                z.put(zkey, x[xkey]*y[ykey]);
+                
+                //std::cerr << "x: " << xkey << ": " << x[xkey] << std::endl;
+                //std::cerr << "y: " << ykey << ": " << y[ykey] << std::endl;
+                //std::cerr << "z: " << zkey << ": " << z[zkey] << std::endl;
+            }
             
             return z;
         }
@@ -132,13 +158,29 @@ namespace design {
             }
         }
         
-        // overload << operator to print ProbabilityKeys in pair with graph
+        // overload << operator to print ProbabilityKeys
         std::ostream& operator<<(std::ostream& os, ProbabilityKey& m) {
             os << "[";
             for (typename ProbabilityKey::iterator it = m.begin(); it != m.end(); it++) {
                 os << "(" << std::setfill(' ') << std::setw(1) << it->first << "," << enum_to_char(it->second) << ")";
             }
             os << "]";
+            return os;
+        }
+        
+        // overload << operator to print ProbabilityMatrix
+        std::ostream& operator<<(std::ostream& os, ProbabilityMatrix& m) {
+            ProbabilityKey key;
+            std::set<int> specials = m.getSpecials();
+            for (auto s : specials) {
+                key[s] = N;
+            }
+            std::vector<ProbabilityKey> keys = permute_key(key);
+            for (auto k : keys) {
+                if (m[k] != 0) {
+                    os << k << ": " << m[k] << std::endl;
+                }
+            }
             return os;
         }
 

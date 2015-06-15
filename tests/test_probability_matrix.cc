@@ -204,4 +204,125 @@ BOOST_AUTO_TEST_CASE (GetNOS2) {
     
     BOOST_CHECK(pm.mnos() == control);
 }
+
+BOOST_AUTO_TEST_CASE (MultiplyPM1) {
+    
+    BOOST_TEST_MESSAGE("Multiply ProbabilityMatrix 1");
+    
+    ProbabilityMatrix x;
+    ProbabilityMatrix y;
+    ProbabilityMatrix z;
+    
+    ProbabilityKey xkey;
+    for (auto b : base_conversion[N]) {
+        xkey[1] = b;
+        x.put(xkey, 3*b);
+    }
+    
+    ProbabilityKey ykey;
+    for (auto b : base_conversion[N]) {
+        for (auto c : base_conversion[N]) {
+            ykey[1] = b;
+            ykey[2] = c;
+            y.put(ykey, 2+b+c);
+        }
+    }
+    
+    z = x * y;
+    
+    ProbabilityKey zkey;
+    unsigned long long mnos = 0;
+    for (auto b : base_conversion[N]) {
+        for (auto c : base_conversion[N]) {
+            zkey[1] = b;
+            zkey[2] = c;
+            BOOST_CHECK(z[zkey] == ((3*b)*(2+b+c)));
+            mnos += z[zkey];
+        }
+    }
+    
+    std::cerr << "x:" << std::endl << x << std::endl;
+    std::cerr << "y:" << std::endl << y << std::endl;
+    std::cerr << "z:" << std::endl << z << std::endl;
+    
+    BOOST_CHECK(z.mnos() == mnos);
+}
+
+BOOST_AUTO_TEST_CASE (MultiplyPM2) {
+    
+    BOOST_TEST_MESSAGE("Multiply ProbabilityMatrix 2");
+    
+    ProbabilityMatrix x;
+    ProbabilityMatrix y;
+    ProbabilityMatrix z;
+    
+    ProbabilityKey xkey;
+    for (auto b : base_conversion[N]) {
+        xkey[1] = b;
+        x.put(xkey, 3*b);
+    }
+    
+    ProbabilityKey ykey;
+    for (auto b : base_conversion[N]) {
+        ykey[5] = b;
+        y.put(ykey, 5+b);
+    }
+    
+    z = x * y;
+    
+    ProbabilityKey zkey;
+    unsigned long long mnos = 0;
+    for (auto b : base_conversion[N]) {
+        for (auto c : base_conversion[N]) {
+            zkey[1] = b;
+            zkey[5] = c;
+            BOOST_CHECK(z[zkey] == ((3*b)*(5+c)));
+            mnos += z[zkey];
+        }
+    }
+    
+    std::cerr << "x:" << std::endl << x << std::endl;
+    std::cerr << "y:" << std::endl << y << std::endl;
+    std::cerr << "z:" << std::endl << z << std::endl;
+    
+    BOOST_CHECK(z.mnos() == mnos);
+}
+
+BOOST_AUTO_TEST_CASE (MultiplyPM3) {
+    
+    BOOST_TEST_MESSAGE("Multiply ProbabilityMatrix 3");
+    
+    ProbabilityMatrix x;
+    ProbabilityMatrix y;
+    ProbabilityMatrix z;
+    
+    ProbabilityKey xkey;
+    for (auto b : base_conversion[N]) {
+        xkey[1] = b;
+        x.put(xkey, 3*b);
+    }
+    
+    ProbabilityKey ykey;
+    for (auto b : base_conversion[N]) {
+        ykey[1] = b;
+        y.put(ykey, 5+b);
+    }
+    
+    z = x * y;
+    
+    ProbabilityKey zkey;
+    unsigned long long mnos = 0;
+    for (auto b : base_conversion[N]) {
+        zkey[1] = b;
+        BOOST_CHECK(z[zkey] == ((3*b)*(5+b)));
+        mnos += z[zkey];
+    }
+    
+    std::cerr << "x:" << std::endl << x << std::endl;
+    std::cerr << "y:" << std::endl << y << std::endl;
+    std::cerr << "z:" << std::endl << z << std::endl;
+    
+    BOOST_CHECK(z.mnos() == mnos);
+}
+
 BOOST_AUTO_TEST_SUITE_END ()

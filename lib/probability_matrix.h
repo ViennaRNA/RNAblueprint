@@ -75,8 +75,11 @@ namespace design {
         // helper for permute_key
         void permute_impl(ProbabilityKey::iterator start, ProbabilityKey::iterator end, std::vector<ProbabilityKey>& result, ProbabilityKey current);
         
-        // overload << operator to print ProbabilityKeys with any content
+        // overload << operator to print ProbabilityKeys
         std::ostream& operator<<(std::ostream& os, ProbabilityKey& m);
+        
+        // overload << operator to print ProbabilityMatrix
+        std::ostream& operator<<(std::ostream& os, ProbabilityMatrix& m);
     }
 }
 
