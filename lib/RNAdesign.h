@@ -33,7 +33,7 @@ namespace design {
   template <typename R>
   class DependencyGraph {
   public:
-    DependencyGraph(std::vector<std::string> structures, R rand);
+    DependencyGraph(std::vector<std::string> structures, std::string constraints, R rand);
     ~DependencyGraph();
     bool is_bipartite();
     std::string get_sequence();

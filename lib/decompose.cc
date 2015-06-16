@@ -90,6 +90,8 @@ namespace design {
                     }
                 } else if ((min_degree == 2) && (max_degree == 2)) {
                     // this is a connected component circle
+                    
+                    //TODO check if there are already special vertices in the circle
                     Vertex r = boost::vertex(boost::num_vertices(*cc), *cc);
                     (*cc)[s].special = true;
                     (*cc)[r].special = true;

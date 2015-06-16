@@ -23,7 +23,7 @@ namespace design
     namespace detail{
 
         template <typename R>
-        DependencyGraph<R>::DependencyGraph(std::vector<std::string> structures, R _rand)
+        DependencyGraph<R>::DependencyGraph(std::vector<std::string> structures, std::string constraints, R _rand)
         : rand(_rand) {
 
             if (debug) {
@@ -35,6 +35,9 @@ namespace design
 
             // generate graph from input vector
             graph = parse_structures(structures);
+            
+            // set sequence constraints
+            set_constraints(graph, constraints);
 
             // decompose the graph into its connected components, biconnected
             // components and decompose blocks via ear decomposition
@@ -87,7 +90,8 @@ namespace design
                                 boost::get_property(*cg, gpt).pm = &current;
                             }
                             // remove internal special vertex from this PM!
-                            current = make_internal(current, v);
+                            current = make_internal(current, vertex_to_int(v, *cg));
+                            //TODO is there a need to remove special flag if this vertex is now internal?
                         }
                     }
                 }

@@ -69,8 +69,11 @@ int main (int ac, char* av[]) {
   if (vm.count("out")) {
     out = new std::ofstream(vm["out"].as<std::string>(), std::ofstream::out);
   }
-
-  design::DependencyGraph<std::mt19937> dependency_graph(structures, rand_gen);
+  //TODO make this nicer!
+  std::string constraints = structures.back();
+  structures.pop_back();
+  
+  design::DependencyGraph<std::mt19937> dependency_graph(structures, constraints, rand_gen);
 
   if (!dependency_graph.is_bipartite()) {
     std::cerr << "Impossible to find a solution for this input: Dependency graph is not bipartite!" << std::endl;

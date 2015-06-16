@@ -94,7 +94,8 @@ BOOST_AUTO_TEST_CASE(SetConstraints) {
     set_constraints(g, constraints);
     
     BGL_FORALL_VERTICES_T(v, g, Graph) {
-        BOOST_CHECK(g[v].constraint == constraints[vertex_to_int(v, g)]);
+        BOOST_CHECK(g[v].constraint == char_to_enum(constraints[vertex_to_int(v, g)]));
+        BOOST_CHECK((g[v].constraint != N) == g[v].special);
     }
 }
 

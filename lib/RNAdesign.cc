@@ -15,8 +15,8 @@ namespace design {
   }
   
   template <typename R>
-  DependencyGraph<R>::DependencyGraph(std::vector<std::string> structures, R rand) {
-    g = new detail::DependencyGraph<R>(structures, rand);
+  DependencyGraph<R>::DependencyGraph(std::vector<std::string> structures, std::string constraints, R rand) {
+    g = new detail::DependencyGraph<R>(structures, constraints, rand);
   }
   template <typename R>
   DependencyGraph<R>::~DependencyGraph() {

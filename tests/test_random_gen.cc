@@ -53,7 +53,7 @@ BOOST_AUTO_TEST_CASE (rand_library) {
   design::initialize_library(false);
   std::vector<std::string> structures = { "." };
   std::mt19937 rand_gen(1);
-  design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, rand_gen);
+  design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "A", rand_gen);
   
   std::uniform_real_distribution<float> dist(0, 1);
   float random = dist(*dependency_graph.rand_ptr);
@@ -65,7 +65,7 @@ BOOST_AUTO_TEST_CASE (rand_library1) {
   design::initialize_library(false);
   std::vector<std::string> structures = { "." };
   std::mt19937 rand_gen(1);
-  design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, rand_gen);
+  design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "A", rand_gen);
   
   std::uniform_real_distribution<float> dist(0, 1);
   float random = dist(*dependency_graph.rand_ptr);
