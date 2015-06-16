@@ -177,4 +177,63 @@ void reset(Graph& g) {
     }
 }
 
+BOOST_AUTO_TEST_CASE(get_path_pm_test) {
+    initialize_library(true);
+
+    std::vector < TestCase > testcases;
+    testcases.push_back(TestCase(G, G, 2, 2,{}));
+    testcases.push_back(TestCase(A, A, 0, 1,{}));
+    testcases.push_back(TestCase(Y, Y, 0, 2,{}));
+    testcases.push_back(TestCase(N, G, 3, 5,{}));
+    testcases.push_back(TestCase(U, U, 6, 13,{}));
+    testcases.push_back(TestCase(R, U, 3, 5,{}));
+    testcases.push_back(TestCase(Y, U, 6, 21,{}));
+    testcases.push_back(TestCase(C, N, 4, 5,{}));
+    testcases.push_back(TestCase(N, N, 1, 6,{}));
+    testcases.push_back(TestCase(N, N, 5, 42,{}));
+    testcases.push_back(TestCase(C, R, 1, 1,{}));
+    testcases.push_back(TestCase(R, Y, 1, 3,{}));
+    testcases.push_back(TestCase(H, A, 2, 1,{}));
+
+    for (auto t : testcases) {
+        // tell the user what is going on right now
+        std::stringstream ss;
+        ss << "-> Checking Path (" << enum_to_char(t.first) << ", "
+                << enum_to_char(t.last) << ", " << t.length << "):";
+        BOOST_TEST_MESSAGE(ss.str());
+
+        // Build graph
+        Graph g(t.length + 1);
+        int vertex_name = 0;
+        // set the vertex_name
+
+        BGL_FORALL_VERTICES_T(v, g, Graph) {
+            boost::put(boost::vertex_color_t(), g, v, vertex_name++);
+        }
+        // add the edges
+        for (unsigned int i = 0; i < boost::num_vertices(g) - 1; i++) {
+            boost::add_edge(boost::vertex(i, g), boost::vertex(i + 1, g), g);
+        }
+        
+        // set the sequence constraints
+        g[boost::vertex(0, g)].constraint = t.first;
+        if (t.first != N) {
+            g[boost::vertex(0, g)].special = true;
+        }
+        g[boost::vertex(boost::num_vertices(g) - 1, g)].constraint = t.last;
+        if (t.last != N) {
+            g[boost::vertex(boost::num_vertices(g) - 1, g)].special = true;
+        }
+            
+        //call the function
+        ProbabilityMatrix pm = get_path_pm(g);
+        // do the comparison of the results
+        ss.str(std::string());
+        ss << std::endl << "Got PM: " << std::endl << pm << " with MNOS: " << pm.mnos();
+        BOOST_TEST_MESSAGE(ss.str());
+        BOOST_CHECK(pm.mnos() == t.nos);
+    }
+}
+
+
 BOOST_AUTO_TEST_SUITE_END()

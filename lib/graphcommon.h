@@ -25,7 +25,7 @@ namespace design {
         struct vertex_property {
             int color = 0;
             int base = N;
-            int constraints = N;
+            int constraint = N;
             bool special = false;
         };
 
@@ -45,7 +45,7 @@ namespace design {
         struct graph_property {
             std::string id;
             bool path = false;
-            ProbabilityMatrix pm;
+            ProbabilityMatrix* pm;
         };
 
         enum graph_property_t {

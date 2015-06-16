@@ -22,6 +22,9 @@ namespace design {
   namespace detail {
     // parse the input string into a graph
     Graph parse_structures (std::vector<std::string> structures);
+    
+    // set the sequence constraints in the graph object
+    void set_constraints(Graph& g, std::string constraints);
   }
 }
 #endif

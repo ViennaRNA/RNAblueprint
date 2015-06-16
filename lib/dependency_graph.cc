@@ -58,21 +58,19 @@ namespace design
             
             Graph::children_iterator cg, cg_end;
             for (boost::tie(cg, cg_end) = g.children(); cg != cg_end; ++cg) {
-                
-                ProbabilityMatrix thischild;
-                
+                                
                 if (boost::get_property(*cg, gpt).path) {
                     // this is a path and therefore needs to be treated separately
                     // calculate PM for Path and save to subgraph
-                    boost::get_property(*cg, gpt).pm = get_path_pm(*cg);
+                    ProbabilityMatrix path_matrix = get_path_pm(*cg);
+                    boost::get_property(*cg, gpt).pm = &path_matrix;
                 } else {
                     // recursion is here
                     calculate_probabilities(*cg);
                 }
                 
-                thischild = boost::get_property(*cg, gpt).pm;
                 // Multiply current with pm of this child
-                current = current * thischild;
+                current = current * (*boost::get_property(*cg, gpt).pm);
                 
                 bool pmsaved = false;
                 BGL_FORALL_VERTICES_T(v, *cg, Graph) {
@@ -86,7 +84,7 @@ namespace design
                             // only the first time a internal node is detected, otherwise we overwrite this
                             if (!pmsaved) {
                                 pmsaved = true;
-                                boost::get_property(*cg, gpt).pm = current;
+                                boost::get_property(*cg, gpt).pm = &current;
                             }
                             // remove internal special vertex from this PM!
                             current = make_internal(current, v);
@@ -96,7 +94,7 @@ namespace design
             }
             
             // save final state of PM to the main graph
-            boost::get_property(g, gpt).pm = current;
+            boost::get_property(g, gpt).pm = &current;
         }
 
         template <typename R>

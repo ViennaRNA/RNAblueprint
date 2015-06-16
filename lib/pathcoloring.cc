@@ -15,28 +15,66 @@ namespace design {
         
         // calculate a ProbabilityMatrix for a path
         ProbabilityMatrix get_path_pm(Graph& g) {
-            ProbabilityMatrix result;
+            // check if given graph is indeed a path with max_degree = 2 and two ends with degree = 1;
+            int max_degree;
+            int min_degree;
+            std::tie(min_degree, max_degree) = get_min_max_degree(g);
+            
+            // assert path
+            if (max_degree > 2) {
+                std::cerr << std::endl << "This graph is no cycle or path (max degree > 2). I can't color this!" << std::endl;
+                exit(1);
+            } else if (min_degree > 1) {
+                std::cerr << std::endl << "cannot color circles this way." << std::endl;
+                exit(1);
+            }
+            
+            ProbabilityKey key;
             std::set< int > specials;
-            std::set< Vertex > ends;
             
             BGL_FORALL_VERTICES_T(v, g, Graph) {
-                if (boost::out_degree(v, g) == 1) {
-                    ends.insert(v);
-                    if (g[v].special) {
-                        specials.insert(vertex_to_int(v, g));
+                if (g[v].special) {
+                    if (boost::out_degree(v, g) <= 1) {
+                        // remember vertex as int with sequence constraint
+                        key[vertex_to_int(v, g)] = g[v].constraint;
+                        specials.emplace(vertex_to_int(v, g));
+                    } else {
+                        std::cerr << std::endl << "There is a special vertex which is no path end in get_path_pm. This is not possible!" << std::endl;
+                        exit(1);
                     }
                 }
             }
             
-            Vertex start;
-            // if the path is a connected component, then there is no special point.
+            if (specials.size() > 2) {
+                std::cerr << std::endl << "More than two special vertices in one path. ridiculous!" << std::endl;
+                exit(1);
+            }
             
-            // if the path has one special end, start to calculate at the other end
+            std::vector<ProbabilityKey> keys = permute_key(key);
+            std::cerr << "keys: " << std::endl << keys;
+            int length = boost::num_vertices(g) - 1;
+            std::cerr << "length: " << length << std::endl;
+            PairingMatrix * p = PairingMatrix::Instance();
             
-            // if the path has two special ends, we need to do the calculation 4 times
+            ProbabilityMatrix result;
             
-            
-            
+            for (auto k : keys) {
+                switch ( specials.size() )
+                {
+                    case 0:
+                        result.put(k, p->get(length, N, N));
+                        break;
+                    case 1:
+                        result.put(k, p->get(length, k[*(specials.begin())], N));
+                        break;
+                    case 2:
+                        result.put(k, p->get(length, k[*(specials.begin())], k[*(++specials.begin())]));
+                        break;
+                    default:
+                        std::cerr << std::endl << "More than two special vertices in one path. ridiculous!" << std::endl;
+                        exit(1);
+                }
+            }
             return result;
         }
         
@@ -50,7 +88,7 @@ namespace design {
             int min_degree;
             std::tie(min_degree, max_degree) = get_min_max_degree(g);
 
-            // assert path or cycle
+            // assert path
             if (max_degree > 2) {
                 std::cerr << std::endl << "This graph is no cycle or path (max degree > 2). I can't color this!" << std::endl;
                 exit(1);
