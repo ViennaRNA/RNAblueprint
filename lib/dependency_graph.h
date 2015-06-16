@@ -12,8 +12,8 @@
 
 #include "common.h"
 #include "graphcommon.h"
-#include "pairing_matrix.h"
 #include "probability_matrix.h"
+#include "pathcoloring.h"
 
 #include <sstream>
 #include <random>

@@ -339,13 +339,16 @@ BOOST_AUTO_TEST_CASE (MultiplyPM4) {
         x.put(xkey, 3*b);
     }
     
+    ProbabilityKey ykey;
+    y.put(ykey, 16);
+    
     z = x * y;
     
     ProbabilityKey zkey;
     unsigned long long mnos = 0;
     for (auto b : base_conversion[N]) {
         zkey[1] = b;
-        BOOST_CHECK(z[zkey] == x[zkey]);
+        BOOST_CHECK(z[zkey] == 16*(3*b));
         mnos += z[zkey];
     }
     
@@ -354,6 +357,96 @@ BOOST_AUTO_TEST_CASE (MultiplyPM4) {
     std::cerr << "z:" << std::endl << z << std::endl;
     
     BOOST_CHECK(z.mnos() == mnos);
+}
+
+BOOST_AUTO_TEST_CASE (MultiplyPM5) {
+    
+    BOOST_TEST_MESSAGE("Multiply two empty ProbabilityMatrix");
+    
+    ProbabilityMatrix x;
+    ProbabilityMatrix y;
+    ProbabilityMatrix z;
+    
+    ProbabilityKey xkey;
+    x.put(xkey, 12);
+    
+    ProbabilityKey ykey;
+    y.put(ykey, 24);
+    
+    z = x * y;
+    
+    ProbabilityKey zkey;
+    unsigned long long mnos = 0;
+    BOOST_CHECK(z[zkey] == 12*24);
+    mnos += z[zkey];
+    
+    std::cerr << "x:" << std::endl << x << std::endl;
+    std::cerr << "y:" << std::endl << y << std::endl;
+    std::cerr << "z:" << std::endl << z << std::endl;
+    
+    BOOST_CHECK(z.mnos() == mnos);
+}
+
+BOOST_AUTO_TEST_CASE (MakeInternal1) {
+    
+    BOOST_TEST_MESSAGE("make a vertex internal in ProbabilityMatrix");
+    
+    ProbabilityMatrix x;
+    ProbabilityMatrix y;
+    
+    ProbabilityKey xkey;
+    for (auto b : base_conversion[N]) {
+        for (auto c : base_conversion[N]) {
+            for (auto d : base_conversion[N]) {
+                xkey[1] = b;
+                xkey[5] = c;
+                xkey[7] = d;
+                x.put(xkey, d*b+c);
+            }
+        }
+    }
+    
+    y = make_internal(x, 5);
+
+    std::cerr << "x:" << std::endl << x << std::endl;
+    std::cerr << "y:" << std::endl << y << std::endl;
+    
+    ProbabilityKey testkey;
+    testkey[1] = U;
+    testkey[7] = C;
+    unsigned long long ytest = y[testkey];
+    testkey[5] = N;
+    unsigned long long xtest = x[testkey];
+    BOOST_CHECK(ytest == xtest);
+    BOOST_CHECK(x.getSpecials().size() == y.getSpecials().size()+1);
+    BOOST_CHECK(x.mnos() == y.mnos());
+}
+
+BOOST_AUTO_TEST_CASE (MakeInternal2) {
+    
+    BOOST_TEST_MESSAGE("make last vertex internal in ProbabilityMatrix");
+    
+    ProbabilityMatrix x;
+    ProbabilityMatrix y;
+    
+    ProbabilityKey xkey;
+    for (auto b : base_conversion[N]) {
+        xkey[5] = b;
+        x.put(xkey, 3*b+4);
+    }
+    
+    y = make_internal(x, 5);
+
+    std::cerr << "x:" << std::endl << x << std::endl;
+    std::cerr << "y:" << std::endl << y << std::endl;
+    
+     ProbabilityKey testkey;
+    unsigned long long ytest = y[testkey];
+    testkey[5] = N;
+    unsigned long long xtest = x[testkey];
+    BOOST_CHECK(ytest == xtest);
+    BOOST_CHECK(x.getSpecials().size() == y.getSpecials().size()+1);
+    BOOST_CHECK(x.mnos() == y.mnos());
 }
 
 BOOST_AUTO_TEST_SUITE_END ()

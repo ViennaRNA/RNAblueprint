@@ -99,53 +99,69 @@ namespace design {
             // get all vertices that are present in both PMs
             std::set< int > xSpecials = x.getSpecials();
             std::set< int > ySpecials = y.getSpecials();
-            
-            
-            if ((xSpecials.size() != 0 ) && (ySpecials.size() != 0)) {
-                
-                std::set< int > zSpecials;
-                std::insert_iterator< std::set<int> > insert_it (zSpecials, zSpecials.begin());
-                std::set_union(xSpecials.begin(), xSpecials.end(), ySpecials.begin(), ySpecials.end(), insert_it);
+            std::set< int > zSpecials;
+            std::insert_iterator< std::set<int> > insert_it (zSpecials, zSpecials.begin());
+            std::set_union(xSpecials.begin(), xSpecials.end(), ySpecials.begin(), ySpecials.end(), insert_it);
 
-                //std::cerr << zSpecials << std::endl;
+            //std::cerr << zSpecials << std::endl;
 
-                // build all keys needed for new PM
+            // build all keys needed for new PM
+            ProbabilityKey newkey;
+            for (auto s : zSpecials) {
+                newkey[s] = N; //TODO maybe we could check sequence constraints here?
+            }
+            std::vector<ProbabilityKey> zkeys = permute_key(newkey);
+
+            //std::cerr << zkeys << std::endl;
+
+            // lookup keys from previous and multiply them to insert into new
+            for (auto zkey : zkeys) {
+                // generate keys for both old PMs
+                ProbabilityKey xkey;
+                for (auto s : xSpecials) {
+                    xkey[s] = zkey[s];
+                }
+                ProbabilityKey ykey;
+                for (auto s : ySpecials) {
+                    ykey[s] = zkey[s];
+                }
+                // read probability for this keys and multiply them
+                // insert this new probability into the new pm z
+                z.put(zkey, x[xkey]*y[ykey]);
+
+                //std::cerr << "x: " << xkey << ": " << x[xkey] << std::endl;
+                //std::cerr << "y: " << ykey << ": " << y[ykey] << std::endl;
+                //std::cerr << "z: " << zkey << ": " << z[zkey] << std::endl;
+            }
+            return z;
+        }
+        
+        ProbabilityMatrix make_internal(ProbabilityMatrix& pm, int v) {
+            ProbabilityMatrix result;
+            
+            std::set< int > specials = pm.getSpecials();
+            // find v in specials
+            std::set< int >::iterator v_it = specials.find(v);
+            if (v_it != specials.end()) {
+                specials.erase(v_it);
+                // create a key for the new pm
                 ProbabilityKey newkey;
-                for (auto s : zSpecials) {
+                for (auto s : specials) {
                     newkey[s] = N; //TODO maybe we could check sequence constraints here?
                 }
-                std::vector<ProbabilityKey> zkeys = permute_key(newkey);
-
-                //std::cerr << zkeys << std::endl;
-
-                // lookup keys from previous and multiply them to insert into new
-                for (auto zkey : zkeys) {
-                    // generate keys for both old PMs
-                    ProbabilityKey xkey;
-                    for (auto s : xSpecials) {
-                        xkey[s] = zkey[s];
-                    }
-                    ProbabilityKey ykey;
-                    for (auto s : ySpecials) {
-                        ykey[s] = zkey[s];
-                    }
-                    // read probability for this keys and multiply them
-                    // insert this new probability into the new pm z
-                    z.put(zkey, x[xkey]*y[ykey]);
-
-                    //std::cerr << "x: " << xkey << ": " << x[xkey] << std::endl;
-                    //std::cerr << "y: " << ykey << ": " << y[ykey] << std::endl;
-                    //std::cerr << "z: " << zkey << ": " << z[zkey] << std::endl;
+                
+                std::vector<ProbabilityKey> newkeys = permute_key(newkey);
+                for (auto k : newkeys) {
+                    ProbabilityKey pmkey = k;
+                    pmkey[v] = N;
+                    // now put the new key with the sum over the internal vertex into the new matrix
+                    result.put(k, pm[pmkey]);
                 }
-
-                return z;
-            } else if ((xSpecials.size() == 0 ) && (ySpecials.size() != 0)) {
-                return y;
-            } else if ((xSpecials.size() != 0 ) && (ySpecials.size() == 0)) {
-                return x;
             } else {
-                return z;
+                // in case the vertex is not present in specials, it is already "internal"
+                result = pm;
             }
+            return result;
         }
         
         std::vector<ProbabilityKey> permute_key(ProbabilityKey pk) {

@@ -93,7 +93,7 @@ namespace design {
                     Vertex r = boost::vertex(boost::num_vertices(*cc), *cc);
                     (*cc)[s].special = true;
                     (*cc)[r].special = true;
-                    
+                    // assign any two special vertices and get paths in between
                     parts_between_specials_to_subgraphs(*cc);
                 }
             }

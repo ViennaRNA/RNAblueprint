@@ -64,7 +64,7 @@ namespace design
                 if (boost::get_property(*cg, gpt).path) {
                     // this is a path and therefore needs to be treated separately
                     // calculate PM for Path and save to subgraph
-                    //TODO boost::get_property(*cg, gpt).pm = calculate_path_pm(*cg);
+                    boost::get_property(*cg, gpt).pm = get_path_pm(*cg);
                 } else {
                     // recursion is here
                     calculate_probabilities(*cg);
@@ -74,6 +74,7 @@ namespace design
                 // Multiply current with pm of this child
                 current = current * thischild;
                 
+                bool pmsaved = false;
                 BGL_FORALL_VERTICES_T(v, *cg, Graph) {
                     if ((*cg)[v].special) {
                         // update current degrees as status of special points
@@ -82,9 +83,13 @@ namespace design
                         // check if a vertex becomes internal here
                         if ((*cg)[v].color == boost::degree((*cg).local_to_global(v), (*cg).root())) {
                             // remember this PM here
-                            boost::get_property(*cg, gpt).pm = current; // only the first time a internal node is detected, otherwise we overwrite this
+                            // only the first time a internal node is detected, otherwise we overwrite this
+                            if (!pmsaved) {
+                                pmsaved = true;
+                                boost::get_property(*cg, gpt).pm = current;
+                            }
                             // remove internal special vertex from this PM!
-                            // TODO need a function therefore! make_internal(pm, v)
+                            current = make_internal(current, v);
                         }
                     }
                 }

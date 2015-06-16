@@ -30,14 +30,19 @@ namespace design {
         
         // get the vertex descriptor from a vertex_color_t tag
         Vertex int_to_vertex(int i, Graph g) {
+            
+            Graph root = g.root();
+            Vertex v = boost::vertex(i, root);
+            return g.global_to_local(v);
+            /*
             BGL_FORALL_VERTICES_T(v, g, Graph) {
                 if (boost::get(boost::vertex_color_t(), g, v) == i) {
                     return v;
                 }
             }
-            // like this??? boost::vertex(i, g);
             std::cerr << "This vertex is not present in this graph!";
             exit(1);
+            */
         }
         
         // get the vertex_color_t tag from a vertex descriptor

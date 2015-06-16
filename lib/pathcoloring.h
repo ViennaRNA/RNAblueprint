@@ -14,6 +14,7 @@
     #include "common.h"
     #include "graphcommon.h"
     #include "pairing_matrix.h"
+    #include "probability_matrix.h"
 
     // include standard library parts
     #include <sstream>
@@ -29,9 +30,14 @@ namespace design {
         typedef std::unordered_map< Vertex, std::unordered_map<int, unsigned long long> > nosMap;
 
         // class definitions
-
+        
+        // calculate a ProbabilityMatrix for a path
+        ProbabilityMatrix get_path_pm(Graph& g);
+        
+        // color a path
         template <typename RG>
-        unsigned long long color_path_cycle_graph(Graph& g, RG* rand_ptr);
+        unsigned long long color_path_graph(Graph& g, RG* rand_ptr);
+        
     }
 }
 #endif

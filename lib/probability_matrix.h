@@ -69,6 +69,8 @@ namespace design {
         // multiply operator overloaded which calculates new pm
         ProbabilityMatrix operator* (ProbabilityMatrix& x, ProbabilityMatrix& y);
         
+        // a function which creates a new ProbabilityMatrix where the given key is internal
+        ProbabilityMatrix make_internal(ProbabilityMatrix& pm, int v);
         
         // A function to permute the keys if the key contains Letters bigger than the alphabet (eg N, S, Y,...)
         std::vector<ProbabilityKey> permute_key(ProbabilityKey pk);
