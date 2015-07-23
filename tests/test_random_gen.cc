@@ -48,8 +48,6 @@ BOOST_AUTO_TEST_CASE (rand_test1) {
 
 }
 
-//TODO find out what is wrong with the random pointer
-/*
 BOOST_AUTO_TEST_CASE (rand_library) {
   BOOST_TEST_MESSAGE("test random number generator in library");
   design::initialize_library(false);
@@ -59,7 +57,7 @@ BOOST_AUTO_TEST_CASE (rand_library) {
   
   std::uniform_real_distribution<float> dist(0, 1);
   float random = dist(*dependency_graph.rand_ptr);
-  BOOST_CHECK_CLOSE(random, 0.997185f, 0.0001);
+  BOOST_CHECK_CLOSE(random, 0.41702199f, 0.0001);
 }
 
 BOOST_AUTO_TEST_CASE (rand_library1) {
@@ -71,7 +69,7 @@ BOOST_AUTO_TEST_CASE (rand_library1) {
   
   std::uniform_real_distribution<float> dist(0, 1);
   float random = dist(*dependency_graph.rand_ptr);
-  BOOST_CHECK_CLOSE(random, 0.997185f, 0.0001);
+  BOOST_CHECK_CLOSE(random, 0.41702199f, 0.0001);
 }
-*/
+
 BOOST_AUTO_TEST_SUITE_END ()

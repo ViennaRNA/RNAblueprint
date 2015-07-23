@@ -43,11 +43,6 @@ namespace design
             // components and decompose blocks via ear decomposition
             bipartite = decompose_graph(graph, rand_ptr);
             
-            BGL_FORALL_VERTICES_T(v, graph, Graph) {
-                // reset the color tag for the calculate_probabilities function
-                graph[v].color = 0;
-            }
-
             // now calculate all the PMs
             calculate_probabilities(graph);
 
@@ -55,6 +50,11 @@ namespace design
 
         template <typename R>
         void DependencyGraph<R>::calculate_probabilities(Graph g) {
+            
+            BGL_FORALL_VERTICES_T(v, g, Graph) {
+                // reset the color tag for the calculate_probabilities function
+                g[v].color = 0;
+            }
             
             // Remember a temporary PM which holds the current state
             ProbabilityMatrix current;
