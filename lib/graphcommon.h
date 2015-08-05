@@ -16,6 +16,7 @@
 
 // include standard library parts
 #include <limits>
+#include <memory>
 
 namespace design {
     namespace detail {
@@ -44,12 +45,9 @@ namespace design {
 
         struct graph_property {
             std::string id;
-            bool path = false;
-            ProbabilityMatrix* pm;
-        };
-
-        enum graph_property_t {
-            gpt
+            bool is_path = false;
+            bool is_cc = false;
+            std::shared_ptr<ProbabilityMatrix> pm;
         };
 
         // graph_properties 
@@ -58,7 +56,7 @@ namespace design {
         boost::adjacency_list< boost::vecS, boost::vecS, boost::undirectedS,
         boost::property< boost::vertex_color_t, int, vertex_property >,
         boost::property< boost::edge_index_t, int, boost::property < edge_component_t, std::size_t, edge_property> >,
-        boost::property< graph_property_t, graph_property> > > Graph;
+        boost::property< boost::graph_name_t, graph_property> > > Graph;
         typedef Graph::edge_descriptor Edge;
         typedef Graph::vertex_descriptor Vertex;
 

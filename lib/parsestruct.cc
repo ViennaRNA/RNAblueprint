@@ -74,7 +74,10 @@ namespace design {
                     exit(1);
                 }
             }
-
+            
+            // label graph as root
+            boost::get_property(g, boost::graph_name).id = "root_graph";
+            
             return g;
         }
         

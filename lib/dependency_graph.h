@@ -45,7 +45,8 @@ namespace design {
             bool bipartite; // if dependency graph is bipartite and a therefore a solution exists
             unsigned long long nos = 0; // number of sequences/solutions
             R rand;
-            void calculate_probabilities(Graph g);
+            void calculate_probabilities(Graph& g);
+            void sample_sequence(Graph& g);
         };
     }
 }

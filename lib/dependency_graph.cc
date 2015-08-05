@@ -49,7 +49,7 @@ namespace design
         }
 
         template <typename R>
-        void DependencyGraph<R>::calculate_probabilities(Graph g) {
+        void DependencyGraph<R>::calculate_probabilities(Graph& g) {
             
             BGL_FORALL_VERTICES_T(v, g, Graph) {
                 // reset the color tag for the calculate_probabilities function
@@ -61,33 +61,54 @@ namespace design
             
             Graph::children_iterator cg, cg_end;
             for (boost::tie(cg, cg_end) = g.children(); cg != cg_end; ++cg) {
-                                
-                if (boost::get_property(*cg, gpt).path) {
+                if (debug) {
+                    std::cerr << "current graph path? " << boost::get_property(*cg, boost::graph_name).is_path << std::endl;
+                    print_graph(*cg, &std::cerr, "current graph");
+                    //std::cerr << "current PM: " << current << std::endl;
+                }
+                
+                if (boost::get_property(*cg, boost::graph_name).is_path) {
                     // this is a path and therefore needs to be treated separately
-                    // calculate PM for Path and save to subgraph
+                    // calculate PM for Path and save to subgraph                    
                     ProbabilityMatrix path_matrix = get_path_pm(*cg);
-                    boost::get_property(*cg, gpt).pm = &path_matrix;
+                    boost::get_property(*cg, boost::graph_name).pm = std::make_shared<ProbabilityMatrix> (path_matrix);
+                    if (debug) {
+                        std::cerr << "Path PM: " << std::endl << *boost::get_property(*cg, boost::graph_name).pm << std::endl;
+                    }
                 } else {
+                    if (debug) {
+                        std::cerr << "Recursion!" << std::endl;
+                    }
                     // recursion is here
                     calculate_probabilities(*cg);
                 }
                 
                 // Multiply current with pm of this child
-                current = current * (*boost::get_property(*cg, gpt).pm);
-                
+                current = *boost::get_property(*cg, boost::graph_name).pm * current;
+                if (debug) {
+                    std::cerr << "current PM: " << std::endl << current << std::endl;
+                }
                 bool pmsaved = false;
                 BGL_FORALL_VERTICES_T(v, *cg, Graph) {
                     if ((*cg)[v].special) {
                         // update current degrees as status of special points
                         (*cg)[v].color += boost::degree(v, *cg);
-                        
+
                         // check if a vertex becomes internal here
+                        if (debug) {
+                            std::cerr << "Internal? " << (*cg)[v].color << "/" << boost::degree((*cg).local_to_global(v), (*cg).root()) << std::endl;
+                        }
                         if ((*cg)[v].color == boost::degree((*cg).local_to_global(v), (*cg).root())) {
                             // remember this PM here
                             // only the first time a internal node is detected, otherwise we overwrite this
                             if (!pmsaved) {
                                 pmsaved = true;
-                                boost::get_property(*cg, gpt).pm = &current;
+                                if (!boost::get_property(*cg, boost::graph_name).is_cc) {
+                                    boost::get_property(*cg, boost::graph_name).pm = std::make_shared<ProbabilityMatrix> (current);
+                                    if (debug) {
+                                        std::cerr << "saved PM: " << std::endl << *boost::get_property(*cg, boost::graph_name).pm << std::endl;
+                                    }
+                                }
                             }
                             // remove internal special vertex from this PM!
                             current = make_internal(current, vertex_to_int(v, *cg));
@@ -96,15 +117,22 @@ namespace design
                     }
                 }
             }
-            
             // save final state of PM to the main graph
-            boost::get_property(g, gpt).pm = &current;
+            boost::get_property(g, boost::graph_name).pm = std::make_shared<ProbabilityMatrix> (current);
+            if (debug) {
+                std::cerr << "PM of " << boost::get_property(g, boost::graph_name).id << std::endl << *boost::get_property(g, boost::graph_name).pm << std::endl;
+            }
+        }
+        
+        template <typename R>
+        void DependencyGraph<R>::sample_sequence(Graph& g) {
+            
         }
 
         template <typename R>
         Sequence DependencyGraph<R>::get_sequence() {
             Sequence sequence(boost::num_vertices(graph), N);
-
+            
             BGL_FORALL_VERTICES_T(v, graph, Graph) {
                 sequence[boost::get(boost::vertex_color_t(), graph, v)] = graph[v].base;
             }

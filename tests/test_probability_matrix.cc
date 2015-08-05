@@ -387,6 +387,28 @@ BOOST_AUTO_TEST_CASE (MultiplyPM5) {
     BOOST_CHECK(z.mnos() == mnos);
 }
 
+BOOST_AUTO_TEST_CASE (MultiplyPM6) {
+    
+    BOOST_TEST_MESSAGE("Multiply with complete empty (only constructed) ProbabilityMatrix");
+    
+    ProbabilityMatrix x;
+    ProbabilityMatrix y;
+    ProbabilityMatrix z;
+    
+    ProbabilityKey xkey;
+    x.put(xkey, 12);
+    
+    z = x * y;
+    
+    BOOST_CHECK(z[xkey] == 12);
+    
+    std::cerr << "x:" << std::endl << x << std::endl;
+    std::cerr << "y:" << std::endl << y << std::endl;
+    std::cerr << "z:" << std::endl << z << std::endl;
+    
+    BOOST_CHECK(z.mnos() == x.mnos());
+}
+
 BOOST_AUTO_TEST_CASE (MakeInternal1) {
     
     BOOST_TEST_MESSAGE("make a vertex internal in ProbabilityMatrix");

@@ -15,37 +15,30 @@ namespace design {
     
     void print_graph (Graph& g, std::ostream* out, std::string nametag) {
       // to convert enums of bases to chars
-      std::map<Vertex, char> bases;
-      boost::associative_property_map< std::map<Vertex, char> > base_map(bases);
+      std::map<Vertex, char> bases, constraints;
+      boost::associative_property_map< std::map<Vertex, char> > base_map(bases), constraint_map(constraints);
       // to convert list of articulation points to string
       std::map< Vertex, std::string > aps;
       boost::associative_property_map< std::map<Vertex, std::string> > ap_map(aps);
-
-      /*BGL_FORALL_VERTICES_T(v, g, Graph) {
+      
+      BGL_FORALL_VERTICES_T(v, g, Graph) {
         bases.insert(std::make_pair(v, enum_to_char(g[v].base)));
-
-        // convert list of articulation points to string
-        std::stringstream ap_stream;
-        for (auto elem : g[v].Ak) {
-          ap_stream << elem << " ";
-        }
-        std::string ap_string = ap_stream.str();
-        if (ap_string.size() > 1) {
-          ap_string.pop_back();
-        } // delete last character
-        aps.insert(std::make_pair(v, ap_string));
-      }*/
+        constraints.insert(std::make_pair(v, enum_to_char(g[v].constraint)));
+      }
 
       // print vertex and edge properties from my self-defined bundled properties
       boost::dynamic_properties dp;
-      //dp.property("bipartite_color", boost::get(&vertex_property::bipartite_color, g));
-      //dp.property("color", boost::get(&vertex_property::color, g));
+      
+      boost::ref_property_map<Graph*, std::string> graphName(boost::get_property(g, boost::graph_name).id);
+      dp.property("name", graphName);
+      boost::ref_property_map<Graph*, bool> graphPath(boost::get_property(g, boost::graph_name).is_path);
+      dp.property("path", graphPath);
+      
       dp.property("base", base_map);
-      //property("base_enum", boost::get(&vertex_property::base, g));
-      //dp.property("Ak", ap_map);
-      //dp.property("Ai", boost::get(&vertex_property::Ai, g));
+      dp.property("constraints", constraint_map);
       dp.property("name", boost::get(boost::vertex_color_t(), g));
       dp.property("ear", boost::get(&edge_property::ear, g));
+      dp.property("special", boost::get(&vertex_property::special, g));
 
       /*if (outfile != "") {
         std::stringstream filename;
