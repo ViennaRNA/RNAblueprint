@@ -43,9 +43,9 @@ BOOST_AUTO_TEST_CASE (middle_construction) {
   //BOOST_CHECK(random == 0.417022f);
 }
 
-BOOST_AUTO_TEST_CASE (hard_construction) {
+BOOST_AUTO_TEST_CASE (cc_construction) {
 
-  BOOST_TEST_MESSAGE("test dependency graph construction on an hard example");
+  BOOST_TEST_MESSAGE("test dependency graph construction on an cc example");
 
   design::initialize_library(true);
   std::vector<std::string> structures = { ".()..", "..().", "..(.)" };
@@ -56,15 +56,28 @@ BOOST_AUTO_TEST_CASE (hard_construction) {
   //BOOST_CHECK(random == 0.417022f);
 }
 
-BOOST_AUTO_TEST_CASE (hard_construction_constraints) {
+BOOST_AUTO_TEST_CASE (cc_construction_constraints) {
 
-  BOOST_TEST_MESSAGE("test dependency graph construction on an hard example with constraints");
+  BOOST_TEST_MESSAGE("test dependency graph construction on an cc example with constraints");
 
   design::initialize_library(true);
   std::vector<std::string> structures = { ".()..", "..().", "..(.)" };
   std::mt19937 rand_gen(1);
   
   design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "NNNA", rand_gen);
+  
+  //BOOST_CHECK(random == 0.417022f);
+}
+
+BOOST_AUTO_TEST_CASE (bc_construction) {
+
+  BOOST_TEST_MESSAGE("test dependency graph construction on an bc example");
+
+  design::initialize_library(true);
+  std::vector<std::string> structures = { "().().", ".().()", ".(..)." };
+  std::mt19937 rand_gen(1);
+  
+  design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "NNNNNN", rand_gen);
   
   //BOOST_CHECK(random == 0.417022f);
 }

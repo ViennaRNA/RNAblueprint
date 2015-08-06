@@ -89,6 +89,31 @@ namespace design {
             return mnos;
         }
         
+        template <typename R>
+        ProbabilityKey ProbabilityMatrix::sample(R rand_gen) {
+            ProbabilityKey result;
+            
+            std::uniform_real_distribution<float> dist(0, 1);
+            unsigned long long random = dist(rand_gen) * mnos();
+
+            // stochastically take one of the possibilities
+            // start at the probability of first possible character and add each other base probability as long long as the random number is bigger.
+            unsigned long long sum = 0;
+            for (auto k : pm) {
+                sum += k.second;
+                // if the random number is bigger than our probability, take this base as the current base!
+                if (random < sum) {
+                    result = k.first;
+                    // don't forget to exit the loop, otherwise will always be last entry
+                    break;
+                }
+            }
+
+            if (debug) {
+                std::cerr << "Key Sampled: " << result << std::endl;
+            }
+            return result;
+        }
         
         ProbabilityMatrix::~ProbabilityMatrix() {
             // cleanup?
@@ -217,6 +242,7 @@ namespace design {
             }
             return os;
         }
-
+        
+        template ProbabilityKey ProbabilityMatrix::sample<std::mt19937> (std::mt19937);
     }
 }

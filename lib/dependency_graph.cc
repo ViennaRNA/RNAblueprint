@@ -126,7 +126,19 @@ namespace design
         
         template <typename R>
         void DependencyGraph<R>::sample_sequence(Graph& g) {
-            
+            // reverse iterate over children
+            Graph::children_iterator cg, cg_end, current;
+            for ( current = cg_end; current != cg;) {
+                --current;
+                
+                if (debug) {
+                    std::cerr << "Recursion!" << std::endl;
+                }
+                // recursion is here
+                calculate_probabilities(*current);
+                
+                ProbabilityKey colors = boost::get_property(*current, boost::graph_name).pm->sample(rand);
+            }
         }
 
         template <typename R>
