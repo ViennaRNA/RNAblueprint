@@ -121,6 +121,8 @@ BOOST_AUTO_TEST_CASE (GetPutKey1) {
     BOOST_TEST_MESSAGE(ss.str());
     
     BOOST_CHECK(pm[pk] == control);
+    std::set< int > specials = { 0, 4 };
+    BOOST_CHECK(pm.getSpecials() == specials);
 }
 
 BOOST_AUTO_TEST_CASE (GetPutKey2) {
@@ -147,6 +149,8 @@ BOOST_AUTO_TEST_CASE (GetPutKey2) {
     BOOST_TEST_MESSAGE(ss.str());
     
     BOOST_CHECK(pm[pk] == control);
+    std::set< int > specials = { 0, 4 };
+    BOOST_CHECK(pm.getSpecials() == specials);
 }
 
 BOOST_AUTO_TEST_CASE (GetPutKey3) {
@@ -173,6 +177,8 @@ BOOST_AUTO_TEST_CASE (GetPutKey3) {
     BOOST_TEST_MESSAGE(ss.str());
     
     BOOST_CHECK(pm[pk] == control);
+    std::set< int > specials = { 0, 4 };
+    BOOST_CHECK(pm.getSpecials() == specials);
 }
 
 BOOST_AUTO_TEST_CASE (GetNOS1) {
@@ -193,6 +199,8 @@ BOOST_AUTO_TEST_CASE (GetNOS1) {
     BOOST_TEST_MESSAGE("Try to get number of sequences for a ProbabilityMatrix");
     
     BOOST_CHECK(pm.mnos() == control);
+    std::set< int > specials = { 0, 4 };
+    BOOST_CHECK(pm.getSpecials() == specials);
 }
 
 BOOST_AUTO_TEST_CASE (GetNOS2) {
@@ -203,6 +211,16 @@ BOOST_AUTO_TEST_CASE (GetNOS2) {
     BOOST_TEST_MESSAGE("Try to get number of sequences for empty ProbabilityMatrix");
     
     BOOST_CHECK(pm.mnos() == control);
+}
+
+BOOST_AUTO_TEST_CASE (GetSpecials1) {
+    
+    ProbabilityMatrix pm;
+    
+    BOOST_TEST_MESSAGE("Try to get specials for empty ProbabilityMatrix");
+    
+    std::set< int > specials = { };
+    BOOST_CHECK(pm.getSpecials() == specials);
 }
 
 BOOST_AUTO_TEST_CASE (MultiplyPM1) {
@@ -462,13 +480,68 @@ BOOST_AUTO_TEST_CASE (MakeInternal2) {
     std::cerr << "x:" << std::endl << x << std::endl;
     std::cerr << "y:" << std::endl << y << std::endl;
     
-     ProbabilityKey testkey;
+    ProbabilityKey testkey;
     unsigned long long ytest = y[testkey];
     testkey[5] = N;
     unsigned long long xtest = x[testkey];
     BOOST_CHECK(ytest == xtest);
     BOOST_CHECK(x.getSpecials().size() == y.getSpecials().size()+1);
     BOOST_CHECK(x.mnos() == y.mnos());
+}
+
+BOOST_AUTO_TEST_CASE (RandomlySampleKey1) {
+    
+    BOOST_TEST_MESSAGE("randomly sample a probability key from a matrix");
+    
+    std::uniform_real_distribution<float> dist(0, 1);
+    std::mt19937 rand_gen(1);
+    
+    ProbabilityMatrix m;
+    
+    ProbabilityKey input;
+    input[1] = N;
+    input[4] = N;
+    input[7] = Y;
+    
+    std::vector<ProbabilityKey> input_keys = permute_key(input);
+    for (auto i : input_keys) {
+        m.put(i, dist(rand_gen) * 400);
+    }
+    
+    ProbabilityKey constraint;
+    constraint[1] = A;
+    constraint[4] = V;
+    constraint[7] = N;
+    
+    ProbabilityKey result = m.sample(constraint, &rand_gen);
+    BOOST_CHECK(result[1] == A);
+    BOOST_CHECK(result[4] == A);
+    BOOST_CHECK(result[7] == U);
+}
+
+BOOST_AUTO_TEST_CASE (RandomlySampleKey2) {
+    
+    BOOST_TEST_MESSAGE("randomly sample a probability key from a matrix, no constraints");
+    
+    std::uniform_real_distribution<float> dist(0, 1);
+    std::mt19937 rand_gen(1);
+    
+    ProbabilityMatrix m;
+    
+    ProbabilityKey input;
+    input[1] = N;
+    input[4] = N;
+    input[7] = Y;
+    
+    std::vector<ProbabilityKey> input_keys = permute_key(input);
+    for (auto i : input_keys) {
+        m.put(i, dist(rand_gen) * 400);
+    }
+    
+    ProbabilityKey result = m.sample(&rand_gen);
+    BOOST_CHECK(result[1] == C);
+    BOOST_CHECK(result[4] == U);
+    BOOST_CHECK(result[7] == U);
 }
 
 BOOST_AUTO_TEST_SUITE_END ()

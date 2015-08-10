@@ -64,9 +64,9 @@ namespace design {
         std::pair <int, int> get_min_max_degree(Graph& g);
         
         // get the vertex descriptor from a vertex_color_t tag
-        Vertex int_to_vertex(int i, Graph g);
+        Vertex int_to_vertex(int i, Graph& g);
         // get the vertex_color_t tag from a vertex descriptor
-        int vertex_to_int(Vertex v, Graph g);
+        int vertex_to_int(Vertex v, Graph& g);
     }
 }
 #endif

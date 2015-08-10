@@ -53,9 +53,12 @@ namespace design {
             unsigned long long mnos();
             // get set of special vertices
             std::set< int > getSpecials() { return specials; };
-            // sample one combination randomly
+            // sample one combination randomly given a ProbabilityKey with the constraints and a random number generator
             template <typename R>
-            ProbabilityKey sample(R rand_gen);
+            ProbabilityKey sample(ProbabilityKey pk, R* rand_ptr);
+            // special case without probability key (and therefore constraints)
+            template <typename R>
+            ProbabilityKey sample(R* rand_ptr);
             // My custom hash key used for n
             friend class ProbabilityKeyHash;
             friend ProbabilityMatrix operator* (ProbabilityMatrix& x, ProbabilityMatrix& y);

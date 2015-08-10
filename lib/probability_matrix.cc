@@ -90,20 +90,39 @@ namespace design {
         }
         
         template <typename R>
-        ProbabilityKey ProbabilityMatrix::sample(R rand_gen) {
+        ProbabilityKey ProbabilityMatrix::sample(R* rand_ptr) {
+            ProbabilityKey pk;
+            
+            for (auto s : getSpecials()) {
+                pk[s] = N; //TODO maybe we could check sequence constraints here?
+            }
+            
+            return sample(pk, rand_ptr);
+        }
+        
+        template <typename R>
+        ProbabilityKey ProbabilityMatrix::sample(ProbabilityKey pk, R* rand_ptr) {
             ProbabilityKey result;
             
+            // get all possible keys for the constraints set in pk
+            std::vector<ProbabilityKey> possible_keys = permute_key(pk);
+            unsigned long long constrained_mnos = 0;
+            // get the maximal number of sequences for the input constraints set in pk
+            for (auto k: possible_keys) {
+                constrained_mnos += pm[k];
+            }
+            
             std::uniform_real_distribution<float> dist(0, 1);
-            unsigned long long random = dist(rand_gen) * mnos();
+            unsigned long long random = dist(*rand_ptr) * constrained_mnos;
 
             // stochastically take one of the possibilities
             // start at the probability of first possible character and add each other base probability as long long as the random number is bigger.
             unsigned long long sum = 0;
-            for (auto k : pm) {
-                sum += k.second;
+            for (auto k : possible_keys) {
+                sum += pm[k];
                 // if the random number is bigger than our probability, take this base as the current base!
                 if (random < sum) {
-                    result = k.first;
+                    result = k;
                     // don't forget to exit the loop, otherwise will always be last entry
                     break;
                 }
@@ -243,6 +262,7 @@ namespace design {
             return os;
         }
         
-        template ProbabilityKey ProbabilityMatrix::sample<std::mt19937> (std::mt19937);
+        template ProbabilityKey ProbabilityMatrix::sample<std::mt19937> (std::mt19937*);
+        template ProbabilityKey ProbabilityMatrix::sample<std::mt19937> (ProbabilityKey, std::mt19937*);
     }
 }

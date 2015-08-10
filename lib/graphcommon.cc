@@ -31,10 +31,12 @@ namespace design {
         }
         
         // get the vertex descriptor from a vertex_color_t tag
-        Vertex int_to_vertex(int i, Graph g) {
+        Vertex int_to_vertex(int i, Graph& g) {
+            if (debug) {
+                std::cerr << "Get vertex descriptor for " << i << std::endl;
+            }
             
-            Graph root = g.root();
-            Vertex v = boost::vertex(i, root);
+            Vertex v = boost::vertex(i, g.root());
             return g.global_to_local(v);
             /*
             BGL_FORALL_VERTICES_T(v, g, Graph) {
@@ -48,7 +50,7 @@ namespace design {
         }
         
         // get the vertex_color_t tag from a vertex descriptor
-        int vertex_to_int(Vertex v, Graph g) {
+        int vertex_to_int(Vertex v, Graph& g) {
             return boost::get(boost::vertex_color_t(), g, v);
         }
     }

@@ -45,6 +45,8 @@ namespace design
             
             // now calculate all the PMs
             calculate_probabilities(graph);
+            // remember nos
+            nos = boost::get_property(graph, boost::graph_name).pm->mnos();
 
         }
 
@@ -128,16 +130,38 @@ namespace design
         void DependencyGraph<R>::sample_sequence(Graph& g) {
             // reverse iterate over children
             Graph::children_iterator cg, cg_end, current;
+            boost::tie(cg, cg_end) = g.children();
             for ( current = cg_end; current != cg;) {
                 --current;
+                print_graph(*current, &std::cerr, "iterator");
                 
-                if (debug) {
-                    std::cerr << "Recursion!" << std::endl;
+                // recursion is here (abort is if graph is a path!)
+                if (!boost::get_property(*current, boost::graph_name).is_path) {
+                    if (debug) {
+                        std::cerr << "Recursion!" << std::endl;
+                    }
+                    sample_sequence(*current);
                 }
-                // recursion is here
-                calculate_probabilities(*current);
                 
-                ProbabilityKey colors = boost::get_property(*current, boost::graph_name).pm->sample(rand);
+                // build a key containing the constraints of already sampled bases
+                ProbabilityKey constraints;
+                for (auto s : boost::get_property(*current, boost::graph_name).pm->getSpecials()) {
+                    constraints[s] = (*current)[int_to_vertex(s, *current)].base;
+                }
+                
+                // randomly sample one key from the matrix
+                ProbabilityKey colors = boost::get_property(*current, boost::graph_name).pm->sample(constraints, rand_ptr);
+                // write to graph
+                for (auto c : colors) {
+                    (*current)[int_to_vertex(c.first, *current)].base = c.second;
+                }
+                // if the graph is a path, we need to color everything in between special points as well
+                if (boost::get_property(*current, boost::graph_name).is_path) {
+                    if (debug) {
+                        std::cerr << "Path Coloring!" << std::endl;
+                    }
+                    color_path_graph(*current, rand_ptr);
+                }
             }
         }
 
@@ -166,6 +190,10 @@ namespace design
             // reset all the colors to N
             reset_colors();
             // TODO replace with a good mutation function
+            if (debug) {
+                std::cerr << "Sample Sequence on Graph: Backtracing!" << std::endl;
+            }
+            sample_sequence(graph);
         }
 
         template <typename R>
