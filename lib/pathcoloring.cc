@@ -122,7 +122,9 @@ namespace design {
                     mnos = 0;
                     for (auto b : base_conversion[ g[s].base ]) {
                         nos_map[s][b] = p->get(0, b, b);
-                        std::cerr << s << ":" << enum_to_char(b) << ":" << nos_map[s][b] << std::endl;
+                        if (debug) {
+                            std::cerr << s << ":" << enum_to_char(b) << ":" << nos_map[s][b] << std::endl;
+                        }
                         mnos += nos_map[s][b];
                     }
                 }
@@ -146,7 +148,9 @@ namespace design {
                         }
                         // calculate maximal number of sequences on this vertex
                         mnos += nos_map[u][u_base];
-                        std::cerr << u << ":" << enum_to_char(u_base) << ":" << nos_map[u][u_base] << std::endl;
+                        if (debug) {
+                            std::cerr << u << ":" << enum_to_char(u_base) << ":" << nos_map[u][u_base] << std::endl;
+                        }
                     }
                 }
 

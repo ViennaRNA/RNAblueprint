@@ -133,7 +133,7 @@ namespace design
             boost::tie(cg, cg_end) = g.children();
             for ( current = cg_end; current != cg;) {
                 --current;
-                print_graph(*current, &std::cerr, "iterator");
+                //print_graph(*current, &std::cerr, "iterator");
                 
                 // recursion is here (abort is if graph is a path!)
                 if (!boost::get_property(*current, boost::graph_name).is_path) {
