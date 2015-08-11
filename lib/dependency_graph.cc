@@ -82,11 +82,7 @@ namespace design
                 }
                 
                 // Multiply current with pm of this child (if pm is set)
-                
-                if (boost::get_property(*cg, boost::graph_name).pm) {
-                    std::cerr << "current is multiplied as pm exists" << *boost::get_property(*cg, boost::graph_name).pm << std::endl;
-                    current = (*boost::get_property(*cg, boost::graph_name).pm) * current;
-                }
+                current = (*boost::get_property(*cg, boost::graph_name).pm) * current;
                 if (debug) {
                     std::cerr << "current PM: " << std::endl << current << std::endl;
                 }
