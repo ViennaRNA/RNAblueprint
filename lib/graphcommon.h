@@ -43,11 +43,14 @@ namespace design {
             typedef boost::edge_property_tag kind;
         };
 
-        struct graph_property {
+        class graph_property {
+        public:
+            graph_property() = default;
+            graph_property( const graph_property &gp);
             std::string id;
             bool is_path = false;
             bool is_cc = false;
-            std::shared_ptr<ProbabilityMatrix> pm;
+            std::unique_ptr<ProbabilityMatrix> pm;
         };
 
         // graph_properties 

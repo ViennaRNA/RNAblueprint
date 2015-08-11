@@ -94,11 +94,6 @@ namespace design {
                                     (*bc)[r].special = true;
                                 }
                                 parts_between_specials_to_subgraphs(*ear);
-                                if (debug) {
-                                    *out << "parts between attachment points of ear:" << std::endl;
-                                    // print the just created subgraphs
-                                    print_subgraphs(*ear, out, "attachment-point-parts");
-                                }
                             }
                         } else if ((min_degree == 2) && (max_degree == 2)) {
                             // this is a biconnected component circle

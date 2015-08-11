@@ -12,7 +12,15 @@
 
 namespace design {
     namespace detail {
-
+        
+        // copy constructor for graph property class (for unique_ptr deep copy)
+        graph_property::graph_property( const graph_property &gp)
+        : id(gp.id), is_path(gp.is_path), is_cc(gp.is_cc) {
+            if (gp.pm) {
+                pm = std::unique_ptr<ProbabilityMatrix>(new ProbabilityMatrix( *gp.pm ));
+            }
+        }
+        
         std::pair <int, int> get_min_max_degree(Graph& g) {
             int max_degree = 0;
             int min_degree = std::numeric_limits<int>::max();
@@ -32,21 +40,8 @@ namespace design {
         
         // get the vertex descriptor from a vertex_color_t tag
         Vertex int_to_vertex(int i, Graph& g) {
-            if (debug) {
-                std::cerr << "Get vertex descriptor for " << i << std::endl;
-            }
-            
             Vertex v = boost::vertex(i, g.root());
             return g.global_to_local(v);
-            /*
-            BGL_FORALL_VERTICES_T(v, g, Graph) {
-                if (boost::get(boost::vertex_color_t(), g, v) == i) {
-                    return v;
-                }
-            }
-            std::cerr << "This vertex is not present in this graph!";
-            exit(1);
-            */
         }
         
         // get the vertex_color_t tag from a vertex descriptor

@@ -13,6 +13,7 @@
     // include common header with graph definition and global variables
     #include "common.h"
     #include "graphcommon.h"
+    #include "printgraph.h"
     #include "pairing_matrix.h"
     #include "probability_matrix.h"
 

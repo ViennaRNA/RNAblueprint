@@ -51,9 +51,9 @@ namespace design {
             }
             
             std::vector<ProbabilityKey> keys = permute_key(key);
-            std::cerr << "keys: " << std::endl << keys;
+            //std::cerr << "keys: " << std::endl << keys;
             int length = boost::num_vertices(g) - 1;
-            std::cerr << "length: " << length << std::endl;
+            //std::cerr << "length: " << length << std::endl;
             PairingMatrix * p = PairingMatrix::Instance();
             
             ProbabilityMatrix result;
@@ -96,6 +96,10 @@ namespace design {
                 std::cerr << std::endl << "cannot color circles this way." << std::endl;
                 //TODO get circle coloring right with splitting into 2 paths. one with length 0.
             }
+            
+            /*if (debug) {
+                print_graph(g, &std::cerr, "this path will be colored");
+            }*/
 
             // visitor declaration
 
@@ -115,15 +119,16 @@ namespace design {
                 int& previous;
 
                 void start_vertex(Vertex s, Graph g) const {
+                    
                     if (debug) {
-                        std::cerr << "Start vertex: " << s << std::endl;
+                        std::cerr << "Start vertex: " << s << " [" << enum_to_char(g[s].base) << "]" << std::endl;
                     }
 
                     mnos = 0;
                     for (auto b : base_conversion[ g[s].base ]) {
                         nos_map[s][b] = p->get(0, b, b);
                         if (debug) {
-                            std::cerr << s << ":" << enum_to_char(b) << ":" << nos_map[s][b] << std::endl;
+                            std::cerr << "v" << s << ": " << enum_to_char(b) << ": " << nos_map[s][b] << std::endl;
                         }
                         mnos += nos_map[s][b];
                     }
@@ -149,7 +154,7 @@ namespace design {
                         // calculate maximal number of sequences on this vertex
                         mnos += nos_map[u][u_base];
                         if (debug) {
-                            std::cerr << u << ":" << enum_to_char(u_base) << ":" << nos_map[u][u_base] << std::endl;
+                            std::cerr << "v" << u << ": " << enum_to_char(u_base) << ": " << nos_map[u][u_base] << std::endl;
                         }
                     }
                 }
@@ -176,7 +181,8 @@ namespace design {
 
                     if (nos == 0) {
                         std::cerr << std::endl << "The requested sequence cannot be colored! Conflict at: "
-                                << enum_to_char(g[u].base) << ", " << enum_to_char(previous) << std::endl;
+                                << enum_to_char(g[u].base) << ", " << enum_to_char(previous) << std::endl 
+                                << "Length is: " << boost::num_vertices(g) << std::endl;
                         exit(1);
                     }
 
@@ -199,7 +205,7 @@ namespace design {
                     }
 
                     if (debug) {
-                        std::cerr << "Vertex colored: " << u << "/" << enum_to_char(colors[u]) << std::endl;
+                        std::cerr << "Vertex colored: " << vertex_to_int(u, g) << "/" << enum_to_char(colors[u]) << std::endl;
                     }
                 }
             };
@@ -209,7 +215,7 @@ namespace design {
             nosMap nos_map;
             std::unordered_map<Vertex, int> colors;
             int prev = N;
-
+            
             color_dfs_visitor vis(max_number_of_sequences, rand_ptr, p, dist, nos_map, colors, prev);
 
             // start is the 0 node in case of a circle

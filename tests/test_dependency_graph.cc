@@ -30,9 +30,22 @@ BOOST_AUTO_TEST_CASE(easy_construction) {
     BOOST_CHECK(dependency_graph.number_of_sequences() == 6);
 }
 
+BOOST_AUTO_TEST_CASE(easy_cc_construction) {
+
+    BOOST_TEST_MESSAGE("test dependency graph construction on an easy cc example");
+
+    design::initialize_library(true);
+    std::vector<std::string> structures = {"....."};
+    std::mt19937 rand_gen(1);
+
+    design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "NNNNN", rand_gen);
+
+    BOOST_CHECK(dependency_graph.number_of_sequences() == 1024);
+}
+
 BOOST_AUTO_TEST_CASE(middle_construction) {
 
-    BOOST_TEST_MESSAGE("test dependency graph construction on an middle example");
+    BOOST_TEST_MESSAGE("test dependency graph construction on an bc example");
 
     design::initialize_library(true);
     std::vector<std::string> structures = {"()..", ".().", ".(.)"};
@@ -92,27 +105,27 @@ BOOST_AUTO_TEST_CASE(bc_sampling) {
 
     design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "NNNNNN", rand_gen);
     BOOST_CHECK(dependency_graph.number_of_sequences() == 48);
-    
-    dependency_graph.mutate();
-    std::cerr << "Sampled sequence: " << dependency_graph.get_sequence_string() << std::endl;
+    for (int i = 0; i < 100; i++) {
+        dependency_graph.mutate();
+        std::cerr << "Sampled sequence: " << dependency_graph.get_sequence_string() << std::endl;
+    }
 }
-/*
-BOOST_AUTO_TEST_CASE (cc_sampling) {
 
-  BOOST_TEST_MESSAGE("test sampling on an cc example");
+BOOST_AUTO_TEST_CASE(cc_sampling) {
 
-  design::initialize_library(true);
-  std::vector<std::string> structures = { "((.().)).", "()()().()", ".()..(..)", ".....()..", "...(..).." };
-  std::mt19937 rand_gen(1);
-  
-  design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "NNNNNNNNN", rand_gen);
-  for (int i=0; i<100; i++) {
-    dependency_graph.mutate();
-  
-     std::cerr << "Sampled sequence: " << dependency_graph.get_sequence_string() << std::endl;
-  }    
-  
-  //BOOST_CHECK(random == 0.417022f);
+    BOOST_TEST_MESSAGE("test sampling on an cc example");
+
+    design::initialize_library(true);
+    std::vector<std::string> structures = {"((.().)).", "()()().()", ".()..(..)", ".....()..", "...(..).."};
+    std::mt19937 rand_gen(1);
+
+    design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "NNNNNNNNN", rand_gen);
+    for (int i = 0; i < 100; i++) {
+        dependency_graph.mutate();
+        std::cerr << "Sampled sequence: " << dependency_graph.get_sequence_string() << std::endl;
+    }
+
+    BOOST_CHECK(dependency_graph.number_of_sequences() == 134);
 }
- */
+
 BOOST_AUTO_TEST_SUITE_END()

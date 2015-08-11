@@ -62,6 +62,7 @@ BOOST_AUTO_TEST_CASE(generateSeq) {
     std::vector < TestCase > testcases;
     testcases.push_back(TestCase(G, G, 2, 2,{G, U, G}));
     testcases.push_back(TestCase(A, A, 0, 1,{A}));
+    testcases.push_back(TestCase(N, C, 0, 1,{C}));
     testcases.push_back(TestCase(Y, Y, 0, 2,{C}));
     testcases.push_back(TestCase(N, G, 3, 5,{U, G, U, G}));
     testcases.push_back(TestCase(U, U, 6, 13,{U, G, C, G, U, G, U}));

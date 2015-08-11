@@ -213,6 +213,26 @@ BOOST_AUTO_TEST_CASE (GetNOS2) {
     BOOST_CHECK(pm.mnos() == control);
 }
 
+BOOST_AUTO_TEST_CASE (CopyConstructor1) {
+    
+    ProbabilityMatrix pm;
+    
+    for (auto b : base_conversion[N]) {
+        for (auto c : base_conversion[S]) {
+            ProbabilityKey pk;
+            pk.emplace(0, b);
+            pk.emplace(4, c);
+            pm.put(pk, 45);
+        }
+    }
+    
+    ProbabilityMatrix check(pm);
+    BOOST_TEST_MESSAGE("Try to get number of sequences for a ProbabilityMatrix, copy and compare");
+    
+    BOOST_CHECK(pm.mnos() == check.mnos());
+    BOOST_CHECK(pm.getSpecials() == check.getSpecials());
+}
+
 BOOST_AUTO_TEST_CASE (GetSpecials1) {
     
     ProbabilityMatrix pm;
@@ -537,11 +557,18 @@ BOOST_AUTO_TEST_CASE (RandomlySampleKey2) {
     for (auto i : input_keys) {
         m.put(i, dist(rand_gen) * 400);
     }
+    ProbabilityMatrix c = m;
     
     ProbabilityKey result = m.sample(&rand_gen);
     BOOST_CHECK(result[1] == C);
     BOOST_CHECK(result[4] == U);
     BOOST_CHECK(result[7] == U);
+    
+    for (int i = 0; i < 1000; i++) {
+        ProbabilityKey test = m.sample(&rand_gen);
+        //std::cerr << "One hundred Test:" << std::endl << test << std::endl;
+    }
+    BOOST_CHECK(m.mnos() == c.mnos());
 }
 
 BOOST_AUTO_TEST_SUITE_END ()

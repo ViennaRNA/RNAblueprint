@@ -112,6 +112,11 @@ namespace design {
                 constrained_mnos += pm[k];
             }
             
+            if (constrained_mnos == 0) {
+                std::cerr << "Cannot fulfill constraints while sampling a key!" << std::endl;
+                exit(1);
+            }
+            
             std::uniform_real_distribution<float> dist(0, 1);
             unsigned long long random = dist(*rand_ptr) * constrained_mnos;
 

@@ -44,6 +44,8 @@ namespace design {
         class ProbabilityMatrix {
         public:
             ProbabilityMatrix();
+            // default copy constructor
+            //ProbabilityMatrix( const ProbabilityMatrix &pm ) = default;
             // get probability for ProbabilityKeys... key of Aks (12/A) (4/C) ()...
             //unsigned long long get(ProbabilityKey pk);
             unsigned long long operator[] (ProbabilityKey& pk);
