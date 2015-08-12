@@ -47,10 +47,11 @@ namespace design {
         public:
             graph_property() = default;
             graph_property( const graph_property &gp);
-            std::string id;
+            std::string id = "";
             bool is_path = false;
             bool is_cc = false;
             std::unique_ptr<ProbabilityMatrix> pm;
+            ~graph_property() = default;
         };
 
         // graph_properties 

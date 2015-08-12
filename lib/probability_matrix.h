@@ -64,7 +64,7 @@ namespace design {
             // My custom hash key used for n
             friend class ProbabilityKeyHash;
             friend ProbabilityMatrix operator* (ProbabilityMatrix& x, ProbabilityMatrix& y);
-            ~ProbabilityMatrix();
+            ~ProbabilityMatrix() = default;
         private:
             // map of possibilities saved by key
             ProbabilityMap pm;

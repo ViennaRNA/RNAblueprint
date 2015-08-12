@@ -144,7 +144,7 @@ namespace design
                 // build a key containing the constraints of already sampled bases
                 ProbabilityKey constraints;
                 for (auto s : boost::get_property(*current, boost::graph_name).pm->getSpecials()) {
-                    std::cerr << s << "/" << int_to_vertex(s, g.root()) << "/" << enum_to_char(g.root()[int_to_vertex(s, g.root())].base) << std::endl;
+                    //std::cerr << s << "/" << int_to_vertex(s, g.root()) << "/" << enum_to_char(g.root()[int_to_vertex(s, g.root())].base) << std::endl;
                     constraints[s] = g.root()[int_to_vertex(s, g.root())].base;
                 }
                 
@@ -157,7 +157,7 @@ namespace design
                 ProbabilityKey colors = boost::get_property(*current, boost::graph_name).pm->sample(constraints, rand_ptr);
                 // write to graph
                 for (auto c : colors) {
-                    (*current)[int_to_vertex(c.first, *current)].base = c.second;
+                    g.root()[int_to_vertex(c.first, g.root())].base = c.second;
                 }
                 // if the graph is a path, we need to color everything in between special points as well
                 // else we will start the recursion

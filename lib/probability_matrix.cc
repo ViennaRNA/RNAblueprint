@@ -139,10 +139,6 @@ namespace design {
             return result;
         }
         
-        ProbabilityMatrix::~ProbabilityMatrix() {
-            // cleanup?
-        }
-        
         ProbabilityMatrix operator* (ProbabilityMatrix& x, ProbabilityMatrix& y) {
             if (x.pm.size() == 0) {
                 return y;

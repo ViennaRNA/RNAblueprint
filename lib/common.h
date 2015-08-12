@@ -19,6 +19,7 @@
 #include <set>
 #include <iostream>
 #include <utility>
+#include <exception>
 
 // include boost components
 #include <boost/lexical_cast.hpp>
@@ -35,7 +36,7 @@ namespace design {
         extern bool * debug_ptr;
 
         // define size of the alphabet
-#define A_Size 4
+        #define A_Size 4
         // Encode Bases to enums
 
         /*
@@ -101,7 +102,17 @@ namespace design {
         // function to make enum a char again and other way round
         char enum_to_char(int intletter);
         int char_to_enum(char charletter);
-
+        
+        class designException: public std::exception {
+        public:
+            designException() = default;
+            designException(std::string m)
+            : message(m) {}
+            const char* what() { return message.c_str(); }
+        private:
+            std::string message = "Unknown Error happened!";
+        };
+        
         // overload << operator to print vectors with any content
 
         template <typename T>

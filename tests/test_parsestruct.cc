@@ -80,6 +80,16 @@ BOOST_AUTO_TEST_CASE(ParseDotBracket) {
     BOOST_CHECK(boost::degree(int_to_vertex(13, g), g) == 1);
 }
 
+BOOST_AUTO_TEST_CASE(TestFault1) {
+    std::vector< std::string > structures;
+    structures.push_back("((((...))))");
+    BOOST_TEST_MESSAGE("parse structure with too few closing brackets");
+
+    Graph g = parse_structures(structures);
+    // TODO check for exception
+    //BOOST_CHECK
+}
+
 BOOST_AUTO_TEST_CASE(SetConstraints) {
     Graph g(9);
     int vertex_name = 0;
