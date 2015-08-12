@@ -22,11 +22,9 @@ namespace design {
             
             // assert path
             if (max_degree > 2) {
-                std::cerr << std::endl << "This graph is no cycle or path (max degree > 2). I can't color this!" << std::endl;
-                exit(1);
+                throw( new std::logic_error("This graph is no cycle or path (max degree > 2). I can't color this!"));
             } else if (min_degree > 1) {
-                std::cerr << std::endl << "cannot color circles this way." << std::endl;
-                exit(1);
+                throw( new std::logic_error("cannot color circles this way."));
             }
             
             ProbabilityKey key;
@@ -39,15 +37,13 @@ namespace design {
                         key[vertex_to_int(v, g)] = g[v].constraint;
                         specials.emplace(vertex_to_int(v, g));
                     } else {
-                        std::cerr << std::endl << "There is a special vertex which is no path end in get_path_pm. This is not possible!" << std::endl;
-                        exit(1);
+                        throw( new std::logic_error("There is a special vertex which is no path end in get_path_pm. This is not possible!"));
                     }
                 }
             }
             
             if (specials.size() > 2) {
-                std::cerr << std::endl << "More than two special vertices in one path. ridiculous!" << std::endl;
-                exit(1);
+                throw( new std::logic_error("More than two special vertices in one path. ridiculous!"));
             }
             
             std::vector<ProbabilityKey> keys = permute_key(key);
@@ -71,8 +67,7 @@ namespace design {
                         result.put(k, p->get(length, k[*(specials.begin())], k[*(++specials.begin())]));
                         break;
                     default:
-                        std::cerr << std::endl << "More than two special vertices in one path. ridiculous!" << std::endl;
-                        exit(1);
+                        throw(new std::logic_error("More than two special vertices in one path. ridiculous!"));
                 }
             }
             return result;
@@ -90,11 +85,9 @@ namespace design {
 
             // assert path
             if (max_degree > 2) {
-                std::cerr << std::endl << "This graph is no cycle or path (max degree > 2). I can't color this!" << std::endl;
-                exit(1);
+                throw( new std::logic_error("This graph is no cycle or path (max degree > 2). I can't color this!"));
             } else if (min_degree > 1) {
-                std::cerr << std::endl << "cannot color circles this way." << std::endl;
-                //TODO get circle coloring right with splitting into 2 paths. one with length 0.
+                throw( new std::logic_error("cannot color circles this way."));
             }
             
             /*if (debug) {
@@ -161,8 +154,7 @@ namespace design {
 
                 void back_edge(Edge e, Graph g) const {
                     if (debug) {
-                        std::cerr << "Detecting back-edge (graph is a cycle). This can't be!" << e << std::endl;
-                        exit(1);
+                        throw( std::logic_error("Detecting back-edge (graph is a cycle). This can't be!"));
                     }
                 }
 
@@ -180,10 +172,11 @@ namespace design {
                     }
 
                     if (nos == 0) {
-                        std::cerr << std::endl << "The requested sequence cannot be colored! Conflict at: "
+                        std::stringstream ss;
+                        ss << "The requested sequence cannot be colored! Conflict at: "
                                 << enum_to_char(g[u].base) << ", " << enum_to_char(previous) << std::endl 
                                 << "Length is: " << boost::num_vertices(g) << std::endl;
-                        exit(1);
+                        throw( std::logic_error(ss.str()));
                     }
 
                     unsigned long long random = dist(*r_ptr) * nos;
