@@ -335,7 +335,10 @@ namespace design {
         void parts_between_specials_to_subgraphs(Graph& g) {
             bool split = false;
             BGL_FORALL_VERTICES_T(v, g, Graph) {
-                split = split || (g[v].special && (boost::degree(v, g) != 1));
+                split = split || (g[v].special && (boost::degree(v, g) > 1));
+            }
+            if (debug && !split) {
+                std::cerr << "No need to generate a subpath as this is already a path with specials only on ends." << std::endl;
             }
             
             if (split) {

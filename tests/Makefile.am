@@ -18,6 +18,7 @@ testRNAdesign_SOURCES =	main.cc \
 			test_graphcommon.cc \
 			test_parsestruct.cc \
 			test_pathcoloring.cc \
+			test_statistics.cc \
 			test_dependency_graph.cc
 noinst_HEADERS = test_common.h
 

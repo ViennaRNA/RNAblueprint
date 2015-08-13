@@ -57,7 +57,7 @@ int main(int ac, char* av[]) {
             std::cerr << "....,....1....,....2....,....3....,....4....,....5....,....6....,....7....,....8" << std::endl;
         } else {
             std::cerr << "Unable to open file";
-            return 1;
+            exit(EXIT_FAILURE);
         }
     } else {
         std::cerr << "Input structures (one per line); @ to quit" << std::endl
@@ -86,14 +86,15 @@ int main(int ac, char* av[]) {
         }
     }
     
+    if (debug) {
+        std::cerr << "structures: " << std::endl 
+                << structures << std::endl
+                << "constraints: " << std::endl
+                << constraints << std::endl;
+    }
+    
     design::DependencyGraph<std::mt19937>* dependency_graph;
     try {
-        if (debug) {
-            std::cerr << "structures: " << std::endl 
-                    << structures << std::endl
-                    << "constraints: " << std::endl
-                    << constraints << std::endl;
-        }
         dependency_graph = new design::DependencyGraph<std::mt19937>(structures, constraints, rand_gen);
     } catch (std::exception& e) {
         std::cerr << e.what() << std::endl;
