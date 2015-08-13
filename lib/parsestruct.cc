@@ -56,13 +56,11 @@ namespace design {
                             std::cerr << elem[pos] << ", open count: " << open;
                         }
                     } else if (elem[pos] != '.') {
-                        std::cerr << std::endl << "Unknown character in dot bracket representation" << std::endl;
-                        exit(1);
+                        throw ( std::logic_error( "Unknown character in dot bracket representation" ));
                     }
                     // error handling: there can't be more closing brackets than opening ones
                     if (open < 0) {
-                        std::cerr << std::endl << "Unbalanced brackets in make_pair_table" << std::endl;
-                        exit(1);
+                        throw ( std::logic_error( "Unbalanced brackets in make_pair_table" ));
                     }
                     if (debug) {
                         std::cerr << " pos count:" << pos << std::endl;
@@ -70,8 +68,7 @@ namespace design {
                 }
                 // error handling: at the end all brackets must be closed again!
                 if (open != 0) {
-                    std::cerr << std::endl << "too few closed brackets in make_pair_table" << std::endl;
-                    exit(1);
+                    throw ( std::logic_error( "Too few closed brackets in make_pair_table" ));
                 }
             }
             

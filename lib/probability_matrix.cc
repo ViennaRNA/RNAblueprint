@@ -37,8 +37,7 @@ namespace design {
             // sanity check if the vertices requested are indeed stored in this pm
             for (auto pair : pk) {
                 if ( specials.find(pair.first) == specials.end() ) {
-                    std::cerr << "Tried to get a not allowed Vertex from ProbabilityMatrix." << std::endl;
-                    exit(1);
+                    throw( new std::logic_error( "Tried to get a not allowed Vertex from ProbabilityMatrix." ));
                 }
             }
             
@@ -67,12 +66,10 @@ namespace design {
             for (auto pair : pk) {
                 // sanity check if the bases requested are within our alphabet size
                 if (pair.second >= A_Size) {
-                    std::cerr << "Tried to write a base outside of the alphabet size into ProbabilityMatrix." << std::endl;
-                    exit(1);
+                    throw( new std::out_of_range( "Tried to write a base outside of the alphabet size into ProbabilityMatrix." ));
                 // sanity check if the vertices requested are indeed stored in this pm
                 } else if ( specials.find(pair.first) == specials.end() ) {
-                    std::cerr << "Tried to write a not allowed Vertex into ProbabilityMatrix." << std::endl;
-                    exit(1);
+                    throw( new std::logic_error( "Tried to write a not allowed Vertex into ProbabilityMatrix." ));
                 }
             }
             // only write if nos is != 0 as we have a sparse implementation
@@ -113,8 +110,7 @@ namespace design {
             }
             
             if (constrained_mnos == 0) {
-                std::cerr << "Cannot fulfill constraints while sampling a key!" << std::endl;
-                exit(1);
+                throw( std::logic_error( "Cannot fulfill constraints while sampling a key!" ));
             }
             
             std::uniform_real_distribution<float> dist(0, 1);

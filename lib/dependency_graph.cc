@@ -34,17 +34,40 @@ namespace design
             rand_ptr = &rand;
 
             // generate graph from input vector
-            graph = parse_structures(structures);
+            try {
+                graph = parse_structures(structures);
+            } catch (std::exception& e) {
+                std::stringstream ss;
+                ss << "Error while parsing the structures: " << std::endl << e.what();
+                throw( std::logic_error(ss.str()));
+            }
             
             // set sequence constraints
             set_constraints(graph, constraints);
 
             // decompose the graph into its connected components, biconnected
             // components and decompose blocks via ear decomposition
-            bipartite = decompose_graph(graph, rand_ptr);
+            try {
+                bipartite = decompose_graph(graph, rand_ptr);
+            } catch (std::exception& e) {
+                std::stringstream ss;
+                ss << "Error while decomposing the dependency graph: " << std::endl << e.what();
+                throw( std::logic_error(ss.str()));
+            }
+            // trow an exception for now if graph is not bipartite
+            if (!bipartite) {
+                throw( std::logic_error("Graph is not bipartite! No solution exists therefore."));
+            }
             
             // now calculate all the PMs
-            calculate_probabilities(graph);
+            try {
+                calculate_probabilities(graph);
+            } catch (std::exception& e) {
+                std::stringstream ss;
+                ss << "Error while calculating the probabilities: " << std::endl << e.what();
+                throw( std::logic_error(ss.str()));
+            }
+            
             // remember nos
             nos = boost::get_property(graph, boost::graph_name).pm->mnos();
             
@@ -67,8 +90,13 @@ namespace design
                 if (boost::get_property(*cg, boost::graph_name).is_path) {
                     // this is a path and therefore needs to be treated separately
                     // calculate PM for Path and save to subgraph
-                    
-                    boost::get_property(*cg, boost::graph_name).pm = std::unique_ptr<ProbabilityMatrix> (new ProbabilityMatrix(get_path_pm(*cg)));
+                    try {
+                        boost::get_property(*cg, boost::graph_name).pm = std::unique_ptr<ProbabilityMatrix> (new ProbabilityMatrix(get_path_pm(*cg)));
+                    } catch (std::exception& e) {
+                        std::stringstream ss;
+                        ss << "Could not get a ProbabilityMatrix for a path: " << std::endl << e.what();
+                        throw( std::logic_error( ss.str() ));
+                    }
                     if (debug) {
                         std::cerr << "Path PM (" << boost::get_property(*cg, boost::graph_name).id << "):" << std::endl
                                 << *boost::get_property(*cg, boost::graph_name).pm << std::endl;
@@ -154,7 +182,15 @@ namespace design
                             << constraints << std::endl << "and PM: " << std::endl
                             << *boost::get_property(*current, boost::graph_name).pm << std::endl;
                 }
-                ProbabilityKey colors = boost::get_property(*current, boost::graph_name).pm->sample(constraints, rand_ptr);
+                
+                ProbabilityKey colors;
+                try {
+                    colors = boost::get_property(*current, boost::graph_name).pm->sample(constraints, rand_ptr);
+                } catch (std::exception& e) {
+                    std::stringstream ss;
+                    ss << "Error while sampling from a ProbabilityMatrix: " << std::endl << e.what();
+                    throw( std::logic_error(ss.str()));
+                }
                 // write to graph
                 for (auto c : colors) {
                     g.root()[int_to_vertex(c.first, g.root())].base = c.second;
@@ -165,7 +201,13 @@ namespace design
                     if (debug) {
                         std::cerr << "Path Coloring!" << std::endl;
                     }
-                    color_path_graph(*current, rand_ptr);
+                    try {
+                        color_path_graph(*current, rand_ptr);
+                    } catch (std::exception& e) {
+                        std::stringstream ss;
+                        ss << "Error while sampling a path sequence: " << std::endl << e.what();
+                        throw( std::logic_error(ss.str()));
+                    }
                 } else {
                     if (debug) {
                         std::cerr << "Recursion!" << std::endl;
@@ -203,7 +245,13 @@ namespace design
             if (debug) {
                 std::cerr << "Sample Sequence on Graph: Backtracing!" << std::endl;
             }
-            sample_sequence(graph);
+            try {
+                sample_sequence(graph);
+            } catch (std::exception& e) {
+                std::stringstream ss;
+                ss << "Error while sampling a sequence: " << std::endl << e.what();
+                throw( std::logic_error(ss.str()));
+            }
         }
 
         template <typename R>

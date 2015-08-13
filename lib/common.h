@@ -103,16 +103,6 @@ namespace design {
         char enum_to_char(int intletter);
         int char_to_enum(char charletter);
         
-        class designException: public std::exception {
-        public:
-            designException() = default;
-            designException(std::string m)
-            : message(m) {}
-            const char* what() { return message.c_str(); }
-        private:
-            std::string message = "Unknown Error happened!";
-        };
-        
         // overload << operator to print vectors with any content
 
         template <typename T>

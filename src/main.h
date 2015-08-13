@@ -18,6 +18,8 @@
 #include <fstream>
 #include <random>
 #include <chrono>
+#include <regex>
+#include <exception>
 
 // include boost components
 #include <boost/program_options.hpp>
@@ -25,9 +27,20 @@
 
 
 // initialize boost command line option parser
-boost::program_options::variables_map init_options (int ac, char* av[]);
+boost::program_options::variables_map init_options(int ac, char* av[]);
 
 // read the input file into a string
-std::vector<std::string> read_input (std::istream* in);
+std::vector<std::string> read_input(std::istream* in);
+
+// overload << operator to print vectors with any content
+
+template <typename T>
+std::ostream& operator<<(std::ostream& os, std::vector<T>& vec) {
+    int i = 0;
+    for (auto elem : vec) {
+        os << "(" << i++ << ") " << elem << std::endl;
+    }
+    return os;
+}
 
 #endif

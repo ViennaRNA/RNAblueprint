@@ -139,8 +139,9 @@ namespace design {
                 } else if ((b1 >= A_Size) || (b2 >= A_Size)) {
                     // check if the requested length is bigger than our initialization or that a base bigger than 3 is requested
                     // -> to avoid segfaults or unknown behavior!
-                    std::cerr << "Requested a value in pairing matrix which is out of range: p[" << l << "][" << b1 << "][" << b2 << "]" << std::endl;
-                    exit(1);
+                    std::stringstream ss;
+                    ss << "Requested a value in pairing matrix which is out of range: p[" << l << "][" << b1 << "][" << b2 << "]";
+                    throw( new std::out_of_range( ss.str() ));
                 }
                 return p[l][b1][b2];
             }

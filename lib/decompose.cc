@@ -44,7 +44,6 @@ namespace design {
                 Vertex s = boost::vertex(0, *cc);
                 // generate a edge_descriptor for the case that the graph is not bipartite
                 if (!boost::is_bipartite(*cc)) {
-                    std::cerr << "Graph is not bipartite! No solution exists therefore." << std::endl;
                     return false;
                 }
 
