@@ -54,9 +54,6 @@ namespace design {
     // identify attachment points and add them as graph property Ak
     void color_attachment_points (Graph& g);
 
-    // in an ear graph just get the degree of edges participating in this ear
-    int degree_in_ear (Vertex& v, Graph& g, int k);
-
     // now create subgraphs for the parts between Ak and Iks
     void parts_between_specials_to_subgraphs (Graph& g);
 

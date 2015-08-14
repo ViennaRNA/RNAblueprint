@@ -321,17 +321,6 @@ namespace design {
             }
         }
 
-        int degree_in_ear(Vertex& v, Graph& g, int k) {
-            int degree = 0;
-
-            BGL_FORALL_OUTEDGES_T(v, e, g, Graph) {
-                if (g[e].ear == k) {
-                    degree++;
-                }
-            }
-            return degree;
-        }
-
         void parts_between_specials_to_subgraphs(Graph& g) {
             bool split = false;
             BGL_FORALL_VERTICES_T(v, g, Graph) {

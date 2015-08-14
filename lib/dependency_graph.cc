@@ -132,9 +132,9 @@ namespace design
 
                             // check if a vertex becomes internal here
                             if (debug) {
-                                std::cerr << "v" << vertex_to_int(v, *cg) << " internal? " << degree_map[global_v] << "/" << boost::degree(global_v, (*cg).root()) << std::endl;
+                                std::cerr << "v" << vertex_to_int(v, *cg) << " internal? " << degree_map[global_v] << "/" << boost::degree(global_v, cg->root()) << std::endl;
                             }
-                            if (degree_map[global_v] == boost::degree(global_v, (*cg).root())) {
+                            if (degree_map[global_v] == boost::degree(global_v, cg->root())) {
                                 // remember this PM here
                                 // only the first time a internal node is detected, otherwise we overwrite this
                                 if (!alreadysaved) {
