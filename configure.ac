@@ -13,7 +13,7 @@ AC_CONFIG_SRCDIR([src/main.cc])
 # include m4 local macros
 AC_CONFIG_MACRO_DIR([m4])
 
-# init docygen
+# init doxygen
 DX_HTML_FEATURE(ON)
 DX_PDF_FEATURE(ON)
 DX_MAN_FEATURE(ON)
