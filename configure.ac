@@ -14,6 +14,9 @@ AC_CONFIG_SRCDIR([src/main.cc])
 AC_CONFIG_MACRO_DIR([m4])
 
 # init docygen
+DX_HTML_FEATURE(ON)
+DX_PDF_FEATURE(ON)
+DX_MAN_FEATURE(ON)
 DX_INIT_DOXYGEN($PACKAGE_NAME, doxygen.cfg, doc)
 
 # check for C++ compiler

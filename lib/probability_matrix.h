@@ -1,15 +1,19 @@
-/* This program reads secundary RNA structures in dot-bracket and
- * builds a graph for a latter ear-decomposition and bipartitness-check
+/*!\file probability_matrix.h 
+ * \brief This file holds the class definitions for the Probability Matrix.
+ *  
+ * The ProbabilityMatrix stores the number of solutions for a particular subgraph as value
+ * for a certaion ProbabilityKey.
+ * The ProbabilityKey contains a list of pairs, the vertex (position) and its current base-color.
  *
  * Created on: 18.03.2014
  * Author: Stefan Hammer <s.hammer@univie.ac.at>
  * License: GPLv3
- *
+ * 
+ * \cond INTERNAL
  */
 
 #ifndef PROBABILITY_MATRIX_H
 #define	PROBABILITY_MATRIX_H
-
 
 // include common header with graph definition and global variables
 #include "common.h"
@@ -94,3 +98,7 @@ namespace design {
 }
 
 #endif	/* PROBABILITY_MATRIX_H */
+
+/* 
+ * \endcond INTERNAL
+ */

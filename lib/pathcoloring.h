@@ -1,10 +1,11 @@
-/* This program reads secundary RNA structures in dot-bracket and
- * builds a graph for a latter ear-decomposition and bipartitness-check
+/*!\file pathcoloring.h 
+ * \brief This file holds the functions to sample a sequence for a certain path.
  *
  * Created on: 13.08.2013
  * Author: Stefan Hammer <s.hammer@univie.ac.at>
  * License: GPLv3
  *
+ * \cond INTERNAL
  */
 
 #ifndef PATHCOLORING_H
@@ -42,3 +43,8 @@ namespace design {
     }
 }
 #endif
+
+
+/* 
+ * \endcond INTERNAL
+ */

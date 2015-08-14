@@ -1,10 +1,11 @@
-/* This program reads secondary RNA structures in dot-bracket and
- * builds a graph for a latter ear-decomposition and bipartitness-check.
+/*!\file common.h 
+ * \brief This file holds all global includes, definitions and variables.
  *
  * Created on: 25.03.2013
  * Author: Stefan Hammer <s.hammer@univie.ac.at>
  * License: GPLv3
  *
+ * \cond INTERNAL
  */
 
 #ifndef COMMON_H
@@ -143,3 +144,7 @@ namespace design {
 }
 
 #endif
+
+/* 
+ * \endcond INTERNAL
+ */

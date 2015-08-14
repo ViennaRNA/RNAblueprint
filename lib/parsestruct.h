@@ -1,10 +1,11 @@
-/* This program reads secundary RNA structures in dot-bracket and
- * builds a graph for a latter ear-decomposition and bipartitness-check
+/*!\file parsestruct.h 
+ * \brief This file holds the functions to parse a dot-bracket representation to a boost graph and set the sequence constraints.
  *
  * Created on: 25.03.2013
  * Author: Stefan Hammer <s.hammer@univie.ac.at>
  * License: GPLv3
  *
+ * \cond INTERNAL
  */
 
 #ifndef PARSESTRUCT_H
@@ -28,3 +29,8 @@ namespace design {
   }
 }
 #endif
+
+
+/* 
+ * \endcond INTERNAL
+ */

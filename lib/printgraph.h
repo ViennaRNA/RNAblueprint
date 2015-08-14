@@ -1,10 +1,11 @@
-/* This program reads secundary RNA structures in dot-bracket and
- * builds a graph for a latter ear-decomposition and bipartitness-check
+/*!\file printgraph.h 
+ * \brief This file holds the functions to print out a graph in xml representation.
  *
  * Created on: 25.03.2013
  * Author: Stefan Hammer <s.hammer@univie.ac.at>
  * License: GPLv3
  *
+ * \cond INTERNAL
  */
 
 #ifndef PRINTGRAPH_H
@@ -37,3 +38,7 @@ namespace design {
   }
 }
 #endif
+
+/* 
+ * \endcond INTERNAL
+ */

@@ -1,10 +1,11 @@
-/* This program reads secundary RNA structures in dot-bracket and
- * builds a graph for a latter ear-decomposition and bipartitness-check
+/*!\file pairing_matrix.h 
+ * \brief This file holds the class definitions for the PairingMatrix.
  *
  * Created on: 27.05.2015
  * Author: Stefan Hammer <s.hammer@univie.ac.at>
  * License: GPLv3
  *
+ * \cond INTERNAL
  */
 
 #ifndef PAIRING_MATRIX_H
@@ -55,3 +56,6 @@ namespace design {
 
 #endif	/* PAIRING_MATRIX_H */
 
+/* 
+ * \endcond INTERNAL
+ */

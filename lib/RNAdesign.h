@@ -1,10 +1,28 @@
-/* This program reads secundary RNA structures in dot-bracket and
- * builds a graph for a latter ear-decomposition and bipartitness-check.
+/*!\file RNAdesign.h 
+ * \brief This file holds the external representation of the DependencyGraph, the main construct for designing RNA molecules.
+ * 
+ * The dependency graph is constructed from structures in dot-bracket notation and sequence constraints following the IUPAC notation.
+ * All important functions on the graph are available as member functions.
  *
  * Created on: 26.06.2014
- * Author: Stefan Hammer <s.hammer@univie.ac.at>
+ * @Author: Stefan Hammer <s.hammer@univie.ac.at>
  * License: GPLv3
  *
+ */
+
+/*! \mainpage RNAdesign library written in C++
+ *
+ * \section intro_sec Introduction
+ *
+ * The RNAdesign library still needs some documentation!
+ *
+ * \section install_sec Installation
+ * 
+ * Is really easy... lots of dependencies though.
+ *
+ * \subsection step1 Step 1: Opening the box
+ *
+ * etc...
  */
 
 
@@ -14,26 +32,23 @@
 // include header
 #include "common.h"
 #include "dependency_graph.h"
-/*
- * RNA design library
- * @autor Stefan Hammer
+/*! \brief All classes and functions for the RNA design library are under the design namespace.
  */
 namespace design {
-    /*! \brief Initialize the Library
+    /*! \brief Initialize the Library.
      * 
      *  Set the debug boolean to true if you want to get verbose output to std:err
      */
     void initialize_library(bool debug);
 
-    /*
-     *! \brief Dependency Graph which holds all structural constraints
+    /*! \brief Dependency Graph which holds all structural constraints.
      * 
      *  This graph is used to generate valid sequences compatible to the input structures
      */
     template <typename R>
     class DependencyGraph {
     public:
-        /*! \brief Constructor for the Dependency graph
+        /*! \brief Constructor for the Dependency graph.
         *
         *  A vector of strings for structures in dot-bracket notation. This will be parsed to a dependency graph
         *  A string containing the sequence constraints in IUPAC notation.
@@ -62,6 +77,8 @@ namespace design {
         */
         unsigned long long number_of_sequences();
     private:
+        /*! \brief Pointer to the internal dependency graph object.
+         */
         detail::DependencyGraph<R> * g;
     };
 }

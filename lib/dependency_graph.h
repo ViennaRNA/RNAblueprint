@@ -1,10 +1,11 @@
-/* This program reads secundary RNA structures in dot-bracket and
- * builds a graph for a latter ear-decomposition and bipartitness-check
+/*!\file dependency_graph.h 
+ * \brief This file holds the class definitions for the internal representation of the DependencyGraph.
  *
  * Created on: 18.03.2014
  * Author: Stefan Hammer <s.hammer@univie.ac.at>
  * License: GPLv3
  *
+ * \cond INTERNAL
  */
 
 #ifndef DEPENDENCY_GRAPH_H
@@ -52,3 +53,7 @@ namespace design {
 }
 #endif	/* DEPENDENCY_GRAPH_H */
 
+
+/* 
+ * \endcond INTERNAL
+ */

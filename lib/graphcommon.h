@@ -1,10 +1,11 @@
-/* This program reads secundary RNA structures in dot-bracket and
- * builds a graph for a latter ear-decomposition and bipartitness-check
+/*!\file graphcommon.h 
+ * \brief This file holds all important information for the dependency graph, its definition and often used functions.
  *
  * Created on: 26.08.2013
  * Author: Stefan Hammer <s.hammer@univie.ac.at>
  * License: GPLv3
  *
+ * \cond INTERNAL
  */
 
 #ifndef GRAPHCOMMON_H
@@ -74,3 +75,8 @@ namespace design {
     }
 }
 #endif
+
+
+/* 
+ * \endcond INTERNAL
+ */

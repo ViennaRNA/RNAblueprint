@@ -1,10 +1,11 @@
-/* This program reads secundary RNA structures in dot-bracket and
- * builds a graph for a latter ear-decomposition and bipartitness-check
+/*!\file decompose.h 
+ * \brief This file holds the functions to decompose the dependency graph into its subgraphs.
  *
  * Created on: 25.03.2013
  * Author: Stefan Hammer <s.hammer@univie.ac.at>
  * License: GPLv3
  *
+ * \cond INTERNAL
  */
 
 #ifndef DECOMPOSE_H
@@ -62,3 +63,8 @@ namespace design {
   }
 }
 #endif
+
+
+/* 
+ * \endcond INTERNAL
+ */
