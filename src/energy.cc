@@ -22,15 +22,15 @@ extern "C" {
 
 // functions
 
-float energy_of_structure (std::string& sequence, std::string& structure) {
-  float energy = energy_of_structure(sequence.c_str(), structure.c_str(), 0);
-  return energy;
+float energy_of_structure(std::string& sequence, std::string& structure) {
+    float energy = energy_of_structure(sequence.c_str(), structure.c_str(), 0);
+    return energy;
 }
 
-float fold (std::string& sequence, std::string& structure) {
-  char* structure_cstr = new char[sequence.length()];
-  float energy = fold(sequence.c_str(), structure_cstr);
-  structure = structure_cstr;
-  delete structure_cstr;
-  return energy;
+float fold(std::string& sequence, std::string& structure) {
+    char* structure_cstr = new char[sequence.length()];
+    float energy = fold(sequence.c_str(), structure_cstr);
+    structure = structure_cstr;
+    delete structure_cstr;
+    return energy;
 }

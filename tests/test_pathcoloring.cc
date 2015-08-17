@@ -19,10 +19,11 @@ using namespace design;
 using namespace design::detail;
 
 // define heads
-namespace PathColoring {
+namespace PathColoring{
 
-    class TestCase {
-    public:
+    class TestCase
+    {
+        public :
         TestCase(int first, int last, int length, int nos, Sequence sequence);
         TestCase(Sequence input, int nos, Sequence sequence);
         int first;
@@ -33,8 +34,8 @@ namespace PathColoring {
         Sequence sequence;
     };
 
-    Sequence get_vertex_colors(Graph& g);
-    void reset(Graph& g);
+    Sequence get_vertex_colors(Graph & g);
+    void reset(Graph & g);
 }
 
 BOOST_AUTO_TEST_SUITE(PathColoring)
@@ -96,11 +97,11 @@ BOOST_AUTO_TEST_CASE(generateSeq) {
         for (unsigned int i = 0; i < boost::num_vertices(g) - 1; i++) {
             boost::add_edge(boost::vertex(i, g), boost::vertex(i + 1, g), g);
         }
-        
+
         // set the sequence constraints
         g[boost::vertex(0, g)].base = t.first;
         g[boost::vertex(boost::num_vertices(g) - 1, g)].base = t.last;
-            
+
         //call the function
         unsigned long long nos = color_path_graph(g, &rand_gen);
         Sequence sequence = get_vertex_colors(g);
@@ -120,11 +121,23 @@ BOOST_AUTO_TEST_CASE(generateConstraintSeq) {
     initialize_library(true);
 
     std::vector < TestCase > testcases;
-    testcases.push_back(TestCase({G, N, G}, 2,{G, U, G}));
-    testcases.push_back(TestCase({N, N, C, N, N}, 4,{C, G, C, G, C}));
-    testcases.push_back(TestCase({N, N, G, N, N}, 9,{A, U, G, U, G}));
-    testcases.push_back(TestCase({N, N, S, N, N}, 13,{A, U, G, U, G}));
-    
+    testcases.push_back(TestCase({G, N, G}, 2,
+    {
+        G, U, G
+    }));
+    testcases.push_back(TestCase({N, N, C, N, N}, 4,
+    {
+        C, G, C, G, C
+    }));
+    testcases.push_back(TestCase({N, N, G, N, N}, 9,
+    {
+        A, U, G, U, G
+    }));
+    testcases.push_back(TestCase({N, N, S, N, N}, 13,
+    {
+        A, U, G, U, G
+    }));
+
     for (auto t : testcases) {
         // tell the user what is going on right now
         std::stringstream ss;
@@ -147,7 +160,7 @@ BOOST_AUTO_TEST_CASE(generateConstraintSeq) {
         for (unsigned int i = 0; i < boost::num_vertices(g) - 1; i++) {
             boost::add_edge(boost::vertex(i, g), boost::vertex(i + 1, g), g);
         }
-        
+
         //call the function
         unsigned long long nos = color_path_graph(g, &rand_gen);
         Sequence sequence = get_vertex_colors(g);
@@ -215,7 +228,7 @@ BOOST_AUTO_TEST_CASE(get_path_pm_test) {
         for (unsigned int i = 0; i < boost::num_vertices(g) - 1; i++) {
             boost::add_edge(boost::vertex(i, g), boost::vertex(i + 1, g), g);
         }
-        
+
         // set the sequence constraints
         g[boost::vertex(0, g)].constraint = t.first;
         if (t.first != N) {
@@ -225,7 +238,7 @@ BOOST_AUTO_TEST_CASE(get_path_pm_test) {
         if (t.last != N) {
             g[boost::vertex(boost::num_vertices(g) - 1, g)].special = true;
         }
-            
+
         //call the function
         ProbabilityMatrix pm = get_path_pm(g);
         // do the comparison of the results

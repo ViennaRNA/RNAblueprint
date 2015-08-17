@@ -18,6 +18,7 @@
 // include standard library parts
 #include <limits>
 #include <memory>
+#include <sstream>
 
 namespace design {
     namespace detail {

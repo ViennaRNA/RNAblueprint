@@ -41,12 +41,17 @@ namespace design {
         // get the vertex descriptor from a vertex_color_t tag
         Vertex int_to_vertex(int i, Graph& g) {
             Vertex v = boost::vertex(i, g.root());
+            if (i >= num_vertices(g) || i < 0 || v == Graph::null_vertex()) {
+                std::stringstream ss;
+                ss << "Error getting vertex descriptor from integer: " << i;
+                throw( std::out_of_range(ss.str()));
+            }
             return g.global_to_local(v);
         }
         
         // get the vertex_color_t tag from a vertex descriptor
         int vertex_to_int(Vertex v, Graph& g) {
-            return boost::get(boost::vertex_color_t(), g, v);
+            return boost::get(boost::vertex_color_t(), g.root(), g.local_to_global(v));
         }
     }
 }

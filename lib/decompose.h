@@ -33,34 +33,34 @@
 #include <boost/property_map/vector_property_map.hpp>
 
 namespace design {
-  namespace detail {
-    
-    // does the graph decomposition, and calls the coloring of the subgraphs
-    template <typename RG>
-    bool decompose_graph (Graph& graph, RG* rand_ptr);
+    namespace detail {
 
-    // get a vector of all vertices with their component id. finds connected components with DFS
-    void connected_components_to_subgraphs (Graph& g);
+        // does the graph decomposition, and calls the coloring of the subgraphs
+        template <typename RG>
+        bool decompose_graph(Graph& graph, RG* rand_ptr);
 
-    // finds biconnected components with DFS
-    void biconnected_components_to_subgraphs (Graph& g);
+        // get a vector of all vertices with their component id. finds connected components with DFS
+        void connected_components_to_subgraphs(Graph& g);
 
-    // starts at a degree>3 articulation point and walks along a path to connect it to one component
-    void merge_biconnected_paths (Graph& g, Vertex p, Vertex v, boost::property_map < Graph, edge_component_t >::type& component, std::vector<Vertex>& art_points, int& nc);
+        // finds biconnected components with DFS
+        void biconnected_components_to_subgraphs(Graph& g);
 
-    // ear decomposition of blocks
-    template <typename RG>
-    void ear_decomposition_to_subgraphs (Graph& g, RG* rand_ptr);
+        // starts at a degree>3 articulation point and walks along a path to connect it to one component
+        void merge_biconnected_paths(Graph& g, Vertex p, Vertex v, boost::property_map < Graph, edge_component_t >::type& component, std::vector<Vertex>& art_points, int& nc);
 
-    // identify attachment points and add them as graph property Ak
-    void color_attachment_points (Graph& g);
+        // ear decomposition of blocks
+        template <typename RG>
+        void ear_decomposition_to_subgraphs(Graph& g, RG* rand_ptr);
 
-    // now create subgraphs for the parts between Ak and Iks
-    void parts_between_specials_to_subgraphs (Graph& g);
+        // identify attachment points and add them as graph property Ak
+        void color_attachment_points(Graph& g);
 
-    // recursion for parts function
-    void parts_recursion (Graph& g, Graph * subgptr, Vertex v);
-  }
+        // now create subgraphs for the parts between Ak and Iks
+        void parts_between_specials_to_subgraphs(Graph& g);
+
+        // recursion for parts function
+        void parts_recursion(Graph& g, Graph * subgptr, Vertex v);
+    }
 }
 #endif
 

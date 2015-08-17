@@ -11,22 +11,22 @@
 #ifndef PARSESTRUCT_H
 #define PARSESTRUCT_H
 
-    // include common header with graph definition and global variables
-    #include "common.h"
-    #include "graphcommon.h"
+// include common header with graph definition and global variables
+#include "common.h"
+#include "graphcommon.h"
 
-    // include standard library parts
+// include standard library parts
 
-    // include boost components
+// include boost components
 
 namespace design {
-  namespace detail {
-    // parse the input string into a graph
-    Graph parse_structures (std::vector<std::string> structures);
-    
-    // set the sequence constraints in the graph object
-    void set_constraints(Graph& g, std::string constraints);
-  }
+    namespace detail {
+        // parse the input string into a graph
+        Graph parse_structures(std::vector<std::string> structures);
+
+        // set the sequence constraints in the graph object
+        void set_constraints(Graph& g, std::string constraints);
+    }
 }
 #endif
 

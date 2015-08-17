@@ -97,12 +97,12 @@ BOOST_AUTO_TEST_CASE(SetConstraints) {
     BGL_FORALL_VERTICES_T(v, g, Graph) {
         boost::put(boost::vertex_color_t(), g, v, vertex_name++);
     }
-    
+
     BOOST_TEST_MESSAGE("set sequence constraints on graph");
-    
+
     std::string constraints = "CNNNYNSNN";
     set_constraints(g, constraints);
-    
+
     BGL_FORALL_VERTICES_T(v, g, Graph) {
         //std::cerr << g[v].constraint << "/" << char_to_enum(constraints[vertex_to_int(v, g)]) << std::endl;
         BOOST_CHECK(g[v].constraint == char_to_enum(constraints[vertex_to_int(v, g)]));
