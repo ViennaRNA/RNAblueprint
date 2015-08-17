@@ -19,6 +19,35 @@ namespace design {
     DependencyGraph<R>::DependencyGraph(std::vector<std::string> structures, std::string constraints, R rand) {
         g = new detail::DependencyGraph<R>(structures, constraints, rand);
     }
+    
+    template <typename R>
+    DependencyGraph<R>::DependencyGraph(std::vector<std::string> structures, std::string constraints) {
+        // initialize mersenne twister with our seed
+        unsigned long seed = std::chrono::system_clock::now().time_since_epoch().count();
+        std::mt19937 rand_gen;
+        rand_gen.seed(seed);
+        if (*detail::debug_ptr) {
+            std::cerr << "Using this seed: " << seed << std::endl;
+        }
+        g = new detail::DependencyGraph<R>(structures, constraints, rand_gen);
+    }
+    
+    template <typename R>
+    DependencyGraph<R>::DependencyGraph(std::vector<std::string> structures, R rand) {
+        g = new detail::DependencyGraph<R>(structures, "", rand);
+    }
+    
+    template <typename R>
+    DependencyGraph<R>::DependencyGraph(std::vector<std::string> structures) {
+        // initialize mersenne twister with our seed
+        unsigned long seed = std::chrono::system_clock::now().time_since_epoch().count();
+        std::mt19937 rand_gen;
+        rand_gen.seed(seed);
+        if (*detail::debug_ptr) {
+            std::cerr << "Using this seed: " << seed << std::endl;
+        }
+        g = new detail::DependencyGraph<R>(structures, "", rand_gen);
+    }
 
     template <typename R>
     DependencyGraph<R>::~DependencyGraph() {

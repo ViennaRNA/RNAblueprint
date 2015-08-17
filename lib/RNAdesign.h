@@ -32,6 +32,11 @@
 // include header
 #include "common.h"
 #include "dependency_graph.h"
+
+// include standard library parts
+#include <random>
+#include <chrono>
+
 /*! \brief All classes and functions for the RNA design library are under the design namespace.
  */
 namespace design {
@@ -48,13 +53,25 @@ namespace design {
     template <typename R>
     class DependencyGraph {
     public:
-        /*! \brief Constructor for the Dependency graph.
+        /*! \brief constructor for the Dependency graph.
         *
         *  A vector of strings for structures in dot-bracket notation. This will be parsed to a dependency graph
         *  A string containing the sequence constraints in IUPAC notation.
         *  A random number generator of your choice. Supported at the moment is only std::mt19937, but as it is templated, it can easily be extended to support more generators.
         */
         DependencyGraph(std::vector<std::string> structures, std::string constraints, R rand);
+        /*! \brief constructor for the Dependency graph using a predefined random number generator with a clock generated seed.
+        */
+        DependencyGraph(std::vector<std::string> structures, std::string constraints);
+        /*! \brief constructor for the Dependency graph without any sequence constraints. Sending an empty string leads to the same result.
+        */
+        DependencyGraph(std::vector<std::string> structures, R rand);
+        /*! \brief constructor for the Dependency graph using a predefined random number generator with a clock generated seed and an empty string as
+         * sequence constraints.
+        */
+        DependencyGraph(std::vector<std::string> structures);
+        /*! \brief Simple destructor for the dependency graph object.
+        */
         ~DependencyGraph();
         /*! \brief get_sequence() returns the current RNA sequence as a std::string
         *  
