@@ -60,6 +60,9 @@ namespace design {
         *  A random number generator of your choice. Supported at the moment is only std::mt19937, but as it is templated, it can easily be extended to support more generators.
         */
         DependencyGraph(std::vector<std::string> structures, std::string constraints, R rand);
+        /*! \brief constructor for the Dependency graph using a predefinded random number generator with the given seed.
+         */
+        DependencyGraph(std::vector<std::string> structures, std::string constraints, unsigned long seed);
         /*! \brief constructor for the Dependency graph using a predefined random number generator with a clock generated seed.
         */
         DependencyGraph(std::vector<std::string> structures, std::string constraints);

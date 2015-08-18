@@ -80,7 +80,7 @@ namespace design {
         
         void set_constraints(Graph& g, std::string constraints) {
             for (int pos = 0; pos < constraints.length(); pos++) {
-                g[int_to_vertex(pos, g)].constraint = char_to_enum(constraints[pos]);
+                g[int_to_vertex(pos, g)].constraint = char_to_enum(std::toupper(constraints[pos]));
                 
                 // set constraints other than N to special
                 if (g[int_to_vertex(pos, g)].constraint != N) {

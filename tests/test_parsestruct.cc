@@ -110,4 +110,24 @@ BOOST_AUTO_TEST_CASE(SetConstraints) {
     }
 }
 
+BOOST_AUTO_TEST_CASE(SetLowerCaseConstraints) {
+    Graph g(9);
+    int vertex_name = 0;
+
+    BGL_FORALL_VERTICES_T(v, g, Graph) {
+        boost::put(boost::vertex_color_t(), g, v, vertex_name++);
+    }
+
+    BOOST_TEST_MESSAGE("set sequence constraints with lower case on graph");
+
+    std::string constraints = "cNNNyNsNN";
+    set_constraints(g, constraints);
+
+    BGL_FORALL_VERTICES_T(v, g, Graph) {
+        //std::cerr << g[v].constraint << "/" << char_to_enum(constraints[vertex_to_int(v, g)]) << std::endl;
+        BOOST_CHECK(g[v].constraint == char_to_enum(std::toupper(constraints[vertex_to_int(v, g)])));
+        BOOST_CHECK((g[v].constraint != N) == g[v].special);
+    }
+}
+
 BOOST_AUTO_TEST_SUITE_END()

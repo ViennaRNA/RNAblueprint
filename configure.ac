@@ -60,8 +60,7 @@ AC_MSG_RESULT([$debugit])
 
 if test x"$debugit" = x"yes"; then
     AC_DEFINE([DEBUG],[],[Debug Mode])
-    AM_CXXFLAGS="$AM_CXXFLAGS -g -Werror -Wno-uninitialized -O0"
-    #AM_CXXFLAGS="$AM_CXXFLAGS -g -Wall -Werror -Wno-uninitialized -O0"
+    AM_CXXFLAGS="$AM_CXXFLAGS -g -Wall -Werror -Wno-uninitialized -O0"
 else
     AC_DEFINE([NDEBUG],[],[No-debug Mode])
     AM_CXXFLAGS="$AM_CXXFLAGS -O3"
@@ -134,6 +133,15 @@ AC_CHECK_HEADERS([ViennaRNA/fold.h])
 CPPFLAGS=$OLD_CPPFLAGS
 # Checks for typedefs, structures, and compiler characteristics.
 AC_TYPE_SIZE_T
+
+# SWIG Interface
+AX_PKG_SWIG(1.3.17, [], [ AC_MSG_ERROR([SWIG is required to build..]) ])
+AX_SWIG_ENABLE_CXX
+AX_SWIG_MULTI_MODULE_SUPPORT
+AX_SWIG_PYTHON
+
+# Add -fPIC for SWIG interface
+AM_CXXFLAGS="-fPIC $AM_CXXFLAGS"
 
 # distribute additional compiler and linker flags
 # --> set these variables instead of CXXFLAGS or LDFLAGS
