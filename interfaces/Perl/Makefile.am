@@ -16,6 +16,9 @@ all-local: perl_interface
 install-exec-local: all-local
 	$(MAKE) -f Makefile.perl install
 
+uninstall-local:
+	$(MAKE) -f Makefile.perl clean
+
 mostlyclean-local: 
 	$(MAKE) -f Makefile.perl clean
 	rm -rf RNAdesign.pm RNAdesign_wrap.cxx Makefile.perl Makefile.perl.old

@@ -6,7 +6,7 @@
 
 from distutils.core import setup, Extension
 
-extra_compile_args = ['-std=c++11']
+extra_compile_args = ['-std=c++11 -lstdc++']
 extra_link_args = []
 
 rnadesign_module = Extension('_RNAdesign',

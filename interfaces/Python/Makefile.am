@@ -13,6 +13,9 @@ all-local: python_interface
 install-exec-local: all-local
 	@PYTHON@ setup.py install --prefix=$(prefix) --record install.record
 
+uninstall-local:
+	cat install.record | xargs rm -rf
+	
 mostlyclean-local: 
 	@PYTHON@ setup.py clean --all
 	rm -rf RNAdesign.py RNAdesign_wrap.cxx

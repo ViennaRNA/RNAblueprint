@@ -5,7 +5,7 @@ use ExtUtils::MakeMaker;
 WriteMakefile(
 	'MAKEFILE'  => 'Makefile.perl',
 	'NAME'      => '@PACKAGE_NAME@',
-	'LIBS'      => '@top_srcdir@/lib/libRNAdesign.a',
+	'LIBS'      => '-L@top_srcdir@/lib -lRNAdesign -lstdc++',
 	'CCFLAGS'   => '-std=c++11',
 	'INC'       => '-I@top_srcdir@/lib',
 	'OBJECT'    => 'RNAdesign_wrap.o',
