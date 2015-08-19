@@ -5,4 +5,4 @@ ACLOCAL_AMFLAGS = -I m4
 include $(top_srcdir)/doxygen.am
 
 # the subdirectories of the project to go into
-SUBDIRS = lib src tests
+SUBDIRS = lib src interfaces tests

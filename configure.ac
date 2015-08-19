@@ -1,7 +1,7 @@
 # RNAdesign: configure.ac
 
 # initial information about the project
-AC_INIT([RNAdesign],[0.1],[s.hammer@univie.ac.at])
+AC_INIT([RNAdesign],[0.1],[s.hammer@univie.ac.at],[RNAdesign],[http://www.tbi.univie.ac.at/~jango/])
 
 # automake initialisation (mandatory)
 AC_PREREQ([2.59])
@@ -138,10 +138,13 @@ AC_TYPE_SIZE_T
 AX_PKG_SWIG(1.3.17, [], [ AC_MSG_ERROR([SWIG is required to build..]) ])
 AX_SWIG_ENABLE_CXX
 AX_SWIG_MULTI_MODULE_SUPPORT
-AX_SWIG_PYTHON
 
 # Add -fPIC for SWIG interface
 AM_CXXFLAGS="-fPIC $AM_CXXFLAGS"
+
+# Python/Perl support
+AM_PATH_PYTHON(2.7, [], [ AC_MSG_ERROR([Python is required to build..]) ])
+AC_PATH_PROGS(PERL, perl5 perl)
 
 # distribute additional compiler and linker flags
 # --> set these variables instead of CXXFLAGS or LDFLAGS
@@ -154,6 +157,11 @@ AC_CONFIG_FILES([Makefile])
 AC_CONFIG_FILES([lib/Makefile])
 AC_CONFIG_FILES([src/Makefile])
 AC_CONFIG_FILES([tests/Makefile])
+AC_CONFIG_FILES([interfaces/Makefile])
+AC_CONFIG_FILES([interfaces/Python/Makefile])
+AC_CONFIG_FILES([interfaces/Python/setup.py])
+AC_CONFIG_FILES([interfaces/Perl/Makefile])
+AC_CONFIG_FILES([interfaces/Perl/Makefile.PL])
 
 # generate the final Makefile etc.
 AC_OUTPUT

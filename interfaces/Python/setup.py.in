@@ -1,0 +1,28 @@
+#!/usr/bin/env python
+
+"""
+@configure_input@
+"""
+
+from distutils.core import setup, Extension
+
+extra_compile_args = ['-std=c++11']
+extra_link_args = []
+
+rnadesign_module = Extension('_RNAdesign',
+                           sources=['RNAdesign_wrap.cxx'],
+                           include_dirs=['@top_srcdir@/lib'],
+                           library_dirs=['@top_srcdir@/lib'],
+                           libraries=['@PACKAGE_NAME@'],
+                           extra_compile_args=extra_compile_args,
+                           extra_link_args=extra_link_args
+                           )
+
+setup (name = '@PACKAGE_NAME@',
+       version = '@PACKAGE_VERSION@',
+       author = 'Stefan Hammer <jango@tbi.univie.ac.at>',
+       url = '@PACKAGE_URL@',
+       description = """Python Interface for RNAdesign library to design RNA molecules.""",
+       ext_modules = [rnadesign_module],
+       py_modules=['RNAdesign']
+       )

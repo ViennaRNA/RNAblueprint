@@ -1,0 +1,14 @@
+# @configure_input@
+
+use ExtUtils::MakeMaker;
+
+WriteMakefile(
+	'MAKEFILE'  => 'Makefile.perl',
+	'NAME'      => '@PACKAGE_NAME@',
+	'LIBS'      => '@top_srcdir@/lib/libRNAdesign.a',
+	'CCFLAGS'   => '-std=c++11',
+	'INC'       => '-I@top_srcdir@/lib',
+	'OBJECT'    => 'RNAdesign_wrap.o',
+	'AUTHOR'    => 'Stefan Hammer <jango@tbi.univie.ac.at>',
+	'VERSION'   => '@VERSION@'
+);
