@@ -2,10 +2,14 @@
 
 SOURCES = setup.py
 
-RNAdesign_wrap.cxx: ../RNAdesign.i
+swig-python: ../RNAdesign.i
 	$(SWIG) -python -outcurrentdir ../RNAdesign.i
 
-python_interface: RNAdesign_wrap.cxx setup.py
+RNAdesign_wrap.cxx: swig-python
+
+RNAdesign.py: swig-python
+
+python_interface: RNAdesign_wrap.cxx RNAdesign.py setup.py
 	@PYTHON@ setup.py build
 
 all-local: python_interface	

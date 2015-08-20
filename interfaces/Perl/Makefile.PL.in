@@ -5,6 +5,7 @@ use ExtUtils::MakeMaker;
 WriteMakefile(
 	'MAKEFILE' => 'Makefile.perl',
 	'NAME'     => '@PACKAGE_NAME@',
+	'PM'       => {'RNAdesign.pm' => '$(INST_LIB)/RNAdesign.pm'},
 	'LIBS'     => '-L@top_srcdir@/lib -lRNAdesign -lstdc++',
 	'CCFLAGS'  => '-std=c++11',
 	'INC'	   => '-I@top_srcdir@/lib',

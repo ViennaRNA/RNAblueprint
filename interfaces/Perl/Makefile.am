@@ -2,10 +2,12 @@
 
 SOURCES = Makefile.PL
 
-RNAdesign_wrap.cxx: ../RNAdesign.i
+swig-perl: ../RNAdesign.i
 	$(SWIG) -perl -outcurrentdir ../RNAdesign.i
 
-RNAdesign.pm: RNAdesign_wrap.cxx
+RNAdesign_wrap.cxx: swig-perl
+
+RNAdesign.pm: swig-perl
 
 Makefile.perl: Makefile.PL Makefile
 	@PERL@ Makefile.PL PREFIX=$(prefix) INSTALL_BASE= 
@@ -13,7 +15,7 @@ Makefile.perl: Makefile.PL Makefile
 perl_interface: RNAdesign_wrap.cxx Makefile.perl RNAdesign.pm
 	$(MAKE) -f Makefile.perl
 
-all-local: perl_interface	
+all-local: perl_interface
 
 install-exec-local: all-local
 	$(MAKE) -f Makefile.perl install
