@@ -28,9 +28,10 @@
 #include <boost/graph/breadth_first_search.hpp>
 #include <boost/graph/random_spanning_tree.hpp>
 #include <boost/property_map/shared_array_property_map.hpp>
-#include <boost/graph/ear_decomposition.hpp>
 #include <boost/property_map/property_map.hpp>
 #include <boost/property_map/vector_property_map.hpp>
+// #include <boost/graph/ear_decomposition.hpp>
+#include "ear-decomposition.hpp"
 
 namespace design {
     namespace detail {

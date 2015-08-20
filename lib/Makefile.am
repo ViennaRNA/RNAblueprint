@@ -13,26 +13,27 @@ AM_CPPFLAGS = $(BOOST_CPPFLAGS) @AM_CXXFLAGS@
 libRNAdesign_a_HEADERS = RNAdesign.h
 
 noinst_HEADERS = \
-      common.h \
-			pairing_matrix.h \
-			probability_matrix.h \
-			pathcoloring.h \
+			common.h \
 			decompose.h \
+			printgraph.h \
 			graphcommon.h \
 			parsestruct.h \
-			printgraph.h \
-			dependency_graph.h
+			pathcoloring.h \
+			pairing_matrix.h \
+			dependency_graph.h \
+			probability_matrix.h \
+			ear-decomposition.hpp
 
 # the sources to add to the library and to add to the source distribution
 libRNAdesign_a_SOURCES =	\
-      $(libRNAdesign_a_HEADERS) \
-      RNAdesign.cc \
+			$(libRNAdesign_a_HEADERS) \
+			RNAdesign.cc \
 			common.cc \
-			graphcommon.cc \
-			printgraph.cc \
 			decompose.cc \
+			printgraph.cc \
+			graphcommon.cc \
 			parsestruct.cc \
 			pathcoloring.cc \
 			pairing_matrix.cc \
-			probability_matrix.cc \
-			dependency_graph.cc
+			dependency_graph.cc \
+			probability_matrix.cc
