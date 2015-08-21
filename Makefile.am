@@ -27,10 +27,16 @@ docdata += @DX_DOCDIR@/RNAdesign.pdf
 endif
 if DX_COND_html
 dist_htmldoc_DATA = @DX_DOCDIR@/html/*
+
+$(dist_htmldoc_DATA): doxygen-doc
+
 endif
 if DX_COND_xml
 docdata += @DX_DOCDIR@/RNAdesign.tag 
 dist_xmldoc_DATA = @DX_DOCDIR@/xml/*
+
+$(dist_htmldoc_DATA): doxygen-doc
+
 endif
 
 dist_doc_DATA = $(docdata) 
