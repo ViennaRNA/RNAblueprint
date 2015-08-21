@@ -10,8 +10,31 @@ SUBDIRS = lib src interfaces tests
 doc:
 	$(MAKE) doxygen-doc
 
-all-local: doc
+if DX_COND_man
+# post-process man pages and install them
+dist_man3_MANS = @DX_DOCDIR@/man/man3/RNAdesign.h.3
 
-mostlyclean-local:
-	rm -rf doc
+$(dist_man3_MANS): doxygen-doc
 
+endif
+
+docdata=
+htmldocdir = $(docdir)/html
+xmldocdir = $(docdir)/xml
+
+if DX_COND_pdf
+docdata += @DX_DOCDIR@/RNAdesign.pdf
+endif
+if DX_COND_html
+dist_htmldoc_DATA = @DX_DOCDIR@/html/*
+endif
+if DX_COND_xml
+docdata += @DX_DOCDIR@/RNAdesign.tag 
+dist_xmldoc_DATA = @DX_DOCDIR@/xml/*
+endif
+
+dist_doc_DATA = $(docdata) 
+
+$(dist_doc_DATA): doxygen-doc
+
+MOSTLYCLEANFILES = $(DX_CLEANFILES)
