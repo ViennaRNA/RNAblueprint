@@ -6,3 +6,12 @@ include $(top_srcdir)/doxygen.am
 
 # the subdirectories of the project to go into
 SUBDIRS = lib src interfaces tests
+
+doc:
+	$(MAKE) doxygen-doc
+
+all-local: doc
+
+mostlyclean-local:
+	rm -rf doc
+
