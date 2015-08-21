@@ -18,11 +18,16 @@
  *
  * \section install_sec Installation
  * 
- * Is really easy... lots of dependencies though.
- *
- * \subsection step1 Step 1: Opening the box
- *
- * etc...
+ * 
+ * Just call these commands:
+ * 
+ * ./autogen.sh
+ * ./configure
+ * make
+ * make install
+ * 
+ * TIP: You might want call ./configure --help for all install options!
+ * 
  */
 
 
