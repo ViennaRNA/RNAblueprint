@@ -69,6 +69,11 @@ namespace design {
     std::string DependencyGraph<R>::get_sequence() {
         return g->get_sequence_string();
     }
+    
+    template <typename R>
+    void DependencyGraph<R>::set_sequence(std::string sequence) {
+        g->set_sequence_string(sequence);
+    }
 
     template <typename R>
     void DependencyGraph<R>::mutate() {
@@ -78,6 +83,11 @@ namespace design {
     template <typename R>
     void DependencyGraph<R>::mutate(int position) {
         g->mutate(position);
+    }
+    
+    template <typename R>
+    void DependencyGraph<R>::mutate(int start, int end) {
+        g->mutate(start, end);
     }
 
     template <typename R>

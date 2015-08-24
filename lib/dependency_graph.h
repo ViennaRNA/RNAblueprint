@@ -36,7 +36,10 @@ namespace design {
             }
             Sequence get_sequence();
             std::string get_sequence_string();
+            void set_sequence(Sequence sequence);
+            void set_sequence_string(std::string seq_str);
             void mutate(int position);
+            void mutate(int start, int end);
             void mutate();
             void reset_colors();
             R * rand_ptr;

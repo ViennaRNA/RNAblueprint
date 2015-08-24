@@ -81,22 +81,32 @@ namespace design {
         /*! \brief Simple destructor for the dependency graph object.
         */
         ~DependencyGraph();
-        /*! \brief get_sequence() returns the current RNA sequence as a std::string
+        /*! \brief Returns the current RNA sequence as a std::string
         *  
         *  This sequence is only N directly after construction. You need to call mutate() first to sample a initial sequence.
         */
         std::string get_sequence();
-        /*! \brief mutate() resets all bases to N in the whole dependency graph and samples a new sequence
+        /*! \brief Allows you to set a initial sequence as starting point for your optimization.
+        *  
+        *  Only real bases are allowed and the sequence has to fulfill all structural constraints, otherwise an error is thrown.
+        */
+        void set_sequence(std::string sequence);
+        /*! \brief Resets all bases to N in the whole dependency graph and samples a new sequence
         *  
         *  Call get_sequence() after you sampled a new sequence.
         */
         void mutate();
-        /*! \brief mutate(int pos) resets only the smalles subgraph(s) containing the vertex pos to N.
+        /*! \brief Resets only the smalles subgraph(s) containing the vertex pos to N.
         *  
         *  This way the walk through the solution space happens in much smaller hops.
         */
         void mutate(int position);
-        /*! \brief number_of_sequences() returns the amount of solutions given the dependency graph and sequence constraints
+        /*! \brief Resets only the smalles subgraph(s) containing the vertex from position start to end.
+        *  
+        *  This way you can optimize by targeted mutagenesis at the given positions.
+        */
+        void mutate(int start, int end);
+        /*! \brief Returns the amount of solutions given the dependency graph and sequence constraints
         *  
         *  Number of sequences is the total amount of sequences possible for the given structural and sequence constraints.
         */

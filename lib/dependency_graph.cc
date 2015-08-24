@@ -236,6 +236,16 @@ namespace design
 
             return stream.str();
         }
+        
+        template <typename R>
+        void DependencyGraph<R>::set_sequence_string(std::string seq_str) {
+            //TODO
+        }
+        
+        template <typename R>
+        void DependencyGraph<R>::set_sequence(Sequence sequence) {
+            //TODO
+        }
 
         template <typename R>
         void DependencyGraph<R>::mutate() {
@@ -256,6 +266,12 @@ namespace design
 
         template <typename R>
         void DependencyGraph<R>::mutate(int position) {
+            // TODO replace with a good mutation function	
+            this->mutate();
+        }
+        
+        template <typename R>
+        void DependencyGraph<R>::mutate(int start, int end) {
             // TODO replace with a good mutation function	
             this->mutate();
         }
