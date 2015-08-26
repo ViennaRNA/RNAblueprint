@@ -38,12 +38,13 @@ namespace design {
             std::string get_sequence_string();
             void set_sequence(Sequence sequence);
             void set_sequence_string(std::string seq_str);
-            void mutate(int position);
-            void mutate(int start, int end);
-            void mutate();
-            void reset_colors();
+            void set_sequence();
+            unsigned long long mutate_local(int min_num_pos, int max_num_pos);
+            unsigned long long mutate_global(int min_num_pos, int max_num_pos);
+            unsigned long long mutate(int position);
+            unsigned long long mutate(int start, int end);
             R * rand_ptr;
-            ~DependencyGraph();
+            ~DependencyGraph() = default;
         private:
             Graph graph;
             bool bipartite; // if dependency graph is bipartite and a therefore a solution exists
@@ -51,6 +52,7 @@ namespace design {
             R rand;
             void calculate_probabilities(Graph& g);
             void sample_sequence(Graph& g);
+            void reset_colors(Graph g);
         };
     }
 }

@@ -91,26 +91,68 @@ namespace design {
         *  Only real bases are allowed and the sequence has to fulfill all structural constraints, otherwise an error is thrown.
         */
         void set_sequence(std::string sequence);
-        /*! \brief Resets all bases to N in the whole dependency graph and samples a new sequence
+        /*! \brief Resets all bases to N in the whole dependency graph and samples a new initial sequence randomly
         *  
         *  Call get_sequence() after you sampled a new sequence.
         */
-        void mutate();
-        /*! \brief Resets only the smalles subgraph(s) containing the vertex pos to N.
+        void set_sequence();
+        /*! \brief Randomly chooses one path (either top-level a connected component, or within a block, etc.) and mutates all positions.
         *  
-        *  This way the walk through the solution space happens in much smaller hops.
+        *  Special vertices such as cut points or articulation points will stay the same. Therefore it is guaranteed that the sampling is correct,
+        *  even if we only sample a small local piece of a more complex graph object.
+        *  int min_num_pos, int max_num_pos set the minimal/maximal number of mutated positions, e.g., for (3,5) only paths
+        *  with minimal 3 and maximal 5 non-special vertices will be chosen for mutation. 0 defines infinity. The range is inclusive!
         */
-        void mutate(int position);
-        /*! \brief Resets only the smalles subgraph(s) containing the vertex from position start to end.
+        unsigned long long mutate_local(int min_num_pos, int max_num_pos);
+        /*! \brief Randomly chooses a connected component and samples a new sequence for the whole component.
         *  
-        *  This way you can optimize by targeted mutagenesis at the given positions.
+        *  This is a more global way of mutating the structure as it probably exchanges a much bigger graph object.
+        *  int min_num_pos, int max_num_pos set the minimal/maximal number of mutated positions, e.g., for (3,5) only connected components
+        *  with minimal 3 and maximal 5 vertices will be chosen for mutation. 0 defines infinity. The range is inclusive!
+        * 
+        *  Returns: The number of possible sequences for this mutation.
         */
-        void mutate(int start, int end);
+        unsigned long long mutate_global(int min_num_pos, int max_num_pos);
+        /*! \brief Resets only the smallest subgraph(s) possible containing the vertex at the given position in the sequence.
+        *  
+        *  This way you can optimize by targeted mutagenesis at the given positions. All positions dependent on the chosen one
+        *  will also be mutated.
+        *  If your position is a special vertex, the whole connected component will be re-sampled. Else, in case of being a non-special vertex,
+        *  only the smallest path containing the vertex will be mutated. Positions range from [0,N-1]
+        * 
+        *  Returns: The number of possible sequences for this mutation.
+        */
+        unsigned long long mutate(int position);
+        /*! \brief Resets only the smallest subgraph(s) possible containing the vertices from position start to end.
+        *  
+        *  This way you can optimize by targeted mutagenesis at the given positions. All positions dependent on the chosen ones
+        *  will also be mutated.
+        *  If your positions contain special vertices, the whole connected components will be re-sampled. Else, in case of being only non-special vertex,
+        *  only the smallest paths containing the vertices will be mutated. Positions range from [0,N-1]
+        * 
+        *  Returns: The number of possible sequences for this mutation.
+        */
+        unsigned long long mutate(int start, int end);        
         /*! \brief Returns the amount of solutions given the dependency graph and sequence constraints
         *  
         *  Number of sequences is the total amount of sequences possible for the given structural and sequence constraints.
         */
         unsigned long long number_of_sequences();
+        
+        // TODO
+        // ??? inspect_solution_space(DependencyGraph)
+        // Function which returns all connected components (with a ID), their vertices, the number_of_sequences and a list of special vertices
+
+        // ??? get_special_probabilities(connected components ID)
+        // Returns basically the ProbabilityMatrix for all special vertices (remove make_internal() function) of the whole connected component 
+        // hash of hash: vertex -> base_color -> number_of_sequences
+
+        // ??? get_constrained_probabilities()
+        // Returns a hash of hash table of vertex -> base_color -> number_of_sequences for all positions given the base_color.
+        // for special vertices we can just call the function above and get the sums, 
+        // for non-specials we maybe have to do a constraint recalculation for every position/base combination?
+        
+        
     private:
         /*! \brief Pointer to the internal dependency graph object.
          */

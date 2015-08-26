@@ -76,18 +76,28 @@ namespace design {
     }
 
     template <typename R>
-    void DependencyGraph<R>::mutate() {
-        g->mutate();
-    }
-
-    template <typename R>
-    void DependencyGraph<R>::mutate(int position) {
-        g->mutate(position);
+    void DependencyGraph<R>::set_sequence() {
+        g->set_sequence();
     }
     
     template <typename R>
-    void DependencyGraph<R>::mutate(int start, int end) {
-        g->mutate(start, end);
+    unsigned long long DependencyGraph<R>::mutate_local(int min_num_pos, int max_num_pos) {
+        return g->mutate_local(min_num_pos, max_num_pos);
+    }
+    
+    template <typename R>
+    unsigned long long DependencyGraph<R>::mutate_global(int min_num_pos, int max_num_pos) {
+        return g->mutate_global(min_num_pos, max_num_pos);
+    }
+    
+    template <typename R>
+    unsigned long long DependencyGraph<R>::mutate(int position) {
+        return g->mutate(position);
+    }
+    
+    template <typename R>
+    unsigned long long DependencyGraph<R>::mutate(int start, int end) {
+        return g->mutate(start, end);
     }
 
     template <typename R>

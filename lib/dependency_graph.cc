@@ -248,10 +248,9 @@ namespace design
         }
 
         template <typename R>
-        void DependencyGraph<R>::mutate() {
+        void DependencyGraph<R>::set_sequence() {
             // reset all the colors to N
-            reset_colors();
-            // TODO replace with a good mutation function
+            reset_colors(graph);
             if (debug) {
                 std::cerr << "Sample Sequence on Graph: Backtracing!" << std::endl;
             }
@@ -265,28 +264,39 @@ namespace design
         }
 
         template <typename R>
-        void DependencyGraph<R>::mutate(int position) {
-            // TODO replace with a good mutation function	
-            this->mutate();
-        }
-        
-        template <typename R>
-        void DependencyGraph<R>::mutate(int start, int end) {
-            // TODO replace with a good mutation function	
-            this->mutate();
+        unsigned long long DependencyGraph<R>::mutate_local(int min_num_pos, int max_num_pos) {
+            //TODO!
+            unsigned long long nos = 0;
+            return nos;
         }
 
         template <typename R>
-        void DependencyGraph<R>::reset_colors() {
+        unsigned long long DependencyGraph<R>::mutate_global(int min_num_pos, int max_num_pos) {
+            //TODO!
+            unsigned long long nos = 0;
+            return nos;
+        }
 
-            BGL_FORALL_VERTICES_T(v, graph, Graph) {
-                graph[v].base = N;
+        template <typename R>
+        unsigned long long DependencyGraph<R>::mutate(int position) {
+            //TODO!
+            unsigned long long nos = 0;
+            return nos;
+        }
+
+        template <typename R>
+        unsigned long long DependencyGraph<R>::mutate(int start, int end) {
+            //TODO!
+            unsigned long long nos = 0;
+            return nos;
+        }
+
+        template <typename R>
+        void DependencyGraph<R>::reset_colors(Graph g) {
+
+            BGL_FORALL_VERTICES_T(v, g, Graph) {
+                g[v].base = N;
             }
-        }
-
-        template <typename R>
-        DependencyGraph<R>::~DependencyGraph() {
-            // TODO clean up all the data
         }
 
         template class DependencyGraph<std::mt19937>;

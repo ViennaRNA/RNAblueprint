@@ -107,7 +107,7 @@ int main(int ac, char* av[]) {
 
     while (number_of_designs > 0) {
         try {
-            dependency_graph->mutate(); // color the graph and get the sequence
+            dependency_graph->set_sequence(); // color the graph and get the sequence
         } catch (std::exception& e) {
             std::cerr << e.what() << std::endl;
             exit(EXIT_FAILURE);
