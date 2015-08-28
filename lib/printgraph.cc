@@ -29,10 +29,10 @@ namespace design {
             // print vertex and edge properties from my self-defined bundled properties
             boost::dynamic_properties dp;
 
-            boost::ref_property_map<Graph*, std::string> graphName(boost::get_property(g, boost::graph_name).id);
-            dp.property("name", graphName);
-            boost::ref_property_map < Graph*, bool> graphPath(boost::get_property(g, boost::graph_name).is_path);
-            dp.property("path", graphPath);
+            //graph_property& gps = boost::get_property(g, boost::graph_name);
+            //dp.property("type", gps.type);
+            //dp.property("id", gps.nummer);
+            //dp.property("path", gps.is_path);
 
             dp.property("base", base_map);
             dp.property("constraints", constraint_map);

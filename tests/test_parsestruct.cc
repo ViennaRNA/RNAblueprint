@@ -78,6 +78,11 @@ BOOST_AUTO_TEST_CASE(ParseDotBracket) {
     BOOST_CHECK(boost::degree(int_to_vertex(2, g), g) == 3);
     BOOST_CHECK(boost::degree(int_to_vertex(0, g), g) == 3);
     BOOST_CHECK(boost::degree(int_to_vertex(13, g), g) == 1);
+    
+    graph_property& graph_propt = boost::get_property(g, boost::graph_name);
+    BOOST_CHECK(graph_propt.type == 0);
+    BOOST_CHECK(graph_propt.nummer == 0);
+    
 }
 
 BOOST_AUTO_TEST_CASE(TestFault1) {

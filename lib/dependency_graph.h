@@ -21,16 +21,16 @@
 
 namespace design {
     namespace detail {
+        
+        typedef std::unordered_map< Graph*, ProbabilityMatrix> ProbabilityMatrixStorage;
 
         template <typename R>
         class DependencyGraph {
         public:
             DependencyGraph(std::vector<std::string> structures, std::string constraints, R rand);
 
-            unsigned long long number_of_sequences() {
-                return nos;
-            }
-
+            unsigned long long number_of_sequences();
+            unsigned long long number_of_sequences(int connected_component_ID);
             bool is_bipartite() {
                 return bipartite;
             }
@@ -43,12 +43,14 @@ namespace design {
             unsigned long long mutate_global(int min_num_pos, int max_num_pos);
             unsigned long long mutate(int position);
             unsigned long long mutate(int start, int end);
+            std::map< int, std::vector<int> > connected_components();
+            std::vector< int > special_vertices();
             R * rand_ptr;
-            ~DependencyGraph() = default;
+            //~DependencyGraph() = default;
         private:
             Graph graph;
+            ProbabilityMatrixStorage pms;
             bool bipartite; // if dependency graph is bipartite and a therefore a solution exists
-            unsigned long long nos = 0; // number of sequences/solutions
             R rand;
             void calculate_probabilities(Graph& g);
             void sample_sequence(Graph& g);

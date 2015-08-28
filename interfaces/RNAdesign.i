@@ -9,9 +9,23 @@
 
 %include "std_string.i"
 %include "std_vector.i"
+%include "std_map.i"
 
 namespace std {
-    %template() vector<std::string>;
+    %template() std::vector<std::string>;
+    %template() std::map< int, std::vector<int> >;
+}
+
+%include "exception.i"
+%exception{
+
+    try {
+        $action
+    }
+
+    catch(const std::exception & e) {
+        SWIG_exception_fail(SWIG_RuntimeError, e.what());
+    }
 }
 
 namespace design {
@@ -32,6 +46,9 @@ namespace design {
             unsigned long long mutate(int position);
             unsigned long long mutate(int start, int end);
             unsigned long long number_of_sequences();
+            unsigned long long number_of_sequences(int connected_component_ID);
+            std::map< int, std::vector<int> > connected_components();
+            std::vector< int > special_vertices();
     };
     
     %template(DependencyGraphMT) DependencyGraph<std::mt19937>;

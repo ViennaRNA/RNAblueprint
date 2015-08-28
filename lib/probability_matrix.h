@@ -57,6 +57,8 @@ namespace design {
             void put(ProbabilityKey& pk, unsigned long long nos);            
             // get maximal number of sequences for the whole matrix/subgraph
             unsigned long long mnos();
+            // return if this is a initialized PM or not
+            bool is_initialized() { return initialized; }
             // get set of special vertices
             std::set< int > getSpecials() { return specials; };
             // sample one combination randomly given a ProbabilityKey with the constraints and a random number generator
@@ -71,9 +73,11 @@ namespace design {
             ~ProbabilityMatrix() = default;
         private:
             // map of possibilities saved by key
-            ProbabilityMap pm;
+            ProbabilityMap pmap;
+            // remember if initialized
+            bool initialized = false;
             // remember all special points
-            std::set< int > specials;
+            std::set< int > specials = {};
             // TODO a function to "multiply" probability matrixes
         };
         

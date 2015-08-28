@@ -39,7 +39,8 @@ namespace design
             } catch (std::exception& e) {
                 std::stringstream ss;
                 ss << "Error while parsing the structures: " << std::endl << e.what();
-                throw( std::logic_error(ss.str()));
+                std::cerr << ss.str() << std::endl;
+                throw std::logic_error(ss.str());
             }
             
             // set sequence constraints
@@ -52,11 +53,12 @@ namespace design
             } catch (std::exception& e) {
                 std::stringstream ss;
                 ss << "Error while decomposing the dependency graph: " << std::endl << e.what();
-                throw( std::logic_error(ss.str()));
+                std::cerr << ss.str() << std::endl;
+                throw std::logic_error(ss.str());
             }
             // trow an exception for now if graph is not bipartite
             if (!bipartite) {
-                throw( std::logic_error("Graph is not bipartite! No solution exists therefore."));
+                throw std::logic_error("Graph is not bipartite! No solution exists therefore.");
             }
             
             // now calculate all the PMs
@@ -65,12 +67,9 @@ namespace design
             } catch (std::exception& e) {
                 std::stringstream ss;
                 ss << "Error while calculating the probabilities: " << std::endl << e.what();
-                throw( std::logic_error(ss.str()));
+                std::cerr << ss.str() << std::endl;
+                throw std::logic_error(ss.str());
             }
-            
-            // remember nos
-            nos = boost::get_property(graph, boost::graph_name).pm->mnos();
-            
         }
 
         template <typename R>
@@ -82,6 +81,12 @@ namespace design
             
             Graph::children_iterator cg, cg_end;
             for (boost::tie(cg, cg_end) = g.children(); cg != cg_end; ++cg) {
+                
+                std::cerr << "Graph (" << boost::get_property(*cg, boost::graph_name).type << "-" << boost::get_property(*cg, boost::graph_name).nummer << "):" << std::endl;
+                std::cerr << "current graph storage location: " << &(*cg) << std::endl;
+                std::cerr << "current graph property storage location: " << &boost::get_property(*cg, boost::graph_name) << std::endl;
+                
+                
                 if (debug) {
                     std::cerr << "current graph path? " << boost::get_property(*cg, boost::graph_name).is_path << std::endl;
                     print_graph(*cg, &std::cerr, "current graph");
@@ -91,15 +96,16 @@ namespace design
                     // this is a path and therefore needs to be treated separately
                     // calculate PM for Path and save to subgraph
                     try {
-                        boost::get_property(*cg, boost::graph_name).pm = std::unique_ptr<ProbabilityMatrix> (new ProbabilityMatrix(get_path_pm(*cg)));
+                        pms[&*cg] = get_path_pm(*cg);
                     } catch (std::exception& e) {
                         std::stringstream ss;
                         ss << "Could not get a ProbabilityMatrix for a path: " << std::endl << e.what();
-                        throw( std::logic_error( ss.str() ));
+                        std::cerr << ss.str() << std::endl;
+                        throw std::logic_error( ss.str() );
                     }
                     if (debug) {
-                        std::cerr << "Path PM (" << boost::get_property(*cg, boost::graph_name).id << "):" << std::endl
-                                << *boost::get_property(*cg, boost::graph_name).pm << std::endl;
+                        std::cerr << "Path PM (" << boost::get_property(*cg, boost::graph_name).type << "-" << boost::get_property(*cg, boost::graph_name).nummer << "):" << std::endl
+                                << pms[&*cg] << std::endl;
                     }
                 } else {
                     if (debug) {
@@ -109,8 +115,8 @@ namespace design
                     calculate_probabilities(*cg);
                 }
                 
-                // Multiply current with pm of this child (if pm is set)
-                current = (*boost::get_property(*cg, boost::graph_name).pm) * current;
+                // Multiply current with pm of this child
+                current = pms[&*cg] * current;
                 if (debug) {
                     std::cerr << "current PM: " << std::endl << current << std::endl;
                 }
@@ -138,11 +144,11 @@ namespace design
                                 // remember this PM here
                                 // only the first time a internal node is detected, otherwise we overwrite this
                                 if (!alreadysaved) {
-                                    boost::get_property(*cg, boost::graph_name).pm = std::unique_ptr<ProbabilityMatrix> (new ProbabilityMatrix(current));
+                                    pms[&*cg] = ProbabilityMatrix(current);
                                     alreadysaved = true;
                                     if (debug) {
-                                        std::cerr << "saved PM (" << boost::get_property(*cg, boost::graph_name).id << "):"  << std::endl
-                                                << *boost::get_property(*cg, boost::graph_name).pm << std::endl;
+                                        std::cerr << "saved PM (" << boost::get_property(*cg, boost::graph_name).type << "-" << boost::get_property(*cg, boost::graph_name).nummer << "):"  << std::endl
+                                                << pms[&*cg] << std::endl;
                                     }
                                 }
                                 // remove internal special vertex from this PM!
@@ -152,12 +158,19 @@ namespace design
                         }
                     }
                 }
+                
+                
+                std::cerr << "Graph (" << boost::get_property(*cg, boost::graph_name).type << "-" << boost::get_property(*cg, boost::graph_name).nummer << "):" << std::endl;
+                std::cerr << "Graph (" << &boost::get_property(*cg, boost::graph_name).type << "-" << &boost::get_property(*cg, boost::graph_name).nummer << "):" << std::endl;
+                std::cerr << "current graph storage location: " << &*cg << std::endl;
+                std::cerr << "current graph property storage location: " << &boost::get_property(*cg, boost::graph_name) << std::endl;
             }
             // save final state of PM to the main graph
-            boost::get_property(g, boost::graph_name).pm = std::unique_ptr<ProbabilityMatrix> (new ProbabilityMatrix(current));
+            
+            pms[&g] = ProbabilityMatrix(current);
             if (debug) {
-                std::cerr << "final PM (" << boost::get_property(g, boost::graph_name).id << "):" << std::endl
-                        << *boost::get_property(g, boost::graph_name).pm << std::endl;
+                std::cerr << "final PM (" << boost::get_property(g, boost::graph_name).type << "-" << boost::get_property(g, boost::graph_name).nummer << "):" << std::endl
+                        << pms[&g] << std::endl;
             }
         }
         
@@ -168,28 +181,41 @@ namespace design
             boost::tie(cg, cg_end) = g.children();
             for ( current = cg_end; current != cg;) {
                 --current;
+                
+                std::cerr << "current graph storage location: " << &(*current) << std::endl;
+                std::cerr << "current graph property storage location: " << &boost::get_property(*current, boost::graph_name) << std::endl;
+                if (debug) {
+                    std::cerr << "Sampling from: " << boost::get_property(*current, boost::graph_name).type << "-" << boost::get_property(*current, boost::graph_name).nummer << std::endl;
+                    std::cerr << "Sampling from: " << &boost::get_property(*current, boost::graph_name).type << "-" << &boost::get_property(*current, boost::graph_name).nummer << std::endl;
+                    std::cerr << "With PM: " << pms[&*current] << std::endl;
+                }
                 //print_graph(*current, &std::cerr, "iterator");
                 // build a key containing the constraints of already sampled bases
                 ProbabilityKey constraints;
-                for (auto s : boost::get_property(*current, boost::graph_name).pm->getSpecials()) {
+                std::set<int> a = pms[&*current].getSpecials();
+                std::cerr << "specials from this pm: " << a << std::endl;
+                for (auto s : pms[&*current].getSpecials()) {
+                    std::cerr << s << std::endl;
                     //std::cerr << s << "/" << int_to_vertex(s, g.root()) << "/" << enum_to_char(g.root()[int_to_vertex(s, g.root())].base) << std::endl;
                     constraints[s] = g.root()[int_to_vertex(s, g.root())].base;
+                    std::cerr << "bbb"  << std::endl;
                 }
                 
                 // randomly sample one key from the matrix
                 if (debug) {
-                    std::cerr << "sampling from " << boost::get_property(*current, boost::graph_name).id << " with key: " << std::endl
-                            << constraints << std::endl << "and PM: " << std::endl
-                            << *boost::get_property(*current, boost::graph_name).pm << std::endl;
+                    std::cerr << "sampling from " << boost::get_property(*current, boost::graph_name).type << "-" << boost::get_property(*current, boost::graph_name).nummer << " with key: " << std::endl
+                           << constraints << std::endl << "and PM: " << std::endl
+                           << pms[&*current] << std::endl;
                 }
                 
                 ProbabilityKey colors;
                 try {
-                    colors = boost::get_property(*current, boost::graph_name).pm->sample(constraints, rand_ptr);
+                    colors = pms[&*current].sample(constraints, rand_ptr);
                 } catch (std::exception& e) {
                     std::stringstream ss;
                     ss << "Error while sampling from a ProbabilityMatrix: " << std::endl << e.what();
-                    throw( std::logic_error(ss.str()));
+                    std::cerr << ss.str() << std::endl;
+                    throw std::logic_error(ss.str());
                 }
                 // write to graph
                 for (auto c : colors) {
@@ -206,7 +232,8 @@ namespace design
                     } catch (std::exception& e) {
                         std::stringstream ss;
                         ss << "Error while sampling a path sequence: " << std::endl << e.what();
-                        throw( std::logic_error(ss.str()));
+                        std::cerr << ss.str() << std::endl;
+                        throw std::logic_error(ss.str());
                     }
                 } else {
                     if (debug) {
@@ -259,7 +286,8 @@ namespace design
             } catch (std::exception& e) {
                 std::stringstream ss;
                 ss << "Error while sampling a sequence: " << std::endl << e.what();
-                throw( std::logic_error(ss.str()));
+                std::cerr << ss.str() << std::endl;
+                throw std::logic_error(ss.str());
             }
         }
 
@@ -297,6 +325,43 @@ namespace design
             BGL_FORALL_VERTICES_T(v, g, Graph) {
                 g[v].base = N;
             }
+        }
+        
+        template <typename R>
+        unsigned long long DependencyGraph<R>::number_of_sequences() {
+            return pms[&graph].mnos();
+        }
+        
+        template <typename R>
+        unsigned long long DependencyGraph<R>::number_of_sequences(int connected_component_ID) {
+            Graph::children_iterator cc, cc_end;
+            // iterate over all connected component and return pm.mnos() for the one with the right ID
+            for (boost::tie(cc, cc_end) = graph.children(); cc != cc_end; ++cc) {
+                
+                if (boost::get_property(*cc, boost::graph_name).nummer == connected_component_ID) {
+                    return pms[&*cc].mnos();
+                }
+            }
+            throw std::out_of_range("Could not find a connected component with this ID!");
+        }
+
+        template <typename R>
+        std::map< int, std::vector<int> > DependencyGraph<R>::connected_components() {
+            // object to return
+            std::map< int, std::vector<int> > connected_components_map;
+            
+            Graph::children_iterator cc, cc_end;
+            // iterate over all connected component and fill up the map [id, Vector of Vertices]
+            for (boost::tie(cc, cc_end) = graph.children(); cc != cc_end; ++cc) {
+                connected_components_map[boost::get_property(*cc, boost::graph_name).nummer] = getVertexList(*cc);
+            }
+            
+            return connected_components_map;
+        }
+
+        template <typename R>
+        std::vector< int > DependencyGraph<R>::special_vertices() {
+            //TODO
         }
 
         template class DependencyGraph<std::mt19937>;

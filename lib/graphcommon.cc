@@ -13,14 +13,6 @@
 namespace design {
     namespace detail {
         
-        // copy constructor for graph property class (for unique_ptr deep copy)
-        graph_property::graph_property( const graph_property &gp)
-        : id(gp.id), is_path(gp.is_path), is_cc(gp.is_cc) {
-            if (gp.pm) {
-                pm = std::unique_ptr<ProbabilityMatrix>(new ProbabilityMatrix( *gp.pm ));
-            }
-        }
-        
         std::pair <int, int> get_min_max_degree(Graph& g) {
             int max_degree = 0;
             int min_degree = std::numeric_limits<int>::max();
@@ -44,7 +36,7 @@ namespace design {
             if (i >= num_vertices(g) || i < 0 || v == Graph::null_vertex()) {
                 std::stringstream ss;
                 ss << "Error getting vertex descriptor from integer: " << i;
-                throw( std::out_of_range(ss.str()));
+                throw std::out_of_range(ss.str());
             }
             return g.global_to_local(v);
         }
@@ -52,6 +44,16 @@ namespace design {
         // get the vertex_color_t tag from a vertex descriptor
         int vertex_to_int(Vertex v, Graph& g) {
             return boost::get(boost::vertex_color_t(), g.root(), g.local_to_global(v));
+        }
+        
+        
+        std::vector<int> getVertexList(Graph& g) {
+            std::vector<int> result;
+
+            BGL_FORALL_VERTICES(v, g, Graph) {
+                result.push_back(vertex_to_int(v, g));
+            }
+            return result;
         }
     }
 }

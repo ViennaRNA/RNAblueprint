@@ -56,8 +56,11 @@ namespace design {
                             std::cerr << elem[pos] << ", open count: " << open;
                         }
                     } else if (elem[pos] != '.') {
-                        throw ( std::logic_error( "Unknown character in dot bracket representation" ));
+                        std::stringstream ss;
+                        ss << "Unknown character (" << elem[pos] << ") in dot bracket representation";
+                        throw ( std::logic_error( ss.str() ));
                     }
+                    
                     // error handling: there can't be more closing brackets than opening ones
                     if (open < 0) {
                         throw ( std::logic_error( "Unbalanced brackets in make_pair_table" ));
@@ -73,7 +76,8 @@ namespace design {
             }
             
             // label graph as root
-            boost::get_property(g, boost::graph_name).id = "root_graph";
+            boost::get_property(g, boost::graph_name).type = 0;
+            boost::get_property(g, boost::graph_name).nummer = 0;
             
             return g;
         }

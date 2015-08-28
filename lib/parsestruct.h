@@ -16,6 +16,7 @@
 #include "graphcommon.h"
 
 // include standard library parts
+#include <sstream>
 #include <ctype.h>
 
 // include boost components

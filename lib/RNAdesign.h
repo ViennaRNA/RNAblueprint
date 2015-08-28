@@ -113,6 +113,13 @@ namespace design {
         *  Returns: The number of possible sequences for this mutation.
         */
         unsigned long long mutate_global(int min_num_pos, int max_num_pos);
+        /*! \brief Takes the connected component with the ID (int connected_component_ID) and samples a new sequence for the whole component.
+        *  
+        *  The connected_component_IDs can be retrieved by calling connected_components()
+        *  
+        *  Returns: The number of possible sequences for this mutation.
+        */
+        unsigned long long mutate_global(int connected_component_ID);
         /*! \brief Resets only the smallest subgraph(s) possible containing the vertex at the given position in the sequence.
         *  
         *  This way you can optimize by targeted mutagenesis at the given positions. All positions dependent on the chosen one
@@ -138,11 +145,22 @@ namespace design {
         *  Number of sequences is the total amount of sequences possible for the given structural and sequence constraints.
         */
         unsigned long long number_of_sequences();
+        /*! \brief Returns the amount of solutions for the connected component with the given ID.
+        *  
+        *  Number of sequences is the total amount of sequences possible for the given structural and sequence constraints.
+        *  The connected_component_IDs can be retrieved by calling connected_components()
+        */
+        unsigned long long number_of_sequences(int connected_component_ID);
+        /*! \brief Returns a hash table with the connected_component_ID as key and a list with all the vertices in this component
+        *  
+        */
+        std::map< int, std::vector<int> > connected_components();
+        /*! \brief Returns a list of vertices specified as "special".
+        *  
+        *  These special vertices include cut points, articulation points and also sequence constraints.
+        */
+        std::vector< int > special_vertices();
         
-        // TODO
-        // ??? inspect_solution_space(DependencyGraph)
-        // Function which returns all connected components (with a ID), their vertices, the number_of_sequences and a list of special vertices
-
         // ??? get_special_probabilities(connected components ID)
         // Returns basically the ProbabilityMatrix for all special vertices (remove make_internal() function) of the whole connected component 
         // hash of hash: vertex -> base_color -> number_of_sequences

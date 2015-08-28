@@ -19,12 +19,11 @@ namespace design {
             int max_degree;
             int min_degree;
             std::tie(min_degree, max_degree) = get_min_max_degree(g);
-            
             // assert path
             if (max_degree > 2) {
-                throw( new std::logic_error("This graph is no cycle or path (max degree > 2). I can't color this!"));
+                throw std::logic_error("This graph is no cycle or path (max degree > 2). I can't color this!");
             } else if (min_degree > 1) {
-                throw( new std::logic_error("cannot color circles this way."));
+                throw std::logic_error("cannot color circles this way.");
             }
             
             ProbabilityKey key;
@@ -37,13 +36,13 @@ namespace design {
                         key[vertex_to_int(v, g)] = g[v].constraint;
                         specials.emplace(vertex_to_int(v, g));
                     } else {
-                        throw( new std::logic_error("There is a special vertex which is no path end in get_path_pm. This is not possible!"));
+                        throw std::logic_error("There is a special vertex which is no path end in get_path_pm. This is not possible!");
                     }
                 }
             }
             
             if (specials.size() > 2) {
-                throw( new std::logic_error("More than two special vertices in one path. ridiculous!"));
+                throw std::logic_error("More than two special vertices in one path. ridiculous!");
             }
             
             std::vector<ProbabilityKey> keys = permute_key(key);
@@ -67,7 +66,7 @@ namespace design {
                         result.put(k, p->get(length, k[*(specials.begin())], k[*(++specials.begin())]));
                         break;
                     default:
-                        throw(new std::logic_error("More than two special vertices in one path. ridiculous!"));
+                        throw std::logic_error("More than two special vertices in one path. ridiculous!");
                 }
             }
             return result;
@@ -82,12 +81,13 @@ namespace design {
             int max_degree;
             int min_degree;
             std::tie(min_degree, max_degree) = get_min_max_degree(g);
-
+            
+            std::cerr << "min/max: " << min_degree << "/" << max_degree << std::endl;
             // assert path
             if (max_degree > 2) {
-                throw( new std::logic_error("This graph is no cycle or path (max degree > 2). I can't color this!"));
+                throw std::logic_error("This graph is no cycle or path (max degree > 2). I can't color this!");
             } else if (min_degree > 1) {
-                throw( new std::logic_error("cannot color circles this way."));
+                throw std::logic_error("cannot color circles this way.");
             }
             
             /*if (debug) {
@@ -154,7 +154,7 @@ namespace design {
 
                 void back_edge(Edge e, Graph g) const {
                     if (debug) {
-                        throw( std::logic_error("Detecting back-edge (graph is a cycle). This can't be!"));
+                        throw std::logic_error("Detecting back-edge (graph is a cycle). This can't be!");
                     }
                 }
 
@@ -176,7 +176,7 @@ namespace design {
                         ss << "The requested sequence cannot be colored! Conflict at: "
                                 << enum_to_char(g[u].base) << ", " << enum_to_char(previous) << std::endl 
                                 << "Length is: " << boost::num_vertices(g) << std::endl;
-                        throw( std::logic_error(ss.str()));
+                        throw std::logic_error(ss.str());
                     }
 
                     unsigned long long random = dist(*r_ptr) * nos;

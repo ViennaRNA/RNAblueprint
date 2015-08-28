@@ -17,7 +17,6 @@
 
 // include standard library parts
 #include <limits>
-#include <memory>
 #include <sstream>
 
 namespace design {
@@ -45,15 +44,18 @@ namespace design {
             typedef boost::edge_property_tag kind;
         };
 
-        class graph_property {
-        public:
-            graph_property() = default;
-            graph_property( const graph_property &gp);
-            std::string id = "";
+        struct graph_property {
+            int nummer;
+            /*
+             0 -> root
+             1 -> cc
+             2 -> bc
+             3 -> ear
+             4 -> path
+             */
+            int type;
             bool is_path = false;
             bool is_cc = false;
-            std::unique_ptr<ProbabilityMatrix> pm;
-            ~graph_property() = default;
         };
 
         // graph_properties 
@@ -68,11 +70,13 @@ namespace design {
 
         // get max degree of a graph
         std::pair <int, int> get_min_max_degree(Graph& g);
-        
+
         // get the vertex descriptor from a vertex_color_t tag
         Vertex int_to_vertex(int i, Graph& g);
         // get the vertex_color_t tag from a vertex descriptor
         int vertex_to_int(Vertex v, Graph& g);
+        // get the set of vertices for a certain (sub)graph
+        std::vector<int> getVertexList(Graph& g);
     }
 }
 #endif

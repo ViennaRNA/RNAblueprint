@@ -104,7 +104,22 @@ namespace design {
     unsigned long long DependencyGraph<R>::number_of_sequences() {
         return g->number_of_sequences();
     }
-
+    
+    template <typename R>
+    unsigned long long DependencyGraph<R>::number_of_sequences(int connected_component_ID) {
+        return g->number_of_sequences(connected_component_ID);
+    }
+    
+    template <typename R>
+    std::map< int, std::vector<int> > DependencyGraph<R>::connected_components() {
+        return g->connected_components();
+    }
+    
+    template <typename R>
+    std::vector< int > DependencyGraph<R>::special_vertices() {
+        return g->special_vertices();
+    }
+    
     template class DependencyGraph<std::mt19937>;
 
 }

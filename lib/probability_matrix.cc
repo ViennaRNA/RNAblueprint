@@ -46,9 +46,9 @@ namespace design {
             
             for (auto key : allkeys) {
                 // important for map: if you request with [] an entry will be created for unexisting ones.
-                ProbabilityMap::const_iterator found = pm.find(key);
+                ProbabilityMap::const_iterator found = pmap.find(key);
 
-                if (found != pm.end()) {
+                if (found != pmap.end()) {
                     returnvalue += found->second;
                 }
             }
@@ -56,31 +56,31 @@ namespace design {
         }
         
         void ProbabilityMatrix::put (ProbabilityKey& pk, unsigned long long nos) {
-            
-            if (pm.size() == 0) {
+            if (!initialized) {
                 for (auto pair : pk) {
                     specials.insert(pair.first);
                 }
+                initialized = true;
             }
             
             for (auto pair : pk) {
                 // sanity check if the bases requested are within our alphabet size
                 if (pair.second >= A_Size) {
-                    throw( new std::out_of_range( "Tried to write a base outside of the alphabet size into ProbabilityMatrix." ));
+                    throw new std::out_of_range( "Tried to write a base outside of the alphabet size into ProbabilityMatrix." );
                 // sanity check if the vertices requested are indeed stored in this pm
                 } else if ( specials.find(pair.first) == specials.end() ) {
-                    throw( new std::logic_error( "Tried to write a not allowed Vertex into ProbabilityMatrix." ));
+                    throw new std::logic_error( "Tried to write a not allowed Vertex into ProbabilityMatrix." );
                 }
             }
             // only write if nos is != 0 as we have a sparse implementation
             if (nos != 0) {
-                pm[pk] = nos;
+                pmap[pk] = nos;
             }
         }
         
         unsigned long long ProbabilityMatrix::mnos() {
             unsigned long long mnos = 0;
-            for (auto elem : pm) {
+            for (auto elem : pmap) {
                 mnos += elem.second;
             }
             return mnos;
@@ -106,21 +106,19 @@ namespace design {
             unsigned long long constrained_mnos = 0;
             // get the maximal number of sequences for the input constraints set in pk
             for (auto k: possible_keys) {
-                constrained_mnos += pm[k];
+                constrained_mnos += (*this)[k];
             }
             
             if (constrained_mnos == 0) {
-                throw( std::logic_error( "Cannot fulfill constraints while sampling a key!" ));
+                throw std::logic_error( "Cannot fulfill constraints while sampling a key!" );
             }
-            
             std::uniform_real_distribution<float> dist(0, 1);
             unsigned long long random = dist(*rand_ptr) * constrained_mnos;
-
             // stochastically take one of the possibilities
             // start at the probability of first possible character and add each other base probability as long long as the random number is bigger.
             unsigned long long sum = 0;
             for (auto k : possible_keys) {
-                sum += pm[k];
+                sum += (*this)[k];
                 // if the random number is bigger than our probability, take this base as the current base!
                 if (random < sum) {
                     result = k;
@@ -136,9 +134,9 @@ namespace design {
         }
         
         ProbabilityMatrix operator* (ProbabilityMatrix& x, ProbabilityMatrix& y) {
-            if (x.pm.size() == 0) {
+            if (!x.is_initialized()) {
                 return y;
-            } else if (y.pm.size() == 0) {
+            } else if (!y.is_initialized()) {
                 return x;
             } else {
                 ProbabilityMatrix z;

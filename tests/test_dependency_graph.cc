@@ -105,10 +105,8 @@ BOOST_AUTO_TEST_CASE(bc_sampling) {
 
     design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "NNNNNN", rand_gen);
     BOOST_CHECK(dependency_graph.number_of_sequences() == 48);
-    for (int i = 0; i < 100; i++) {
-        dependency_graph.mutate();
-        std::cerr << "Sampled sequence: " << dependency_graph.get_sequence_string() << std::endl;
-    }
+    dependency_graph.set_sequence();
+    std::cerr << "Sampled sequence: " << dependency_graph.get_sequence_string() << std::endl;
 }
 
 BOOST_AUTO_TEST_CASE(cc_sampling) {
@@ -120,12 +118,25 @@ BOOST_AUTO_TEST_CASE(cc_sampling) {
     std::mt19937 rand_gen(1);
 
     design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "NNNNNNNNN", rand_gen);
-    for (int i = 0; i < 100; i++) {
-        dependency_graph.mutate();
-        std::cerr << "Sampled sequence: " << dependency_graph.get_sequence_string() << std::endl;
-    }
-
+    dependency_graph.set_sequence();
+    std::cerr << "Sampled sequence: " << dependency_graph.get_sequence_string() << std::endl;
+    
     BOOST_CHECK(dependency_graph.number_of_sequences() == 134);
+}
+
+
+BOOST_AUTO_TEST_CASE(output_connected_components) {
+
+    BOOST_TEST_MESSAGE("test the connected_components() function for correct output");
+
+    design::initialize_library(true);
+    std::vector<std::string> structures = {"(..)"};
+    std::mt19937 rand_gen(1);
+
+    design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "NNNN", rand_gen);
+    std::map< int, std::vector<int> > check_output = {{0, {0, 3}}, {1, {1}}, {2, {2}}};
+
+    BOOST_CHECK(dependency_graph.connected_components() == check_output);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

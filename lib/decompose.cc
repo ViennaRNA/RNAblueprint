@@ -21,6 +21,8 @@ namespace design {
         bool decompose_graph(Graph& graph, RG* rand_ptr) {
             std::ostream* out = &std::cerr;
             
+            
+            
             if (debug) {
                 *out << "root graph:" << std::endl;
                 // print the just created subgraphs
@@ -141,18 +143,20 @@ namespace design {
             for (int i = 0; i != num; ++i) {
                 // for each component number generate a new subgraph
                 Graph& subg = g.create_subgraph();
-                boost::get_property(subg, boost::graph_name).id = "connected_component";
-                boost::get_property(subg, boost::graph_name).is_cc = true;
                 
                 int vertex = 0;
                 // iterate over elements of connected_components
                 for (auto elem : component) {
                     if (i == elem) {
                         // add vertex into current subgraph
-                        boost::add_vertex(vertex, subg);
+                        boost::add_vertex(int_to_vertex(vertex, g), subg);
                     }
                     vertex++;
                 }
+                
+                boost::get_property(subg, boost::graph_name).type = 1;
+                boost::get_property(subg, boost::graph_name).nummer = i;
+                boost::get_property(subg, boost::graph_name).is_cc = true;
             }
         }
 
@@ -203,7 +207,7 @@ namespace design {
                     }
                 }
             }
-
+            int j = 0;
             // write biconnected components into subgraphs:
             for (unsigned int i = 0; i != num; i++) {
                 // only create a subgraph if there is really an edge associated to this component (as we merged many components before)
@@ -218,10 +222,8 @@ namespace design {
 
                 // for this bicomponent number generate a new subgraph
                 Graph& subg = g.create_subgraph();
-                boost::get_property(subg, boost::graph_name).id = "biconnected_component";
+                
                 // iterate over edges of graph
-                //Graph rg = g.root();
-
                 BGL_FORALL_EDGES_T(e, g, Graph) {
                     if (i == component[e]) {
                         // add vertex into current subgraph if not present already
@@ -233,6 +235,9 @@ namespace design {
                         }
                     }
                 }
+                // add properties
+                boost::get_property(subg, boost::graph_name).type = 2;
+                boost::get_property(subg, boost::graph_name).nummer = j++;
             }
         }
 
@@ -281,7 +286,6 @@ namespace design {
             for (int i = 1; i != num + 1; ++i) {
                 // for each ear create a new subgraph
                 Graph& subg = g.create_subgraph();
-                boost::get_property(subg, boost::graph_name).id = "ear_component";
 
                 BGL_FORALL_EDGES_T(e, g, Graph) {
                     if (g[e].ear == i) {
@@ -293,6 +297,9 @@ namespace design {
                         }
                     }
                 }
+                
+                boost::get_property(subg, boost::graph_name).type = 3;
+                boost::get_property(subg, boost::graph_name).nummer = i-1;
             }
             // detect attachment points and push them into the graph as vertex property Ak
             color_attachment_points(g);
@@ -343,22 +350,23 @@ namespace design {
                 }
 
                 // start recursion at all vertices of edges
+                int i = 0;
                 BGL_FORALL_EDGES_T(e, g, Graph) {
                     if (g[e].color == 0) {
                         g[e].color = 1;
                         Graph* subgptr = &g.create_subgraph();
-                        boost::get_property(*subgptr, boost::graph_name).id = "path";
-                        // mark this subgraph as a path
-                        boost::get_property(*subgptr, boost::graph_name).is_path = true;
                         parts_recursion(g, subgptr, boost::source(e, g));
                         parts_recursion(g, subgptr, boost::target(e, g));
+                        
+                        boost::get_property(*subgptr, boost::graph_name).type = 4;
+                        boost::get_property(*subgptr, boost::graph_name).nummer = i++;
+                        boost::get_property(*subgptr, boost::graph_name).is_path = true;
                     }
                 }
                 if (debug) {
                     print_subgraphs(g, &std::cerr, "parts-between-specials");
                 }
             } else {
-                boost::get_property(g, boost::graph_name).id = "path";
                 // mark this subgraph as a path
                 boost::get_property(g, boost::graph_name).is_path = true;
             }
