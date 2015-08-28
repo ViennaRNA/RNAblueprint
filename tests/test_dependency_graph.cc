@@ -334,6 +334,9 @@ BOOST_AUTO_TEST_CASE(mutate_local1) {
     BOOST_CHECK(dependency_graph.get_sequence_string() == "AC");
 }
 
+//TODO mutate global local unit tests!
+// todo mutate by position unit tests
+
 
 
 BOOST_AUTO_TEST_SUITE_END()
