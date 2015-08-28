@@ -46,7 +46,6 @@ namespace design {
             std::map< int, std::vector<int> > connected_components();
             std::vector< int > special_vertices();
             R * rand_ptr;
-            //~DependencyGraph() = default;
         private:
             Graph graph;
             ProbabilityMatrixStorage pms;
@@ -54,7 +53,7 @@ namespace design {
             R rand;
             void calculate_probabilities(Graph& g);
             void sample_sequence(Graph& g);
-            void reset_colors(Graph g);
+            void reset_colors(Graph& g);
         };
     }
 }

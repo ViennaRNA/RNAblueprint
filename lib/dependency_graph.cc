@@ -81,18 +81,16 @@ namespace design
             
             Graph::children_iterator cg, cg_end;
             for (boost::tie(cg, cg_end) = g.children(); cg != cg_end; ++cg) {
-                
-                std::cerr << "Graph (" << boost::get_property(*cg, boost::graph_name).type << "-" << boost::get_property(*cg, boost::graph_name).nummer << "):" << std::endl;
-                std::cerr << "current graph storage location: " << &(*cg) << std::endl;
-                std::cerr << "current graph property storage location: " << &boost::get_property(*cg, boost::graph_name) << std::endl;
-                
+                // get property map of graph
+                graph_property& gprop = boost::get_property(*cg, boost::graph_name);
                 
                 if (debug) {
-                    std::cerr << "current graph path? " << boost::get_property(*cg, boost::graph_name).is_path << std::endl;
+                    std::cerr << "current graph path? " << gprop.is_path << std::endl;
+                    std::cerr << "Graph (" << gprop.type << "-" << gprop.nummer << "):" << std::endl;
                     print_graph(*cg, &std::cerr, "current graph");
                 }
                 
-                if (boost::get_property(*cg, boost::graph_name).is_path) {
+                if (gprop.is_path) {
                     // this is a path and therefore needs to be treated separately
                     // calculate PM for Path and save to subgraph
                     try {
@@ -104,7 +102,7 @@ namespace design
                         throw std::logic_error( ss.str() );
                     }
                     if (debug) {
-                        std::cerr << "Path PM (" << boost::get_property(*cg, boost::graph_name).type << "-" << boost::get_property(*cg, boost::graph_name).nummer << "):" << std::endl
+                        std::cerr << "Path PM (" << gprop.type << "-" << gprop.nummer << "):" << std::endl
                                 << pms[&*cg] << std::endl;
                     }
                 } else {
@@ -122,7 +120,7 @@ namespace design
                 }
                 
                 // now make nodes internal and remember the current pm at such nodes (except for cc as those are independent of each other)
-                if (!boost::get_property(*cg, boost::graph_name).is_cc) {
+                if (!gprop.is_cc) {
                     // only save PM before first make_internal
                     bool alreadysaved = false;
                     
@@ -147,7 +145,7 @@ namespace design
                                     pms[&*cg] = ProbabilityMatrix(current);
                                     alreadysaved = true;
                                     if (debug) {
-                                        std::cerr << "saved PM (" << boost::get_property(*cg, boost::graph_name).type << "-" << boost::get_property(*cg, boost::graph_name).nummer << "):"  << std::endl
+                                        std::cerr << "saved PM (" << gprop.type << "-" << gprop.nummer << "):"  << std::endl
                                                 << pms[&*cg] << std::endl;
                                     }
                                 }
@@ -158,18 +156,13 @@ namespace design
                         }
                     }
                 }
-                
-                
-                std::cerr << "Graph (" << boost::get_property(*cg, boost::graph_name).type << "-" << boost::get_property(*cg, boost::graph_name).nummer << "):" << std::endl;
-                std::cerr << "Graph (" << &boost::get_property(*cg, boost::graph_name).type << "-" << &boost::get_property(*cg, boost::graph_name).nummer << "):" << std::endl;
-                std::cerr << "current graph storage location: " << &*cg << std::endl;
-                std::cerr << "current graph property storage location: " << &boost::get_property(*cg, boost::graph_name) << std::endl;
             }
             // save final state of PM to the main graph
             
             pms[&g] = ProbabilityMatrix(current);
             if (debug) {
-                std::cerr << "final PM (" << boost::get_property(g, boost::graph_name).type << "-" << boost::get_property(g, boost::graph_name).nummer << "):" << std::endl
+                graph_property& rgprop = boost::get_property(g, boost::graph_name);
+                std::cerr << "final PM (" << rgprop.type << "-" << rgprop.nummer << "):" << std::endl
                         << pms[&g] << std::endl;
             }
         }
@@ -182,28 +175,26 @@ namespace design
             for ( current = cg_end; current != cg;) {
                 --current;
                 
-                std::cerr << "current graph storage location: " << &(*current) << std::endl;
-                std::cerr << "current graph property storage location: " << &boost::get_property(*current, boost::graph_name) << std::endl;
+                // get graph properties
+                graph_property& gprop = boost::get_property(*current, boost::graph_name);
+                
                 if (debug) {
-                    std::cerr << "Sampling from: " << boost::get_property(*current, boost::graph_name).type << "-" << boost::get_property(*current, boost::graph_name).nummer << std::endl;
-                    std::cerr << "Sampling from: " << &boost::get_property(*current, boost::graph_name).type << "-" << &boost::get_property(*current, boost::graph_name).nummer << std::endl;
+                    std::cerr << "Sampling from: " << gprop.type << "-" << gprop.nummer << std::endl;
                     std::cerr << "With PM: " << pms[&*current] << std::endl;
                 }
                 //print_graph(*current, &std::cerr, "iterator");
                 // build a key containing the constraints of already sampled bases
                 ProbabilityKey constraints;
                 std::set<int> a = pms[&*current].getSpecials();
-                std::cerr << "specials from this pm: " << a << std::endl;
+                
                 for (auto s : pms[&*current].getSpecials()) {
-                    std::cerr << s << std::endl;
                     //std::cerr << s << "/" << int_to_vertex(s, g.root()) << "/" << enum_to_char(g.root()[int_to_vertex(s, g.root())].base) << std::endl;
                     constraints[s] = g.root()[int_to_vertex(s, g.root())].base;
-                    std::cerr << "bbb"  << std::endl;
                 }
                 
                 // randomly sample one key from the matrix
                 if (debug) {
-                    std::cerr << "sampling from " << boost::get_property(*current, boost::graph_name).type << "-" << boost::get_property(*current, boost::graph_name).nummer << " with key: " << std::endl
+                    std::cerr << "sampling from " << gprop.type << "-" << gprop.nummer << " with key: " << std::endl
                            << constraints << std::endl << "and PM: " << std::endl
                            << pms[&*current] << std::endl;
                 }
@@ -223,7 +214,7 @@ namespace design
                 }
                 // if the graph is a path, we need to color everything in between special points as well
                 // else we will start the recursion
-                if (boost::get_property(*current, boost::graph_name).is_path) {
+                if (gprop.is_path) {
                     if (debug) {
                         std::cerr << "Path Coloring!" << std::endl;
                     }
@@ -320,7 +311,7 @@ namespace design
         }
 
         template <typename R>
-        void DependencyGraph<R>::reset_colors(Graph g) {
+        void DependencyGraph<R>::reset_colors(Graph& g) {
 
             BGL_FORALL_VERTICES_T(v, g, Graph) {
                 g[v].base = N;
@@ -337,7 +328,6 @@ namespace design
             Graph::children_iterator cc, cc_end;
             // iterate over all connected component and return pm.mnos() for the one with the right ID
             for (boost::tie(cc, cc_end) = graph.children(); cc != cc_end; ++cc) {
-                
                 if (boost::get_property(*cc, boost::graph_name).nummer == connected_component_ID) {
                     return pms[&*cc].mnos();
                 }

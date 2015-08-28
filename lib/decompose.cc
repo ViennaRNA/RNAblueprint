@@ -154,9 +154,10 @@ namespace design {
                     vertex++;
                 }
                 
-                boost::get_property(subg, boost::graph_name).type = 1;
-                boost::get_property(subg, boost::graph_name).nummer = i;
-                boost::get_property(subg, boost::graph_name).is_cc = true;
+                graph_property& gprop = boost::get_property(subg, boost::graph_name);
+                gprop.type = 1;
+                gprop.nummer = i;
+                gprop.is_cc = true;
             }
         }
 
@@ -236,8 +237,9 @@ namespace design {
                     }
                 }
                 // add properties
-                boost::get_property(subg, boost::graph_name).type = 2;
-                boost::get_property(subg, boost::graph_name).nummer = j++;
+                graph_property& gprop = boost::get_property(subg, boost::graph_name);
+                gprop.type = 2;
+                gprop.nummer = j++;
             }
         }
 
@@ -298,8 +300,9 @@ namespace design {
                     }
                 }
                 
-                boost::get_property(subg, boost::graph_name).type = 3;
-                boost::get_property(subg, boost::graph_name).nummer = i-1;
+                graph_property& gprop = boost::get_property(subg, boost::graph_name);
+                gprop.type = 3;
+                gprop.nummer = i-1;
             }
             // detect attachment points and push them into the graph as vertex property Ak
             color_attachment_points(g);
@@ -358,9 +361,10 @@ namespace design {
                         parts_recursion(g, subgptr, boost::source(e, g));
                         parts_recursion(g, subgptr, boost::target(e, g));
                         
-                        boost::get_property(*subgptr, boost::graph_name).type = 4;
-                        boost::get_property(*subgptr, boost::graph_name).nummer = i++;
-                        boost::get_property(*subgptr, boost::graph_name).is_path = true;
+                        graph_property& gprop = boost::get_property(*subgptr, boost::graph_name);
+                        gprop.type = 4;
+                        gprop.nummer = i++;
+                        gprop.is_path = true;
                     }
                 }
                 if (debug) {

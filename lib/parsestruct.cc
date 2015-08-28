@@ -76,8 +76,9 @@ namespace design {
             }
             
             // label graph as root
-            boost::get_property(g, boost::graph_name).type = 0;
-            boost::get_property(g, boost::graph_name).nummer = 0;
+            graph_property& gprop = boost::get_property(g, boost::graph_name);
+            gprop.type = 0;
+            gprop.nummer = 0;
             
             return g;
         }
