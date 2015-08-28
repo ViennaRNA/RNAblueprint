@@ -45,7 +45,8 @@ namespace design {
         };
 
         struct graph_property {
-            int nummer;
+            // concurrent number from 0 to #components-1
+            int id;
             /*
              0 -> root
              1 -> cc
@@ -55,7 +56,6 @@ namespace design {
              */
             int type;
             bool is_path = false;
-            bool is_cc = false;
         };
 
         // graph_properties 

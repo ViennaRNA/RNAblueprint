@@ -139,7 +139,15 @@ namespace design {
         * 
         *  Returns: The number of possible sequences for this mutation.
         */
-        unsigned long long mutate(int start, int end);        
+        unsigned long long mutate(int start, int end);
+        /*! \brief Resets only the connected component with the connected_component_ID and samples a new sequence.
+        *  
+        *  This way you can choose yourself what to mutate!
+        *  The whole connected components will be re-sampled all the time.
+        * 
+        *  Returns: The number of possible sequences for this mutation.
+        */
+        unsigned long long mutate_connected_component(int connected_component_ID);
         /*! \brief Returns the amount of solutions given the dependency graph and sequence constraints
         *  
         *  Number of sequences is the total amount of sequences possible for the given structural and sequence constraints.

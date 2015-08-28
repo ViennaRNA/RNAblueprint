@@ -39,10 +39,11 @@ namespace design {
             void set_sequence(Sequence sequence);
             void set_sequence_string(std::string seq_str);
             void set_sequence();
-            unsigned long long mutate_local(int min_num_pos, int max_num_pos);
-            unsigned long long mutate_global(int min_num_pos, int max_num_pos);
+            // call this function to mutate a random subgraph (either a path, if graph_type=-1 or a connected component, if graph_type=1)
+            unsigned long long mutate_local_global(int graph_type, int min_num_pos, int max_num_pos);
             unsigned long long mutate(int position);
             unsigned long long mutate(int start, int end);
+            unsigned long long mutate_connected_component(int connected_component_ID);
             std::map< int, std::vector<int> > connected_components();
             std::vector< int > special_vertices();
             R * rand_ptr;
@@ -52,8 +53,13 @@ namespace design {
             bool bipartite; // if dependency graph is bipartite and a therefore a solution exists
             R rand;
             void calculate_probabilities(Graph& g);
-            void sample_sequence(Graph& g);
+            unsigned long long sample_sequence(Graph& g);
             void reset_colors(Graph& g);
+            unsigned long long mutate(Graph& g);
+            // this function fills the subgraphs set with all the sugraphs of the given type (root, cc, bc, path)
+            // if int type= -1, then it returns all subgraphs which are actual paths (gp.is_path == true).
+            // you can specify also a minimal and maximal size of the subgraph
+            void get_subgraphs(Graph& g, std::unordered_set< Graph* >& subgraphs, int type, int min_size, int max_size);
         };
     }
 }

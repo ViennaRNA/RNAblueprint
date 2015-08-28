@@ -156,8 +156,7 @@ namespace design {
                 
                 graph_property& gprop = boost::get_property(subg, boost::graph_name);
                 gprop.type = 1;
-                gprop.nummer = i;
-                gprop.is_cc = true;
+                gprop.id = i;
             }
         }
 
@@ -239,7 +238,7 @@ namespace design {
                 // add properties
                 graph_property& gprop = boost::get_property(subg, boost::graph_name);
                 gprop.type = 2;
-                gprop.nummer = j++;
+                gprop.id = j++;
             }
         }
 
@@ -302,7 +301,7 @@ namespace design {
                 
                 graph_property& gprop = boost::get_property(subg, boost::graph_name);
                 gprop.type = 3;
-                gprop.nummer = i-1;
+                gprop.id = i-1;
             }
             // detect attachment points and push them into the graph as vertex property Ak
             color_attachment_points(g);
@@ -363,7 +362,7 @@ namespace design {
                         
                         graph_property& gprop = boost::get_property(*subgptr, boost::graph_name);
                         gprop.type = 4;
-                        gprop.nummer = i++;
+                        gprop.id = i++;
                         gprop.is_path = true;
                     }
                 }

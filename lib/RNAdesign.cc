@@ -82,12 +82,14 @@ namespace design {
     
     template <typename R>
     unsigned long long DependencyGraph<R>::mutate_local(int min_num_pos, int max_num_pos) {
-        return g->mutate_local(min_num_pos, max_num_pos);
+        // if local_global=-1 we will mutate only actual graphs (independent of their type)
+        return g->mutate_local_global(-1, min_num_pos, max_num_pos);
     }
     
     template <typename R>
     unsigned long long DependencyGraph<R>::mutate_global(int min_num_pos, int max_num_pos) {
-        return g->mutate_global(min_num_pos, max_num_pos);
+        // if local_global=1 we will mutate only connected components
+        return g->mutate_local_global(1, min_num_pos, max_num_pos);
     }
     
     template <typename R>
@@ -98,6 +100,11 @@ namespace design {
     template <typename R>
     unsigned long long DependencyGraph<R>::mutate(int start, int end) {
         return g->mutate(start, end);
+    }
+    
+    template <typename R>
+    unsigned long long DependencyGraph<R>::mutate_connected_component(int connected_component_ID) {
+        return g->mutate_connected_component(connected_component_ID);
     }
 
     template <typename R>

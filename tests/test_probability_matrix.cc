@@ -533,10 +533,11 @@ BOOST_AUTO_TEST_CASE(RandomlySampleKey1) {
     constraint[4] = V;
     constraint[7] = N;
 
-    ProbabilityKey result = m.sample(constraint, &rand_gen);
-    BOOST_CHECK(result[1] == A);
-    BOOST_CHECK(result[4] == A);
-    BOOST_CHECK(result[7] == U);
+    std::pair<ProbabilityKey, unsigned long long> result = m.sample(constraint, &rand_gen);
+    BOOST_CHECK(result.first[1] == A);
+    BOOST_CHECK(result.first[4] == A);
+    BOOST_CHECK(result.first[7] == U);
+    BOOST_CHECK(result.second == 1276);
 }
 
 BOOST_AUTO_TEST_CASE(RandomlySampleKey2) {
@@ -559,13 +560,14 @@ BOOST_AUTO_TEST_CASE(RandomlySampleKey2) {
     }
     ProbabilityMatrix c = m;
 
-    ProbabilityKey result = m.sample(&rand_gen);
-    BOOST_CHECK(result[1] == C);
-    BOOST_CHECK(result[4] == U);
-    BOOST_CHECK(result[7] == U);
+    std::pair<ProbabilityKey, unsigned long long> result = m.sample(&rand_gen);
+    BOOST_CHECK(result.first[1] == C);
+    BOOST_CHECK(result.first[4] == U);
+    BOOST_CHECK(result.first[7] == U);
+    BOOST_CHECK(result.second == 6191);
 
     for (int i = 0; i < 1000; i++) {
-        ProbabilityKey test = m.sample(&rand_gen);
+        std::pair<ProbabilityKey, unsigned long long> test = m.sample(&rand_gen);
         //std::cerr << "One hundred Test:" << std::endl << test << std::endl;
     }
     BOOST_CHECK(m.mnos() == c.mnos());

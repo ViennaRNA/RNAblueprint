@@ -81,18 +81,16 @@ BOOST_AUTO_TEST_CASE(ParseDotBracket) {
     
     graph_property& graph_propt = boost::get_property(g, boost::graph_name);
     BOOST_CHECK(graph_propt.type == 0);
-    BOOST_CHECK(graph_propt.nummer == 0);
+    BOOST_CHECK(graph_propt.id == 0);
     
 }
 
 BOOST_AUTO_TEST_CASE(TestFault1) {
     std::vector< std::string > structures;
-    structures.push_back("((((...))))");
+    structures.push_back("((((...)))");
     BOOST_TEST_MESSAGE("parse structure with too few closing brackets");
-
-    Graph g = parse_structures(structures);
-    // TODO check for exception
-    //BOOST_CHECK
+    //check for exception
+    BOOST_REQUIRE_THROW(Graph g = parse_structures(structures), std::exception);
 }
 
 BOOST_AUTO_TEST_CASE(SetConstraints) {

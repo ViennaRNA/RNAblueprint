@@ -87,7 +87,7 @@ namespace design {
         }
         
         template <typename R>
-        ProbabilityKey ProbabilityMatrix::sample(R* rand_ptr) {
+        std::pair<ProbabilityKey, unsigned long long> ProbabilityMatrix::sample(R* rand_ptr) {
             ProbabilityKey pk;
             
             for (auto s : getSpecials()) {
@@ -98,7 +98,7 @@ namespace design {
         }
         
         template <typename R>
-        ProbabilityKey ProbabilityMatrix::sample(ProbabilityKey pk, R* rand_ptr) {
+        std::pair<ProbabilityKey, unsigned long long> ProbabilityMatrix::sample(ProbabilityKey pk, R* rand_ptr) {
             ProbabilityKey result;
             
             // get all possible keys for the constraints set in pk
@@ -128,9 +128,9 @@ namespace design {
             }
 
             if (debug) {
-                std::cerr << "Key Sampled: " << result << std::endl;
+                std::cerr << "Key Sampled: " << result << " with mnos: " << constrained_mnos << std::endl;
             }
-            return result;
+            return std::make_pair(result, constrained_mnos);
         }
         
         ProbabilityMatrix operator* (ProbabilityMatrix& x, ProbabilityMatrix& y) {
@@ -257,7 +257,7 @@ namespace design {
             return os;
         }
         
-        template ProbabilityKey ProbabilityMatrix::sample<std::mt19937> (std::mt19937*);
-        template ProbabilityKey ProbabilityMatrix::sample<std::mt19937> (ProbabilityKey, std::mt19937*);
+        template std::pair<ProbabilityKey, unsigned long long> ProbabilityMatrix::sample<std::mt19937> (std::mt19937*);
+        template std::pair<ProbabilityKey, unsigned long long> ProbabilityMatrix::sample<std::mt19937> (ProbabilityKey, std::mt19937*);
     }
 }

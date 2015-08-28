@@ -90,7 +90,8 @@ namespace design {
                     break;
                 case 'N': intletter = N;
                     break;
-                default: intletter = -1;
+                default: 
+                    throw std::out_of_range("This is not a valid IUPAC notation!");
                     break;
             }
             return intletter;

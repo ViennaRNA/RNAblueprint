@@ -139,4 +139,201 @@ BOOST_AUTO_TEST_CASE(output_connected_components) {
     BOOST_CHECK(dependency_graph.connected_components() == check_output);
 }
 
+BOOST_AUTO_TEST_CASE(set_sequence1) {
+
+    BOOST_TEST_MESSAGE("set a sequence onto the graph");
+
+    design::initialize_library(true);
+    std::vector<std::string> structures = {"(..)"};
+    std::mt19937 rand_gen(1);
+
+    design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "NNNN", rand_gen);
+    dependency_graph.set_sequence_string("AAAU");
+    
+    BOOST_CHECK(dependency_graph.get_sequence_string() == "AAAU");
+}
+
+BOOST_AUTO_TEST_CASE(set_sequence2) {
+
+    BOOST_TEST_MESSAGE("set a sequence onto the graph with failure");
+
+    design::initialize_library(true);
+    std::vector<std::string> structures = {"(..)"};
+    std::mt19937 rand_gen(1);
+
+    design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "NNNN", rand_gen);
+    BOOST_REQUIRE_THROW(dependency_graph.set_sequence_string("AAAA"), std::exception);
+}
+
+BOOST_AUTO_TEST_CASE(set_sequence3) {
+
+    BOOST_TEST_MESSAGE("set a sequence onto the graph with failure and recover");
+
+    design::initialize_library(true);
+    std::vector<std::string> structures = {"(..)"};
+    std::mt19937 rand_gen(1);
+
+    design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "NNNN", rand_gen);
+    dependency_graph.set_sequence_string("AGCU");
+    BOOST_CHECK(dependency_graph.get_sequence_string() == "AGCU");
+    BOOST_REQUIRE_THROW(dependency_graph.set_sequence_string("AAAA"), std::exception);
+    BOOST_CHECK(dependency_graph.get_sequence_string() == "AGCU");
+}
+
+BOOST_AUTO_TEST_CASE(set_sequence4) {
+
+    BOOST_TEST_MESSAGE("set a sequence onto the graph with failure and recover");
+
+    design::initialize_library(true);
+    std::vector<std::string> structures = {"(..)"};
+    std::mt19937 rand_gen(1);
+
+    design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "NGNN", rand_gen);
+    BOOST_REQUIRE_THROW(dependency_graph.set_sequence_string("AAAU"), std::exception);
+}
+
+BOOST_AUTO_TEST_CASE(set_sequence5) {
+
+    BOOST_TEST_MESSAGE("set a sequence onto the path and failure");
+
+    design::initialize_library(true);
+    std::vector<std::string> structures = {".."};
+    std::mt19937 rand_gen(1);
+
+    design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "GN", rand_gen);
+    BOOST_REQUIRE_THROW(dependency_graph.set_sequence_string("AU"), std::exception);
+}
+
+BOOST_AUTO_TEST_CASE(set_sequence6) {
+
+    BOOST_TEST_MESSAGE("set a sequence containing N and die");
+
+    design::initialize_library(true);
+    std::vector<std::string> structures = {"().().", ".().()", ".(..)."};
+    std::mt19937 rand_gen(1);
+
+    design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "NNNNNN", rand_gen);
+    BOOST_CHECK(dependency_graph.number_of_sequences() == 48);
+    BOOST_REQUIRE_THROW(dependency_graph.set_sequence_string("UNNNNG"), std::exception);
+}
+
+BOOST_AUTO_TEST_CASE(number_of_sequences_ccID) {
+
+    BOOST_TEST_MESSAGE("check if we can get the nos for ccID");
+
+    design::initialize_library(true);
+    std::vector<std::string> structures = {".."};
+    std::mt19937 rand_gen(1);
+
+    design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "WN", rand_gen);
+    BOOST_CHECK(dependency_graph.number_of_sequences() == 8);
+    std::map< int, std::vector<int> > result = dependency_graph.connected_components();
+    std::map< int, std::vector<int> > check = {{0, {0}}, {1, {1}}};
+    
+    BOOST_CHECK(dependency_graph.number_of_sequences(0) == 2);
+    BOOST_CHECK(dependency_graph.number_of_sequences(1) == 4);
+}
+
+BOOST_AUTO_TEST_CASE(get_specials1) {
+
+    BOOST_TEST_MESSAGE("get empty list of special vertices");
+
+    design::initialize_library(true);
+    std::vector<std::string> structures = {".."};
+    std::mt19937 rand_gen(1);
+    
+    design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "WN", rand_gen);
+    std::vector< int > check = {};
+    BOOST_CHECK(dependency_graph.special_vertices() == check);
+}
+
+BOOST_AUTO_TEST_CASE(get_specials2) {
+
+    BOOST_TEST_MESSAGE("get list of special vertices for more complex graph");
+
+    design::initialize_library(true);
+    std::vector<std::string> structures = {"().().", ".().()", ".(..)."};
+    std::mt19937 rand_gen(1);
+    
+    design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "NNNNNY", rand_gen);
+    std::vector< int > check = {1, 4};
+    BOOST_CHECK(dependency_graph.special_vertices() == check);
+}
+
+BOOST_AUTO_TEST_CASE(mutate_cc_with_ID) {
+
+    BOOST_TEST_MESSAGE("check if we can mutate the cc with ccID");
+
+    design::initialize_library(true);
+    std::vector<std::string> structures = {".."};
+    std::mt19937 rand_gen(1);
+
+    design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "WN", rand_gen);
+    BOOST_CHECK(dependency_graph.number_of_sequences() == 8);
+    dependency_graph.set_sequence();
+    std::cerr << dependency_graph.get_sequence_string() << std::endl;
+    BOOST_CHECK(dependency_graph.get_sequence_string() == "UG");
+    
+    unsigned long long cnos = dependency_graph.mutate_connected_component(1);
+    BOOST_CHECK(cnos == 4);
+    BOOST_CHECK(dependency_graph.get_sequence_string() == "UC");
+    
+    cnos = dependency_graph.mutate_connected_component(0);
+    BOOST_CHECK(cnos == 2);
+    BOOST_CHECK(dependency_graph.get_sequence_string() == "UC");
+    
+    cnos = dependency_graph.mutate_connected_component(0);
+    BOOST_CHECK(cnos == 2);
+    BOOST_CHECK(dependency_graph.get_sequence_string() == "AC");
+}
+
+BOOST_AUTO_TEST_CASE(mutate_global1) {
+
+    BOOST_TEST_MESSAGE("check if we can mutate globally");
+
+    design::initialize_library(true);
+    std::vector<std::string> structures = {".."};
+    std::mt19937 rand_gen(2);
+
+    design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "WN", rand_gen);
+    BOOST_CHECK(dependency_graph.number_of_sequences() == 8);
+    dependency_graph.set_sequence();
+    BOOST_CHECK(dependency_graph.get_sequence_string() == "UA");
+    
+    unsigned long long cnos = dependency_graph.mutate_local_global(1, 0, 0);
+    BOOST_CHECK(cnos == 2);
+    BOOST_CHECK(dependency_graph.get_sequence_string() == "AA");
+    
+    cnos = dependency_graph.mutate_local_global(1, 0, 1);
+    BOOST_CHECK(cnos == 4);
+    BOOST_CHECK(dependency_graph.get_sequence_string() == "AC");
+}
+
+BOOST_AUTO_TEST_CASE(mutate_local1) {
+
+    BOOST_TEST_MESSAGE("check if we can mutate locally");
+
+    design::initialize_library(true);
+    std::vector<std::string> structures = {".."};
+    std::mt19937 rand_gen(2);
+
+    design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "WN", rand_gen);
+    BOOST_CHECK(dependency_graph.number_of_sequences() == 8);
+    dependency_graph.set_sequence();
+    std::cerr << dependency_graph.get_sequence_string() << std::endl;
+    BOOST_CHECK(dependency_graph.get_sequence_string() == "UA");
+    
+    unsigned long long cnos = dependency_graph.mutate_local_global(-1, 0, 0);
+    BOOST_CHECK(cnos == 2);
+    std::cerr << dependency_graph.get_sequence_string() << std::endl;
+    BOOST_CHECK(dependency_graph.get_sequence_string() == "AA");
+    
+    cnos = dependency_graph.mutate_local_global(-1, 0, 1);
+    BOOST_CHECK(cnos == 4);
+    std::cerr << dependency_graph.get_sequence_string() << std::endl;
+    BOOST_CHECK(dependency_graph.get_sequence_string() == "AC");
+}
+
+
+
 BOOST_AUTO_TEST_SUITE_END()
