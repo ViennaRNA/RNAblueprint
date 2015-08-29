@@ -18,6 +18,7 @@
 
 #include <sstream>
 #include <random>
+#include <unordered_set>
 
 namespace design {
     namespace detail {
