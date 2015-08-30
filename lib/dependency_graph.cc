@@ -289,10 +289,13 @@ namespace design
                 sample_sequence(graph);
             } catch (std::exception& e) {
                 // reset to previous sequence
-                set_sequence(previous);
+                for (unsigned int p = 0; p < previous.size(); p++) {
+                    graph[int_to_vertex(p, graph)].base = previous[p];
+                }
                 std::stringstream ss;
                 ss << "Error while setting the given sequence: " << sequence << std::endl
-                        << "Resetting to previous sequence: " << previous << std::endl << e.what();
+                        << "Resetting to previous sequence: " << previous << std::endl 
+                        << "Maybe constraints are not fulfilled?" std::endl << e.what();
                 throw std::logic_error(ss.str());
             }
         }
