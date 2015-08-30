@@ -82,7 +82,6 @@ namespace design {
             int min_degree;
             std::tie(min_degree, max_degree) = get_min_max_degree(g);
             
-            std::cerr << "min/max: " << min_degree << "/" << max_degree << std::endl;
             // assert path
             if (max_degree > 2) {
                 throw std::logic_error("This graph is no cycle or path (max degree > 2). I can't color this!");
