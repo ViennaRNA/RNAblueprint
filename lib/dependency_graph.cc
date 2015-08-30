@@ -295,7 +295,7 @@ namespace design
                 std::stringstream ss;
                 ss << "Error while setting the given sequence: " << sequence << std::endl
                         << "Resetting to previous sequence: " << previous << std::endl 
-                        << "Maybe constraints are not fulfilled?" std::endl << e.what();
+                        << "Maybe constraints are not fulfilled?" << std::endl << e.what();
                 throw std::logic_error(ss.str());
             }
         }
