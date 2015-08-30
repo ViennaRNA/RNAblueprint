@@ -45,7 +45,7 @@ namespace design {
             unsigned long long mutate_global(int min_num_pos, int max_num_pos);
             unsigned long long mutate(int position);
             unsigned long long mutate(int start, int end);
-            unsigned long long mutate_connected_component(int connected_component_ID);
+            unsigned long long mutate_global(int connected_component_ID);
             unsigned long long number_of_sequences();
             unsigned long long number_of_sequences(int connected_component_ID);
             std::map< int, std::vector<int> > connected_components();
