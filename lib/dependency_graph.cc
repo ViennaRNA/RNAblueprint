@@ -344,8 +344,10 @@ namespace design
                 // if the random number is bigger than our probability, take this base as the current base!
                 if (random < sum) {
                     return mutate(*s);
+                    break;
                 }
             }
+            throw std::out_of_range("Could not find any component which fulfils your requirements!");
         }
         
         template <typename R>
