@@ -321,7 +321,7 @@ namespace design
 
         template <typename R>
         unsigned long long DependencyGraph<R>::mutate_local_global(int graph_type, int min_num_pos, int max_num_pos) {
-            // get all paths which fulfill the requirements of the range
+            // get all paths which fulfil the requirements of the range
             std::unordered_set< Graph* > subgraphs;
             get_subgraphs(graph, subgraphs, graph_type, min_num_pos, max_num_pos);
             if (debug) {
@@ -343,6 +343,17 @@ namespace design
                     return mutate(*s);
                 }
             }
+        }
+        
+        template <typename R>
+        unsigned long long DependencyGraph<R>::mutate_global(int connected_component_ID) {
+            Graph::children_iterator cc, cc_end;
+            for (boost::tie(cc, cc_end) = graph.children(); cc != cc_end; ++cc) {
+                if (boost::get_property(*cc, boost::graph_name).id == connected_component_ID) {
+                    return mutate(*cc);
+                }
+            }
+            throw std::out_of_range("Could not find a connected component with this ID!");
         }
         
         template <typename R>
@@ -383,17 +394,6 @@ namespace design
             //TODO!
             unsigned long long nos = 0;
             return nos;
-        }
-        
-        template <typename R>
-        unsigned long long DependencyGraph<R>::mutate_connected_component(int connected_component_ID) {
-            Graph::children_iterator cc, cc_end;
-            for (boost::tie(cc, cc_end) = graph.children(); cc != cc_end; ++cc) {
-                if (boost::get_property(*cc, boost::graph_name).id == connected_component_ID) {
-                    return mutate(*cc);
-                }
-            }
-            throw std::out_of_range("Could not find a connected component with this ID!");
         }
         
         template <typename R>

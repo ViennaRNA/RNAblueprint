@@ -122,7 +122,7 @@ namespace design {
         unsigned long long mutate_global(int connected_component_ID);
         /*! \brief Resets only the smallest subgraph(s) possible containing the vertex at the given position in the sequence.
         *  
-        *  This way you can optimize by targeted mutagenesis at the given positions. All positions dependent on the chosen one
+        *  This way you can optimise by targeted mutagenesis at the given positions. All positions dependent on the chosen one
         *  will also be mutated.
         *  If your position is a special vertex, the whole connected component will be re-sampled. Else, in case of being a non-special vertex,
         *  only the smallest path containing the vertex will be mutated. Positions range from [0,N-1]
@@ -140,14 +140,6 @@ namespace design {
         *  Returns: The number of possible sequences for this mutation.
         */
         unsigned long long mutate(int start, int end);
-        /*! \brief Resets only the connected component with the connected_component_ID and samples a new sequence.
-        *  
-        *  This way you can choose yourself what to mutate!
-        *  The whole connected components will be re-sampled all the time.
-        * 
-        *  Returns: The number of possible sequences for this mutation.
-        */
-        unsigned long long mutate_connected_component(int connected_component_ID);
         /*! \brief Returns the amount of solutions given the dependency graph and sequence constraints
         *  
         *  Number of sequences is the total amount of sequences possible for the given structural and sequence constraints.

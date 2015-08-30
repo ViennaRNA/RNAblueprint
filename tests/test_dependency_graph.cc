@@ -274,15 +274,15 @@ BOOST_AUTO_TEST_CASE(mutate_cc_with_ID) {
     std::cerr << dependency_graph.get_sequence_string() << std::endl;
     BOOST_CHECK(dependency_graph.get_sequence_string() == "UG");
     
-    unsigned long long cnos = dependency_graph.mutate_connected_component(1);
+    unsigned long long cnos = dependency_graph.mutate_global(1);
     BOOST_CHECK(cnos == 4);
     BOOST_CHECK(dependency_graph.get_sequence_string() == "UC");
     
-    cnos = dependency_graph.mutate_connected_component(0);
+    cnos = dependency_graph.mutate_global(0);
     BOOST_CHECK(cnos == 2);
     BOOST_CHECK(dependency_graph.get_sequence_string() == "UC");
     
-    cnos = dependency_graph.mutate_connected_component(0);
+    cnos = dependency_graph.mutate_global(0);
     BOOST_CHECK(cnos == 2);
     BOOST_CHECK(dependency_graph.get_sequence_string() == "AC");
 }

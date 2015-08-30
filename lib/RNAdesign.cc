@@ -93,18 +93,21 @@ namespace design {
     }
     
     template <typename R>
+    unsigned long long DependencyGraph<R>::mutate_global(int connected_component_ID) {
+        // if local_global=1 we will mutate only connected components
+        return g->mutate_global(connected_component_ID);
+    }
+    
+    template <typename R>
     unsigned long long DependencyGraph<R>::mutate(int position) {
+        throw std::logic_error("This is not implemented yet!");
         return g->mutate(position);
     }
     
     template <typename R>
     unsigned long long DependencyGraph<R>::mutate(int start, int end) {
+        throw std::logic_error("This is not implemented yet!");
         return g->mutate(start, end);
-    }
-    
-    template <typename R>
-    unsigned long long DependencyGraph<R>::mutate_connected_component(int connected_component_ID) {
-        return g->mutate_connected_component(connected_component_ID);
     }
 
     template <typename R>

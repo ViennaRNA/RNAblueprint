@@ -42,9 +42,9 @@ namespace design {
             void set_sequence();
             // call this function to mutate a random subgraph (either a path, if graph_type=-1 or a connected component, if graph_type=1)
             unsigned long long mutate_local_global(int graph_type, int min_num_pos, int max_num_pos);
+            unsigned long long mutate_global(int connected_component_ID);
             unsigned long long mutate(int position);
             unsigned long long mutate(int start, int end);
-            unsigned long long mutate_connected_component(int connected_component_ID);
             std::map< int, std::vector<int> > connected_components();
             std::vector< int > special_vertices();
             R * rand_ptr;
