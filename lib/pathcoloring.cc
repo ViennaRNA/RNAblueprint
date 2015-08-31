@@ -73,9 +73,9 @@ namespace design {
         }
         
         template <typename RG>
-        unsigned long long color_path_graph(Graph& g, RG* rand_ptr) {
+        double color_path_graph(Graph& g, RG* rand_ptr) {
 
-            unsigned long long max_number_of_sequences = 0;
+            double max_number_of_sequences = 0;
 
             // check if given graph is indeed a path with max_degree = 2 and two ends with degree = 1;
             int max_degree;
@@ -98,11 +98,11 @@ namespace design {
             class color_dfs_visitor : public boost::default_dfs_visitor {
             public:
 
-                color_dfs_visitor(unsigned long long& max_number_of_sequences, RG * rand_ptr, PairingMatrix * pair, std::uniform_real_distribution<float>& d,
+                color_dfs_visitor(double& max_number_of_sequences, RG * rand_ptr, PairingMatrix * pair, std::uniform_real_distribution<float>& d,
                         nosMap& n, std::unordered_map<Vertex, int>& c, int& prev)
                 : mnos(max_number_of_sequences), r_ptr(rand_ptr), p(pair), dist(d), nos_map(n), colors(c), previous(prev) {
                 }
-                unsigned long long& mnos;
+                double& mnos;
                 RG * r_ptr;
                 PairingMatrix * p;
                 std::uniform_real_distribution<float>& dist;
@@ -163,7 +163,7 @@ namespace design {
                     }
 
                     // calculate number of sequences with respect to the chosen previous base
-                    unsigned long long nos = 0;
+                    double nos = 0;
                     for (auto b : base_conversion[ g[u].base ]) {
                         if (p->get(1, b, previous) > 0) {
                             nos += nos_map[u][b];
@@ -178,11 +178,11 @@ namespace design {
                         throw std::logic_error(ss.str());
                     }
 
-                    unsigned long long random = dist(*r_ptr) * nos;
+                    double random = dist(*r_ptr) * nos;
 
                     // stochastically take one of the possibilities
                     // start at the probability of first possible character and add each other base probability as long long as the random number is bigger.
-                    unsigned long long sum = 0;
+                    double sum = 0;
                     for (auto b : base_conversion[ g[u].base ]) {
                         if (p->get(1, b, previous) > 0) {
                             sum += nos_map[u][b];
@@ -233,6 +233,6 @@ namespace design {
             return max_number_of_sequences;
         }
 
-        template unsigned long long color_path_graph<std::mt19937> (Graph&, std::mt19937*);
+        template double color_path_graph<std::mt19937> (Graph&, std::mt19937*);
     }
 }

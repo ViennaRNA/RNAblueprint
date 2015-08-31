@@ -81,42 +81,42 @@ namespace design {
     }
     
     template <typename R>
-    unsigned long long DependencyGraph<R>::mutate_local(int min_num_pos, int max_num_pos) {
+    double DependencyGraph<R>::mutate_local(int min_num_pos, int max_num_pos) {
         // if local_global=-1 we will mutate only actual graphs (independent of their type)
         return g->mutate_local_global(-1, min_num_pos, max_num_pos);
     }
     
     template <typename R>
-    unsigned long long DependencyGraph<R>::mutate_global(int min_num_pos, int max_num_pos) {
+    double DependencyGraph<R>::mutate_global(int min_num_pos, int max_num_pos) {
         // if local_global=1 we will mutate only connected components
         return g->mutate_local_global(1, min_num_pos, max_num_pos);
     }
     
     template <typename R>
-    unsigned long long DependencyGraph<R>::mutate_global(int connected_component_ID) {
+    double DependencyGraph<R>::mutate_global(int connected_component_ID) {
         // if local_global=1 we will mutate only connected components
         return g->mutate_global(connected_component_ID);
     }
     
     template <typename R>
-    unsigned long long DependencyGraph<R>::mutate(int position) {
+    double DependencyGraph<R>::mutate(int position) {
         throw std::logic_error("This is not implemented yet!");
         return g->mutate(position);
     }
     
     template <typename R>
-    unsigned long long DependencyGraph<R>::mutate(int start, int end) {
+    double DependencyGraph<R>::mutate(int start, int end) {
         throw std::logic_error("This is not implemented yet!");
         return g->mutate(start, end);
     }
 
     template <typename R>
-    unsigned long long DependencyGraph<R>::number_of_sequences() {
+    double DependencyGraph<R>::number_of_sequences() {
         return g->number_of_sequences();
     }
     
     template <typename R>
-    unsigned long long DependencyGraph<R>::number_of_sequences(int connected_component_ID) {
+    double DependencyGraph<R>::number_of_sequences(int connected_component_ID) {
         return g->number_of_sequences(connected_component_ID);
     }
     

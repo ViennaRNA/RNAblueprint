@@ -274,7 +274,7 @@ BOOST_AUTO_TEST_CASE(mutate_cc_with_ID) {
     std::cerr << dependency_graph.get_sequence_string() << std::endl;
     BOOST_CHECK(dependency_graph.get_sequence_string() == "UG");
     
-    unsigned long long cnos = dependency_graph.mutate_global(1);
+    double cnos = dependency_graph.mutate_global(1);
     BOOST_CHECK(cnos == 4);
     BOOST_CHECK(dependency_graph.get_sequence_string() == "UC");
     
@@ -300,7 +300,7 @@ BOOST_AUTO_TEST_CASE(mutate_global1) {
     dependency_graph.set_sequence();
     BOOST_CHECK(dependency_graph.get_sequence_string() == "UA");
     
-    unsigned long long cnos = dependency_graph.mutate_local_global(1, 0, 0);
+    double cnos = dependency_graph.mutate_local_global(1, 0, 0);
     BOOST_CHECK(cnos == 2);
     BOOST_CHECK(dependency_graph.get_sequence_string() == "AA");
     
@@ -323,7 +323,7 @@ BOOST_AUTO_TEST_CASE(mutate_local1) {
     std::cerr << dependency_graph.get_sequence_string() << std::endl;
     BOOST_CHECK(dependency_graph.get_sequence_string() == "UA");
     
-    unsigned long long cnos = dependency_graph.mutate_local_global(-1, 0, 0);
+    double cnos = dependency_graph.mutate_local_global(-1, 0, 0);
     BOOST_CHECK(cnos == 2);
     std::cerr << dependency_graph.get_sequence_string() << std::endl;
     BOOST_CHECK(dependency_graph.get_sequence_string() == "AA");

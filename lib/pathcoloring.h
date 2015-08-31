@@ -29,7 +29,7 @@
 namespace design {
     namespace detail {
         // typedefs
-        typedef std::unordered_map< Vertex, std::unordered_map<int, unsigned long long> > nosMap;
+        typedef std::unordered_map< Vertex, std::unordered_map<int, double> > nosMap;
 
         // class definitions
         
@@ -38,7 +38,7 @@ namespace design {
         
         // color a path
         template <typename RG>
-        unsigned long long color_path_graph(Graph& g, RG* rand_ptr);
+        double color_path_graph(Graph& g, RG* rand_ptr);
         
     }
 }

@@ -103,7 +103,7 @@ namespace design {
             return C;
         }
 
-        unsigned long long PairingMatrix::get(unsigned int l, unsigned int b1, unsigned int b2) {
+        double PairingMatrix::get(unsigned int l, unsigned int b1, unsigned int b2) {
 
             // if we request a probability for an unknown (N) character at one or both ends, 
             // return the sum of the probabilities for all characters at this position
@@ -113,7 +113,7 @@ namespace design {
             if ((b1 >= A_Size) || (b2 >= A_Size)) {
                 if ((b1 >= A_Size) && (b2 >= A_Size)) {
                     //std::cerr << "b1>=Abet; b2>=Abet" << std::endl;
-                    unsigned long long sum = 0;
+                    double sum = 0;
                     for (auto i : base_conversion[b2]) {
                         sum += get(l, b1, i);
                     }
@@ -121,7 +121,7 @@ namespace design {
 
                 } else if (b1 >= A_Size) {
                     //std::cerr << "b1>=Abet" << std::endl;
-                    unsigned long long sum = 0;
+                    double sum = 0;
                     for (auto i : base_conversion[b1]) {
                         sum += get(l, i, b2);
                     }

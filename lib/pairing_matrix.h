@@ -21,7 +21,7 @@
 namespace design {
     namespace detail {
         //typedefs
-        typedef matrix< unsigned long long, A_Size, A_Size > rnaMatrix;
+        typedef matrix< double, A_Size, A_Size > rnaMatrix;
 
         class Fibonacci {
         public:
@@ -39,7 +39,7 @@ namespace design {
         public:
             static PairingMatrix* Instance();
             // interface
-            unsigned long long get(unsigned int l, unsigned int b1, unsigned int b2);
+            double get(unsigned int l, unsigned int b1, unsigned int b2);
         protected:
             PairingMatrix();
             ~PairingMatrix();

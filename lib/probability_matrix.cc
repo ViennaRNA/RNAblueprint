@@ -33,7 +33,7 @@ namespace design {
             }
         }
 
-        unsigned long long ProbabilityMatrix::operator[] (ProbabilityKey& pk) {
+        double ProbabilityMatrix::operator[] (ProbabilityKey& pk) {
             // sanity check if the vertices requested are indeed stored in this pm
             for (auto pair : pk) {
                 if ( specials.find(pair.first) == specials.end() ) {
@@ -41,7 +41,7 @@ namespace design {
                 }
             }
             
-            unsigned long long returnvalue = 0;
+            double returnvalue = 0;
             std::vector<ProbabilityKey> allkeys = permute_key(pk);
             
             for (auto key : allkeys) {
@@ -55,7 +55,7 @@ namespace design {
             return returnvalue;
         }
         
-        void ProbabilityMatrix::put (ProbabilityKey& pk, unsigned long long nos) {
+        void ProbabilityMatrix::put (ProbabilityKey& pk, double nos) {
             if (!initialized) {
                 for (auto pair : pk) {
                     specials.insert(pair.first);
@@ -78,8 +78,8 @@ namespace design {
             }
         }
         
-        unsigned long long ProbabilityMatrix::mnos() {
-            unsigned long long mnos = 0;
+        double ProbabilityMatrix::mnos() {
+            double mnos = 0;
             for (auto elem : pmap) {
                 mnos += elem.second;
             }
@@ -87,7 +87,7 @@ namespace design {
         }
         
         template <typename R>
-        std::pair<ProbabilityKey, unsigned long long> ProbabilityMatrix::sample(R* rand_ptr) {
+        std::pair<ProbabilityKey, double> ProbabilityMatrix::sample(R* rand_ptr) {
             ProbabilityKey pk;
             
             for (auto s : getSpecials()) {
@@ -98,12 +98,12 @@ namespace design {
         }
         
         template <typename R>
-        std::pair<ProbabilityKey, unsigned long long> ProbabilityMatrix::sample(ProbabilityKey pk, R* rand_ptr) {
+        std::pair<ProbabilityKey, double> ProbabilityMatrix::sample(ProbabilityKey pk, R* rand_ptr) {
             ProbabilityKey result;
             
             // get all possible keys for the constraints set in pk
             std::vector<ProbabilityKey> possible_keys = permute_key(pk);
-            unsigned long long constrained_mnos = 0;
+            double constrained_mnos = 0;
             // get the maximal number of sequences for the input constraints set in pk
             for (auto k: possible_keys) {
                 constrained_mnos += (*this)[k];
@@ -113,10 +113,10 @@ namespace design {
                 throw std::logic_error( "Cannot fulfill constraints while sampling a key!" );
             }
             std::uniform_real_distribution<float> dist(0, 1);
-            unsigned long long random = dist(*rand_ptr) * constrained_mnos;
+            double random = dist(*rand_ptr) * constrained_mnos;
             // stochastically take one of the possibilities
             // start at the probability of first possible character and add each other base probability as long long as the random number is bigger.
-            unsigned long long sum = 0;
+            double sum = 0;
             for (auto k : possible_keys) {
                 sum += (*this)[k];
                 // if the random number is bigger than our probability, take this base as the current base!
@@ -257,7 +257,7 @@ namespace design {
             return os;
         }
         
-        template std::pair<ProbabilityKey, unsigned long long> ProbabilityMatrix::sample<std::mt19937> (std::mt19937*);
-        template std::pair<ProbabilityKey, unsigned long long> ProbabilityMatrix::sample<std::mt19937> (ProbabilityKey, std::mt19937*);
+        template std::pair<ProbabilityKey, double> ProbabilityMatrix::sample<std::mt19937> (std::mt19937*);
+        template std::pair<ProbabilityKey, double> ProbabilityMatrix::sample<std::mt19937> (ProbabilityKey, std::mt19937*);
     }
 }

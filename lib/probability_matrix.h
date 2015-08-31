@@ -43,7 +43,7 @@ namespace design {
         };
         
         // Class to get Pairing numbers
-        typedef std::unordered_map< ProbabilityKey, unsigned long long, ProbabilityKeyHash> ProbabilityMap;
+        typedef std::unordered_map< ProbabilityKey, double, ProbabilityKeyHash> ProbabilityMap;
         
         class ProbabilityMatrix {
         public:
@@ -51,12 +51,12 @@ namespace design {
             // default copy constructor
             //ProbabilityMatrix( const ProbabilityMatrix &pm ) = default;
             // get probability for ProbabilityKeys... key of Aks (12/A) (4/C) ()...
-            //unsigned long long get(ProbabilityKey pk);
-            unsigned long long operator[] (ProbabilityKey& pk);
+            //double get(ProbabilityKey pk);
+            double operator[] (ProbabilityKey& pk);
             // fill a nos for a certain key
-            void put(ProbabilityKey& pk, unsigned long long nos);            
+            void put(ProbabilityKey& pk, double nos);            
             // get maximal number of sequences for the whole matrix/subgraph
-            unsigned long long mnos();
+            double mnos();
             // return if this is a initialized PM or not
             bool is_initialized() { return initialized; }
             // get set of special vertices
@@ -64,10 +64,10 @@ namespace design {
             // sample one combination randomly given a ProbabilityKey with the constraints and a random number generator
             // return a pair with the chosen ProbabilityKey and the number_of_sequences for the given input constraints
             template <typename R>
-            std::pair<ProbabilityKey, unsigned long long> sample(ProbabilityKey pk, R* rand_ptr);
+            std::pair<ProbabilityKey, double> sample(ProbabilityKey pk, R* rand_ptr);
             // special case without probability key (and therefore constraints)
             template <typename R>
-            std::pair<ProbabilityKey, unsigned long long> sample(R* rand_ptr);
+            std::pair<ProbabilityKey, double> sample(R* rand_ptr);
             // My custom hash key used for n
             friend class ProbabilityKeyHash;
             friend ProbabilityMatrix operator* (ProbabilityMatrix& x, ProbabilityMatrix& y);
