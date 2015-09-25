@@ -17,7 +17,6 @@
 #include "pathcoloring.h"
 
 #include <sstream>
-#include <random>
 #include <unordered_set>
 
 namespace design {
@@ -30,8 +29,8 @@ namespace design {
         public:
             DependencyGraph(std::vector<std::string> structures, std::string constraints, R rand);
 
-            double number_of_sequences();
-            double number_of_sequences(int connected_component_ID);
+            boost::multiprecision::mpz_int number_of_sequences();
+            boost::multiprecision::mpz_int number_of_sequences(int connected_component_ID);
             bool is_bipartite() {
                 return bipartite;
             }
@@ -41,10 +40,10 @@ namespace design {
             void set_sequence_string(std::string seq_str);
             void set_sequence();
             // call this function to mutate a random subgraph (either a path, if graph_type=-1 or a connected component, if graph_type=1)
-            double mutate_local_global(int graph_type, int min_num_pos, int max_num_pos);
-            double mutate_global(int connected_component_ID);
-            double mutate(int position);
-            double mutate(int start, int end);
+            boost::multiprecision::mpz_int mutate_local_global(int graph_type, int min_num_pos, int max_num_pos);
+            boost::multiprecision::mpz_int mutate_global(int connected_component_ID);
+            boost::multiprecision::mpz_int mutate(int position);
+            boost::multiprecision::mpz_int mutate(int start, int end);
             std::map< int, std::vector<int> > connected_components();
             std::vector< int > special_vertices();
             R * rand_ptr;
@@ -54,9 +53,9 @@ namespace design {
             bool bipartite; // if dependency graph is bipartite and a therefore a solution exists
             R rand;
             void calculate_probabilities(Graph& g);
-            double sample_sequence(Graph& g);
+            boost::multiprecision::mpz_int sample_sequence(Graph& g);
             void reset_colors(Graph& g);
-            double mutate(Graph& g);
+            boost::multiprecision::mpz_int mutate(Graph& g);
             // this function fills the subgraphs set with all the sugraphs of the given type (root, cc, bc, path)
             // if int type= -1, then it returns all subgraphs which are actual paths (gp.is_path == true).
             // you can specify also a minimal and maximal size of the subgraph

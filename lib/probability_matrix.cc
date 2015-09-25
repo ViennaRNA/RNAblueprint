@@ -33,7 +33,7 @@ namespace design {
             }
         }
 
-        double ProbabilityMatrix::operator[] (ProbabilityKey& pk) {
+        boost::multiprecision::mpz_int ProbabilityMatrix::operator[] (ProbabilityKey& pk) {
             // sanity check if the vertices requested are indeed stored in this pm
             for (auto pair : pk) {
                 if ( specials.find(pair.first) == specials.end() ) {
@@ -41,7 +41,7 @@ namespace design {
                 }
             }
             
-            double returnvalue = 0;
+            boost::multiprecision::mpz_int returnvalue = 0;
             std::vector<ProbabilityKey> allkeys = permute_key(pk);
             
             for (auto key : allkeys) {
@@ -55,7 +55,7 @@ namespace design {
             return returnvalue;
         }
         
-        void ProbabilityMatrix::put (ProbabilityKey& pk, double nos) {
+        void ProbabilityMatrix::put (ProbabilityKey& pk, boost::multiprecision::mpz_int nos) {
             if (!initialized) {
                 for (auto pair : pk) {
                     specials.insert(pair.first);
@@ -78,8 +78,8 @@ namespace design {
             }
         }
         
-        double ProbabilityMatrix::mnos() {
-            double mnos = 0;
+        boost::multiprecision::mpz_int ProbabilityMatrix::mnos() {
+            boost::multiprecision::mpz_int mnos = 0;
             for (auto elem : pmap) {
                 mnos += elem.second;
             }
@@ -87,7 +87,7 @@ namespace design {
         }
         
         template <typename R>
-        std::pair<ProbabilityKey, double> ProbabilityMatrix::sample(R* rand_ptr) {
+        std::pair<ProbabilityKey, boost::multiprecision::mpz_int> ProbabilityMatrix::sample(R* rand_ptr) {
             ProbabilityKey pk;
             
             for (auto s : getSpecials()) {
@@ -98,12 +98,12 @@ namespace design {
         }
         
         template <typename R>
-        std::pair<ProbabilityKey, double> ProbabilityMatrix::sample(ProbabilityKey pk, R* rand_ptr) {
+        std::pair<ProbabilityKey, boost::multiprecision::mpz_int> ProbabilityMatrix::sample(ProbabilityKey pk, R* rand_ptr) {
             ProbabilityKey result;
             
             // get all possible keys for the constraints set in pk
             std::vector<ProbabilityKey> possible_keys = permute_key(pk);
-            double constrained_mnos = 0;
+            boost::multiprecision::mpz_int constrained_mnos = 0;
             // get the maximal number of sequences for the input constraints set in pk
             for (auto k: possible_keys) {
                 constrained_mnos += (*this)[k];
@@ -112,11 +112,11 @@ namespace design {
             if (constrained_mnos == 0) {
                 throw std::logic_error( "Cannot fulfill constraints while sampling a key!" );
             }
-            std::uniform_real_distribution<float> dist(0, 1);
-            double random = dist(*rand_ptr) * constrained_mnos;
+            boost::random::uniform_int_distribution<boost::multiprecision::mpz_int> dist(0, constrained_mnos-1);
+            boost::multiprecision::mpz_int random = dist(*rand_ptr);
             // stochastically take one of the possibilities
             // start at the probability of first possible character and add each other base probability as long long as the random number is bigger.
-            double sum = 0;
+            boost::multiprecision::mpz_int sum = 0;
             for (auto k : possible_keys) {
                 sum += (*this)[k];
                 // if the random number is bigger than our probability, take this base as the current base!
@@ -257,7 +257,7 @@ namespace design {
             return os;
         }
         
-        template std::pair<ProbabilityKey, double> ProbabilityMatrix::sample<std::mt19937> (std::mt19937*);
-        template std::pair<ProbabilityKey, double> ProbabilityMatrix::sample<std::mt19937> (ProbabilityKey, std::mt19937*);
+        template std::pair<ProbabilityKey, boost::multiprecision::mpz_int> ProbabilityMatrix::sample<std::mt19937> (std::mt19937*);
+        template std::pair<ProbabilityKey, boost::multiprecision::mpz_int> ProbabilityMatrix::sample<std::mt19937> (ProbabilityKey, std::mt19937*);
     }
 }

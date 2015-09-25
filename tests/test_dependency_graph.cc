@@ -274,17 +274,17 @@ BOOST_AUTO_TEST_CASE(mutate_cc_with_ID) {
     std::cerr << dependency_graph.get_sequence_string() << std::endl;
     BOOST_CHECK(dependency_graph.get_sequence_string() == "UG");
     
-    double cnos = dependency_graph.mutate_global(1);
+    boost::multiprecision::mpz_int cnos = dependency_graph.mutate_global(1);
     BOOST_CHECK(cnos == 4);
-    BOOST_CHECK(dependency_graph.get_sequence_string() == "UC");
+    BOOST_CHECK(dependency_graph.get_sequence_string() == "UA");
     
     cnos = dependency_graph.mutate_global(0);
     BOOST_CHECK(cnos == 2);
-    BOOST_CHECK(dependency_graph.get_sequence_string() == "UC");
+    BOOST_CHECK(dependency_graph.get_sequence_string() == "AA");
     
     cnos = dependency_graph.mutate_global(0);
     BOOST_CHECK(cnos == 2);
-    BOOST_CHECK(dependency_graph.get_sequence_string() == "AC");
+    BOOST_CHECK(dependency_graph.get_sequence_string() == "UA");
 }
 
 BOOST_AUTO_TEST_CASE(mutate_global1) {
@@ -293,20 +293,20 @@ BOOST_AUTO_TEST_CASE(mutate_global1) {
 
     design::initialize_library(true);
     std::vector<std::string> structures = {".."};
-    std::mt19937 rand_gen(2);
+    std::mt19937 rand_gen(4);
 
     design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "WN", rand_gen);
     BOOST_CHECK(dependency_graph.number_of_sequences() == 8);
     dependency_graph.set_sequence();
-    BOOST_CHECK(dependency_graph.get_sequence_string() == "UA");
+    BOOST_CHECK(dependency_graph.get_sequence_string() == "AG");
     
-    double cnos = dependency_graph.mutate_local_global(1, 0, 0);
+    boost::multiprecision::mpz_int cnos = dependency_graph.mutate_local_global(1, 0, 0);
     BOOST_CHECK(cnos == 2);
-    BOOST_CHECK(dependency_graph.get_sequence_string() == "AA");
+    BOOST_CHECK(dependency_graph.get_sequence_string() == "UG");
     
     cnos = dependency_graph.mutate_local_global(1, 0, 1);
-    BOOST_CHECK(cnos == 4);
-    BOOST_CHECK(dependency_graph.get_sequence_string() == "AC");
+    BOOST_CHECK(cnos == 2);
+    BOOST_CHECK(dependency_graph.get_sequence_string() == "UG");
 }
 
 BOOST_AUTO_TEST_CASE(mutate_local1) {
@@ -315,21 +315,21 @@ BOOST_AUTO_TEST_CASE(mutate_local1) {
 
     design::initialize_library(true);
     std::vector<std::string> structures = {".."};
-    std::mt19937 rand_gen(2);
+    std::mt19937 rand_gen(1);
 
     design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "WN", rand_gen);
     BOOST_CHECK(dependency_graph.number_of_sequences() == 8);
     dependency_graph.set_sequence();
     std::cerr << dependency_graph.get_sequence_string() << std::endl;
-    BOOST_CHECK(dependency_graph.get_sequence_string() == "UA");
+    BOOST_CHECK(dependency_graph.get_sequence_string() == "UG");
     
-    double cnos = dependency_graph.mutate_local_global(-1, 0, 0);
-    BOOST_CHECK(cnos == 2);
+    boost::multiprecision::mpz_int cnos = dependency_graph.mutate_local_global(-1, 0, 0);
+    BOOST_CHECK(cnos == 4);
     std::cerr << dependency_graph.get_sequence_string() << std::endl;
-    BOOST_CHECK(dependency_graph.get_sequence_string() == "AA");
+    BOOST_CHECK(dependency_graph.get_sequence_string() == "UC");
     
     cnos = dependency_graph.mutate_local_global(-1, 0, 1);
-    BOOST_CHECK(cnos == 4);
+    BOOST_CHECK(cnos == 2);
     std::cerr << dependency_graph.get_sequence_string() << std::endl;
     BOOST_CHECK(dependency_graph.get_sequence_string() == "AC");
 }

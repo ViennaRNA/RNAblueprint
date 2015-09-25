@@ -73,9 +73,9 @@ namespace design {
         }
         
         template <typename RG>
-        double color_path_graph(Graph& g, RG* rand_ptr) {
+        boost::multiprecision::mpz_int color_path_graph(Graph& g, RG* rand_ptr) {
 
-            double max_number_of_sequences = 0;
+            boost::multiprecision::mpz_int max_number_of_sequences = 0;
 
             // check if given graph is indeed a path with max_degree = 2 and two ends with degree = 1;
             int max_degree;
@@ -98,14 +98,13 @@ namespace design {
             class color_dfs_visitor : public boost::default_dfs_visitor {
             public:
 
-                color_dfs_visitor(double& max_number_of_sequences, RG * rand_ptr, PairingMatrix * pair, std::uniform_real_distribution<float>& d,
+                color_dfs_visitor(boost::multiprecision::mpz_int& max_number_of_sequences, RG * rand_ptr, PairingMatrix * pair,
                         nosMap& n, std::unordered_map<Vertex, int>& c, int& prev)
-                : mnos(max_number_of_sequences), r_ptr(rand_ptr), p(pair), dist(d), nos_map(n), colors(c), previous(prev) {
+                : mnos(max_number_of_sequences), r_ptr(rand_ptr), p(pair), nos_map(n), colors(c), previous(prev) {
                 }
-                double& mnos;
+                boost::multiprecision::mpz_int& mnos;
                 RG * r_ptr;
                 PairingMatrix * p;
-                std::uniform_real_distribution<float>& dist;
                 nosMap& nos_map;
                 std::unordered_map<Vertex, int>& colors;
                 int& previous;
@@ -163,7 +162,7 @@ namespace design {
                     }
 
                     // calculate number of sequences with respect to the chosen previous base
-                    double nos = 0;
+                    boost::multiprecision::mpz_int nos = 0;
                     for (auto b : base_conversion[ g[u].base ]) {
                         if (p->get(1, b, previous) > 0) {
                             nos += nos_map[u][b];
@@ -177,12 +176,13 @@ namespace design {
                                 << "Length is: " << boost::num_vertices(g) << std::endl;
                         throw std::logic_error(ss.str());
                     }
-
-                    double random = dist(*r_ptr) * nos;
+                    
+                    boost::random::uniform_int_distribution<boost::multiprecision::mpz_int> dist(0, nos-1);
+                    boost::multiprecision::mpz_int random = dist(*r_ptr);
 
                     // stochastically take one of the possibilities
                     // start at the probability of first possible character and add each other base probability as long long as the random number is bigger.
-                    double sum = 0;
+                    boost::multiprecision::mpz_int sum = 0;
                     for (auto b : base_conversion[ g[u].base ]) {
                         if (p->get(1, b, previous) > 0) {
                             sum += nos_map[u][b];
@@ -203,12 +203,11 @@ namespace design {
             };
 
             PairingMatrix * p = PairingMatrix::Instance();
-            std::uniform_real_distribution<float> dist(0, 1);
             nosMap nos_map;
             std::unordered_map<Vertex, int> colors;
             int prev = N;
             
-            color_dfs_visitor vis(max_number_of_sequences, rand_ptr, p, dist, nos_map, colors, prev);
+            color_dfs_visitor vis(max_number_of_sequences, rand_ptr, p, nos_map, colors, prev);
 
             // start is the 0 node in case of a circle
             Vertex start = boost::vertex(0, g); //boost::graph_traits<Graph>::null_vertex();
@@ -233,6 +232,6 @@ namespace design {
             return max_number_of_sequences;
         }
 
-        template double color_path_graph<std::mt19937> (Graph&, std::mt19937*);
+        template boost::multiprecision::mpz_int color_path_graph<std::mt19937> (Graph&, std::mt19937*);
     }
 }

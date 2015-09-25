@@ -100,7 +100,7 @@ BOOST_AUTO_TEST_CASE(PermuteKey2) {
 BOOST_AUTO_TEST_CASE(GetPutKey1) {
 
     ProbabilityMatrix pm;
-    double control = 0;
+    boost::multiprecision::mpz_int control = 0;
 
     for (auto b : base_conversion[N]) {
         for (auto c : base_conversion[S]) {
@@ -128,7 +128,7 @@ BOOST_AUTO_TEST_CASE(GetPutKey1) {
 BOOST_AUTO_TEST_CASE(GetPutKey2) {
 
     ProbabilityMatrix pm;
-    double control = 0;
+    boost::multiprecision::mpz_int control = 0;
 
     for (auto b : base_conversion[N]) {
         for (auto c : base_conversion[S]) {
@@ -156,7 +156,7 @@ BOOST_AUTO_TEST_CASE(GetPutKey2) {
 BOOST_AUTO_TEST_CASE(GetPutKey3) {
 
     ProbabilityMatrix pm;
-    double control = 0;
+    boost::multiprecision::mpz_int control = 0;
 
     for (auto b : base_conversion[N]) {
         for (auto c : base_conversion[S]) {
@@ -184,7 +184,7 @@ BOOST_AUTO_TEST_CASE(GetPutKey3) {
 BOOST_AUTO_TEST_CASE(GetNOS1) {
 
     ProbabilityMatrix pm;
-    double control = 0;
+    boost::multiprecision::mpz_int control = 0;
 
     for (auto b : base_conversion[N]) {
         for (auto c : base_conversion[S]) {
@@ -206,7 +206,7 @@ BOOST_AUTO_TEST_CASE(GetNOS1) {
 BOOST_AUTO_TEST_CASE(GetNOS2) {
 
     ProbabilityMatrix pm;
-    double control = 0;
+    boost::multiprecision::mpz_int control = 0;
 
     BOOST_TEST_MESSAGE("Try to get number of sequences for empty ProbabilityMatrix");
 
@@ -269,7 +269,7 @@ BOOST_AUTO_TEST_CASE(MultiplyPM1) {
     z = x * y;
 
     ProbabilityKey zkey;
-    double mnos = 0;
+    boost::multiprecision::mpz_int mnos = 0;
     for (auto b : base_conversion[N]) {
         for (auto c : base_conversion[N]) {
             zkey[1] = b;
@@ -309,7 +309,7 @@ BOOST_AUTO_TEST_CASE(MultiplyPM2) {
     z = x * y;
 
     ProbabilityKey zkey;
-    double mnos = 0;
+    boost::multiprecision::mpz_int mnos = 0;
     for (auto b : base_conversion[N]) {
         for (auto c : base_conversion[N]) {
             zkey[1] = b;
@@ -349,7 +349,7 @@ BOOST_AUTO_TEST_CASE(MultiplyPM3) {
     z = x * y;
 
     ProbabilityKey zkey;
-    double mnos = 0;
+    boost::multiprecision::mpz_int mnos = 0;
     for (auto b : base_conversion[N]) {
         zkey[1] = b;
         BOOST_CHECK(z[zkey] == ((3 * b)*(5 + b)));
@@ -383,7 +383,7 @@ BOOST_AUTO_TEST_CASE(MultiplyPM4) {
     z = x * y;
 
     ProbabilityKey zkey;
-    double mnos = 0;
+    boost::multiprecision::mpz_int mnos = 0;
     for (auto b : base_conversion[N]) {
         zkey[1] = b;
         BOOST_CHECK(z[zkey] == 16 * (3 * b));
@@ -414,7 +414,7 @@ BOOST_AUTO_TEST_CASE(MultiplyPM5) {
     z = x * y;
 
     ProbabilityKey zkey;
-    double mnos = 0;
+    boost::multiprecision::mpz_int mnos = 0;
     BOOST_CHECK(z[zkey] == 12 * 24);
     mnos += z[zkey];
 
@@ -474,9 +474,9 @@ BOOST_AUTO_TEST_CASE(MakeInternal1) {
     ProbabilityKey testkey;
     testkey[1] = U;
     testkey[7] = C;
-    double ytest = y[testkey];
+    boost::multiprecision::mpz_int ytest = y[testkey];
     testkey[5] = N;
-    double xtest = x[testkey];
+    boost::multiprecision::mpz_int xtest = x[testkey];
     BOOST_CHECK(ytest == xtest);
     BOOST_CHECK(x.getSpecials().size() == y.getSpecials().size() + 1);
     BOOST_CHECK(x.mnos() == y.mnos());
@@ -501,9 +501,9 @@ BOOST_AUTO_TEST_CASE(MakeInternal2) {
     std::cerr << "y:" << std::endl << y << std::endl;
 
     ProbabilityKey testkey;
-    double ytest = y[testkey];
+    boost::multiprecision::mpz_int ytest = y[testkey];
     testkey[5] = N;
-    double xtest = x[testkey];
+    boost::multiprecision::mpz_int xtest = x[testkey];
     BOOST_CHECK(ytest == xtest);
     BOOST_CHECK(x.getSpecials().size() == y.getSpecials().size() + 1);
     BOOST_CHECK(x.mnos() == y.mnos());
@@ -525,7 +525,7 @@ BOOST_AUTO_TEST_CASE(RandomlySampleKey1) {
 
     std::vector<ProbabilityKey> input_keys = permute_key(input);
     for (auto i : input_keys) {
-        m.put(i, dist(rand_gen) * 400);
+        m.put(i, static_cast<boost::multiprecision::mpz_int>(dist(rand_gen) * 400));
     }
 
     ProbabilityKey constraint;
@@ -533,7 +533,7 @@ BOOST_AUTO_TEST_CASE(RandomlySampleKey1) {
     constraint[4] = V;
     constraint[7] = N;
 
-    std::pair<ProbabilityKey, double> result = m.sample(constraint, &rand_gen);
+    std::pair<ProbabilityKey, boost::multiprecision::mpz_int> result = m.sample(constraint, &rand_gen);
     BOOST_CHECK(result.first[1] == A);
     BOOST_CHECK(result.first[4] == A);
     BOOST_CHECK(result.first[7] == U);
@@ -556,18 +556,18 @@ BOOST_AUTO_TEST_CASE(RandomlySampleKey2) {
 
     std::vector<ProbabilityKey> input_keys = permute_key(input);
     for (auto i : input_keys) {
-        m.put(i, dist(rand_gen) * 400);
+        m.put(i, static_cast<boost::multiprecision::mpz_int>(dist(rand_gen) * 400));
     }
     ProbabilityMatrix c = m;
 
-    std::pair<ProbabilityKey, double> result = m.sample(&rand_gen);
+    std::pair<ProbabilityKey, boost::multiprecision::mpz_int> result = m.sample(&rand_gen);
     BOOST_CHECK(result.first[1] == C);
     BOOST_CHECK(result.first[4] == U);
     BOOST_CHECK(result.first[7] == U);
     BOOST_CHECK(result.second == 6191);
 
     for (int i = 0; i < 1000; i++) {
-        std::pair<ProbabilityKey, double> test = m.sample(&rand_gen);
+        std::pair<ProbabilityKey, boost::multiprecision::mpz_int> test = m.sample(&rand_gen);
         //std::cerr << "One hundred Test:" << std::endl << test << std::endl;
     }
     BOOST_CHECK(m.mnos() == c.mnos());

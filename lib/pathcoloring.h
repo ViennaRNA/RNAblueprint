@@ -11,25 +11,25 @@
 #ifndef PATHCOLORING_H
 #define PATHCOLORING_H
 
-    // include common header with graph definition and global variables
-    #include "common.h"
-    #include "graphcommon.h"
-    #include "printgraph.h"
-    #include "pairing_matrix.h"
-    #include "probability_matrix.h"
+// include common header with graph definition and global variables
+#include "common.h"
+#include "graphcommon.h"
+#include "printgraph.h"
+#include "pairing_matrix.h"
+#include "probability_matrix.h"
 
-    // include standard library parts
-    #include <sstream>
-    #include <unordered_map>
+// include standard library parts
+#include <sstream>
+#include <unordered_map>
 
-    // include boost components
-    //#include <boost/graph/depth_first_search.hpp>
+// include boost components
+//#include <boost/graph/depth_first_search.hpp>
 #include <boost/graph/undirected_dfs.hpp>
 
 namespace design {
     namespace detail {
         // typedefs
-        typedef std::unordered_map< Vertex, std::unordered_map<int, double> > nosMap;
+        typedef std::unordered_map< Vertex, std::unordered_map<int, boost::multiprecision::mpz_int> > nosMap;
 
         // class definitions
         
@@ -38,7 +38,7 @@ namespace design {
         
         // color a path
         template <typename RG>
-        double color_path_graph(Graph& g, RG* rand_ptr);
+        boost::multiprecision::mpz_int color_path_graph(Graph& g, RG* rand_ptr);
         
     }
 }

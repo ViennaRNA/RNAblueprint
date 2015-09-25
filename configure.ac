@@ -78,10 +78,15 @@ fi
 AC_OPENMP
 AC_SUBST(OPENMP_CFLAGS)
 
-# Checks for libraries.
+# Checks for libraries: math.
 AC_CHECK_LIB([m], [exp],
 	[LIBS="-lm $LIBS"],
 	AC_MSG_ERROR([libMath not found!]))
+	
+# Checks for libraries: gmp.
+AC_CHECK_LIB([gmp], [exp],
+	[LIBS="-lgmp $LIBS"],
+	AC_MSG_ERROR([libGMP not found!]))
 
 # introduce the optional configure parameter for a non-standard install prefix of RNAlib
 AC_ARG_WITH([RNAlib],

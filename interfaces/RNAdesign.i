@@ -56,7 +56,7 @@
 %rename(CLEAR)  std::map<int, std::vector<int> >::clear;
 
 /*
- * implement iteration support for thre map<int, vector<int>> consturct
+ * implement iteration support for the map<int, vector<int>> construct
  */
 %{
 #include <map>
@@ -129,13 +129,13 @@ namespace design {
     std::string get_sequence();
     void set_sequence(std::string sequence);
     void set_sequence();
-    double mutate_local(int min_num_pos, int max_num_pos);
-    double mutate_global(int min_num_pos, int max_num_pos);
-    double mutate_global(int connected_component_ID);
-    double mutate(int position);
-    double mutate(int start, int end);
-    double number_of_sequences();
-    double number_of_sequences(int connected_component_ID);
+    boost::multiprecision::mpz_int mutate_local(int min_num_pos, int max_num_pos);
+    boost::multiprecision::mpz_int mutate_global(int min_num_pos, int max_num_pos);
+    boost::multiprecision::mpz_int mutate_global(int connected_component_ID);
+    boost::multiprecision::mpz_int mutate(int position);
+    boost::multiprecision::mpz_int mutate(int start, int end);
+    boost::multiprecision::mpz_int number_of_sequences();
+    boost::multiprecision::mpz_int number_of_sequences(int connected_component_ID);
     std::map< int, std::vector<int> > connected_components();
     std::vector< int > special_vertices();
   };

@@ -90,7 +90,7 @@ namespace design {
         rnaMatrix PairingMatrix::multiply(rnaMatrix A, rnaMatrix B) {
             rnaMatrix C;
             int i, j, k;
-            long long sum;
+            boost::multiprecision::mpz_int sum;
             for (i = 0; i < A_Size; i++) {
                 for (j = 0; j < A_Size; j++) {
                     sum = 0;
@@ -103,7 +103,7 @@ namespace design {
             return C;
         }
 
-        double PairingMatrix::get(unsigned int l, unsigned int b1, unsigned int b2) {
+        boost::multiprecision::mpz_int PairingMatrix::get(unsigned int l, unsigned int b1, unsigned int b2) {
 
             // if we request a probability for an unknown (N) character at one or both ends, 
             // return the sum of the probabilities for all characters at this position
@@ -113,7 +113,7 @@ namespace design {
             if ((b1 >= A_Size) || (b2 >= A_Size)) {
                 if ((b1 >= A_Size) && (b2 >= A_Size)) {
                     //std::cerr << "b1>=Abet; b2>=Abet" << std::endl;
-                    double sum = 0;
+                    boost::multiprecision::mpz_int sum = 0;
                     for (auto i : base_conversion[b2]) {
                         sum += get(l, b1, i);
                     }
@@ -121,7 +121,7 @@ namespace design {
 
                 } else if (b1 >= A_Size) {
                     //std::cerr << "b1>=Abet" << std::endl;
-                    double sum = 0;
+                    boost::multiprecision::mpz_int sum = 0;
                     for (auto i : base_conversion[b1]) {
                         sum += get(l, i, b2);
                     }

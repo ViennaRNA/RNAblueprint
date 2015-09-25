@@ -21,7 +21,7 @@
 namespace design {
     namespace detail {
         //typedefs
-        typedef matrix< double, A_Size, A_Size > rnaMatrix;
+        typedef matrix< boost::multiprecision::mpz_int, A_Size, A_Size > rnaMatrix;
 
         class Fibonacci {
         public:
@@ -39,7 +39,7 @@ namespace design {
         public:
             static PairingMatrix* Instance();
             // interface
-            double get(unsigned int l, unsigned int b1, unsigned int b2);
+            boost::multiprecision::mpz_int get(unsigned int l, unsigned int b1, unsigned int b2);
         protected:
             PairingMatrix();
             ~PairingMatrix();

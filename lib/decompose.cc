@@ -19,111 +19,100 @@ namespace design {
 
         template <typename RG>
         bool decompose_graph(Graph& graph, RG* rand_ptr) {
-            std::ostream* out = &std::cerr;
-            
-            
             
             if (debug) {
-                *out << "root graph:" << std::endl;
+                std::cerr << "root graph:" << std::endl;
                 // print the just created subgraphs
-                print_graph(graph, out, "root");
+                print_graph(graph, &std::cerr, "root");
             }
             
             connected_components_to_subgraphs(graph); // get connected components and make subgraphs
 
             if (debug) {
-                *out << "subgraphs connected components:" << std::endl;
+                std::cerr << "subgraphs connected components:" << std::endl;
                 // print the just created subgraphs
-                print_subgraphs(graph, out, "connected-component");
+                print_subgraphs(graph, &std::cerr, "connected-component");
             }
 
             // iterate over all subgraphs (connected components)
             Graph::children_iterator cc, cc_end;
             for (boost::tie(cc, cc_end) = graph.children(); cc != cc_end; ++cc) {
                 
-                // check if subgraph is bipartite with a simple BFS
-                // generate the vertex 0 as vertex_descriptor
-                Vertex s = boost::vertex(0, *cc);
-                // generate a edge_descriptor for the case that the graph is not bipartite
+                // in case that the graph is not bipartite return false
                 if (!boost::is_bipartite(*cc)) {
                     return false;
                 }
-
-                // calculate the max degree of this graph
-                int max_degree;
-                int min_degree;
-                std::tie(min_degree, max_degree) = get_min_max_degree(*cc);
-                
-                if (debug) {
-                    std::cerr << "Max degree of subgraph is: " << max_degree << std::endl;
-                    std::cerr << "Min degree of subgraph is: " << min_degree << std::endl;
-                }
-
-                // split further into biconnected components do ear decomposition
-                if (max_degree > 2) {
-                    biconnected_components_to_subgraphs(*cc);
-
-                    if (debug) {
-                        *out << "subgraphs biconnected components:" << std::endl;
-                        // print the just created subgraphs
-                        print_subgraphs(*cc, out, "biconnected-component");
-                    }
-
-                    Graph::children_iterator bc, bc_end;
-                    for (boost::tie(bc, bc_end) = (*cc).children(); bc != bc_end; ++bc) {
-                        // calculate the max degree of this graph (biconnected component)
-                        int max_degree;
-                        int min_degree;
-                        std::tie(min_degree, max_degree) = get_min_max_degree(*bc);
-                        if (max_degree > 2) {
-                            // do the ear decomposition and create to subgraphs
-                            ear_decomposition_to_subgraphs(*bc, rand_ptr);
-
-                            if (debug) {
-                                *out << "subgraphs ear decomposition:" << std::endl;
-                                // print the just created subgraphs
-                                print_subgraphs(*bc, out, "decomposed-ear");
-                            }
-                            // now lets push parts between special points of an ear to subgraphs
-                            Graph::children_iterator ear, ear_end;
-                            for (boost::tie(ear, ear_end) = (*bc).children(); ear != ear_end; ++ear) {
-                                if ((min_degree == 2) && (max_degree == 2)) {
-                                    // this is a biconnected component circle
-                                    //TODO check if there are already special vertices in the circle
-                                    Vertex r = boost::vertex(boost::num_vertices(*bc), *bc);
-                                    (*bc)[s].special = true;
-                                    (*bc)[r].special = true;
-                                }
-                                parts_between_specials_to_subgraphs(*ear);
-                            }
-                        } else if ((min_degree == 2) && (max_degree == 2)) {
-                            // this is a biconnected component circle
-                            //TODO check if there are already special vertices in the circle
-                            // assign any two special vertices and get paths in between
-                            Vertex r = boost::vertex(boost::num_vertices(*bc), *bc);
-                            (*bc)[s].special = true;
-                            (*bc)[r].special = true;
-                            parts_between_specials_to_subgraphs(*bc);
-                        } else {
-                            parts_between_specials_to_subgraphs(*bc);
-                        }
-                    }
-                } else if ((min_degree == 2) && (max_degree == 2)) {
-                    // this is a connected component circle
-                    //TODO check if there are already special vertices in the circle
-                    Vertex r = boost::vertex(boost::num_vertices(*cc), *cc);
-                    (*cc)[s].special = true;
-                    (*cc)[r].special = true;
-                    // assign any two special vertices and get paths in between
-                    parts_between_specials_to_subgraphs(*cc);
-                    
-                } else {
-                    parts_between_specials_to_subgraphs(*cc);
-                }
+                // start a recursion
+                decompose_recursion(*cc, rand_ptr);
             }
             
             // return that the dependency graph is bipartite
             return true;
+        }
+        
+        template <typename RG>
+        void decompose_recursion(Graph& g, RG* rand_ptr) {
+            // calculate the max degree of this graph
+            int max_degree;
+            int min_degree;
+            std::tie(min_degree, max_degree) = get_min_max_degree(g);
+            
+            if (debug) {
+                std::cerr << "Max degree of subgraph is: " << max_degree << std::endl;
+                std::cerr << "Min degree of subgraph is: " << min_degree << std::endl;
+            }
+            
+            // this is either a biconnected component or a block
+            if (max_degree > 2) {
+                std::vector<Vertex> art_points;
+                boost::articulation_points(g, std::back_inserter(art_points));
+                // this is a biconnected component
+                if (art_points.size() != 0) {
+                    biconnected_components_to_subgraphs(g);
+
+                    if (debug) {
+                        std::cerr << "subgraphs biconnected components:" << std::endl;
+                        // print the just created subgraphs
+                        print_subgraphs(g, &std::cerr, "biconnected-component");
+                    }
+                // this is a block
+                } else {
+                    // do the ear decomposition and create to subgraphs
+                    ear_decomposition_to_subgraphs(g, rand_ptr);
+
+                    if (debug) {
+                        std::cerr << "subgraphs ear decomposition:" << std::endl;
+                        // print the just created subgraphs
+                        print_subgraphs(g, &std::cerr, "decomposed-ear");
+                    }
+                }
+            // this is a circle
+            } else if (min_degree == max_degree == 2) {
+                // check if there are already special vertices
+                int count = 0;
+                BGL_FORALL_VERTICES_T(v, g, Graph) {
+                    if (g[v].special) {
+                        count++;
+                    }
+                }
+                if (count == 0) {
+                    // assign any two special vertices and get paths in between
+                    Vertex s = boost::vertex(0, g);
+                    Vertex r = boost::vertex(boost::num_vertices(g)-1, g);
+                    (g)[s].special = true;
+                    (g)[r].special = true;
+                }
+                parts_between_specials_to_subgraphs(g);
+            // this is a path or a single vertex
+            } else {
+                parts_between_specials_to_subgraphs(g);
+            }
+            
+            // call recursion for all children
+            Graph::children_iterator gc, gc_end;
+            for (boost::tie(gc, gc_end) = g.children(); gc != gc_end; ++gc) {
+                decompose_recursion(*gc, rand_ptr);
+            }
         }
 
         void connected_components_to_subgraphs(Graph& g) {
@@ -336,7 +325,7 @@ namespace design {
                 split = split || (g[v].special && (boost::degree(v, g) > 1));
             }
             if (debug && !split) {
-                std::cerr << "No need to generate a subpath as this is already a path with specials only on ends." << std::endl;
+                std::cerr << "No need to generate a subgraph as this is already a path with specials only on ends." << std::endl;
             }
             
             if (split) {
