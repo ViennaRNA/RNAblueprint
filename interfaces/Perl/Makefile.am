@@ -2,7 +2,7 @@
 
 SOURCES = Makefile.PL
 
-EXTRA_DIST = RNAdesign.pm RNAdesign_wrap.cxx
+EXTRA_DIST = RNAdesign.pm RNAdesign_wrap.cxx Makefile.PL
 
 swig-perl: ../RNAdesign.i
 	$(SWIG) -perl -outcurrentdir ../RNAdesign.i

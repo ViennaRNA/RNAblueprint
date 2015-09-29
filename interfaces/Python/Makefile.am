@@ -2,7 +2,7 @@
 
 SOURCES = setup.py
 
-EXTRA_DIST = RNAdesign_wrap.cxx setup.py
+EXTRA_DIST = RNAdesign_wrap.cxx RNAdesign.py setup.py
 
 swig-python: ../RNAdesign.i
 	$(SWIG) -python -outcurrentdir ../RNAdesign.i
