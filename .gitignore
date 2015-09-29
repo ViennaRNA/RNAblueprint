@@ -26,5 +26,3 @@ m4/lt~obsolete.m4
 doc*
 depcomp
 install-sh
-interfaces/Perl/*
-interfaces/Python/*
