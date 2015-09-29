@@ -2,6 +2,8 @@
 
 SOURCES = setup.py
 
+EXTRA_DIST = RNAdesign_wrap.cxx setup.py
+
 swig-python: ../RNAdesign.i
 	$(SWIG) -python -outcurrentdir ../RNAdesign.i
 
@@ -22,4 +24,7 @@ uninstall-local:
 	
 mostlyclean-local: 
 	@PYTHON@ setup.py clean --all
-	rm -rf RNAdesign.py RNAdesign_wrap.cxx
+	
+# remove all generated content
+maintainer-clean-local:
+	rm -f RNAdesign.py RNAdesign_wrap.cxx

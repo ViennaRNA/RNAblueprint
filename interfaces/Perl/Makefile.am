@@ -2,6 +2,8 @@
 
 SOURCES = Makefile.PL
 
+EXTRA_DIST = RNAdesign.pm RNAdesign_wrap.cxx
+
 swig-perl: ../RNAdesign.i
 	$(SWIG) -perl -outcurrentdir ../RNAdesign.i
 
@@ -25,4 +27,9 @@ uninstall-local:
 
 mostlyclean-local:
 	$(MAKE) -f Makefile.perl clean
-	rm -rf RNAdesign.pm RNAdesign_wrap.cxx Makefile.perl Makefile.perl.old
+	rm -f Makefile.perl Makefile.perl.old
+	
+# remove all generated content
+maintainer-clean-local:
+	rm -f RNAdesign.pm RNAdesign_wrap.cxx 
+
