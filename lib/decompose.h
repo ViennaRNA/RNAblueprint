@@ -39,7 +39,10 @@ namespace design {
         // does the graph decomposition, and calls the coloring of the subgraphs
         template <typename RG>
         bool decompose_graph(Graph& graph, RG* rand_ptr);
-
+        // does the graph decomposition recursion
+        template <typename RG>
+        void decompose_recursion(Graph& g, RG* rand_ptr);
+        
         // get a vector of all vertices with their component id. finds connected components with DFS
         void connected_components_to_subgraphs(Graph& g);
 
