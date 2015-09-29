@@ -2,20 +2,13 @@
 
 SOURCES = setup.py
 
-EXTRA_DIST = RNAdesign_wrap.cxx RNAdesign.py setup.py
+EXTRA_DIST = RNAdesign_wrap.cxx RNAdesign.py
 
-swig-python: ../RNAdesign.i
+RNAdesign_wrap.cxx: ../RNAdesign.i
 	$(SWIG) -python -outcurrentdir ../RNAdesign.i
 
-RNAdesign_wrap.cxx: swig-python
-
-#RNAdesign.py: swig-python
-#RNAdesign.py 
-
-python_interface: RNAdesign_wrap.cxx setup.py
+all-local: RNAdesign_wrap.cxx setup.py
 	@PYTHON@ setup.py build
-
-all-local: python_interface	
 
 install-exec-local: all-local
 	@PYTHON@ setup.py install --prefix=$(prefix) --record install.record
