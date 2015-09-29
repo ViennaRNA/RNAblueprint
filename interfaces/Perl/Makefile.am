@@ -9,12 +9,13 @@ swig-perl: ../RNAdesign.i
 
 RNAdesign_wrap.cxx: swig-perl
 
-RNAdesign.pm: swig-perl
+#RNAdesign.pm: swig-perl
 
 Makefile.perl: Makefile.PL Makefile
 	@PERL@ Makefile.PL PREFIX=$(prefix) INSTALL_BASE= 
 
-perl_interface: RNAdesign_wrap.cxx Makefile.perl RNAdesign.pm
+# RNAdesign.pm
+perl_interface: RNAdesign_wrap.cxx Makefile.perl
 	$(MAKE) -f Makefile.perl
 
 all-local: perl_interface

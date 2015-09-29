@@ -9,9 +9,10 @@ swig-python: ../RNAdesign.i
 
 RNAdesign_wrap.cxx: swig-python
 
-RNAdesign.py: swig-python
+#RNAdesign.py: swig-python
+#RNAdesign.py 
 
-python_interface: RNAdesign_wrap.cxx RNAdesign.py setup.py
+python_interface: RNAdesign_wrap.cxx setup.py
 	@PYTHON@ setup.py build
 
 all-local: python_interface	
