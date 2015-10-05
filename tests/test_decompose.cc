@@ -334,5 +334,36 @@ BOOST_AUTO_TEST_CASE(partsBetweenArticulationPoints) {
     BOOST_CHECK(number_of_children == 5);
 }
 
+BOOST_AUTO_TEST_CASE(simpleCircle) {
+    Graph g(4);
+    int vertex_name = 0;
+
+    BGL_FORALL_VERTICES_T(v, g, Graph) {
+        boost::put(boost::vertex_color_t(), g, v, vertex_name++);
+    }
+    // create a path between 0 and 3 and circle closure
+    for (unsigned int i = 0; i < 3; i++) {
+        boost::add_edge(boost::vertex(i, g), boost::vertex(i + 1, g), g);
+    }
+    boost::add_edge(boost::vertex(0, g), boost::vertex(3, g), g);
+    
+    // decompose into subgraphs
+    decompose_recursion(g, new std::mt19937(1));
+    // check
+    int number_of_children = 0;
+    
+    Graph::children_iterator child, child_end;
+    for (boost::tie(child, child_end) = g.children(); child != child_end; ++child) {
+        number_of_children++;
+        // subgraphs should only be paths
+        int max_degree;
+        int min_degree;
+        std::tie(min_degree, max_degree) = get_min_max_degree(g);
+        BOOST_CHECK(max_degree == 2);
+        BOOST_CHECK(min_degree == 1);
+    }
+    
+    BOOST_CHECK(number_of_children == 2);
+}
 
 BOOST_AUTO_TEST_SUITE_END()

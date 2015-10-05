@@ -87,7 +87,7 @@ namespace design {
                     }
                 }
             // this is a circle
-            } else if (min_degree == max_degree == 2) {
+            } else if (min_degree == 2 && max_degree == 2) {
                 // check if there are already special vertices
                 int count = 0;
                 BGL_FORALL_VERTICES_T(v, g, Graph) {
@@ -95,7 +95,7 @@ namespace design {
                         count++;
                     }
                 }
-                if (count == 0) {
+                if (count < 2) {
                     // assign any two special vertices and get paths in between
                     Vertex s = boost::vertex(0, g);
                     Vertex r = boost::vertex(boost::num_vertices(g)-1, g);
@@ -103,9 +103,11 @@ namespace design {
                     (g)[r].special = true;
                 }
                 parts_between_specials_to_subgraphs(g);
+                return;
             // this is a path or a single vertex
             } else {
                 parts_between_specials_to_subgraphs(g);
+                return;
             }
             
             // call recursion for all children
