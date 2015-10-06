@@ -6,8 +6,10 @@
  * 
  */
 
+// include boost components
+#include <boost/test/unit_test.hpp>
+
 // include header
-#include "test_common.h"
 #include "uninduced_subgraph.hpp"
 
 using namespace boost;
@@ -68,7 +70,7 @@ BOOST_AUTO_TEST_CASE(simpleGraph) {
     // add edges to G2 with edge descriptor
     Edge g_edge;
     bool present;
-    std::tie<g_edge, present> = edge(E, F, G0);
+    boost::tie(g_edge, present) = edge(E, F, G0);
     BOOST_CHECK(present);
     add_edge(g_edge, G2); // global vertex E becomes local C2 and global vertex F becomes local D2 for G2
     

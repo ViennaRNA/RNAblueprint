@@ -28,7 +28,7 @@ namespace boost {
     
     
 template <typename Graph>
-class uninduced_subgraph: public subgraph {
+class uninduced_subgraph : public subgraph {
 
 public:
     uninduced_subgraph(const graph_property_type& p) : subgraph(p) {  }
