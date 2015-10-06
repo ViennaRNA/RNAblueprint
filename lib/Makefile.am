@@ -22,6 +22,7 @@ noinst_HEADERS = \
 			pairing_matrix.h \
 			dependency_graph.h \
 			probability_matrix.h \
+			uninduced_subgraph.hpp \
 			ear-decomposition.hpp
 
 # the sources to add to the library and to add to the source distribution
