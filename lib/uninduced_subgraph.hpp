@@ -174,7 +174,7 @@ public:
 
 public: // Needs new declaration
     ChildrenList m_children;
-
+    
 };
 
 //===========================================================================
@@ -182,15 +182,60 @@ public: // Needs new declaration
 
 template <typename G>
 typename uninduced_subgraph<G>::vertex_descriptor
+add_vertex(uninduced_subgraph<G>& g)
+{
+    std::cerr << "inside function add_vertex(g)" << std::endl;
+    typename uninduced_subgraph<G>::vertex_descriptor  u_local, u_global;
+    if(g.is_root()) {
+        u_global = add_vertex(g.m_graph);
+        g.m_global_vertex.push_back(u_global);
+        u_local = u_global;
+    } else {
+        u_global = detail::add_vertex_recur_up(g.parent());
+        u_local = add_vertex(g.m_graph);
+        g.m_global_vertex.push_back(u_global);
+        g.m_local_vertex[u_global] = u_local;
+    }
+    return u_local;
+}
+
+namespace detail {
+    
+    template <typename G>
+    typename subgraph<G>::vertex_descriptor
+    add_vertex_recur_up(typename subgraph<G>::vertex_descriptor u_global,
+                subgraph<G>& g)
+    {
+        if (!g.is_root()) {
+            if (!g.find_vertex(u_global).second) {
+                add_vertex_recur_up(u_global, g.parent());
+
+                typename subgraph<G>::vertex_descriptor u_local;
+                u_local = add_vertex(g.m_graph);
+                g.m_global_vertex.push_back(u_global);
+                g.m_local_vertex[u_global] = u_local;
+
+                return u_local;
+            } else {
+                return g.find_vertex(u_global).first;
+            }
+        } else {
+            return u_global;
+        }
+    }
+    
+} // namespace detail
+
+template <typename G>
+typename uninduced_subgraph<G>::vertex_descriptor
 add_vertex(typename uninduced_subgraph<G>::vertex_descriptor u_global,
            uninduced_subgraph<G>& g)
 {
+    std::cerr << "inside function add_vertex(u, g)" << std::endl;
     BOOST_ASSERT(!g.is_root());
     typename uninduced_subgraph<G>::vertex_descriptor u_local;
 
-    u_local = add_vertex(g.m_graph);
-    g.m_global_vertex.push_back(u_global);
-    g.m_local_vertex[u_global] = u_local;
+    u_local = detail::add_vertex_recur_up(u_global, g);
     
     return u_local;
 }
@@ -212,7 +257,11 @@ namespace detail {
             boost::tie(e_global, inserted) = add_edge(u_global, v_global, ep, g.m_graph);
             put(edge_index, g.m_graph, e_global, g.m_edge_counter++);
             g.m_global_edge.push_back(e_global);
-            //children_add_edge(u_global, v_global, e_global, g.m_children, orig);
+            if (inserted) {
+                std::cerr << "added edge: " << u_global << "->" << v_global << std::endl;
+            } else {
+                std::cerr << "edge present: " << u_global << "->" << v_global << std::endl;
+            }
             return std::make_pair(e_global, inserted);
         } else {
             typename uninduced_subgraph<Graph>::edge_descriptor e_global;
@@ -221,6 +270,7 @@ namespace detail {
                     add_edge_recur_up(u_global, v_global, ep, *g.m_parent, orig);
             
             // insert edge into the current uninduced_subgraph on the way down
+            std::cerr << "added local edge: " << u_global << "->" << v_global << std::endl;
             g.local_add_edge(g.global_to_local(u_global), g.global_to_local(v_global), e_global);
             return std::make_pair(e_global, inserted);
         }
@@ -275,7 +325,6 @@ add_edge(typename uninduced_subgraph<G>::edge_descriptor e_global,
     v_local = add_vertex(target(e_global, g.root()), g);
     // create this local edge
     boost::tie(e_local, inserted) = add_edge(u_local, v_local, g);
-
     return e_local;
 }
 

@@ -15,19 +15,19 @@
 #include <boost/graph/iteration_macros.hpp>
 
 // include header
-#include "uninduced_subgraph.hpp"
+#include <boost/graph/subgraph.hpp>
 
 using namespace boost;
 
 // include headers containing functions to test
 
-BOOST_AUTO_TEST_SUITE(UninducedSubgraph)
+BOOST_AUTO_TEST_SUITE(Subgraph)
 
 BOOST_AUTO_TEST_CASE(simpleGraph) {
 
     BOOST_TEST_MESSAGE("simple uninduced subgraph");
 
-    typedef uninduced_subgraph< adjacency_list< vecS, vecS, directedS,
+    typedef subgraph< adjacency_list< vecS, vecS, directedS,
         no_property, property< edge_index_t, int > > > Graph;
     typedef Graph::edge_descriptor Edge;
     typedef Graph::vertex_descriptor Vertex;
@@ -83,7 +83,7 @@ BOOST_AUTO_TEST_CASE(addVertices) {
 
     BOOST_TEST_MESSAGE("uninduced subgraph add edges");
 
-    typedef uninduced_subgraph< adjacency_list< vecS, vecS, directedS,
+    typedef subgraph< adjacency_list< vecS, vecS, directedS,
         no_property, property< edge_index_t, int > > > Graph;
     typedef Graph::edge_descriptor Edge;
     typedef Graph::vertex_descriptor Vertex;
@@ -177,52 +177,8 @@ BOOST_AUTO_TEST_CASE(addVertices) {
     BGL_FORALL_VERTICES_T(v, G2, Graph) {
         std::cerr << G2.local_to_global(v) << std::endl;
     }
+    
 }
-/*
-BOOST_AUTO_TEST_CASE(addEdge) {
 
-    BOOST_TEST_MESSAGE("uninduced subgraph add edges");
 
-    typedef uninduced_subgraph< adjacency_list< vecS, vecS, directedS,
-        no_property, property< edge_index_t, int > > > Graph;
-    typedef Graph::edge_descriptor Edge;
-    typedef Graph::vertex_descriptor Vertex;
-
-    const int N = 3;
-    Graph G0(N);
-    Graph& G1 = G0.create_subgraph();
-    Graph& G2 = G1.create_subgraph();
-    
-    // add vertices
-    add_vertex(0, G2);
-    add_vertex(1, G2);
-    add_vertex(2, G2);
-    // add same edge to G2
-    add_edge(0, 1, G0);
-    
-    BOOST_CHECK(num_edges(G0) == 1);
-    BOOST_CHECK(num_edges(G1) == 0);
-    BOOST_CHECK(num_edges(G2) == 0);
-    // num_vertices stays the same
-    BOOST_CHECK(num_vertices(G0) == 3);
-    BOOST_CHECK(num_vertices(G1) == 3);
-    std::cerr << num_vertices(G1) << std::endl;
-    BOOST_CHECK(num_vertices(G2) == 3);
-    
-    std::cerr << "All G0 edges: " << std::endl;
-    BGL_FORALL_EDGES_T(e, G0, Graph) {
-        std::cerr << source(e, G0) << "->" << target(e, G0) << std::endl;
-    }
-    
-    std::cerr << "All G1 edges: " << std::endl;
-    BGL_FORALL_EDGES_T(e, G1, Graph) {
-        std::cerr << source(e, G1) << "->" << target(e, G1) << std::endl;
-    }
-    
-    std::cerr << "All G2 edges: " << std::endl;
-    BGL_FORALL_EDGES_T(e, G2, Graph) {
-        std::cerr << source(e, G2) << "->" << target(e, G2) << std::endl;
-    }
-}
-*/
 BOOST_AUTO_TEST_SUITE_END()

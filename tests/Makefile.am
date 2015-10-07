@@ -11,6 +11,7 @@ testRNAdesign_LDADD = $(LDADD) $(top_builddir)/lib/libRNAdesign.a $(BOOST_THREAD
 # list of sources for the 'testRNAdesign' binary
 testRNAdesign_SOURCES =	main.cc \
 			test_uninduced_subgraph.cc \
+			test_subgraph.cc \
 			test_pairing_matrix.cc \
 			test_probability_matrix.cc \
 			test_decompose.cc \
