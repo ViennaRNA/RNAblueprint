@@ -8,6 +8,8 @@
 
 // include boost components
 #include <boost/test/unit_test.hpp>
+#include <boost/graph/adjacency_list.hpp>
+#include <boost/graph/iteration_macros.hpp>
 
 // include header
 #include "uninduced_subgraph.hpp"

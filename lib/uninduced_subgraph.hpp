@@ -29,21 +29,54 @@ namespace boost {
     
 template <typename Graph>
 class uninduced_subgraph : public subgraph<Graph> {
-
+    typedef graph_traits<Graph> Traits;
+    typedef std::list<uninduced_subgraph<Graph>*> ChildrenList;
 public:
+    // Graph requirements
+    typedef typename Traits::vertex_descriptor         vertex_descriptor;
+    typedef typename Traits::edge_descriptor           edge_descriptor;
+    typedef typename Traits::directed_category         directed_category;
+    typedef typename Traits::edge_parallel_category    edge_parallel_category;
+    typedef typename Traits::traversal_category        traversal_category;
+
+    // IncidenceGraph requirements
+    typedef typename Traits::out_edge_iterator         out_edge_iterator;
+    typedef typename Traits::degree_size_type          degree_size_type;
+
+    // AdjacencyGraph requirements
+    typedef typename Traits::adjacency_iterator        adjacency_iterator;
+
+    // VertexListGraph requirements
+    typedef typename Traits::vertex_iterator           vertex_iterator;
+    typedef typename Traits::vertices_size_type        vertices_size_type;
+
+    // EdgeListGraph requirements
+    typedef typename Traits::edge_iterator             edge_iterator;
+    typedef typename Traits::edges_size_type           edges_size_type;
+
+    typedef typename Traits::in_edge_iterator          in_edge_iterator;
+
+    typedef typename edge_property_type<Graph>::type   edge_property_type;
+    typedef typename vertex_property_type<Graph>::type vertex_property_type;
+    typedef subgraph_tag                               graph_tag;
+    typedef Graph                                      graph_type;
+    typedef typename graph_property_type<Graph>::type  graph_property_type;
+    
+    uninduced_subgraph() : subgraph<Graph>() {  }
     
     uninduced_subgraph(const graph_property_type& p) : subgraph<Graph>(p) {  }
 
     uninduced_subgraph(vertices_size_type n, const graph_property_type& p = graph_property_type()) : subgraph<Graph>(n, p) {  }
     
     // copy constructor
-    uninduced_subgraph(const uninduced_subgraph& x)
-        : m_parent(x.m_parent), m_edge_counter(x.m_edge_counter)
-        , m_global_vertex(x.m_global_vertex), m_global_edge(x.m_global_edge)
-    {
-        if(x.is_root())
-        {
-         m_graph = x.m_graph;
+    uninduced_subgraph(const uninduced_subgraph& x) {
+        subgraph<Graph>::m_parent = x.m_parent;
+        subgraph<Graph>::m_edge_counter = x.m_edge_counter;
+        subgraph<Graph>::m_global_vertex = x.m_global_vertex;
+        subgraph<Graph>::m_global_edge = x.m_global_edge;
+        
+        if(x.is_root()) {
+            subgraph<Graph>::m_graph = x.m_graph;
         }
         // Do a deep copy (recursive).
         // Only the root graph is copied, the subgraphs contain
@@ -58,41 +91,89 @@ public:
             boost::tie(vi,vi_end) = vertices(*i);
             for (;vi!=vi_end;++vi)  
             {
-                add_vertex(*vi,child);
+                add_vertex(*vi, child);
             }
             edge_iterator ei,ei_end;
             boost::tie(ei,ei_end) = edges(*i);
             for (;ei!=ei_end;++ei)  
             {
-                add_edge(*ei,child);
+                add_edge(*ei, child);
             }
        }
     }
     
-    // Create a subgraph with the specified edge set.
-    template <typename EdgeIterator>
-    uninduced_subgraph<Graph>& create_subgraph(EdgeIterator first, EdgeIterator last) {
+    // Create a subgraph
+    uninduced_subgraph<Graph>& create_subgraph() {
+        m_children.push_back(new uninduced_subgraph<Graph>());
+        m_children.back()->m_parent = this;
+        return *m_children.back();
+    }
+
+    // Create a subgraph with the specified vertex set.
+    template <typename VertexIterator>
+    uninduced_subgraph<Graph>& create_subgraph(VertexIterator first, VertexIterator last) {
         m_children.push_back(new uninduced_subgraph<Graph>());
         m_children.back()->m_parent = this;
         for(; first != last; ++first) {
-            add_edge(*first, *m_children.back());
+            add_vertex(*first, *m_children.back());
+        }
+        return *m_children.back();
+    }
+    
+    // Create a subgraph with the specified edge set.
+    template <typename EdgeIterator>
+    uninduced_subgraph<Graph>& create_subgraph(std::pair<EdgeIterator, EdgeIterator> its) {
+        m_children.push_back(new uninduced_subgraph<Graph>());
+        m_children.back()->m_parent = this;
+        for(; its.first != its.second; ++its.first) {
+            add_edge(*its.first, *m_children.back());
         }
         return *m_children.back();
     }
     
     // Create a subgraph with the specified edge set.
     template <typename VertexIterator, typename EdgeIterator>
-    uninduced_subgraph<Graph>& create_subgraph(VertexIterator v_first, VertexIterator v_last, EdgeIterator e_first, EdgeIterator e_last) {
+    uninduced_subgraph<Graph>& create_subgraph(std::pair<VertexIterator, VertexIterator> v_its, std::pair<EdgeIterator, EdgeIterator> e_its) {
         m_children.push_back(new uninduced_subgraph<Graph>());
         m_children.back()->m_parent = this;
-        for(; v_first != v_last; ++v_first) {
-            add_vertex(*v_first, *m_children.back());
+        for(; v_its.first != v_its.second; ++v_its.first) {
+            add_vertex(*v_its.first, *m_children.back());
         }
-        for(; e_first != e_last; ++e_first) {
-            add_edge(*e_first, *m_children.back());
+        for(; e_its.first != e_its.second; ++e_its.first) {
+            add_edge(*e_its.first, *m_children.back());
         }
         return *m_children.back();
     }
+    
+    // Return the children subgraphs of this graph/subgraph.
+    // Use a list of pointers because the VC++ std::list doesn't like
+    // storing incomplete type.
+    typedef indirect_iterator<
+        typename ChildrenList::const_iterator
+      , uninduced_subgraph<Graph>
+      , std::bidirectional_iterator_tag
+    >
+    children_iterator;
+
+    typedef indirect_iterator<
+        typename ChildrenList::const_iterator
+      , uninduced_subgraph<Graph> const
+      , std::bidirectional_iterator_tag
+    >
+    const_children_iterator;
+
+    std::pair<const_children_iterator, const_children_iterator> children() const {
+      return std::make_pair(const_children_iterator(m_children.begin()),
+                            const_children_iterator(m_children.end()));
+    }
+
+    std::pair<children_iterator, children_iterator> children() {
+      return std::make_pair(children_iterator(m_children.begin()),
+                            children_iterator(m_children.end()));
+    }
+
+public: // Needs new declaration
+    ChildrenList m_children;
 
 };
 
@@ -181,18 +262,19 @@ add_edge(typename uninduced_subgraph<G>::vertex_descriptor u,
 
 
 template <typename G>
-std::pair<typename uninduced_subgraph<G>::edge_descriptor, bool>
+typename uninduced_subgraph<G>::edge_descriptor
 add_edge(typename uninduced_subgraph<G>::edge_descriptor e_global,
            uninduced_subgraph<G>& g)
 {
     BOOST_ASSERT(!g.is_root());
     typename uninduced_subgraph<G>::vertex_descriptor u_local, v_local;
     typename uninduced_subgraph<G>::edge_descriptor e_local;
+    bool inserted;
     // add vertices to this subgraph first
     u_local = add_vertex(source(e_global, g.root()), g);
     v_local = add_vertex(target(e_global, g.root()), g);
     // create this local edge
-    e_local = add_edge(u_local, v_local, g);
+    boost::tie(e_local, inserted) = add_edge(u_local, v_local, g);
 
     return e_local;
 }
