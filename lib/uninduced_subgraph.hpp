@@ -70,7 +70,7 @@ public:
     
     // copy constructor
     uninduced_subgraph(const uninduced_subgraph& x) {
-        subgraph<Graph>::m_parent = x.m_parent;
+        m_parent = x.m_parent;
         subgraph<Graph>::m_edge_counter = x.m_edge_counter;
         subgraph<Graph>::m_global_vertex = x.m_global_vertex;
         subgraph<Graph>::m_global_edge = x.m_global_edge;
@@ -171,8 +171,13 @@ public:
       return std::make_pair(children_iterator(m_children.begin()),
                             children_iterator(m_children.end()));
     }
+    
+    // Return the parent graph.
+    uninduced_subgraph& parent() { return *m_parent; }
+    const uninduced_subgraph& parent() const { return *m_parent; }
 
 public: // Needs new declaration
+    uninduced_subgraph<Graph>* m_parent;
     ChildrenList m_children;
     
 };
@@ -180,41 +185,26 @@ public: // Needs new declaration
 //===========================================================================
 // Functions special to the Subgraph Class
 
-template <typename G>
-typename uninduced_subgraph<G>::vertex_descriptor
-add_vertex(uninduced_subgraph<G>& g)
-{
-    std::cerr << "inside function add_vertex(g)" << std::endl;
-    typename uninduced_subgraph<G>::vertex_descriptor  u_local, u_global;
-    if(g.is_root()) {
-        u_global = add_vertex(g.m_graph);
-        g.m_global_vertex.push_back(u_global);
-        u_local = u_global;
-    } else {
-        u_global = detail::add_vertex_recur_up(g.parent());
-        u_local = add_vertex(g.m_graph);
-        g.m_global_vertex.push_back(u_global);
-        g.m_local_vertex[u_global] = u_local;
-    }
-    return u_local;
-}
-
 namespace detail {
     
     template <typename G>
-    typename subgraph<G>::vertex_descriptor
-    add_vertex_recur_up(typename subgraph<G>::vertex_descriptor u_global,
-                subgraph<G>& g)
+    typename uninduced_subgraph<G>::vertex_descriptor
+    add_vertex_recur_up(typename uninduced_subgraph<G>::vertex_descriptor u_global,
+                uninduced_subgraph<G>& g)
     {
+        std::cerr << "inside function add_vertex_recur_up(u, g)" << std::endl;
         if (!g.is_root()) {
+            std::cerr << "not root" << std::endl;
             if (!g.find_vertex(u_global).second) {
-                add_vertex_recur_up(u_global, g.parent());
-
-                typename subgraph<G>::vertex_descriptor u_local;
+                std::cerr << "not found" << std::endl;
+                typename uninduced_subgraph<G>::vertex_descriptor u_local;
+                
+                detail::add_vertex_recur_up(u_global, g.parent());
+                
                 u_local = add_vertex(g.m_graph);
                 g.m_global_vertex.push_back(u_global);
                 g.m_local_vertex[u_global] = u_local;
-
+                
                 return u_local;
             } else {
                 return g.find_vertex(u_global).first;
