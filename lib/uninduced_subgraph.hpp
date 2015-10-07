@@ -252,7 +252,7 @@ namespace detail {
             typename uninduced_subgraph<Graph>::edge_descriptor e_global;
             bool inserted;
             boost::tie(e_global, inserted) = 
-                    add_edge_recur_up(u_global, v_global, ep, *g.m_parent, orig);
+                    add_edge_recur_up(u_global, v_global, ep, static_cast<uninduced_subgraph<Graph>&>(*g.m_parent), orig);
             
             // insert edge into the current uninduced_subgraph on the way down
             std::cerr << "added local edge: " << u_global << "->" << v_global << std::endl;
