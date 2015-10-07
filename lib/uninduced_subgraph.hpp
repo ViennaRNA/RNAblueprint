@@ -70,7 +70,7 @@ public:
     
     // copy constructor
     uninduced_subgraph(const uninduced_subgraph& x) {
-        m_parent = x.m_parent;
+        subgraph<Graph>::m_parent = x.m_parent;
         subgraph<Graph>::m_edge_counter = x.m_edge_counter;
         subgraph<Graph>::m_global_vertex = x.m_global_vertex;
         subgraph<Graph>::m_global_edge = x.m_global_edge;
@@ -173,11 +173,10 @@ public:
     }
     
     // Return the parent graph.
-    uninduced_subgraph& parent() { return *m_parent; }
-    const uninduced_subgraph& parent() const { return *m_parent; }
+    uninduced_subgraph& parent() { return static_cast<uninduced_subgraph&>(*subgraph<Graph>::m_parent); }
+    const uninduced_subgraph& parent() const { static_cast<uninduced_subgraph&>(*subgraph<Graph>::m_parent); }
 
 public: // Needs new declaration
-    uninduced_subgraph<Graph>* m_parent;
     ChildrenList m_children;
     
 };
@@ -192,11 +191,8 @@ namespace detail {
     add_vertex_recur_up(typename uninduced_subgraph<G>::vertex_descriptor u_global,
                 uninduced_subgraph<G>& g)
     {
-        std::cerr << "inside function add_vertex_recur_up(u, g)" << std::endl;
         if (!g.is_root()) {
-            std::cerr << "not root" << std::endl;
             if (!g.find_vertex(u_global).second) {
-                std::cerr << "not found" << std::endl;
                 typename uninduced_subgraph<G>::vertex_descriptor u_local;
                 
                 detail::add_vertex_recur_up(u_global, g.parent());
@@ -221,7 +217,6 @@ typename uninduced_subgraph<G>::vertex_descriptor
 add_vertex(typename uninduced_subgraph<G>::vertex_descriptor u_global,
            uninduced_subgraph<G>& g)
 {
-    std::cerr << "inside function add_vertex(u, g)" << std::endl;
     BOOST_ASSERT(!g.is_root());
     typename uninduced_subgraph<G>::vertex_descriptor u_local;
 

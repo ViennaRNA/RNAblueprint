@@ -42,6 +42,9 @@ BOOST_AUTO_TEST_CASE(simpleGraph) {
     
     BOOST_CHECK(&G1.parent() == &G0);
     BOOST_CHECK(&G2.parent() == &G1);
+    BOOST_CHECK(G0.is_root());
+    BOOST_CHECK(!G1.is_root());
+    BOOST_CHECK(!G2.is_root());
     
     enum { A1, B1, C1 }; // for conveniently refering to vertices in G1
     enum { A2, B2, C2 };     // for conveniently refering to vertices in G2
