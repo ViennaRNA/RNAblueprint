@@ -301,4 +301,155 @@ BOOST_AUTO_TEST_CASE(addEdge) {
     }
 }
 
+BOOST_AUTO_TEST_CASE(addEdgeByDescriptor) {
+
+    BOOST_TEST_MESSAGE("uninduced subgraph add edges by descriptor");
+
+    typedef uninduced_subgraph< adjacency_list< vecS, vecS, directedS,
+        no_property, property< edge_index_t, int > > > Graph;
+    typedef Graph::edge_descriptor Edge;
+    typedef Graph::vertex_descriptor Vertex;
+
+    const int N = 3;
+    Graph G0(N);
+    Graph& G1 = G0.create_subgraph();
+    Graph& G2 = G1.create_subgraph();
+    
+    BOOST_CHECK(&G1.parent() == &G0);
+    BOOST_CHECK(&G2.parent() == &G1);
+    
+    // add edge to G0
+    add_edge(0, 1, G0);
+    
+    BOOST_CHECK(num_edges(G0) == 1);
+    BOOST_CHECK(num_edges(G1) == 0);
+    BOOST_CHECK(num_edges(G2) == 0);
+    // num_vertices stays the same
+    BOOST_CHECK(num_vertices(G0) == 3);
+    BOOST_CHECK(num_vertices(G1) == 0);
+    BOOST_CHECK(num_vertices(G2) == 0);
+    
+    Edge e_global;
+    bool exists;
+    
+    boost::tie(e_global, exists) = edge(0, 1, G0);
+    
+    BOOST_REQUIRE(exists);
+    // add edge to subgraph and propagate up and avoid multi-edge on root
+    add_edge(e_global, G2);
+    
+    BOOST_CHECK(num_edges(G0) == 1);
+    BOOST_CHECK(num_edges(G1) == 1);
+    BOOST_CHECK(num_edges(G2) == 1);
+    // num_vertices stays the same
+    BOOST_CHECK(num_vertices(G0) == 3);
+    BOOST_CHECK(num_vertices(G1) == 2);
+    BOOST_CHECK(num_vertices(G2) == 2);
+    
+    
+    std::cerr << "All G0 vertices: " << std::endl;
+    BGL_FORALL_VERTICES_T(v, G0, Graph) {
+        std::cerr << v << "/" << G0.local_to_global(v) << std::endl;
+    }
+    std::cerr << "All G1 vertices: " << std::endl;
+    BGL_FORALL_VERTICES_T(v, G1, Graph) {
+        std::cerr << v << "/" << G1.local_to_global(v) << std::endl;
+    }
+    std::cerr << "All G2 vertices: " << std::endl;
+    BGL_FORALL_VERTICES_T(v, G2, Graph) {
+        std::cerr << v << "/" << G2.local_to_global(v) << std::endl;
+    }
+    std::cerr << "All G0 edges: " << std::endl;
+    BGL_FORALL_EDGES_T(e, G0, Graph) {
+        std::cerr << source(e, G0) << "->" << target(e, G0) << std::endl;
+    }
+    std::cerr << "All G1 edges: " << std::endl;
+    BGL_FORALL_EDGES_T(e, G1, Graph) {
+        std::cerr << source(e, G1) << "->" << target(e, G1) << std::endl;
+    }
+    std::cerr << "All G2 edges: " << std::endl;
+    BGL_FORALL_EDGES_T(e, G2, Graph) {
+        std::cerr << source(e, G2) << "->" << target(e, G2) << std::endl;
+    }
+}
+
+BOOST_AUTO_TEST_CASE(removeEdge) {
+
+    BOOST_TEST_MESSAGE("uninduced subgraph remove edge");
+
+    typedef uninduced_subgraph< adjacency_list< vecS, vecS, directedS,
+        no_property, property< edge_index_t, int > > > Graph;
+    typedef Graph::edge_descriptor Edge;
+    typedef Graph::vertex_descriptor Vertex;
+
+    const int N = 3;
+    Graph G0(N);
+    Graph& G1 = G0.create_subgraph(vertices(G0).first, vertices(G0).second);
+    Graph& G2 = G1.create_subgraph(vertices(G1).first, vertices(G1).second);
+    
+    BOOST_CHECK(&G1.parent() == &G0);
+    BOOST_CHECK(&G2.parent() == &G1);
+    
+    BOOST_CHECK(num_vertices(G0) == 3);
+    BOOST_CHECK(num_vertices(G1) == 3);
+    BOOST_CHECK(num_vertices(G2) == 3);
+    
+    // add edge to G0
+    add_edge(0, 1, G2);
+    add_edge(1, 2, G2);
+    
+    BOOST_CHECK(num_edges(G0) == 2);
+    BOOST_CHECK(num_edges(G1) == 2);
+    BOOST_CHECK(num_edges(G2) == 2);
+    // num_vertices stays the same
+    BOOST_CHECK(num_vertices(G0) == 3);
+    BOOST_CHECK(num_vertices(G1) == 3);
+    BOOST_CHECK(num_vertices(G2) == 3);
+    
+    // remove edge from G1 by descriptor
+    Edge e_local;
+    bool exists;
+    boost::tie(e_local, exists) = edge(0, 1, G1);
+    
+    BOOST_REQUIRE(exists);
+    remove_edge(e_local, G1);
+    
+    BOOST_CHECK(num_edges(G0) == 2);
+    BOOST_CHECK(num_edges(G1) == 1);
+    BOOST_CHECK(num_edges(G2) == 1);
+    
+    // remove edge from G1
+    remove_edge(1, 2, G1);
+    
+    BOOST_CHECK(num_edges(G0) == 2);
+    BOOST_CHECK(num_edges(G1) == 0);
+    BOOST_CHECK(num_edges(G2) == 0);
+    
+    std::cerr << "All G0 vertices: " << std::endl;
+    BGL_FORALL_VERTICES_T(v, G0, Graph) {
+        std::cerr << v << "/" << G0.local_to_global(v) << std::endl;
+    }
+    std::cerr << "All G1 vertices: " << std::endl;
+    BGL_FORALL_VERTICES_T(v, G1, Graph) {
+        std::cerr << v << "/" << G1.local_to_global(v) << std::endl;
+    }
+    std::cerr << "All G2 vertices: " << std::endl;
+    BGL_FORALL_VERTICES_T(v, G2, Graph) {
+        std::cerr << v << "/" << G2.local_to_global(v) << std::endl;
+    }
+    std::cerr << "All G0 edges: " << std::endl;
+    BGL_FORALL_EDGES_T(e, G0, Graph) {
+        std::cerr << source(e, G0) << "->" << target(e, G0) << std::endl;
+    }
+    std::cerr << "All G1 edges: " << std::endl;
+    BGL_FORALL_EDGES_T(e, G1, Graph) {
+        std::cerr << source(e, G1) << "->" << target(e, G1) << std::endl;
+    }
+    std::cerr << "All G2 edges: " << std::endl;
+    BGL_FORALL_EDGES_T(e, G2, Graph) {
+        std::cerr << source(e, G2) << "->" << target(e, G2) << std::endl;
+    }
+    
+}
+
 BOOST_AUTO_TEST_SUITE_END()
