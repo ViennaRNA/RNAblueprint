@@ -61,7 +61,7 @@ namespace design {
 
         // graph_properties 
         // boost graph template
-        typedef boost::subgraph<
+        typedef boost::uninduced_subgraph<
         boost::adjacency_list< boost::vecS, boost::vecS, boost::undirectedS,
         boost::property< boost::vertex_color_t, int, vertex_property >,
         boost::property< boost::edge_index_t, int, boost::property < edge_component_t, std::size_t, edge_property> >,
