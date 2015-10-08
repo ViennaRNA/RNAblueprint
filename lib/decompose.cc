@@ -122,32 +122,31 @@ namespace design {
             // get list of connected components into the component vector
             // http://www.boost.org/doc/libs/1_53_0/libs/graph/doc/connected_components.html
             // http://www.boost.org/doc/libs/1_53_0/libs/graph/example/connected_components.cpp
-            std::vector<int> component(boost::num_vertices(g));
-            int num = boost::connected_components(g, &component[0]);
+            
+            // components map
+            boost::vector_property_map<int> component(boost::num_vertices(g));
+            //boost::property_map < Graph, int >::type component = boost::get(&vertex_property::color, g);
+            int num = boost::connected_components(g, component);
 
             if (debug) {
                 std::cerr << "Number of connected components: " << num << std::endl;
-                std::cerr << component << std::endl;
             }
-
-            // iterate over connected component numbers
+            
+            // create all subgraphs
+            std::map<int, Graph*> component_graphs;
             for (int i = 0; i != num; ++i) {
-                // for each component number generate a new subgraph
-                Graph& subg = g.create_subgraph();
-                
-                int vertex = 0;
-                // iterate over elements of connected_components
-                for (auto elem : component) {
-                    if (i == elem) {
-                        // add vertex into current subgraph
-                        boost::add_vertex(int_to_vertex(vertex, g), subg);
-                    }
-                    vertex++;
-                }
-                
-                graph_property& gprop = boost::get_property(subg, boost::graph_name);
+                component_graphs[i] = &g.create_subgraph();
+                graph_property& gprop = boost::get_property(*component_graphs[i], boost::graph_name);
                 gprop.type = 1;
                 gprop.id = i;
+            }
+            
+            // add all outedges of the vertices to the right subgraph
+            BGL_FORALL_VERTICES_T(v, g, Graph) {
+                //boost::add_vertex(v, *component_graphs[component[v]]);
+                BGL_FORALL_OUTEDGES_T(v, e, g, Graph) {
+                    boost::add_edge(e, *component_graphs[component[v]]);
+                }
             }
         }
 
