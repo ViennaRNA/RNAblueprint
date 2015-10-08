@@ -175,54 +175,62 @@ public:
     // Return the parent graph.
     uninduced_subgraph& parent() { return static_cast<uninduced_subgraph&>(*subgraph<Graph>::m_parent); }
     const uninduced_subgraph& parent() const { static_cast<uninduced_subgraph&>(*subgraph<Graph>::m_parent); }
+    
+    // Return true if this is the root subgraph
+    bool is_root() const { return subgraph<Graph>::m_parent == 0; }
+    
+    // Return the root graph of the subgraph tree.
+    uninduced_subgraph& root()
+    { return is_root() ? *this : static_cast<uninduced_subgraph&>(subgraph<Graph>::m_parent->root()); }
+
+    const uninduced_subgraph& root() const
+    { return is_root() ? *this : static_cast<uninduced_subgraph&>(subgraph<Graph>::m_parent->root()); }
 
 public: // Needs new declaration
     ChildrenList m_children;
     
 };
 
+template <typename Graph>
+struct vertex_bundle_type<uninduced_subgraph<Graph> >
+    : vertex_bundle_type<Graph>
+{ };
+
+template<typename Graph>
+struct edge_bundle_type<uninduced_subgraph<Graph> >
+    : edge_bundle_type<Graph>
+{ };
+
+template<typename Graph>
+struct graph_bundle_type<uninduced_subgraph<Graph> >
+    : graph_bundle_type<Graph>
+{ };
+
 //===========================================================================
 // Functions special to the Subgraph Class
-
-namespace detail {
-    
-    template <typename G>
-    typename uninduced_subgraph<G>::vertex_descriptor
-    add_vertex_recur_up(typename uninduced_subgraph<G>::vertex_descriptor u_global,
-                uninduced_subgraph<G>& g)
-    {
-        if (!g.is_root()) {
-            if (!g.find_vertex(u_global).second) {
-                typename uninduced_subgraph<G>::vertex_descriptor u_local;
-                
-                detail::add_vertex_recur_up(u_global, g.parent());
-                
-                u_local = add_vertex(g.m_graph);
-                g.m_global_vertex.push_back(u_global);
-                g.m_local_vertex[u_global] = u_local;
-                
-                return u_local;
-            } else {
-                return g.find_vertex(u_global).first;
-            }
-        } else {
-            return u_global;
-        }
-    }
-    
-} // namespace detail
 
 template <typename G>
 typename uninduced_subgraph<G>::vertex_descriptor
 add_vertex(typename uninduced_subgraph<G>::vertex_descriptor u_global,
            uninduced_subgraph<G>& g)
 {
-    BOOST_ASSERT(!g.is_root());
-    typename uninduced_subgraph<G>::vertex_descriptor u_local;
+    if (g.is_root()) {
+        return u_global;
+    } else {
+        typename uninduced_subgraph<G>::vertex_descriptor u_local;
+        bool exists_local;
+        boost::tie(u_local, exists_local) = g.find_vertex(u_global);
 
-    u_local = detail::add_vertex_recur_up(u_global, g);
-    
-    return u_local;
+        if (!exists_local) {
+            // call recursion for parent subgraph
+            add_vertex(u_global, g.parent());
+            
+            u_local = add_vertex(g.m_graph);
+            g.m_global_vertex.push_back(u_global);
+            g.m_local_vertex[u_global] = u_local;
+        }
+        return u_local;
+    }
 }
 
 //===========================================================================
@@ -352,6 +360,42 @@ remove_edge(typename uninduced_subgraph<G>::edge_descriptor e, uninduced_subgrap
     remove_edge(e, g.m_graph); // kick edge from this graph
     detail::children_remove_edge<G>(e_global, g.m_children);
     
+}
+
+template <typename G, typename Tag>
+inline typename graph_property<G, Tag>::type&
+get_property(uninduced_subgraph<G>& g, Tag tag) {
+    return get_property(g.m_graph, tag);
+}
+
+template <typename G, typename Tag>
+inline const typename graph_property<G, Tag>::type&
+get_property(const uninduced_subgraph<G>& g, Tag tag) {
+    return get_property(g.m_graph, tag);
+}
+
+template <typename G, typename Property>
+typename property_map<uninduced_subgraph<G>, Property>::type
+get(Property p, uninduced_subgraph<G>& g) {
+    typedef typename property_map< uninduced_subgraph<G>, Property>::type PMap;
+    return PMap(&g, p);
+}
+
+template <typename G, typename Property>
+typename property_map<uninduced_subgraph<G>, Property>::const_type
+get(Property p, const uninduced_subgraph<G>& g) {
+    typedef typename property_map< uninduced_subgraph<G>, Property>::const_type PMap;
+    return PMap(&g, p);
+}
+
+template <typename G, typename Property, typename Key>
+typename property_traits<
+    typename property_map<uninduced_subgraph<G>, Property>::const_type
+>::value_type
+get(Property p, const uninduced_subgraph<G>& g, const Key& k) {
+    typedef typename property_map< uninduced_subgraph<G>, Property>::const_type PMap;
+    PMap pmap(&g, p);
+    return pmap[k];
 }
 
 }
