@@ -88,7 +88,8 @@ std::unordered_set<int> getVertexSet(Graph& g) {
 }
 
 BOOST_AUTO_TEST_CASE(connectedComponents) {
-
+    
+    initialize_library(true);
     // create a graph
     Graph g = createGraph(CC);
     BOOST_TEST_MESSAGE("decompose connected components");
@@ -113,7 +114,8 @@ BOOST_AUTO_TEST_CASE(connectedComponents) {
 }
 
 BOOST_AUTO_TEST_CASE(biconnectedComponents) {
-
+    
+    initialize_library(true);
     // get graph
     Graph g = createGraph(BC);
     // print_graph(g, &std::cout, "graph");
@@ -358,8 +360,8 @@ BOOST_AUTO_TEST_CASE(simpleCircle) {
         // subgraphs should only be paths
         int max_degree;
         int min_degree;
-        std::tie(min_degree, max_degree) = get_min_max_degree(g);
-        BOOST_CHECK(max_degree == 2);
+        std::tie(min_degree, max_degree) = get_min_max_degree(*child);
+        BOOST_CHECK(max_degree <= 2);
         BOOST_CHECK(min_degree == 1);
     }
     

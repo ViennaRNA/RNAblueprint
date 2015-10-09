@@ -50,7 +50,7 @@ namespace design {
         void biconnected_components_to_subgraphs(Graph& g);
 
         // starts at a degree>3 articulation point and walks along a path to connect it to one component
-        void merge_biconnected_paths(Graph& g, Vertex p, Vertex v, boost::property_map < Graph, edge_component_t >::type& component, std::vector<Vertex>& art_points, int& nc);
+        void merge_biconnected_paths(Graph& g, Vertex p, Vertex v, std::map<Edge, int>& component, std::vector<Vertex>& art_points, int& nc);
 
         // ear decomposition of blocks
         template <typename RG>

@@ -26,11 +26,13 @@
 // include boost components
 #include <boost/lexical_cast.hpp>
 #include <boost/config.hpp>
-#include <boost/graph/subgraph.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/iteration_macros.hpp>
 #include <boost/multiprecision/gmp.hpp>
 #include <boost/multiprecision/random.hpp>
+
+// modified boost headers
+#include "uninduced_subgraph.hpp"
 
 namespace design {
     namespace detail {
