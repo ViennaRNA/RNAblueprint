@@ -124,28 +124,30 @@ namespace design {
             // http://www.boost.org/doc/libs/1_53_0/libs/graph/example/connected_components.cpp
             
             // components map
-            boost::vector_property_map<int> component(boost::num_vertices(g));
-            //boost::property_map < Graph, int >::type component = boost::get(&vertex_property::color, g);
-            int num = boost::connected_components(g, component);
+            std::map<Vertex, int> component;
+            boost::associative_property_map< std::map<Vertex, int> > component_map(component);
+            int num = boost::connected_components(g, component_map);
 
             if (debug) {
                 std::cerr << "Number of connected components: " << num << std::endl;
             }
             
-            // create all subgraphs
+            // map with all subgraphs
             std::map<int, Graph*> component_graphs;
-            for (int i = 0; i != num; ++i) {
-                component_graphs[i] = &g.create_subgraph();
-                graph_property& gprop = boost::get_property(*component_graphs[i], boost::graph_name);
-                gprop.type = 1;
-                gprop.id = i;
-            }
-            
-            // add all outedges of the vertices to the right subgraph
+            // add all adjacent edges of the vertices to the right subgraph
             BGL_FORALL_VERTICES_T(v, g, Graph) {
-                //boost::add_vertex(v, *component_graphs[component[v]]);
+                // if subgraph does not exist yet, create it
+                std::map<int, Graph*>::iterator it = component_graphs.find(component[v]);
+                if (it == component_graphs.end()) {
+                    // create subgraph
+                    component_graphs[component[v]] = &g.create_subgraph();
+                    graph_property& gprop = boost::get_property(*component_graphs[component[v]], boost::graph_name);
+                    gprop.type = 1;
+                    gprop.id = component[v];
+                }
+                // add all adjacent edges
                 BGL_FORALL_OUTEDGES_T(v, e, g, Graph) {
-                    boost::add_edge(e, *component_graphs[component[v]]);
+                    boost::add_edge(g.local_to_global(e), *component_graphs[component[v]]);
                 }
             }
         }
@@ -155,29 +157,28 @@ namespace design {
             // get list of biconnected components into the component property map
             // http://www.boost.org/doc/libs/1_53_0/libs/graph/doc/biconnected_components.html
             // http://www.boost.org/doc/libs/1_38_0/libs/graph/example/biconnected_components.cpp
-            edge_component_t edge_component;
-            boost::property_map < Graph, edge_component_t >::type component = boost::get(edge_component, g);
-            unsigned int num = boost::biconnected_components(g, component);
+            std::map<Edge, int> component;
+            boost::associative_property_map< std::map<Edge, int> > component_map(component);
+            std::vector<Vertex> art_points;
+            // call the algorithm
+            unsigned int num;
+            std::back_insert_iterator<std::vector<Vertex> > ap_it(art_points);
+            boost::tie(num, ap_it) = boost::biconnected_components(g, component_map, std::back_inserter(art_points));
+            
             if (debug) {
                 std::cerr << "Number of biconnected components: " << num << std::endl;
-            }
-
-            std::vector<Vertex> art_points;
-            boost::articulation_points(g, std::back_inserter(art_points));
-            if (debug) {
                 std::cerr << "Number of articulation points: " << art_points.size() << " ( ";
                 for (auto elem : art_points) {
-                    std::cerr << boost::get(boost::vertex_color_t(), g, elem) << " ";
+                    std::cerr << vertex_to_int(elem, g) << " ";
                 }
                 std::cerr << ")" << std::endl;
             }
 
             if (debug) {
                 // iterate over all graph edges to print connected components table
-
                 BGL_FORALL_EDGES_T(e, g, Graph) {
-                    std::cerr << e << "\t" << "(" << boost::get(boost::vertex_color_t(), g, boost::source(e, g)) << ","
-                            << boost::get(boost::vertex_color_t(), g, boost::target(e, g)) << ")"
+                    std::cerr << e << "\t" << "(" << vertex_to_int(boost::source(e, g), g) << ","
+                            << vertex_to_int(boost::target(e, g), g) << ")"
                             << "\tcomponent: " << component[e] << std::endl;
                 }
             }
@@ -197,42 +198,29 @@ namespace design {
                     }
                 }
             }
-            int j = 0;
+            
             // write biconnected components into subgraphs:
-            for (unsigned int i = 0; i != num; i++) {
-                // only create a subgraph if there is really an edge associated to this component (as we merged many components before)
-                bool exists = false;
-
-                BGL_FORALL_EDGES_T(e, g, Graph) {
-                    if (i == component[e])
-                        exists = true;
+            // new bcc id
+            int j = 0;
+            // map with subgraphs
+            std::map<int, Graph*> bicomponent_graphs;
+            
+            // add all edges of the biconnected component to the right subgraph
+            BGL_FORALL_EDGES_T(e, g, Graph) {
+                std::map<int, Graph*>::iterator it = bicomponent_graphs.find(component[e]);
+                if (it == bicomponent_graphs.end()) {
+                    // create subgraph
+                    bicomponent_graphs[component[e]] = &g.create_subgraph();
+                    graph_property& gprop = boost::get_property(*bicomponent_graphs[component[e]], boost::graph_name);
+                    gprop.type = 2;
+                    gprop.id = j++;
                 }
-                if (!exists)
-                    continue;
-
-                // for this bicomponent number generate a new subgraph
-                Graph& subg = g.create_subgraph();
-                
-                // iterate over edges of graph
-                BGL_FORALL_EDGES_T(e, g, Graph) {
-                    if (i == component[e]) {
-                        // add vertex into current subgraph if not present already
-                        if (!subg.find_vertex(boost::get(boost::vertex_color_t(), g, boost::target(e, g))).second) {
-                            boost::add_vertex(boost::get(boost::vertex_color_t(), g, boost::target(e, g)), subg);
-                        }
-                        if (!subg.find_vertex(boost::get(boost::vertex_color_t(), g, boost::source(e, g))).second) {
-                            boost::add_vertex(boost::get(boost::vertex_color_t(), g, boost::source(e, g)), subg);
-                        }
-                    }
-                }
-                // add properties
-                graph_property& gprop = boost::get_property(subg, boost::graph_name);
-                gprop.type = 2;
-                gprop.id = j++;
+                // add edge to subgraph
+                boost::add_edge(g.local_to_global(e), *bicomponent_graphs[component[e]]);
             }
         }
 
-        void merge_biconnected_paths(Graph& g, Vertex p, Vertex v, boost::property_map < Graph, edge_component_t >::type& component, std::vector<Vertex>& art_points, int& nc) {
+        void merge_biconnected_paths(Graph& g, Vertex p, Vertex v, std::map<Edge, int>& component, std::vector<Vertex>& art_points, int& nc) {
             if (debug) {
                 std::cerr << "Merging biconnected paths..." << std::endl;
             }
@@ -261,67 +249,46 @@ namespace design {
             boost::random_spanning_tree(g, *rand_ptr, boost::predecessor_map(pred));
             // ear map (this is what we want to fill!)
             auto em = boost::get(&edge_property::ear, g);
-
+            // container to store attatchment points
+            std::vector<Vertex> att_points;
             // run the ear decomposition
-            int num = boost::ear_decomposition(g, pred, em);
+            int num = boost::ear_decomposition(g, pred, em, std::back_inserter(att_points));
+            
             // print the EarMap
             if (debug) {
-
                 BGL_FORALL_EDGES_T(e, g, Graph) {
                     std::cout << "(" << boost::source(e, g) << "/" << boost::target(e, g) << "): " << g[e].ear << std::endl;
                 }
             }
 
             // create subgraphs from decomposed ears
-
-            for (int i = 1; i != num + 1; ++i) {
-                // for each ear create a new subgraph
-                Graph& subg = g.create_subgraph();
-
-                BGL_FORALL_EDGES_T(e, g, Graph) {
-                    if (g[e].ear == i) {
-                        if (!subg.find_vertex(g.local_to_global(boost::source(e, g))).second) {
-                            boost::add_vertex(g.local_to_global(boost::source(e, g)), subg);
-                        }
-                        if (!subg.find_vertex(g.local_to_global(boost::target(e, g))).second) {
-                            boost::add_vertex(g.local_to_global(boost::target(e, g)), subg);
-                        }
-                    }
+            // map with subgraphs
+            std::map<int, Graph*> ear_graphs;
+            // add all edges of the ear to the right subgraph
+            BGL_FORALL_EDGES_T(e, g, Graph) {
+                std::map<int, Graph*>::iterator it = ear_graphs.find(g[e].ear);
+                if (it == ear_graphs.end()) {
+                    // create subgraph
+                    ear_graphs[g[e].ear] = &g.create_subgraph();
+                    graph_property& gprop = boost::get_property(*ear_graphs[g[e].ear], boost::graph_name);
+                    gprop.type = 3;
+                    gprop.id = g[e].ear - 1;
                 }
-                
-                graph_property& gprop = boost::get_property(subg, boost::graph_name);
-                gprop.type = 3;
-                gprop.id = i-1;
+                // add edge to subgraph
+                boost::add_edge(g.local_to_global(e), *ear_graphs[g[e].ear]);
             }
-            // detect attachment points and push them into the graph as vertex property Ak
-            color_attachment_points(g);
-        }
-
-        void color_attachment_points(Graph& g) {
-            if (debug) {
-                std::cerr << "Color attachment points as special vertices..." << std::endl;
-            }
-
-            BGL_FORALL_VERTICES_T(v, g, Graph) {
-                int prev_ear = -1;
-
-                BGL_FORALL_OUTEDGES(v, e, g, Graph) {
-                    if (prev_ear == -1) {
-                        prev_ear = g[e].ear;
-                    } else if (prev_ear != g[e].ear) {
-                        // set special to true!
-                        g[v].special = true;
-                        if (debug) {
-                            std::cout << "Vertex " << g.local_to_global(v) << " is a attachment point!" << std::endl;
-                        }
-                        break;
-                    }
+            
+            for (Vertex v : att_points) {
+                g[v].special = true;
+                if (debug) {
+                    std::cout << "Vertex " << vertex_to_int(v, g) << " is a attachment point!" << std::endl;
                 }
             }
         }
 
         void parts_between_specials_to_subgraphs(Graph& g) {
             bool split = false;
+            Vertex end;
             BGL_FORALL_VERTICES_T(v, g, Graph) {
                 split = split || (g[v].special && (boost::degree(v, g) > 1));
             }
@@ -347,6 +314,7 @@ namespace design {
                     if (g[e].color == 0) {
                         g[e].color = 1;
                         Graph* subgptr = &g.create_subgraph();
+                        boost::add_edge(g.local_to_global(e), *subgptr);
                         parts_recursion(g, subgptr, boost::source(e, g));
                         parts_recursion(g, subgptr, boost::target(e, g));
                         
@@ -367,13 +335,14 @@ namespace design {
 
         void parts_recursion(Graph& g, Graph * subgptr, Vertex v) {
             // add vertex to subgraph
-            boost::add_vertex(boost::get(boost::vertex_color_t(), g, v), *subgptr);
+            //boost::add_vertex(boost::get(boost::vertex_color_t(), g, v), *subgptr);
             g[v].color = 1;
             
             if (!g[v].special) {
                 BGL_FORALL_OUTEDGES_T(v, e, g, Graph) {
                     if (g[e].color == 0) {
                         g[e].color = 1;
+                        boost::add_edge(g.local_to_global(e), *subgptr);
                         parts_recursion(g, subgptr, boost::target(e, g));
                     }
                 }

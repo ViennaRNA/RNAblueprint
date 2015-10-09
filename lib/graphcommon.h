@@ -36,14 +36,6 @@ namespace design {
             int color = 0;
         };
 
-        struct edge_component_t {
-
-            enum {
-                num = 555
-            };
-            typedef boost::edge_property_tag kind;
-        };
-
         struct graph_property {
             // concurrent number from 0 to # of components-1
             int id;
@@ -64,7 +56,7 @@ namespace design {
         typedef boost::uninduced_subgraph<
         boost::adjacency_list< boost::vecS, boost::vecS, boost::undirectedS,
         boost::property< boost::vertex_color_t, int, vertex_property >,
-        boost::property< boost::edge_index_t, int, boost::property < edge_component_t, std::size_t, edge_property> >,
+        boost::property< boost::edge_index_t, int, edge_property >,
         boost::property< boost::graph_name_t, graph_property> > > Graph;
         typedef Graph::edge_descriptor Edge;
         typedef Graph::vertex_descriptor Vertex;
