@@ -145,6 +145,8 @@ namespace design {
                     gprop.type = 1;
                     gprop.id = component[v];
                 }
+                // add vertex
+                boost::add_vertex(g.local_to_global(v), *component_graphs[component[v]]);
                 // add all adjacent edges
                 BGL_FORALL_OUTEDGES_T(v, e, g, Graph) {
                     boost::add_edge(g.local_to_global(e), *component_graphs[component[v]]);

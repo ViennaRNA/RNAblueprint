@@ -334,6 +334,20 @@ BOOST_AUTO_TEST_CASE(mutate_local1) {
     BOOST_CHECK(dependency_graph.get_sequence_string() == "AC");
 }
 
+BOOST_AUTO_TEST_CASE(number_of_sequences_cc) {
+
+    BOOST_TEST_MESSAGE("test dependency graph number_of_sequences(cc_id)");
+
+    design::initialize_library(true);
+    std::vector<std::string> structures = {"()....()..()", ".()()..(.)..", ".(.)...()..."};
+    
+    std::mt19937 rand_gen(1);
+    // connected components: cc0 ps 28 #p 5 0,1,2,3,4 cc1 ps 4 #p 1 5 cc2 ps 2016 #p 4 6,7,8,9 cc3 ps 6 #p 2 10,11
+    design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "NNNNNNNNNNNN", rand_gen);
+
+    BOOST_CHECK(dependency_graph.number_of_sequences() == 12096);
+}
+
 //TODO mutate global local unit tests!
 // todo mutate by position unit tests
 
