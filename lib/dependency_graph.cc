@@ -386,18 +386,55 @@ namespace design
                 get_subgraphs(*c, subgraphs, type, min_size, max_size);
             }
         }
+        
+        template <typename R>
+        Graph* DependencyGraph<R>::find_path_subgraph(Vertex v_global, Graph& g) {
+            Graph::children_iterator c, c_end;
+            for (boost::tie(c, c_end) = g.children(); c != c_end; ++c) {
+                // search if this vertex is present
+                if ((*c).find_vertex(v_global).second) {
+                    // get graph properties
+                    graph_property& gprop = boost::get_property(*c, boost::graph_name);
+                    // return pointer to this path, or go deeper
+                    if (gprop.is_path) {
+                        if (debug)
+                            print_graph(*c, &std::cerr, "mutated graph");
+                        return &*c;
+                    } else {
+                        return find_path_subgraph(v_global, *c);
+                    }
+                    break;
+                }
+            }
+        }
 
         template <typename R>
         boost::multiprecision::mpz_int DependencyGraph<R>::mutate(int position) {
-            //TODO!
-            boost::multiprecision::mpz_int nos = 0;
-            return nos;
+            // first get the right vertex
+            Vertex v_global = int_to_vertex(position, graph);
+            if (debug)
+                std::cerr << "vertex is: " << v_global << std::endl;
+            // search for the lowest path subgraph and mutate
+            Graph* g = find_path_subgraph(v_global, graph);
+            return mutate(*g);
         }
 
         template <typename R>
         boost::multiprecision::mpz_int DependencyGraph<R>::mutate(int start, int end) {
-            //TODO!
-            boost::multiprecision::mpz_int nos = 0;
+            // nos
+            boost::multiprecision::mpz_int nos = 1;
+            // set with all subgraphs to mutate
+            std::set<Graph*> subgraphs;
+            
+            for (; start <= end; start++) {
+                Vertex v_global = int_to_vertex(start, graph);
+                std::cerr << "vertex is: " << v_global << std::endl;
+                subgraphs.insert(find_path_subgraph(v_global, graph));
+            }
+            // mutate collected subgraphs
+            for (auto sg : subgraphs) {
+                nos *= mutate(*sg);
+            }
             return nos;
         }
         

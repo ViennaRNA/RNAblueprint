@@ -56,6 +56,7 @@ namespace design {
             boost::multiprecision::mpz_int sample_sequence(Graph& g);
             void reset_colors(Graph& g);
             boost::multiprecision::mpz_int mutate(Graph& g);
+            Graph* find_path_subgraph(Vertex v_global, Graph& g);
             // this function fills the subgraphs set with all the sugraphs of the given type (root, cc, bc, path)
             // if int type= -1, then it returns all subgraphs which are actual paths (gp.is_path == true).
             // you can specify also a minimal and maximal size of the subgraph

@@ -100,13 +100,11 @@ namespace design {
     
     template <typename R>
     boost::multiprecision::mpz_int DependencyGraph<R>::mutate(int position) {
-        throw std::logic_error("This is not implemented yet!");
         return g->mutate(position);
     }
     
     template <typename R>
     boost::multiprecision::mpz_int DependencyGraph<R>::mutate(int start, int end) {
-        throw std::logic_error("This is not implemented yet!");
         return g->mutate(start, end);
     }
 

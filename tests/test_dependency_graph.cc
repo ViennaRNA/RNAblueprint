@@ -352,8 +352,55 @@ BOOST_AUTO_TEST_CASE(number_of_sequences_cc) {
     BOOST_CHECK(dependency_graph.number_of_sequences() == 12096);
 }
 
-//TODO mutate global local unit tests!
-// todo mutate by position unit tests
+BOOST_AUTO_TEST_CASE(mutate_pos) {
+
+    BOOST_TEST_MESSAGE("mutate dependency graph by position");
+
+    design::initialize_library(true);
+    std::vector<std::string> structures = {"()....()..()", ".()()..(.)..", ".(.)...()..."};
+    
+    std::mt19937 rand_gen(1);
+    // connected components: cc0 ps 28 #p 5 0,1,2,3,4 cc1 ps 4 #p 1 5 cc2 ps 18 #p 4 6,7,8,9 cc3 ps 6 #p 2 10,11
+    design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "NNNNNNNNNNNN", rand_gen);
+    
+    BOOST_CHECK(dependency_graph.number_of_sequences() == 12096);
+    dependency_graph.set_sequence();
+    // mutate CCs which are paths
+    BOOST_CHECK(dependency_graph.mutate(5) == 4);
+    BOOST_CHECK(dependency_graph.mutate(10) == 6);
+    // check sequence
+    BOOST_CHECK(dependency_graph.get_sequence_string() == "GUGGUACGCCAU");
+    
+    // mutate more nested subgraphs
+    BOOST_CHECK(dependency_graph.mutate(2) == 2);
+    BOOST_CHECK(dependency_graph.get_sequence_string() == "GUGGUACGCCAU");
+}
+
+BOOST_AUTO_TEST_CASE(mutate_pos_range) {
+
+    BOOST_TEST_MESSAGE("mutate dependency graph by position range");
+
+    design::initialize_library(true);
+    std::vector<std::string> structures = {"()....()..()", ".()()..(.)..", ".(.)...()..."};
+    
+    std::mt19937 rand_gen(1);
+    // connected components: cc0 ps 28 #p 5 0,1,2,3,4 cc1 ps 4 #p 1 5 cc2 ps 18 #p 4 6,7,8,9 cc3 ps 6 #p 2 10,11
+    design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "NNNNNNNNNNNN", rand_gen);
+    
+    BOOST_CHECK(dependency_graph.number_of_sequences() == 12096);
+    dependency_graph.set_sequence();
+    // mutate positions which are in one path
+    BOOST_CHECK(dependency_graph.mutate(10, 11) == 6);
+    // check sequence
+    std::cerr << dependency_graph.get_sequence_string() << std::endl;
+    BOOST_CHECK(dependency_graph.get_sequence_string() == "GUGGUCCGCCGC");
+    // mutate on different CCs
+    std::cerr << dependency_graph.mutate(9, 11) << std::endl;
+    BOOST_CHECK(dependency_graph.mutate(9, 11) == 12);
+    // check sequence
+    std::cerr << dependency_graph.get_sequence_string() << std::endl;
+    BOOST_CHECK(dependency_graph.get_sequence_string() == "GUGGUCCGCUAU");
+}
 
 
 
