@@ -342,9 +342,13 @@ BOOST_AUTO_TEST_CASE(number_of_sequences_cc) {
     std::vector<std::string> structures = {"()....()..()", ".()()..(.)..", ".(.)...()..."};
     
     std::mt19937 rand_gen(1);
-    // connected components: cc0 ps 28 #p 5 0,1,2,3,4 cc1 ps 4 #p 1 5 cc2 ps 2016 #p 4 6,7,8,9 cc3 ps 6 #p 2 10,11
+    // connected components: cc0 ps 28 #p 5 0,1,2,3,4 cc1 ps 4 #p 1 5 cc2 ps 18 #p 4 6,7,8,9 cc3 ps 6 #p 2 10,11
     design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "NNNNNNNNNNNN", rand_gen);
-
+    
+    BOOST_CHECK(dependency_graph.number_of_sequences(0) == 28);
+    BOOST_CHECK(dependency_graph.number_of_sequences(1) == 4);
+    BOOST_CHECK(dependency_graph.number_of_sequences(2) == 18);
+    BOOST_CHECK(dependency_graph.number_of_sequences(3) == 6);
     BOOST_CHECK(dependency_graph.number_of_sequences() == 12096);
 }
 

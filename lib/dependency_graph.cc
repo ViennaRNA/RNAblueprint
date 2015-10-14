@@ -120,7 +120,7 @@ namespace design
                 
                 // now make nodes internal and remember the current pm at such nodes 
                 // (except for cc as those are independent of each other)
-                if (!(gprop.type == 1)) {
+                if (gprop.type == 1) {
                     alreadysaved = true;
                 }
                 
