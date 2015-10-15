@@ -172,7 +172,7 @@ namespace design {
                     }
                     // read probability for this keys and multiply them
                     // insert this new probability into the new pm z
-                    z.put(zkey, x[xkey]*y[ykey]);
+                    z.put(zkey, x[xkey] * y[ykey]);
 
                     //std::cerr << "x: " << xkey << ": " << x[xkey] << std::endl;
                     //std::cerr << "y: " << ykey << ": " << y[ykey] << std::endl;
@@ -181,10 +181,10 @@ namespace design {
                 return z;
             }
         }
-        
+
         ProbabilityMatrix make_internal(ProbabilityMatrix& pm, int v) {
             ProbabilityMatrix result;
-            
+
             std::set< int > specials = pm.getSpecials();
             // find v in specials
             std::set< int >::iterator v_it = specials.find(v);
@@ -195,7 +195,7 @@ namespace design {
                 for (auto s : specials) {
                     newkey[s] = N; //TODO maybe we could check sequence constraints here?
                 }
-                
+
                 std::vector<ProbabilityKey> newkeys = permute_key(newkey);
                 for (auto k : newkeys) {
                     ProbabilityKey pmkey = k;
@@ -209,7 +209,41 @@ namespace design {
             }
             return result;
         }
-        
+
+        ProbabilityKey* PermuteKeyFactory::PermuteKeyFactory(ProbabilityKey pk) {
+            //std::map<int, std::list<int> > storage;
+            //std::map<int, std::list<int>::iterator> state;
+            //std::map<int, std::list<int>::iterator>::iterator state_it;
+            //std::map<int, int&> current;
+
+            // fill storage container with all possibilities
+            for (auto k : pk) {
+                for (auto b : base_conversion[k->second]) {
+                    storage[k->first].insert(b);
+                }
+            }
+            // fill storage container
+            for (auto k : pk) {
+                state[k->first] = storage[k->first].begin();
+            }
+
+            state_it = state.end() - 1;
+            return &current;
+        }
+
+        bool PermuteKeyFactory::next_permutation() {
+            for (auto s : storage) {
+                current[s.first] = &*s.second;
+            }
+            // move to next step
+
+            return true;
+        }
+
+        bool PermuteKeyFactory::next_recursion() {
+
+        }
+
         std::vector<ProbabilityKey> permute_key(ProbabilityKey pk) {
             std::vector<ProbabilityKey> result;
             
