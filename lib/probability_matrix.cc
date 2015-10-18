@@ -42,15 +42,18 @@ namespace design {
             }
             
             boost::multiprecision::mpz_int returnvalue = 0;
-            std::vector<ProbabilityKey> allkeys = permute_key(pk);
+            PermuteKeyFactory pkf(pk);
             
-            for (auto key : allkeys) {
+            while (true) {
                 // important for map: if you request with [] an entry will be created for unexisting ones.
-                ProbabilityMap::const_iterator found = pmap.find(key);
+                ProbabilityMap::const_iterator found = pmap.find(*pkf.key());
 
                 if (found != pmap.end()) {
                     returnvalue += found->second;
                 }
+                
+                if (!pkf.next_permutation())
+                    break;
             }
             return returnvalue;
         }
@@ -102,11 +105,13 @@ namespace design {
             ProbabilityKey result;
             
             // get all possible keys for the constraints set in pk
-            std::vector<ProbabilityKey> possible_keys = permute_key(pk);
+            PermuteKeyFactory pkf(pk);
             boost::multiprecision::mpz_int constrained_mnos = 0;
             // get the maximal number of sequences for the input constraints set in pk
-            for (auto k: possible_keys) {
-                constrained_mnos += (*this)[k];
+            while (true) {
+                constrained_mnos += (*this)[*pkf.key()];
+                if (!pkf.next_permutation())
+                    break;
             }
             
             if (constrained_mnos == 0) {
@@ -117,14 +122,17 @@ namespace design {
             // stochastically take one of the possibilities
             // start at the probability of first possible character and add each other base probability as long long as the random number is bigger.
             boost::multiprecision::mpz_int sum = 0;
-            for (auto k : possible_keys) {
-                sum += (*this)[k];
+            pkf.reset();
+            while (true) {
+                sum += (*this)[*pkf.key()];
                 // if the random number is bigger than our probability, take this base as the current base!
                 if (random < sum) {
-                    result = k;
+                    result = *pkf.key();
                     // don't forget to exit the loop, otherwise will always be last entry
                     break;
                 }
+                if (!pkf.next_permutation())
+                    break;
             }
 
             if (debug) {
@@ -155,28 +163,28 @@ namespace design {
                 for (auto s : zSpecials) {
                     newkey[s] = N; //TODO maybe we could check sequence constraints here?
                 }
-                std::vector<ProbabilityKey> zkeys = permute_key(newkey);
-
-                //std::cerr << "zkeys: " << zkeys << std::endl;
-
+                
+                PermuteKeyFactory pkf(newkey);
                 // lookup keys from previous and multiply them to insert into new
-                for (auto zkey : zkeys) {
+                while (true) {
                     // generate keys for both old PMs
                     ProbabilityKey xkey;
                     for (auto s : xSpecials) {
-                        xkey[s] = zkey[s];
+                        xkey[s] = (*pkf.key())[s];
                     }
                     ProbabilityKey ykey;
                     for (auto s : ySpecials) {
-                        ykey[s] = zkey[s];
+                        ykey[s] = (*pkf.key())[s];
                     }
                     // read probability for this keys and multiply them
                     // insert this new probability into the new pm z
-                    z.put(zkey, x[xkey] * y[ykey]);
+                    z.put(*pkf.key(), x[xkey] * y[ykey]);
 
                     //std::cerr << "x: " << xkey << ": " << x[xkey] << std::endl;
                     //std::cerr << "y: " << ykey << ": " << y[ykey] << std::endl;
                     //std::cerr << "z: " << zkey << ": " << z[zkey] << std::endl;
+                    if (!pkf.next_permutation())
+                        break;
                 }
                 return z;
             }
@@ -196,12 +204,14 @@ namespace design {
                     newkey[s] = N; //TODO maybe we could check sequence constraints here?
                 }
 
-                std::vector<ProbabilityKey> newkeys = permute_key(newkey);
-                for (auto k : newkeys) {
-                    ProbabilityKey pmkey = k;
+                PermuteKeyFactory pkf(newkey);
+                while (true) {
+                    ProbabilityKey pmkey(*pkf.key());
                     pmkey[v] = N;
                     // now put the new key with the sum over the internal vertex into the new matrix
-                    result.put(k, pm[pmkey]);
+                    result.put(*pkf.key(), pm[pmkey]);
+                    if (!pkf.next_permutation())
+                        break;
                 }
             } else {
                 // in case the vertex is not present in specials, it is already "internal"
@@ -210,59 +220,62 @@ namespace design {
             return result;
         }
 
-        ProbabilityKey* PermuteKeyFactory::PermuteKeyFactory(ProbabilityKey pk) {
+        PermuteKeyFactory::PermuteKeyFactory(ProbabilityKey pk) {
             //std::map<int, std::list<int> > storage;
             //std::map<int, std::list<int>::iterator> state;
-            //std::map<int, std::list<int>::iterator>::iterator state_it;
-            //std::map<int, int&> current;
 
             // fill storage container with all possibilities
             for (auto k : pk) {
-                for (auto b : base_conversion[k->second]) {
-                    storage[k->first].insert(b);
+                for (int b : base_conversion[k.second]) {
+                    storage[k.first].push_back(b);
                 }
             }
-            // fill storage container
-            for (auto k : pk) {
-                state[k->first] = storage[k->first].begin();
+            // fill state container
+            reset();
+        }
+        
+        ProbabilityKey* PermuteKeyFactory::key() {
+            for (auto s : state) {
+                current[s.first] = *s.second;
             }
-
-            state_it = state.end() - 1;
             return &current;
+        }
+        
+        void PermuteKeyFactory::reset() {
+            // reset to begin
+            std::map<int, std::list<int> >::iterator s_it;
+            for (s_it = storage.begin(); s_it != storage.end(); s_it++) {
+                state[s_it->first] = s_it->second.begin();
+            }
         }
 
         bool PermuteKeyFactory::next_permutation() {
-            for (auto s : storage) {
-                current[s.first] = &*s.second;
-            }
             // move to next step
-
-            return true;
+            return make_next_step(state.begin());
         }
 
-        bool PermuteKeyFactory::next_recursion() {
-
-        }
-
-        std::vector<ProbabilityKey> permute_key(ProbabilityKey pk) {
-            std::vector<ProbabilityKey> result;
-            
-            ProbabilityKey current;
-            permute_impl(pk.begin(), pk.end(), result, current);
-            return result;
+        bool PermuteKeyFactory::make_next_step(std::map<int, std::list<int>::iterator>::iterator state_it) {
+            state_it->second++;
+            if (state_it->second == storage[state_it->first].end()) {
+                state_it->second = storage[state_it->first].begin();
+                state_it++;
+                if (state_it != state.end())
+                    return make_next_step(state_it);
+                else
+                    return false;
+            } else {
+                return true;
+            }
         }
         
-        void permute_impl(ProbabilityKey::iterator start, ProbabilityKey::iterator end, std::vector<ProbabilityKey>& result, ProbabilityKey current) {
-            if (start == end) {
-                    result.push_back(current);
-            } else {
-                for (auto b : base_conversion[start->second]) {
-                    //std::cerr << "Base " << enum_to_char(b) << " start " << start->first << " current " << current << std::endl;
-                    current[start->first] = b;
-                    permute_impl(++start, end, result, current);
-                    start--;
-                }
-            }
+        bool PermuteKeyFactory::previous_permutation() {
+            //TODO
+            return false;
+        }
+        
+        bool PermuteKeyFactory::make_previous_step(std::map<int, std::list<int>::iterator>::iterator state_it) {
+            //TODO
+            return false;
         }
         
         // overload << operator to print ProbabilityKeys
@@ -282,11 +295,13 @@ namespace design {
             for (auto s : specials) {
                 key[s] = N;
             }
-            std::vector<ProbabilityKey> keys = permute_key(key);
-            for (auto k : keys) {
-                if (m[k] != 0) {
-                    os << k << ": " << m[k] << std::endl;
+            PermuteKeyFactory pkf(key);
+            while (true) {
+                if (m[*pkf.key()] != 0) {
+                    os << *pkf.key() << ": " << m[*pkf.key()] << std::endl;
                 }
+                if (!pkf.next_permutation())
+                    break;
             }
             return os;
         }

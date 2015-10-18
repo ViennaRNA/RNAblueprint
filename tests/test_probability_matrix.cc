@@ -40,13 +40,19 @@ BOOST_AUTO_TEST_CASE(PermuteKey1) {
     ss << "Key to permute:" << std::endl << pk << std::endl;
     BOOST_TEST_MESSAGE(ss.str());
     ss.str(std::string());
-
-    std::vector<ProbabilityKey> test = permute_key(pk);
+    
+    PermuteKeyFactory pkf(pk);
+    std::vector<ProbabilityKey> test;
+    while (true) { 
+        test.push_back(*pkf.key());
+        if (!pkf.next_permutation())
+            break;
+    }
 
     std::vector<ProbabilityKey> control;
 
-    for (auto b : base_conversion[N]) {
-        for (auto c : base_conversion[S]) {
+    for (auto c : base_conversion[S]) {
+        for (auto b : base_conversion[N]) {
             ProbabilityKey pk;
             pk.emplace(0, b);
             pk.emplace(4, c);
@@ -74,14 +80,20 @@ BOOST_AUTO_TEST_CASE(PermuteKey2) {
     ss << "Key to permute:" << std::endl << pk << std::endl;
     BOOST_TEST_MESSAGE(ss.str());
     ss.str(std::string());
-
-    std::vector<ProbabilityKey> test = permute_key(pk);
+    
+    PermuteKeyFactory pkf(pk);
+    std::vector<ProbabilityKey> test;
+    while (true) { 
+        test.push_back(*pkf.key());
+        if (!pkf.next_permutation())
+            break;
+    }
 
     std::vector<ProbabilityKey> control;
 
-    for (auto b : base_conversion[N]) {
+    for (auto d : base_conversion[V]) {
         for (auto c : base_conversion[S]) {
-            for (auto d : base_conversion[V]) {
+            for (auto b : base_conversion[N]) {
                 ProbabilityKey pk;
                 pk.emplace(0, b);
                 pk.emplace(4, c);
@@ -522,10 +534,12 @@ BOOST_AUTO_TEST_CASE(RandomlySampleKey1) {
     input[1] = N;
     input[4] = N;
     input[7] = Y;
-
-    std::vector<ProbabilityKey> input_keys = permute_key(input);
-    for (auto i : input_keys) {
-        m.put(i, static_cast<boost::multiprecision::mpz_int>(dist(rand_gen) * 400));
+    
+    PermuteKeyFactory pkf(input);
+    while (true) {
+        m.put(*pkf.key(), static_cast<boost::multiprecision::mpz_int>(dist(rand_gen) * 400));
+        if (!pkf.next_permutation())
+            break;
     }
 
     ProbabilityKey constraint;
@@ -554,9 +568,11 @@ BOOST_AUTO_TEST_CASE(RandomlySampleKey2) {
     input[4] = N;
     input[7] = Y;
 
-    std::vector<ProbabilityKey> input_keys = permute_key(input);
-    for (auto i : input_keys) {
-        m.put(i, static_cast<boost::multiprecision::mpz_int>(dist(rand_gen) * 400));
+    PermuteKeyFactory pkf(input);
+    while (true) {
+        m.put(*pkf.key(), static_cast<boost::multiprecision::mpz_int>(dist(rand_gen) * 400));
+        if (!pkf.next_permutation())
+            break;
     }
     ProbabilityMatrix c = m;
 

@@ -21,6 +21,7 @@
 
 // include standard library parts
 #include <unordered_map>
+#include <list>
 #include <functional>
 #include <iomanip>
 #include <algorithm>
@@ -90,14 +91,17 @@ namespace design {
 
         class PermuteKeyFactory {
         public:
-            ProbabilityKey* PermuteKeyFactory(ProbabilityKey pk);
+            PermuteKeyFactory(ProbabilityKey pk);
+            ProbabilityKey* key();
             bool next_permutation();
             bool previous_permutation();
+            void reset();
         private:
             std::map<int, std::list<int> > storage;
             std::map<int, std::list<int>::iterator> state;
-            std::map<int, std::list<int>::iterator>::iterator state_it;
-            std::map<int, int&> current;
+            bool make_next_step(std::map<int, std::list<int>::iterator>::iterator state_it);
+            bool make_previous_step(std::map<int, std::list<int>::iterator>::iterator state_it);
+            ProbabilityKey current;
         };
 
         // multiply operator overloaded which calculates new pm
@@ -105,11 +109,6 @@ namespace design {
 
         // a function which creates a new ProbabilityMatrix where the given key is internal
         ProbabilityMatrix make_internal(ProbabilityMatrix& pm, int v);
-
-        // A function to permute the keys if the key contains Letters bigger than the alphabet (eg N, S, Y,...)
-        std::vector<ProbabilityKey> permute_key(ProbabilityKey pk);
-        // helper for permute_key
-        void permute_impl(ProbabilityKey::iterator start, ProbabilityKey::iterator end, std::vector<ProbabilityKey>& result, ProbabilityKey current);
 
         // overload << operator to print ProbabilityKeys
         std::ostream& operator<<(std::ostream& os, ProbabilityKey& m);
