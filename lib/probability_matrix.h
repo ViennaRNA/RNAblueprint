@@ -21,6 +21,7 @@
 
 // include standard library parts
 #include <unordered_map>
+#include <list>
 #include <functional>
 #include <iomanip>
 #include <algorithm>
@@ -33,18 +34,18 @@
 namespace design {
     namespace detail {
         // class definitions
-        
+
         // Class with custom hash function for the ProbabilityMatrix
         typedef std::map < int, int > ProbabilityKey;
-        
+
         class ProbabilityKeyHash {
         public:
             std::size_t operator()(const ProbabilityKey& k) const;
         };
-        
+
         // Class to get Pairing numbers
         typedef std::unordered_map< ProbabilityKey, boost::multiprecision::mpz_int, ProbabilityKeyHash> ProbabilityMap;
-        
+
         class ProbabilityMatrix {
         public:
             ProbabilityMatrix();
@@ -52,15 +53,21 @@ namespace design {
             //ProbabilityMatrix( const ProbabilityMatrix &pm ) = default;
             // get probability for ProbabilityKeys... key of Aks (12/A) (4/C) ()...
             //boost::multiprecision::mpz_int get(ProbabilityKey pk);
-            boost::multiprecision::mpz_int operator[] (ProbabilityKey& pk);
+            boost::multiprecision::mpz_int operator[](ProbabilityKey& pk);
             // fill a nos for a certain key
-            void put(ProbabilityKey& pk, boost::multiprecision::mpz_int nos);            
+            void put(ProbabilityKey& pk, boost::multiprecision::mpz_int nos);
             // get maximal number of sequences for the whole matrix/subgraph
             boost::multiprecision::mpz_int mnos();
             // return if this is a initialized PM or not
-            bool is_initialized() { return initialized; }
+
+            bool is_initialized() {
+                return initialized;
+            }
             // get set of special vertices
-            std::set< int > getSpecials() { return specials; };
+
+            std::set< int > getSpecials() {
+                return specials;
+            };
             // sample one combination randomly given a ProbabilityKey with the constraints and a random number generator
             // return a pair with the chosen ProbabilityKey and the number_of_sequences for the given input constraints
             template <typename R>
@@ -70,7 +77,7 @@ namespace design {
             std::pair<ProbabilityKey, boost::multiprecision::mpz_int> sample(R* rand_ptr);
             // My custom hash key used for n
             friend class ProbabilityKeyHash;
-            friend ProbabilityMatrix operator* (ProbabilityMatrix& x, ProbabilityMatrix& y);
+            friend ProbabilityMatrix operator*(ProbabilityMatrix& x, ProbabilityMatrix& y);
             ~ProbabilityMatrix() = default;
         private:
             // map of possibilities saved by key
@@ -81,22 +88,31 @@ namespace design {
             std::set< int > specials = {};
             // TODO a function to "multiply" probability matrixes
         };
-        
-        
+
+        class PermuteKeyFactory {
+        public:
+            PermuteKeyFactory(ProbabilityKey pk);
+            ProbabilityKey* key();
+            bool next_permutation();
+            bool previous_permutation();
+            void reset();
+        private:
+            std::map<int, std::list<int> > storage;
+            std::map<int, std::list<int>::iterator> state;
+            bool make_next_step(std::map<int, std::list<int>::iterator>::iterator state_it);
+            bool make_previous_step(std::map<int, std::list<int>::iterator>::iterator state_it);
+            ProbabilityKey current;
+        };
+
         // multiply operator overloaded which calculates new pm
-        ProbabilityMatrix operator* (ProbabilityMatrix& x, ProbabilityMatrix& y);
-        
+        ProbabilityMatrix operator*(ProbabilityMatrix& x, ProbabilityMatrix& y);
+
         // a function which creates a new ProbabilityMatrix where the given key is internal
         ProbabilityMatrix make_internal(ProbabilityMatrix& pm, int v);
-        
-        // A function to permute the keys if the key contains Letters bigger than the alphabet (eg N, S, Y,...)
-        std::vector<ProbabilityKey> permute_key(ProbabilityKey pk);
-        // helper for permute_key
-        void permute_impl(ProbabilityKey::iterator start, ProbabilityKey::iterator end, std::vector<ProbabilityKey>& result, ProbabilityKey current);
-        
+
         // overload << operator to print ProbabilityKeys
         std::ostream& operator<<(std::ostream& os, ProbabilityKey& m);
-        
+
         // overload << operator to print ProbabilityMatrix
         std::ostream& operator<<(std::ostream& os, ProbabilityMatrix& m);
     }

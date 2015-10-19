@@ -45,29 +45,32 @@ namespace design {
                 throw std::logic_error("More than two special vertices in one path. ridiculous!");
             }
             
-            std::vector<ProbabilityKey> keys = permute_key(key);
             //std::cerr << "keys: " << std::endl << keys;
             int length = boost::num_vertices(g) - 1;
             //std::cerr << "length: " << length << std::endl;
             PairingMatrix * p = PairingMatrix::Instance();
             
             ProbabilityMatrix result;
+            PermuteKeyFactory pkf(key);
             
-            for (auto k : keys) {
+            while (true) {
+                ProbabilityKey* k = pkf.key();
                 switch ( specials.size() )
                 {
                     case 0:
-                        result.put(k, p->get(length, N, N));
+                        result.put(*k, p->get(length, N, N));
                         break;
                     case 1:
-                        result.put(k, p->get(length, k[*(specials.begin())], N));
+                        result.put(*k, p->get(length, (*k)[*(specials.begin())], N));
                         break;
                     case 2:
-                        result.put(k, p->get(length, k[*(specials.begin())], k[*(++specials.begin())]));
+                        result.put(*k, p->get(length, (*k)[*(specials.begin())], (*k)[*(++specials.begin())]));
                         break;
                     default:
                         throw std::logic_error("More than two special vertices in one path. ridiculous!");
                 }
+                if (!pkf.next_permutation())
+                    break;
             }
             return result;
         }
