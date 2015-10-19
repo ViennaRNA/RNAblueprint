@@ -47,9 +47,9 @@ BOOST_AUTO_TEST_CASE(rand_test1) {
 
 
     BOOST_TEST_MESSAGE("test random number generator again");
-
-    std::mt19937 rand_gen(1);
+    
     for (int i = 0; i < 10; i++) {
+        std::mt19937 rand_gen(1);
 #ifdef LIBGMP
         RandomDistType dist(0, SolutionSizeType("71329713298047938274804793827443536456"));
 #else
