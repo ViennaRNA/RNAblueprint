@@ -161,7 +161,7 @@ namespace design {
                 // build all keys needed for new PM
                 ProbabilityKey newkey;
                 for (auto s : zSpecials) {
-                    newkey[s] = N; //TODO maybe we could check sequence constraints here?
+                    newkey[s] = N;
                 }
                 
                 PermuteKeyFactory pkf(newkey);
@@ -172,17 +172,20 @@ namespace design {
                     for (auto s : xSpecials) {
                         xkey[s] = (*pkf.key())[s];
                     }
-                    ProbabilityKey ykey;
-                    for (auto s : ySpecials) {
-                        ykey[s] = (*pkf.key())[s];
+                    boost::multiprecision::mpz_int x_value = x[xkey];
+                    // if the first value is 0, we do not need to look up in the second matrix any more
+                    if (x_value != 0) {
+                        // now access the second value
+                        ProbabilityKey ykey;
+                        for (auto s : ySpecials) {
+                            ykey[s] = (*pkf.key())[s];
+                        }
+                        boost::multiprecision::mpz_int y_value = y[ykey];
+                        
+                        // read probability for this keys and multiply them
+                        // insert this new probability into the new pm z
+                        z.put(*pkf.key(), x_value * y_value);
                     }
-                    // read probability for this keys and multiply them
-                    // insert this new probability into the new pm z
-                    z.put(*pkf.key(), x[xkey] * y[ykey]);
-
-                    //std::cerr << "x: " << xkey << ": " << x[xkey] << std::endl;
-                    //std::cerr << "y: " << ykey << ": " << y[ykey] << std::endl;
-                    //std::cerr << "z: " << zkey << ": " << z[zkey] << std::endl;
                     if (!pkf.next_permutation())
                         break;
                 }
