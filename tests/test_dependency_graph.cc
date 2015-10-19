@@ -134,9 +134,13 @@ BOOST_AUTO_TEST_CASE(output_connected_components) {
     std::mt19937 rand_gen(1);
 
     design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "NNNN", rand_gen);
+    // result
     std::map< int, std::vector<int> > check_output = {{0, {0, 3}}, {1, {1}}, {2, {2}}};
-
-    BOOST_CHECK(dependency_graph.connected_components() == check_output);
+    // iterate over connected components
+    for (int i = 0; i < dependency_graph.number_of_connected_components(); i++) {
+        BOOST_CHECK(dependency_graph.component_vertices(i) == check_output[i]);
+    }
+    
 }
 
 BOOST_AUTO_TEST_CASE(set_sequence1) {
@@ -227,8 +231,11 @@ BOOST_AUTO_TEST_CASE(number_of_sequences_ccID) {
 
     design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "WN", rand_gen);
     BOOST_CHECK(dependency_graph.number_of_sequences() == 8);
-    std::map< int, std::vector<int> > result = dependency_graph.connected_components();
+    
     std::map< int, std::vector<int> > check = {{0, {0}}, {1, {1}}};
+    for (int i = 0; i < dependency_graph.number_of_connected_components(); i++) {
+        BOOST_CHECK(dependency_graph.component_vertices(i) == check[i]);
+    }    
     
     BOOST_CHECK(dependency_graph.number_of_sequences(0) == 2);
     BOOST_CHECK(dependency_graph.number_of_sequences(1) == 4);

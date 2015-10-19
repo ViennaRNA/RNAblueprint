@@ -71,7 +71,6 @@ sub new {
 *pop = *RNAdesignc::IntVector_pop;
 *get = *RNAdesignc::IntVector_get;
 *set = *RNAdesignc::IntVector_set;
-*getvec = *RNAdesignc::IntVector_getvec;
 sub DESTROY {
     return unless $_[0]->isa('HASH');
     my $self = tied(%{$_[0]});
@@ -79,53 +78,6 @@ sub DESTROY {
     delete $ITERATORS{$self};
     if (exists $OWNER{$self}) {
         RNAdesignc::delete_IntVector($self);
-        delete $OWNER{$self};
-    }
-}
-
-sub DISOWN {
-    my $self = shift;
-    my $ptr = tied(%$self);
-    delete $OWNER{$ptr};
-}
-
-sub ACQUIRE {
-    my $self = shift;
-    my $ptr = tied(%$self);
-    $OWNER{$ptr} = 1;
-}
-
-
-############# Class : RNAdesign::Map_Int_IntVector ##############
-
-package RNAdesign::Map_Int_IntVector;
-use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
-@ISA = qw( RNAdesign );
-%OWNER = ();
-%ITERATORS = ();
-sub new {
-    my $pkg = shift;
-    my $self = RNAdesignc::new_Map_Int_IntVector(@_);
-    bless $self, $pkg if defined($self);
-}
-
-*SCALAR = *RNAdesignc::Map_Int_IntVector_SCALAR;
-*empty = *RNAdesignc::Map_Int_IntVector_empty;
-*CLEAR = *RNAdesignc::Map_Int_IntVector_CLEAR;
-*FETCH = *RNAdesignc::Map_Int_IntVector_FETCH;
-*STORE = *RNAdesignc::Map_Int_IntVector_STORE;
-*DELETE = *RNAdesignc::Map_Int_IntVector_DELETE;
-*EXISTS = *RNAdesignc::Map_Int_IntVector_EXISTS;
-*TIEHASH = *RNAdesignc::Map_Int_IntVector_TIEHASH;
-*FIRSTKEY = *RNAdesignc::Map_Int_IntVector_FIRSTKEY;
-*NEXTKEY = *RNAdesignc::Map_Int_IntVector_NEXTKEY;
-sub DESTROY {
-    return unless $_[0]->isa('HASH');
-    my $self = tied(%{$_[0]});
-    return unless defined $self;
-    delete $ITERATORS{$self};
-    if (exists $OWNER{$self}) {
-        RNAdesignc::delete_Map_Int_IntVector($self);
         delete $OWNER{$self};
     }
 }
@@ -173,7 +125,8 @@ sub DESTROY {
 *mutate_global = *RNAdesignc::DependencyGraphMT_mutate_global;
 *mutate = *RNAdesignc::DependencyGraphMT_mutate;
 *number_of_sequences = *RNAdesignc::DependencyGraphMT_number_of_sequences;
-*connected_components = *RNAdesignc::DependencyGraphMT_connected_components;
+*number_of_connected_components = *RNAdesignc::DependencyGraphMT_number_of_connected_components;
+*component_vertices = *RNAdesignc::DependencyGraphMT_component_vertices;
 *special_vertices = *RNAdesignc::DependencyGraphMT_special_vertices;
 sub DISOWN {
     my $self = shift;

@@ -510,17 +510,27 @@ namespace design
         }
 
         template <typename R>
-        std::map< int, std::vector<int> > DependencyGraph<R>::connected_components() {
+        int DependencyGraph<R>::number_of_connected_components() {
             // object to return
-            std::map< int, std::vector<int> > connected_components_map;
-            
+            int count = 0;
             Graph::children_iterator cc, cc_end;
             // iterate over all connected component and fill up the map [id, Vector of Vertices]
             for (boost::tie(cc, cc_end) = graph.children(); cc != cc_end; ++cc) {
-                connected_components_map[boost::get_property(*cc, boost::graph_name).id] = getVertexList(*cc);
+                count++;
             }
-            
-            return connected_components_map;
+            return count;
+        }
+        
+        template <typename R>
+        std::vector<int> DependencyGraph<R>::component_vertices(int connected_component_ID) {
+            // iterate over all connected component and fill up the vector
+            Graph::children_iterator cc, cc_end;
+            for (boost::tie(cc, cc_end) = graph.children(); cc != cc_end; ++cc) {
+                if (boost::get_property(*cc, boost::graph_name).id == connected_component_ID) {
+                    return getVertexList(*cc);
+                }
+            }
+            throw std::out_of_range("Could not find a connected component with this ID!");
         }
 
         template <typename R>

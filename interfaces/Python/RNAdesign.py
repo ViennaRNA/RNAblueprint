@@ -262,137 +262,10 @@ class IntVector(_object):
 
     def capacity(self):
         return _RNAdesign.IntVector_capacity(self)
-
-    def getvec(self, v):
-        return _RNAdesign.IntVector_getvec(self, v)
     __swig_destroy__ = _RNAdesign.delete_IntVector
     __del__ = lambda self: None
 IntVector_swigregister = _RNAdesign.IntVector_swigregister
 IntVector_swigregister(IntVector)
-
-class Map_Int_IntVector(_object):
-    __swig_setmethods__ = {}
-    __setattr__ = lambda self, name, value: _swig_setattr(self, Map_Int_IntVector, name, value)
-    __swig_getmethods__ = {}
-    __getattr__ = lambda self, name: _swig_getattr(self, Map_Int_IntVector, name)
-    __repr__ = _swig_repr
-
-    def iterator(self):
-        return _RNAdesign.Map_Int_IntVector_iterator(self)
-    def __iter__(self):
-        return self.iterator()
-
-    def __nonzero__(self):
-        return _RNAdesign.Map_Int_IntVector___nonzero__(self)
-
-    def __bool__(self):
-        return _RNAdesign.Map_Int_IntVector___bool__(self)
-
-    def __len__(self):
-        return _RNAdesign.Map_Int_IntVector___len__(self)
-    def __iter__(self):
-        return self.key_iterator()
-    def iterkeys(self):
-        return self.key_iterator()
-    def itervalues(self):
-        return self.value_iterator()
-    def iteritems(self):
-        return self.iterator()
-
-    def __getitem__(self, key):
-        return _RNAdesign.Map_Int_IntVector___getitem__(self, key)
-
-    def __delitem__(self, key):
-        return _RNAdesign.Map_Int_IntVector___delitem__(self, key)
-
-    def EXISTS(self, key):
-        return _RNAdesign.Map_Int_IntVector_EXISTS(self, key)
-
-    def keys(self):
-        return _RNAdesign.Map_Int_IntVector_keys(self)
-
-    def values(self):
-        return _RNAdesign.Map_Int_IntVector_values(self)
-
-    def items(self):
-        return _RNAdesign.Map_Int_IntVector_items(self)
-
-    def __contains__(self, key):
-        return _RNAdesign.Map_Int_IntVector___contains__(self, key)
-
-    def key_iterator(self):
-        return _RNAdesign.Map_Int_IntVector_key_iterator(self)
-
-    def value_iterator(self):
-        return _RNAdesign.Map_Int_IntVector_value_iterator(self)
-
-    def __setitem__(self, *args):
-        return _RNAdesign.Map_Int_IntVector___setitem__(self, *args)
-
-    def asdict(self):
-        return _RNAdesign.Map_Int_IntVector_asdict(self)
-
-    def __init__(self, *args):
-        this = _RNAdesign.new_Map_Int_IntVector(*args)
-        try:
-            self.this.append(this)
-        except:
-            self.this = this
-
-    def empty(self):
-        return _RNAdesign.Map_Int_IntVector_empty(self)
-
-    def SCALAR(self):
-        return _RNAdesign.Map_Int_IntVector_SCALAR(self)
-
-    def CLEAR(self):
-        return _RNAdesign.Map_Int_IntVector_CLEAR(self)
-
-    def swap(self, v):
-        return _RNAdesign.Map_Int_IntVector_swap(self, v)
-
-    def get_allocator(self):
-        return _RNAdesign.Map_Int_IntVector_get_allocator(self)
-
-    def begin(self):
-        return _RNAdesign.Map_Int_IntVector_begin(self)
-
-    def end(self):
-        return _RNAdesign.Map_Int_IntVector_end(self)
-
-    def rbegin(self):
-        return _RNAdesign.Map_Int_IntVector_rbegin(self)
-
-    def rend(self):
-        return _RNAdesign.Map_Int_IntVector_rend(self)
-
-    def count(self, x):
-        return _RNAdesign.Map_Int_IntVector_count(self, x)
-
-    def erase(self, *args):
-        return _RNAdesign.Map_Int_IntVector_erase(self, *args)
-
-    def find(self, x):
-        return _RNAdesign.Map_Int_IntVector_find(self, x)
-
-    def lower_bound(self, x):
-        return _RNAdesign.Map_Int_IntVector_lower_bound(self, x)
-
-    def upper_bound(self, x):
-        return _RNAdesign.Map_Int_IntVector_upper_bound(self, x)
-
-    def TIEHASH(self):
-        return _RNAdesign.Map_Int_IntVector_TIEHASH(self)
-
-    def FIRSTKEY(self):
-        return _RNAdesign.Map_Int_IntVector_FIRSTKEY(self)
-
-    def NEXTKEY(self, arg2):
-        return _RNAdesign.Map_Int_IntVector_NEXTKEY(self, arg2)
-    __swig_destroy__ = _RNAdesign.delete_Map_Int_IntVector
-    __del__ = lambda self: None
-Map_Int_IntVector_swigregister = _RNAdesign.Map_Int_IntVector_swigregister
-Map_Int_IntVector_swigregister(Map_Int_IntVector)
 
 
 def initialize_library(debug):
@@ -432,8 +305,11 @@ class DependencyGraphMT(_object):
     def number_of_sequences(self, *args):
         return _RNAdesign.DependencyGraphMT_number_of_sequences(self, *args)
 
-    def connected_components(self):
-        return _RNAdesign.DependencyGraphMT_connected_components(self)
+    def number_of_connected_components(self):
+        return _RNAdesign.DependencyGraphMT_number_of_connected_components(self)
+
+    def component_vertices(self, connected_component_ID):
+        return _RNAdesign.DependencyGraphMT_component_vertices(self, connected_component_ID)
 
     def special_vertices(self):
         return _RNAdesign.DependencyGraphMT_special_vertices(self)

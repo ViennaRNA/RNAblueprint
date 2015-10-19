@@ -44,7 +44,8 @@ namespace design {
             boost::multiprecision::mpz_int mutate_global(int connected_component_ID);
             boost::multiprecision::mpz_int mutate(int position);
             boost::multiprecision::mpz_int mutate(int start, int end);
-            std::map< int, std::vector<int> > connected_components();
+            int number_of_connected_components();
+            std::vector< int > component_vertices(int connected_component_ID);
             std::vector< int > special_vertices();
             R * rand_ptr;
         private:

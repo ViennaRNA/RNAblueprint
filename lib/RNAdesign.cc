@@ -119,8 +119,13 @@ namespace design {
     }
     
     template <typename R>
-    std::map< int, std::vector<int> > DependencyGraph<R>::connected_components() {
-        return g->connected_components();
+    int DependencyGraph<R>::number_of_connected_components() {
+        return g->number_of_connected_components();
+    }
+    
+    template <typename R>
+    std::vector<int> DependencyGraph<R>::component_vertices(int connected_component_ID) {
+        return g->component_vertices(connected_component_ID);
     }
     
     template <typename R>

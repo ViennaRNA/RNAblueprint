@@ -64,7 +64,7 @@ namespace design {
         *  A random number generator of your choice. Supported at the moment is only std::mt19937, but as it is templated, it can easily be extended to support more generators.
         */
         DependencyGraph(std::vector<std::string> structures, std::string constraints, R rand);
-        /*! \brief constructor for the Dependency graph using a predefinded random number generator with the given seed.
+        /*! \brief constructor for the Dependency graph using a predefined random number generator with the given seed.
          */
         DependencyGraph(std::vector<std::string> structures, std::string constraints, unsigned long seed);
         /*! \brief constructor for the Dependency graph using a predefined random number generator with a clock generated seed.
@@ -150,10 +150,14 @@ namespace design {
         *  The connected_component_IDs can be retrieved by calling connected_components()
         */
         boost::multiprecision::mpz_int number_of_sequences(int connected_component_ID);
-        /*! \brief Returns a hash table with the connected_component_ID as key and a list with all the vertices in this component
+        /*! \brief Returns the number of connected components
         *  
         */
-        std::map< int, std::vector<int> > connected_components();
+        int number_of_connected_components();
+        /*! \brief Returns a vector with all the vertices in this component of the given connected_component_ID
+        *  
+        */
+        std::vector<int> component_vertices(int connected_component_ID);
         /*! \brief Returns a list of vertices specified as "special".
         *  
         *  These special vertices include cut points, articulation points and also sequence constraints.

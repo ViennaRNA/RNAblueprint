@@ -1530,17 +1530,13 @@ SWIG_Perl_SetModule(swig_module_info *module) {
 #define SWIGTYPE_p_boost__multiprecision__mpz_int swig_types[0]
 #define SWIGTYPE_p_char swig_types[1]
 #define SWIGTYPE_p_design__DependencyGraphT_std__mt19937_t swig_types[2]
-#define SWIGTYPE_p_difference_type swig_types[3]
-#define SWIGTYPE_p_key_type swig_types[4]
-#define SWIGTYPE_p_mapped_type swig_types[5]
-#define SWIGTYPE_p_size_type swig_types[6]
-#define SWIGTYPE_p_std__mapT_int_std__vectorT_int_t_t swig_types[7]
-#define SWIGTYPE_p_std__out_of_range swig_types[8]
-#define SWIGTYPE_p_std__vectorT_int_t swig_types[9]
-#define SWIGTYPE_p_std__vectorT_std__string_t swig_types[10]
-#define SWIGTYPE_p_value_type swig_types[11]
-static swig_type_info *swig_types[13];
-static swig_module_info swig_module = {swig_types, 12, 0, 0, 0, 0};
+#define SWIGTYPE_p_size_type swig_types[3]
+#define SWIGTYPE_p_std__out_of_range swig_types[4]
+#define SWIGTYPE_p_std__vectorT_int_t swig_types[5]
+#define SWIGTYPE_p_std__vectorT_std__string_t swig_types[6]
+#define SWIGTYPE_p_value_type swig_types[7]
+static swig_type_info *swig_types[9];
+static swig_module_info swig_module = {swig_types, 8, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -1580,31 +1576,6 @@ SWIGEXPORT void SWIG_init (CV *cv, CPerlObj *);
   /* Includes the header in the wrapper code */
 #include "../lib/RNAdesign.h"
 
-  
-
-#include <map>
-#include <string>
-#include <sstream>
-  // For iteration support, will leak if iteration stops before the end ever.
-  static std::map<void*, std::map<int, std::vector<int> >::const_iterator> iterstate;
-  const char *current(std::map<int, std::vector<int> >& map) {
-    std::map<void*, std::map<int, std::vector<int> >::const_iterator>::iterator it = iterstate.find(&map);
-    
-    if (it != iterstate.end() && map.end() == it->second) {
-      // clean up entry in the global map
-      iterstate.erase(it);
-      it = iterstate.end();
-    }
-    if (it == iterstate.end()){
-      return NULL;
-    }
-    else{
-      //used to convert the int we get from the it->second->first to a string which is actually need for iteration
-      std::string string = static_cast<std::ostringstream*>( &(std::ostringstream() << it->second->first) )->str();
-      return string.c_str();
-    }
-  }
- 
   
 
 #include <string>
@@ -1905,56 +1876,20 @@ SWIGINTERN void std_vector_Sl_int_Sg__set(std::vector< int > *self,int i,int x){
                 else
                     throw std::out_of_range("vector index out of range");
             }
-SWIGINTERN std::vector< int > std_vector_Sl_int_Sg__getvec(std::vector< int > *self,std::vector< int > const &v){
-    std::vector<int> w(v);
-    return w;
-  }
-SWIGINTERN std::vector< int > const &std_map_Sl_int_Sc_std_vector_Sl_int_Sg__Sg__get(std::map< int,std::vector< int > > *self,int const &key){
-                std::map<int,std::vector< int > >::iterator i = self->find(key);
-                if (i != self->end())
-                    return i->second;
-                else
-                    throw std::out_of_range("key not found");
-            }
-SWIGINTERN void std_map_Sl_int_Sc_std_vector_Sl_int_Sg__Sg__set(std::map< int,std::vector< int > > *self,int const &key,std::vector< int > const &x){
-                (*self)[key] = x;
-            }
-SWIGINTERN void std_map_Sl_int_Sc_std_vector_Sl_int_Sg__Sg__del(std::map< int,std::vector< int > > *self,int const &key){
-                std::map<int,std::vector< int > >::iterator i = self->find(key);
-                if (i != self->end())
-                    self->erase(i);
-                else
-                    throw std::out_of_range("key not found");
-            }
-SWIGINTERN bool std_map_Sl_int_Sc_std_vector_Sl_int_Sg__Sg__has_key(std::map< int,std::vector< int > > *self,int const &key){
-                std::map<int,std::vector< int > >::iterator i = self->find(key);
-                return i != self->end();
-            }
-SWIGINTERN std::map< int,std::vector< int > > *std_map_Sl_int_Sc_std_vector_Sl_int_Sg__Sg__TIEHASH(std::map< int,std::vector< int > > *self){
-    return self;
-  }
-SWIGINTERN char const *std_map_Sl_int_Sc_std_vector_Sl_int_Sg__Sg__FIRSTKEY(std::map< int,std::vector< int > > *self){
-    iterstate[self] = self->begin();
-    return current(*self);
-  }
 
-SWIGINTERNINLINE SV *
-SWIG_FromCharPtrAndSize(const char* carray, size_t size)
+SWIGINTERN int
+SWIG_AsVal_bool SWIG_PERL_DECL_ARGS_2(SV *obj, bool* val)
 {
-  SV *obj = sv_newmortal();
-  if (carray) {
-    sv_setpvn(obj, carray, size);
+  if (obj == &PL_sv_yes) {
+    if (val) *val = true;
+    return SWIG_OK;
+  } else if (obj == &PL_sv_no) { 
+    if (val) *val = false;
+    return SWIG_OK;
   } else {
-    sv_setsv(obj, &PL_sv_undef);
+    if (val) *val = SvTRUE(obj) ? true : false;
+    return SWIG_AddCast(SWIG_OK);    
   }
-  return obj;
-}
-
-
-SWIGINTERNINLINE SV * 
-SWIG_FromCharPtr(const char *cptr)
-{ 
-  return SWIG_FromCharPtrAndSize(cptr, (cptr ? strlen(cptr) : 0));
 }
 
 
@@ -2041,24 +1976,17 @@ SWIG_AsPtr_std_string SWIG_PERL_DECL_ARGS_2(SV * obj, std::string **val)
   return SWIG_ERROR;
 }
 
-SWIGINTERN char const *std_map_Sl_int_Sc_std_vector_Sl_int_Sg__Sg__NEXTKEY(std::map< int,std::vector< int > > *self,std::string const &){
-    ++iterstate[self];
-    return current(*self);
-  }
 
-SWIGINTERN int
-SWIG_AsVal_bool SWIG_PERL_DECL_ARGS_2(SV *obj, bool* val)
+SWIGINTERNINLINE SV *
+SWIG_FromCharPtrAndSize(const char* carray, size_t size)
 {
-  if (obj == &PL_sv_yes) {
-    if (val) *val = true;
-    return SWIG_OK;
-  } else if (obj == &PL_sv_no) { 
-    if (val) *val = false;
-    return SWIG_OK;
+  SV *obj = sv_newmortal();
+  if (carray) {
+    sv_setpvn(obj, carray, size);
   } else {
-    if (val) *val = SvTRUE(obj) ? true : false;
-    return SWIG_AddCast(SWIG_OK);    
+    sv_setsv(obj, &PL_sv_undef);
   }
+  return obj;
 }
 
 
@@ -2747,86 +2675,6 @@ XS(_wrap_IntVector_set) {
 }
 
 
-XS(_wrap_IntVector_getvec) {
-  {
-    std::vector< int > *arg1 = (std::vector< int > *) 0 ;
-    std::vector< int > *arg2 = 0 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    std::vector< int > temp2 ;
-    std::vector< int > *v2 ;
-    int argvi = 0;
-    std::vector< int > result;
-    dXSARGS;
-    
-    if ((items < 2) || (items > 2)) {
-      SWIG_croak("Usage: IntVector_getvec(self,v);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_std__vectorT_int_t, 0 |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IntVector_getvec" "', argument " "1"" of type '" "std::vector< int > *""'"); 
-    }
-    arg1 = reinterpret_cast< std::vector< int > * >(argp1);
-    {
-      if (SWIG_ConvertPtr(ST(1),(void **) &v2, 
-          SWIGTYPE_p_std__vectorT_int_t,1) != -1) {
-        arg2 = v2;
-      } else if (SvROK(ST(1))) {
-        AV *av = (AV *)SvRV(ST(1));
-        if (SvTYPE(av) != SVt_PVAV)
-        SWIG_croak("Type error in argument 2 of IntVector_getvec. "
-          "Expected an array of ""int");
-        SV **tv;
-        I32 len = av_len(av) + 1;
-        for (int i=0; i<len; i++) {
-          tv = av_fetch(av, i, 0);
-          if (SvIOK(*tv)) {
-            temp2.push_back((int)SvIVX(*tv));
-          } else {
-            SWIG_croak("Type error in argument 2 of "
-              "IntVector_getvec. "
-              "Expected an array of ""int");
-          }
-        }
-        arg2 = &temp2;
-      } else {
-        SWIG_croak("Type error in argument 2 of IntVector_getvec. "
-          "Expected an array of ""int");
-      }
-    }
-    {
-      try {
-        result = std_vector_Sl_int_Sg__getvec(arg1,(std::vector< int > const &)*arg2);
-      }
-      
-      catch(const std::exception & e) {
-        SWIG_exception_fail(SWIG_RuntimeError, e.what());
-      }
-    }
-    {
-      size_t len = (&result)->size();
-      SV **svs = new SV*[len];
-      for (size_t i=0; i<len; i++) {
-        svs[i] = sv_newmortal();
-        sv_setiv(svs[i], result[i]);
-      }
-      AV *myav = av_make(len, svs);
-      delete[] svs;
-      ST(argvi) = newRV_noinc((SV*) myav);
-      sv_2mortal(ST(argvi));
-      argvi++;
-    }
-    
-    
-    XSRETURN(argvi);
-  fail:
-    
-    
-    SWIG_croak_null();
-  }
-}
-
-
 XS(_wrap_delete_IntVector) {
   {
     std::vector< int > *arg1 = (std::vector< int > *) 0 ;
@@ -2843,619 +2691,6 @@ XS(_wrap_delete_IntVector) {
       SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_IntVector" "', argument " "1"" of type '" "std::vector< int > *""'"); 
     }
     arg1 = reinterpret_cast< std::vector< int > * >(argp1);
-    {
-      try {
-        delete arg1;
-      }
-      
-      catch(const std::exception & e) {
-        SWIG_exception_fail(SWIG_RuntimeError, e.what());
-      }
-    }
-    ST(argvi) = sv_newmortal();
-    
-    XSRETURN(argvi);
-  fail:
-    
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_new_Map_Int_IntVector__SWIG_0) {
-  {
-    int argvi = 0;
-    std::map< int,std::vector< int > > *result = 0 ;
-    dXSARGS;
-    
-    if ((items < 0) || (items > 0)) {
-      SWIG_croak("Usage: new_Map_Int_IntVector();");
-    }
-    {
-      try {
-        result = (std::map< int,std::vector< int > > *)new std::map< int,std::vector< int > >();
-      }
-      
-      catch(const std::exception & e) {
-        SWIG_exception_fail(SWIG_RuntimeError, e.what());
-      }
-    }
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__mapT_int_std__vectorT_int_t_t, SWIG_OWNER | SWIG_SHADOW); argvi++ ;
-    XSRETURN(argvi);
-  fail:
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_new_Map_Int_IntVector__SWIG_1) {
-  {
-    std::map< int,std::vector< int > > *arg1 = 0 ;
-    void *argp1 ;
-    int res1 = 0 ;
-    int argvi = 0;
-    std::map< int,std::vector< int > > *result = 0 ;
-    dXSARGS;
-    
-    if ((items < 1) || (items > 1)) {
-      SWIG_croak("Usage: new_Map_Int_IntVector(std::map< int,std::vector< int > > const &);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1, SWIGTYPE_p_std__mapT_int_std__vectorT_int_t_t,  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_Map_Int_IntVector" "', argument " "1"" of type '" "std::map< int,std::vector< int > > const &""'"); 
-    }
-    if (!argp1) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "new_Map_Int_IntVector" "', argument " "1"" of type '" "std::map< int,std::vector< int > > const &""'"); 
-    }
-    arg1 = reinterpret_cast< std::map< int,std::vector< int > > * >(argp1);
-    {
-      try {
-        result = (std::map< int,std::vector< int > > *)new std::map< int,std::vector< int > >((std::map< int,std::vector< int > > const &)*arg1);
-      }
-      
-      catch(const std::exception & e) {
-        SWIG_exception_fail(SWIG_RuntimeError, e.what());
-      }
-    }
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__mapT_int_std__vectorT_int_t_t, SWIG_OWNER | SWIG_SHADOW); argvi++ ;
-    
-    XSRETURN(argvi);
-  fail:
-    
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_new_Map_Int_IntVector) {
-  dXSARGS;
-  
-  {
-    unsigned long _index = 0;
-    SWIG_TypeRank _rank = 0; 
-    if (items == 0) {
-      SWIG_TypeRank _ranki = 0;
-      SWIG_TypeRank _rankm = 0;
-      if (!_index || (_ranki < _rank)) {
-        _rank = _ranki; _index = 1;
-        if (_rank == _rankm) goto dispatch;
-      }
-    }
-    if (items == 1) {
-      SWIG_TypeRank _ranki = 0;
-      SWIG_TypeRank _rankm = 0;
-      SWIG_TypeRank _pi = 1;
-      int _v = 0;
-      {
-        void *vptr = 0;
-        int res = SWIG_ConvertPtr(ST(0), &vptr, SWIGTYPE_p_std__mapT_int_std__vectorT_int_t_t, 0);
-        _v = SWIG_CheckState(res);
-      }
-      if (!_v) goto check_2;
-      _ranki += _v*_pi;
-      _rankm += _pi;
-      _pi *= SWIG_MAXCASTRANK;
-      if (!_index || (_ranki < _rank)) {
-        _rank = _ranki; _index = 2;
-        if (_rank == _rankm) goto dispatch;
-      }
-    }
-  check_2:
-    
-  dispatch:
-    switch(_index) {
-    case 1:
-      PUSHMARK(MARK); SWIG_CALLXS(_wrap_new_Map_Int_IntVector__SWIG_0); return;
-    case 2:
-      PUSHMARK(MARK); SWIG_CALLXS(_wrap_new_Map_Int_IntVector__SWIG_1); return;
-    }
-  }
-  
-  croak("No matching function for overloaded 'new_Map_Int_IntVector'");
-  XSRETURN(0);
-}
-
-
-XS(_wrap_Map_Int_IntVector_SCALAR) {
-  {
-    std::map< int,std::vector< int > > *arg1 = (std::map< int,std::vector< int > > *) 0 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    int argvi = 0;
-    unsigned int result;
-    dXSARGS;
-    
-    if ((items < 1) || (items > 1)) {
-      SWIG_croak("Usage: Map_Int_IntVector_SCALAR(self);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_std__mapT_int_std__vectorT_int_t_t, 0 |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Map_Int_IntVector_SCALAR" "', argument " "1"" of type '" "std::map< int,std::vector< int > > const *""'"); 
-    }
-    arg1 = reinterpret_cast< std::map< int,std::vector< int > > * >(argp1);
-    {
-      try {
-        result = (unsigned int)((std::map< int,std::vector< int > > const *)arg1)->size();
-      }
-      
-      catch(const std::exception & e) {
-        SWIG_exception_fail(SWIG_RuntimeError, e.what());
-      }
-    }
-    ST(argvi) = SWIG_From_unsigned_SS_int  SWIG_PERL_CALL_ARGS_1(static_cast< unsigned int >(result)); argvi++ ;
-    
-    XSRETURN(argvi);
-  fail:
-    
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_Map_Int_IntVector_empty) {
-  {
-    std::map< int,std::vector< int > > *arg1 = (std::map< int,std::vector< int > > *) 0 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    int argvi = 0;
-    bool result;
-    dXSARGS;
-    
-    if ((items < 1) || (items > 1)) {
-      SWIG_croak("Usage: Map_Int_IntVector_empty(self);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_std__mapT_int_std__vectorT_int_t_t, 0 |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Map_Int_IntVector_empty" "', argument " "1"" of type '" "std::map< int,std::vector< int > > const *""'"); 
-    }
-    arg1 = reinterpret_cast< std::map< int,std::vector< int > > * >(argp1);
-    {
-      try {
-        result = (bool)((std::map< int,std::vector< int > > const *)arg1)->empty();
-      }
-      
-      catch(const std::exception & e) {
-        SWIG_exception_fail(SWIG_RuntimeError, e.what());
-      }
-    }
-    ST(argvi) = SWIG_From_bool  SWIG_PERL_CALL_ARGS_1(static_cast< bool >(result)); argvi++ ;
-    
-    XSRETURN(argvi);
-  fail:
-    
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_Map_Int_IntVector_CLEAR) {
-  {
-    std::map< int,std::vector< int > > *arg1 = (std::map< int,std::vector< int > > *) 0 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    int argvi = 0;
-    dXSARGS;
-    
-    if ((items < 1) || (items > 1)) {
-      SWIG_croak("Usage: Map_Int_IntVector_CLEAR(self);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_std__mapT_int_std__vectorT_int_t_t, 0 |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Map_Int_IntVector_CLEAR" "', argument " "1"" of type '" "std::map< int,std::vector< int > > *""'"); 
-    }
-    arg1 = reinterpret_cast< std::map< int,std::vector< int > > * >(argp1);
-    {
-      try {
-        (arg1)->clear();
-      }
-      
-      catch(const std::exception & e) {
-        SWIG_exception_fail(SWIG_RuntimeError, e.what());
-      }
-    }
-    ST(argvi) = sv_newmortal();
-    
-    XSRETURN(argvi);
-  fail:
-    
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_Map_Int_IntVector_FETCH) {
-  {
-    std::map< int,std::vector< int > > *arg1 = (std::map< int,std::vector< int > > *) 0 ;
-    int *arg2 = 0 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    int temp2 ;
-    int val2 ;
-    int ecode2 = 0 ;
-    int argvi = 0;
-    std::vector< int > *result = 0 ;
-    dXSARGS;
-    
-    if ((items < 2) || (items > 2)) {
-      SWIG_croak("Usage: Map_Int_IntVector_FETCH(self,key);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_std__mapT_int_std__vectorT_int_t_t, 0 |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Map_Int_IntVector_FETCH" "', argument " "1"" of type '" "std::map< int,std::vector< int > > *""'"); 
-    }
-    arg1 = reinterpret_cast< std::map< int,std::vector< int > > * >(argp1);
-    ecode2 = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(1), &val2);
-    if (!SWIG_IsOK(ecode2)) {
-      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Map_Int_IntVector_FETCH" "', argument " "2"" of type '" "int""'");
-    } 
-    temp2 = static_cast< int >(val2);
-    arg2 = &temp2;
-    {
-      try {
-        try {
-          result = (std::vector< int > *) &std_map_Sl_int_Sc_std_vector_Sl_int_Sg__Sg__get(arg1,(int const &)*arg2);
-        }
-        catch(std::out_of_range &_e) {
-          sv_setsv(get_sv("@", GV_ADD), SWIG_NewPointerObj((new std::out_of_range(static_cast< const std::out_of_range& >(_e))),SWIGTYPE_p_std__out_of_range,SWIG_POINTER_OWN)); SWIG_fail ;
-        }
-        
-      }
-      
-      catch(const std::exception & e) {
-        SWIG_exception_fail(SWIG_RuntimeError, e.what());
-      }
-    }
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_int_t, 0 | SWIG_SHADOW); argvi++ ;
-    
-    
-    XSRETURN(argvi);
-  fail:
-    
-    
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_Map_Int_IntVector_STORE) {
-  {
-    std::map< int,std::vector< int > > *arg1 = (std::map< int,std::vector< int > > *) 0 ;
-    int *arg2 = 0 ;
-    std::vector< int > *arg3 = 0 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    int temp2 ;
-    int val2 ;
-    int ecode2 = 0 ;
-    std::vector< int > temp3 ;
-    std::vector< int > *v3 ;
-    int argvi = 0;
-    dXSARGS;
-    
-    if ((items < 3) || (items > 3)) {
-      SWIG_croak("Usage: Map_Int_IntVector_STORE(self,key,x);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_std__mapT_int_std__vectorT_int_t_t, 0 |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Map_Int_IntVector_STORE" "', argument " "1"" of type '" "std::map< int,std::vector< int > > *""'"); 
-    }
-    arg1 = reinterpret_cast< std::map< int,std::vector< int > > * >(argp1);
-    ecode2 = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(1), &val2);
-    if (!SWIG_IsOK(ecode2)) {
-      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Map_Int_IntVector_STORE" "', argument " "2"" of type '" "int""'");
-    } 
-    temp2 = static_cast< int >(val2);
-    arg2 = &temp2;
-    {
-      if (SWIG_ConvertPtr(ST(2),(void **) &v3, 
-          SWIGTYPE_p_std__vectorT_int_t,1) != -1) {
-        arg3 = v3;
-      } else if (SvROK(ST(2))) {
-        AV *av = (AV *)SvRV(ST(2));
-        if (SvTYPE(av) != SVt_PVAV)
-        SWIG_croak("Type error in argument 3 of Map_Int_IntVector_STORE. "
-          "Expected an array of ""int");
-        SV **tv;
-        I32 len = av_len(av) + 1;
-        for (int i=0; i<len; i++) {
-          tv = av_fetch(av, i, 0);
-          if (SvIOK(*tv)) {
-            temp3.push_back((int)SvIVX(*tv));
-          } else {
-            SWIG_croak("Type error in argument 3 of "
-              "Map_Int_IntVector_STORE. "
-              "Expected an array of ""int");
-          }
-        }
-        arg3 = &temp3;
-      } else {
-        SWIG_croak("Type error in argument 3 of Map_Int_IntVector_STORE. "
-          "Expected an array of ""int");
-      }
-    }
-    {
-      try {
-        std_map_Sl_int_Sc_std_vector_Sl_int_Sg__Sg__set(arg1,(int const &)*arg2,(std::vector< int > const &)*arg3);
-      }
-      
-      catch(const std::exception & e) {
-        SWIG_exception_fail(SWIG_RuntimeError, e.what());
-      }
-    }
-    ST(argvi) = sv_newmortal();
-    
-    
-    
-    XSRETURN(argvi);
-  fail:
-    
-    
-    
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_Map_Int_IntVector_DELETE) {
-  {
-    std::map< int,std::vector< int > > *arg1 = (std::map< int,std::vector< int > > *) 0 ;
-    int *arg2 = 0 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    int temp2 ;
-    int val2 ;
-    int ecode2 = 0 ;
-    int argvi = 0;
-    dXSARGS;
-    
-    if ((items < 2) || (items > 2)) {
-      SWIG_croak("Usage: Map_Int_IntVector_DELETE(self,key);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_std__mapT_int_std__vectorT_int_t_t, 0 |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Map_Int_IntVector_DELETE" "', argument " "1"" of type '" "std::map< int,std::vector< int > > *""'"); 
-    }
-    arg1 = reinterpret_cast< std::map< int,std::vector< int > > * >(argp1);
-    ecode2 = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(1), &val2);
-    if (!SWIG_IsOK(ecode2)) {
-      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Map_Int_IntVector_DELETE" "', argument " "2"" of type '" "int""'");
-    } 
-    temp2 = static_cast< int >(val2);
-    arg2 = &temp2;
-    {
-      try {
-        try {
-          std_map_Sl_int_Sc_std_vector_Sl_int_Sg__Sg__del(arg1,(int const &)*arg2);
-        }
-        catch(std::out_of_range &_e) {
-          sv_setsv(get_sv("@", GV_ADD), SWIG_NewPointerObj((new std::out_of_range(static_cast< const std::out_of_range& >(_e))),SWIGTYPE_p_std__out_of_range,SWIG_POINTER_OWN)); SWIG_fail ;
-        }
-        
-      }
-      
-      catch(const std::exception & e) {
-        SWIG_exception_fail(SWIG_RuntimeError, e.what());
-      }
-    }
-    ST(argvi) = sv_newmortal();
-    
-    
-    XSRETURN(argvi);
-  fail:
-    
-    
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_Map_Int_IntVector_EXISTS) {
-  {
-    std::map< int,std::vector< int > > *arg1 = (std::map< int,std::vector< int > > *) 0 ;
-    int *arg2 = 0 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    int temp2 ;
-    int val2 ;
-    int ecode2 = 0 ;
-    int argvi = 0;
-    bool result;
-    dXSARGS;
-    
-    if ((items < 2) || (items > 2)) {
-      SWIG_croak("Usage: Map_Int_IntVector_EXISTS(self,key);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_std__mapT_int_std__vectorT_int_t_t, 0 |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Map_Int_IntVector_EXISTS" "', argument " "1"" of type '" "std::map< int,std::vector< int > > *""'"); 
-    }
-    arg1 = reinterpret_cast< std::map< int,std::vector< int > > * >(argp1);
-    ecode2 = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(1), &val2);
-    if (!SWIG_IsOK(ecode2)) {
-      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Map_Int_IntVector_EXISTS" "', argument " "2"" of type '" "int""'");
-    } 
-    temp2 = static_cast< int >(val2);
-    arg2 = &temp2;
-    {
-      try {
-        result = (bool)std_map_Sl_int_Sc_std_vector_Sl_int_Sg__Sg__has_key(arg1,(int const &)*arg2);
-      }
-      
-      catch(const std::exception & e) {
-        SWIG_exception_fail(SWIG_RuntimeError, e.what());
-      }
-    }
-    ST(argvi) = SWIG_From_bool  SWIG_PERL_CALL_ARGS_1(static_cast< bool >(result)); argvi++ ;
-    
-    
-    XSRETURN(argvi);
-  fail:
-    
-    
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_Map_Int_IntVector_TIEHASH) {
-  {
-    std::map< int,std::vector< int > > *arg1 = (std::map< int,std::vector< int > > *) 0 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    int argvi = 0;
-    std::map< int,std::vector< int > > *result = 0 ;
-    dXSARGS;
-    
-    if ((items < 1) || (items > 1)) {
-      SWIG_croak("Usage: Map_Int_IntVector_TIEHASH(self);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_std__mapT_int_std__vectorT_int_t_t, 0 |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Map_Int_IntVector_TIEHASH" "', argument " "1"" of type '" "std::map< int,std::vector< int > > *""'"); 
-    }
-    arg1 = reinterpret_cast< std::map< int,std::vector< int > > * >(argp1);
-    {
-      try {
-        result = (std::map< int,std::vector< int > > *)std_map_Sl_int_Sc_std_vector_Sl_int_Sg__Sg__TIEHASH(arg1);
-      }
-      
-      catch(const std::exception & e) {
-        SWIG_exception_fail(SWIG_RuntimeError, e.what());
-      }
-    }
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__mapT_int_std__vectorT_int_t_t, 0 | SWIG_SHADOW); argvi++ ;
-    
-    XSRETURN(argvi);
-  fail:
-    
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_Map_Int_IntVector_FIRSTKEY) {
-  {
-    std::map< int,std::vector< int > > *arg1 = (std::map< int,std::vector< int > > *) 0 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    int argvi = 0;
-    char *result = 0 ;
-    dXSARGS;
-    
-    if ((items < 1) || (items > 1)) {
-      SWIG_croak("Usage: Map_Int_IntVector_FIRSTKEY(self);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_std__mapT_int_std__vectorT_int_t_t, 0 |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Map_Int_IntVector_FIRSTKEY" "', argument " "1"" of type '" "std::map< int,std::vector< int > > *""'"); 
-    }
-    arg1 = reinterpret_cast< std::map< int,std::vector< int > > * >(argp1);
-    {
-      try {
-        result = (char *)std_map_Sl_int_Sc_std_vector_Sl_int_Sg__Sg__FIRSTKEY(arg1);
-      }
-      
-      catch(const std::exception & e) {
-        SWIG_exception_fail(SWIG_RuntimeError, e.what());
-      }
-    }
-    ST(argvi) = SWIG_FromCharPtr((const char *)result); argvi++ ;
-    
-    XSRETURN(argvi);
-  fail:
-    
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_Map_Int_IntVector_NEXTKEY) {
-  {
-    std::map< int,std::vector< int > > *arg1 = (std::map< int,std::vector< int > > *) 0 ;
-    std::string *arg2 = 0 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    int res2 = SWIG_OLDOBJ ;
-    int argvi = 0;
-    char *result = 0 ;
-    dXSARGS;
-    
-    if ((items < 2) || (items > 2)) {
-      SWIG_croak("Usage: Map_Int_IntVector_NEXTKEY(self,std::string const &);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_std__mapT_int_std__vectorT_int_t_t, 0 |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Map_Int_IntVector_NEXTKEY" "', argument " "1"" of type '" "std::map< int,std::vector< int > > *""'"); 
-    }
-    arg1 = reinterpret_cast< std::map< int,std::vector< int > > * >(argp1);
-    {
-      std::string *ptr = (std::string *)0;
-      res2 = SWIG_AsPtr_std_string SWIG_PERL_CALL_ARGS_2(ST(1), &ptr);
-      if (!SWIG_IsOK(res2)) {
-        SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Map_Int_IntVector_NEXTKEY" "', argument " "2"" of type '" "std::string const &""'"); 
-      }
-      if (!ptr) {
-        SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "Map_Int_IntVector_NEXTKEY" "', argument " "2"" of type '" "std::string const &""'"); 
-      }
-      arg2 = ptr;
-    }
-    {
-      try {
-        result = (char *)std_map_Sl_int_Sc_std_vector_Sl_int_Sg__Sg__NEXTKEY(arg1,(std::string const &)*arg2);
-      }
-      
-      catch(const std::exception & e) {
-        SWIG_exception_fail(SWIG_RuntimeError, e.what());
-      }
-    }
-    ST(argvi) = SWIG_FromCharPtr((const char *)result); argvi++ ;
-    
-    if (SWIG_IsNewObj(res2)) delete arg2;
-    XSRETURN(argvi);
-  fail:
-    
-    if (SWIG_IsNewObj(res2)) delete arg2;
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_delete_Map_Int_IntVector) {
-  {
-    std::map< int,std::vector< int > > *arg1 = (std::map< int,std::vector< int > > *) 0 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    int argvi = 0;
-    dXSARGS;
-    
-    if ((items < 1) || (items > 1)) {
-      SWIG_croak("Usage: delete_Map_Int_IntVector(self);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_std__mapT_int_std__vectorT_int_t_t, SWIG_POINTER_DISOWN |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_Map_Int_IntVector" "', argument " "1"" of type '" "std::map< int,std::vector< int > > *""'"); 
-    }
-    arg1 = reinterpret_cast< std::map< int,std::vector< int > > * >(argp1);
     {
       try {
         delete arg1;
@@ -4716,36 +3951,94 @@ XS(_wrap_DependencyGraphMT_number_of_sequences) {
 }
 
 
-XS(_wrap_DependencyGraphMT_connected_components) {
+XS(_wrap_DependencyGraphMT_number_of_connected_components) {
   {
     design::DependencyGraph< std::mt19937 > *arg1 = (design::DependencyGraph< std::mt19937 > *) 0 ;
     void *argp1 = 0 ;
     int res1 = 0 ;
     int argvi = 0;
-    std::map< int,std::vector< int > > result;
+    int result;
     dXSARGS;
     
     if ((items < 1) || (items > 1)) {
-      SWIG_croak("Usage: DependencyGraphMT_connected_components(self);");
+      SWIG_croak("Usage: DependencyGraphMT_number_of_connected_components(self);");
     }
     res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_design__DependencyGraphT_std__mt19937_t, 0 |  0 );
     if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DependencyGraphMT_connected_components" "', argument " "1"" of type '" "design::DependencyGraph< std::mt19937 > *""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DependencyGraphMT_number_of_connected_components" "', argument " "1"" of type '" "design::DependencyGraph< std::mt19937 > *""'"); 
     }
     arg1 = reinterpret_cast< design::DependencyGraph< std::mt19937 > * >(argp1);
     {
       try {
-        result = (arg1)->connected_components();
+        result = (int)(arg1)->number_of_connected_components();
       }
       
       catch(const std::exception & e) {
         SWIG_exception_fail(SWIG_RuntimeError, e.what());
       }
     }
-    ST(argvi) = SWIG_NewPointerObj((new std::map< int,std::vector< int > >(static_cast< const std::map< int,std::vector< int > >& >(result))), SWIGTYPE_p_std__mapT_int_std__vectorT_int_t_t, SWIG_POINTER_OWN | SWIG_SHADOW); argvi++ ;
+    ST(argvi) = SWIG_From_int  SWIG_PERL_CALL_ARGS_1(static_cast< int >(result)); argvi++ ;
     
     XSRETURN(argvi);
   fail:
+    
+    SWIG_croak_null();
+  }
+}
+
+
+XS(_wrap_DependencyGraphMT_component_vertices) {
+  {
+    design::DependencyGraph< std::mt19937 > *arg1 = (design::DependencyGraph< std::mt19937 > *) 0 ;
+    int arg2 ;
+    void *argp1 = 0 ;
+    int res1 = 0 ;
+    int val2 ;
+    int ecode2 = 0 ;
+    int argvi = 0;
+    std::vector< int > result;
+    dXSARGS;
+    
+    if ((items < 2) || (items > 2)) {
+      SWIG_croak("Usage: DependencyGraphMT_component_vertices(self,connected_component_ID);");
+    }
+    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_design__DependencyGraphT_std__mt19937_t, 0 |  0 );
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DependencyGraphMT_component_vertices" "', argument " "1"" of type '" "design::DependencyGraph< std::mt19937 > *""'"); 
+    }
+    arg1 = reinterpret_cast< design::DependencyGraph< std::mt19937 > * >(argp1);
+    ecode2 = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(1), &val2);
+    if (!SWIG_IsOK(ecode2)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "DependencyGraphMT_component_vertices" "', argument " "2"" of type '" "int""'");
+    } 
+    arg2 = static_cast< int >(val2);
+    {
+      try {
+        result = (arg1)->component_vertices(arg2);
+      }
+      
+      catch(const std::exception & e) {
+        SWIG_exception_fail(SWIG_RuntimeError, e.what());
+      }
+    }
+    {
+      size_t len = (&result)->size();
+      SV **svs = new SV*[len];
+      for (size_t i=0; i<len; i++) {
+        svs[i] = sv_newmortal();
+        sv_setiv(svs[i], result[i]);
+      }
+      AV *myav = av_make(len, svs);
+      delete[] svs;
+      ST(argvi) = newRV_noinc((SV*) myav);
+      sv_2mortal(ST(argvi));
+      argvi++;
+    }
+    
+    
+    XSRETURN(argvi);
+  fail:
+    
     
     SWIG_croak_null();
   }
@@ -4806,11 +4099,7 @@ XS(_wrap_DependencyGraphMT_special_vertices) {
 static swig_type_info _swigt__p_boost__multiprecision__mpz_int = {"_p_boost__multiprecision__mpz_int", "boost::multiprecision::mpz_int *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_char = {"_p_char", "char *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_design__DependencyGraphT_std__mt19937_t = {"_p_design__DependencyGraphT_std__mt19937_t", "design::DependencyGraph< std::mt19937 > *", 0, 0, (void*)"RNAdesign::DependencyGraphMT", 0};
-static swig_type_info _swigt__p_difference_type = {"_p_difference_type", "difference_type *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_key_type = {"_p_key_type", "key_type *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_mapped_type = {"_p_mapped_type", "mapped_type *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_size_type = {"_p_size_type", "size_type *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_std__mapT_int_std__vectorT_int_t_t = {"_p_std__mapT_int_std__vectorT_int_t_t", "std::map< int,std::vector< int > > *", 0, 0, (void*)"RNAdesign::Map_Int_IntVector", 0};
 static swig_type_info _swigt__p_std__out_of_range = {"_p_std__out_of_range", "std::out_of_range *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__vectorT_int_t = {"_p_std__vectorT_int_t", "std::vector< int > *", 0, 0, (void*)"RNAdesign::IntVector", 0};
 static swig_type_info _swigt__p_std__vectorT_std__string_t = {"_p_std__vectorT_std__string_t", "std::vector< std::string > *", 0, 0, (void*)0, 0};
@@ -4820,11 +4109,7 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_boost__multiprecision__mpz_int,
   &_swigt__p_char,
   &_swigt__p_design__DependencyGraphT_std__mt19937_t,
-  &_swigt__p_difference_type,
-  &_swigt__p_key_type,
-  &_swigt__p_mapped_type,
   &_swigt__p_size_type,
-  &_swigt__p_std__mapT_int_std__vectorT_int_t_t,
   &_swigt__p_std__out_of_range,
   &_swigt__p_std__vectorT_int_t,
   &_swigt__p_std__vectorT_std__string_t,
@@ -4834,11 +4119,7 @@ static swig_type_info *swig_type_initial[] = {
 static swig_cast_info _swigc__p_boost__multiprecision__mpz_int[] = {  {&_swigt__p_boost__multiprecision__mpz_int, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_char[] = {  {&_swigt__p_char, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_design__DependencyGraphT_std__mt19937_t[] = {  {&_swigt__p_design__DependencyGraphT_std__mt19937_t, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_difference_type[] = {  {&_swigt__p_difference_type, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_key_type[] = {  {&_swigt__p_key_type, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_mapped_type[] = {  {&_swigt__p_mapped_type, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_size_type[] = {  {&_swigt__p_size_type, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_std__mapT_int_std__vectorT_int_t_t[] = {  {&_swigt__p_std__mapT_int_std__vectorT_int_t_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__out_of_range[] = {  {&_swigt__p_std__out_of_range, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__vectorT_int_t[] = {  {&_swigt__p_std__vectorT_int_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__vectorT_std__string_t[] = {  {&_swigt__p_std__vectorT_std__string_t, 0, 0, 0},{0, 0, 0, 0}};
@@ -4848,11 +4129,7 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_boost__multiprecision__mpz_int,
   _swigc__p_char,
   _swigc__p_design__DependencyGraphT_std__mt19937_t,
-  _swigc__p_difference_type,
-  _swigc__p_key_type,
-  _swigc__p_mapped_type,
   _swigc__p_size_type,
-  _swigc__p_std__mapT_int_std__vectorT_int_t_t,
   _swigc__p_std__out_of_range,
   _swigc__p_std__vectorT_int_t,
   _swigc__p_std__vectorT_std__string_t,
@@ -4880,20 +4157,7 @@ static swig_command_info swig_commands[] = {
 {"RNAdesignc::IntVector_pop", _wrap_IntVector_pop},
 {"RNAdesignc::IntVector_get", _wrap_IntVector_get},
 {"RNAdesignc::IntVector_set", _wrap_IntVector_set},
-{"RNAdesignc::IntVector_getvec", _wrap_IntVector_getvec},
 {"RNAdesignc::delete_IntVector", _wrap_delete_IntVector},
-{"RNAdesignc::new_Map_Int_IntVector", _wrap_new_Map_Int_IntVector},
-{"RNAdesignc::Map_Int_IntVector_SCALAR", _wrap_Map_Int_IntVector_SCALAR},
-{"RNAdesignc::Map_Int_IntVector_empty", _wrap_Map_Int_IntVector_empty},
-{"RNAdesignc::Map_Int_IntVector_CLEAR", _wrap_Map_Int_IntVector_CLEAR},
-{"RNAdesignc::Map_Int_IntVector_FETCH", _wrap_Map_Int_IntVector_FETCH},
-{"RNAdesignc::Map_Int_IntVector_STORE", _wrap_Map_Int_IntVector_STORE},
-{"RNAdesignc::Map_Int_IntVector_DELETE", _wrap_Map_Int_IntVector_DELETE},
-{"RNAdesignc::Map_Int_IntVector_EXISTS", _wrap_Map_Int_IntVector_EXISTS},
-{"RNAdesignc::Map_Int_IntVector_TIEHASH", _wrap_Map_Int_IntVector_TIEHASH},
-{"RNAdesignc::Map_Int_IntVector_FIRSTKEY", _wrap_Map_Int_IntVector_FIRSTKEY},
-{"RNAdesignc::Map_Int_IntVector_NEXTKEY", _wrap_Map_Int_IntVector_NEXTKEY},
-{"RNAdesignc::delete_Map_Int_IntVector", _wrap_delete_Map_Int_IntVector},
 {"RNAdesignc::initialize_library", _wrap_initialize_library},
 {"RNAdesignc::new_DependencyGraphMT", _wrap_new_DependencyGraphMT},
 {"RNAdesignc::delete_DependencyGraphMT", _wrap_delete_DependencyGraphMT},
@@ -4903,7 +4167,8 @@ static swig_command_info swig_commands[] = {
 {"RNAdesignc::DependencyGraphMT_mutate_global", _wrap_DependencyGraphMT_mutate_global},
 {"RNAdesignc::DependencyGraphMT_mutate", _wrap_DependencyGraphMT_mutate},
 {"RNAdesignc::DependencyGraphMT_number_of_sequences", _wrap_DependencyGraphMT_number_of_sequences},
-{"RNAdesignc::DependencyGraphMT_connected_components", _wrap_DependencyGraphMT_connected_components},
+{"RNAdesignc::DependencyGraphMT_number_of_connected_components", _wrap_DependencyGraphMT_number_of_connected_components},
+{"RNAdesignc::DependencyGraphMT_component_vertices", _wrap_DependencyGraphMT_component_vertices},
 {"RNAdesignc::DependencyGraphMT_special_vertices", _wrap_DependencyGraphMT_special_vertices},
 {0,0}
 };
@@ -5199,7 +4464,6 @@ XS(SWIG_init) {
   }
   
   SWIG_TypeClientData(SWIGTYPE_p_std__vectorT_int_t, (void*) "RNAdesign::IntVector");
-  SWIG_TypeClientData(SWIGTYPE_p_std__mapT_int_std__vectorT_int_t_t, (void*) "RNAdesign::Map_Int_IntVector");
   SWIG_TypeClientData(SWIGTYPE_p_design__DependencyGraphT_std__mt19937_t, (void*) "RNAdesign::DependencyGraphMT");
   ST(0) = &PL_sv_yes;
   XSRETURN(1);
