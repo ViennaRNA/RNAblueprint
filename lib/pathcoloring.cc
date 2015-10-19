@@ -179,8 +179,11 @@ namespace design {
                                 << "Length is: " << boost::num_vertices(g) << std::endl;
                         throw std::logic_error(ss.str());
                     }
-                    
+#ifdef LIBGMP
                     RandomDistType dist(0, nos-1);
+#else
+                    RandomDistType dist(0, nos);
+#endif
                     SolutionSizeType random = dist(*r_ptr);
 
                     // stochastically take one of the possibilities

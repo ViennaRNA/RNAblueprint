@@ -335,7 +335,11 @@ namespace design
             }
             
             // and multiply the count it with a random number
+#ifdef LIBGMP
             RandomDistType dist(0, subgraphs.size()-1);
+#else
+            RandomDistType dist(0, subgraphs.size());
+#endif
             SolutionSizeType random = dist(*rand_ptr);
             
             SolutionSizeType sum = 0;
