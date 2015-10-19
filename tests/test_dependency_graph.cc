@@ -12,6 +12,7 @@
 #include "parsestruct.h"
 
 using namespace design::detail;
+using namespace design;
 
 // include headers containing functions to test
 
@@ -281,7 +282,7 @@ BOOST_AUTO_TEST_CASE(mutate_cc_with_ID) {
     std::cerr << dependency_graph.get_sequence_string() << std::endl;
     BOOST_CHECK(dependency_graph.get_sequence_string() == "UG");
     
-    boost::multiprecision::mpz_int cnos = dependency_graph.mutate_global(1);
+    SolutionSizeType cnos = dependency_graph.mutate_global(1);
     BOOST_CHECK(cnos == 4);
     BOOST_CHECK(dependency_graph.get_sequence_string() == "UA");
     
@@ -307,7 +308,7 @@ BOOST_AUTO_TEST_CASE(mutate_global1) {
     dependency_graph.set_sequence();
     BOOST_CHECK(dependency_graph.get_sequence_string() == "AG");
     
-    boost::multiprecision::mpz_int cnos = dependency_graph.mutate_local_global(1, 0, 0);
+    SolutionSizeType cnos = dependency_graph.mutate_local_global(1, 0, 0);
     BOOST_CHECK(cnos == 2);
     BOOST_CHECK(dependency_graph.get_sequence_string() == "UG");
     
@@ -330,7 +331,7 @@ BOOST_AUTO_TEST_CASE(mutate_local1) {
     std::cerr << dependency_graph.get_sequence_string() << std::endl;
     BOOST_CHECK(dependency_graph.get_sequence_string() == "UG");
     
-    boost::multiprecision::mpz_int cnos = dependency_graph.mutate_local_global(-1, 0, 0);
+    SolutionSizeType cnos = dependency_graph.mutate_local_global(-1, 0, 0);
     BOOST_CHECK(cnos == 4);
     std::cerr << dependency_graph.get_sequence_string() << std::endl;
     BOOST_CHECK(dependency_graph.get_sequence_string() == "UC");

@@ -167,7 +167,7 @@ namespace design
         }
         
         template <typename R>
-        boost::multiprecision::mpz_int DependencyGraph<R>::sample_sequence(Graph& g) {
+        SolutionSizeType DependencyGraph<R>::sample_sequence(Graph& g) {
             
             // get graph properties
             graph_property& gprop = boost::get_property(g, boost::graph_name);
@@ -188,7 +188,7 @@ namespace design
             }
 
             ProbabilityKey colors;
-            boost::multiprecision::mpz_int cnos = 0;
+            SolutionSizeType cnos = 0;
             
             try {
                 std::tie(colors, cnos) = pms[&g].sample(constraints, rand_ptr);
@@ -323,7 +323,7 @@ namespace design
         }
 
         template <typename R>
-        boost::multiprecision::mpz_int DependencyGraph<R>::mutate_local_global(int graph_type, int min_num_pos, int max_num_pos) {
+        SolutionSizeType DependencyGraph<R>::mutate_local_global(int graph_type, int min_num_pos, int max_num_pos) {
             // get all paths which fulfil the requirements of the range
             std::unordered_set< Graph* > subgraphs;
             get_subgraphs(graph, subgraphs, graph_type, min_num_pos, max_num_pos);
@@ -335,10 +335,10 @@ namespace design
             }
             
             // and multiply the count it with a random number
-            boost::random::uniform_int_distribution<boost::multiprecision::mpz_int> dist(0, subgraphs.size()-1);
-            boost::multiprecision::mpz_int random = dist(*rand_ptr);
+            RandomDistType dist(0, subgraphs.size()-1);
+            SolutionSizeType random = dist(*rand_ptr);
             
-            boost::multiprecision::mpz_int sum = 0;
+            SolutionSizeType sum = 0;
             for (auto s : subgraphs) {
                 sum ++;
                 // if the random number is bigger than our probability, take this base as the current base!
@@ -351,7 +351,7 @@ namespace design
         }
         
         template <typename R>
-        boost::multiprecision::mpz_int DependencyGraph<R>::mutate_global(int connected_component_ID) {
+        SolutionSizeType DependencyGraph<R>::mutate_global(int connected_component_ID) {
             Graph::children_iterator cc, cc_end;
             for (boost::tie(cc, cc_end) = graph.children(); cc != cc_end; ++cc) {
                 if (boost::get_property(*cc, boost::graph_name).id == connected_component_ID) {
@@ -409,7 +409,7 @@ namespace design
         }
 
         template <typename R>
-        boost::multiprecision::mpz_int DependencyGraph<R>::mutate(int position) {
+        SolutionSizeType DependencyGraph<R>::mutate(int position) {
             // first get the right vertex
             Vertex v_global = int_to_vertex(position, graph);
             if (debug)
@@ -420,9 +420,9 @@ namespace design
         }
 
         template <typename R>
-        boost::multiprecision::mpz_int DependencyGraph<R>::mutate(int start, int end) {
+        SolutionSizeType DependencyGraph<R>::mutate(int start, int end) {
             // nos
-            boost::multiprecision::mpz_int nos = 1;
+            SolutionSizeType nos = 1;
             // set with all subgraphs to mutate
             std::set<Graph*> subgraphs;
             
@@ -439,7 +439,7 @@ namespace design
         }
         
         template <typename R>
-        boost::multiprecision::mpz_int DependencyGraph<R>::mutate(Graph& g) {
+        SolutionSizeType DependencyGraph<R>::mutate(Graph& g) {
             // get graph properties
             graph_property& gprop = boost::get_property(g, boost::graph_name);
             
@@ -493,12 +493,12 @@ namespace design
         }
         
         template <typename R>
-        boost::multiprecision::mpz_int DependencyGraph<R>::number_of_sequences() {
+        SolutionSizeType DependencyGraph<R>::number_of_sequences() {
             return pms[&graph].mnos();
         }
         
         template <typename R>
-        boost::multiprecision::mpz_int DependencyGraph<R>::number_of_sequences(int connected_component_ID) {
+        SolutionSizeType DependencyGraph<R>::number_of_sequences(int connected_component_ID) {
             // iterate over all connected component and return pm.mnos() for the one with the right ID
             Graph::children_iterator cc, cc_end;
             for (boost::tie(cc, cc_end) = graph.children(); cc != cc_end; ++cc) {

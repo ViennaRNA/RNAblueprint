@@ -76,9 +76,9 @@ namespace design {
         }
         
         template <typename RG>
-        boost::multiprecision::mpz_int color_path_graph(Graph& g, RG* rand_ptr) {
+        SolutionSizeType color_path_graph(Graph& g, RG* rand_ptr) {
 
-            boost::multiprecision::mpz_int max_number_of_sequences = 0;
+            SolutionSizeType max_number_of_sequences = 0;
 
             // check if given graph is indeed a path with max_degree = 2 and two ends with degree = 1;
             int max_degree;
@@ -101,11 +101,11 @@ namespace design {
             class color_dfs_visitor : public boost::default_dfs_visitor {
             public:
 
-                color_dfs_visitor(boost::multiprecision::mpz_int& max_number_of_sequences, RG * rand_ptr, PairingMatrix * pair,
+                color_dfs_visitor(SolutionSizeType& max_number_of_sequences, RG * rand_ptr, PairingMatrix * pair,
                         nosMap& n, std::unordered_map<Vertex, int>& c, int& prev)
                 : mnos(max_number_of_sequences), r_ptr(rand_ptr), p(pair), nos_map(n), colors(c), previous(prev) {
                 }
-                boost::multiprecision::mpz_int& mnos;
+                SolutionSizeType& mnos;
                 RG * r_ptr;
                 PairingMatrix * p;
                 nosMap& nos_map;
@@ -165,7 +165,7 @@ namespace design {
                     }
 
                     // calculate number of sequences with respect to the chosen previous base
-                    boost::multiprecision::mpz_int nos = 0;
+                    SolutionSizeType nos = 0;
                     for (auto b : base_conversion[ g[u].base ]) {
                         if (p->get(1, b, previous) > 0) {
                             nos += nos_map[u][b];
@@ -180,12 +180,12 @@ namespace design {
                         throw std::logic_error(ss.str());
                     }
                     
-                    boost::random::uniform_int_distribution<boost::multiprecision::mpz_int> dist(0, nos-1);
-                    boost::multiprecision::mpz_int random = dist(*r_ptr);
+                    RandomDistType dist(0, nos-1);
+                    SolutionSizeType random = dist(*r_ptr);
 
                     // stochastically take one of the possibilities
                     // start at the probability of first possible character and add each other base probability as long long as the random number is bigger.
-                    boost::multiprecision::mpz_int sum = 0;
+                    SolutionSizeType sum = 0;
                     for (auto b : base_conversion[ g[u].base ]) {
                         if (p->get(1, b, previous) > 0) {
                             sum += nos_map[u][b];
@@ -235,6 +235,6 @@ namespace design {
             return max_number_of_sequences;
         }
 
-        template boost::multiprecision::mpz_int color_path_graph<std::mt19937> (Graph&, std::mt19937*);
+        template SolutionSizeType color_path_graph<std::mt19937> (Graph&, std::mt19937*);
     }
 }

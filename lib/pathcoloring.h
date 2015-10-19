@@ -29,7 +29,7 @@
 namespace design {
     namespace detail {
         // typedefs
-        typedef std::unordered_map< Vertex, std::unordered_map<int, boost::multiprecision::mpz_int> > nosMap;
+        typedef std::unordered_map< Vertex, std::unordered_map<int, SolutionSizeType> > nosMap;
 
         // class definitions
         
@@ -38,7 +38,7 @@ namespace design {
         
         // color a path
         template <typename RG>
-        boost::multiprecision::mpz_int color_path_graph(Graph& g, RG* rand_ptr);
+        SolutionSizeType color_path_graph(Graph& g, RG* rand_ptr);
         
     }
 }

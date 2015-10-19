@@ -33,7 +33,7 @@ namespace design {
             }
         }
 
-        boost::multiprecision::mpz_int ProbabilityMatrix::operator[] (ProbabilityKey& pk) {
+        SolutionSizeType ProbabilityMatrix::operator[] (ProbabilityKey& pk) {
             // sanity check if the vertices requested are indeed stored in this pm
             for (auto pair : pk) {
                 if ( specials.find(pair.first) == specials.end() ) {
@@ -41,7 +41,7 @@ namespace design {
                 }
             }
             
-            boost::multiprecision::mpz_int returnvalue = 0;
+            SolutionSizeType returnvalue = 0;
             PermuteKeyFactory pkf(pk);
             
             while (true) {
@@ -58,7 +58,7 @@ namespace design {
             return returnvalue;
         }
         
-        void ProbabilityMatrix::put (ProbabilityKey& pk, boost::multiprecision::mpz_int nos) {
+        void ProbabilityMatrix::put (ProbabilityKey& pk, SolutionSizeType nos) {
             if (!initialized) {
                 for (auto pair : pk) {
                     specials.insert(pair.first);
@@ -81,8 +81,8 @@ namespace design {
             }
         }
         
-        boost::multiprecision::mpz_int ProbabilityMatrix::mnos() {
-            boost::multiprecision::mpz_int mnos = 0;
+        SolutionSizeType ProbabilityMatrix::mnos() {
+            SolutionSizeType mnos = 0;
             for (auto elem : pmap) {
                 mnos += elem.second;
             }
@@ -90,7 +90,7 @@ namespace design {
         }
         
         template <typename R>
-        std::pair<ProbabilityKey, boost::multiprecision::mpz_int> ProbabilityMatrix::sample(R* rand_ptr) {
+        std::pair<ProbabilityKey, SolutionSizeType> ProbabilityMatrix::sample(R* rand_ptr) {
             ProbabilityKey pk;
             
             for (auto s : getSpecials()) {
@@ -101,12 +101,12 @@ namespace design {
         }
         
         template <typename R>
-        std::pair<ProbabilityKey, boost::multiprecision::mpz_int> ProbabilityMatrix::sample(ProbabilityKey pk, R* rand_ptr) {
+        std::pair<ProbabilityKey, SolutionSizeType> ProbabilityMatrix::sample(ProbabilityKey pk, R* rand_ptr) {
             ProbabilityKey result;
             
             // get all possible keys for the constraints set in pk
             PermuteKeyFactory pkf(pk);
-            boost::multiprecision::mpz_int constrained_mnos = 0;
+            SolutionSizeType constrained_mnos = 0;
             // get the maximal number of sequences for the input constraints set in pk
             while (true) {
                 constrained_mnos += (*this)[*pkf.key()];
@@ -117,11 +117,11 @@ namespace design {
             if (constrained_mnos == 0) {
                 throw std::logic_error( "Cannot fulfill constraints while sampling a key!" );
             }
-            boost::random::uniform_int_distribution<boost::multiprecision::mpz_int> dist(0, constrained_mnos-1);
-            boost::multiprecision::mpz_int random = dist(*rand_ptr);
+            RandomDistType dist(0, constrained_mnos-1);
+            SolutionSizeType random = dist(*rand_ptr);
             // stochastically take one of the possibilities
             // start at the probability of first possible character and add each other base probability as long long as the random number is bigger.
-            boost::multiprecision::mpz_int sum = 0;
+            SolutionSizeType sum = 0;
             pkf.reset();
             while (true) {
                 sum += (*this)[*pkf.key()];
@@ -172,7 +172,7 @@ namespace design {
                     for (auto s : xSpecials) {
                         xkey[s] = (*pkf.key())[s];
                     }
-                    boost::multiprecision::mpz_int x_value = x[xkey];
+                    SolutionSizeType x_value = x[xkey];
                     // if the first value is 0, we do not need to look up in the second matrix any more
                     if (x_value != 0) {
                         // now access the second value
@@ -180,7 +180,7 @@ namespace design {
                         for (auto s : ySpecials) {
                             ykey[s] = (*pkf.key())[s];
                         }
-                        boost::multiprecision::mpz_int y_value = y[ykey];
+                        SolutionSizeType y_value = y[ykey];
                         
                         // read probability for this keys and multiply them
                         // insert this new probability into the new pm z
@@ -327,7 +327,7 @@ namespace design {
             return os;
         }
         
-        template std::pair<ProbabilityKey, boost::multiprecision::mpz_int> ProbabilityMatrix::sample<std::mt19937> (std::mt19937*);
-        template std::pair<ProbabilityKey, boost::multiprecision::mpz_int> ProbabilityMatrix::sample<std::mt19937> (ProbabilityKey, std::mt19937*);
+        template std::pair<ProbabilityKey, SolutionSizeType> ProbabilityMatrix::sample<std::mt19937> (std::mt19937*);
+        template std::pair<ProbabilityKey, SolutionSizeType> ProbabilityMatrix::sample<std::mt19937> (ProbabilityKey, std::mt19937*);
     }
 }

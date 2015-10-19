@@ -81,40 +81,40 @@ namespace design {
     }
     
     template <typename R>
-    boost::multiprecision::mpz_int DependencyGraph<R>::mutate_local(int min_num_pos, int max_num_pos) {
+    SolutionSizeType DependencyGraph<R>::mutate_local(int min_num_pos, int max_num_pos) {
         // if local_global=-1 we will mutate only actual graphs (independent of their type)
         return g->mutate_local_global(-1, min_num_pos, max_num_pos);
     }
     
     template <typename R>
-    boost::multiprecision::mpz_int DependencyGraph<R>::mutate_global(int min_num_pos, int max_num_pos) {
+    SolutionSizeType DependencyGraph<R>::mutate_global(int min_num_pos, int max_num_pos) {
         // if local_global=1 we will mutate only connected components
         return g->mutate_local_global(1, min_num_pos, max_num_pos);
     }
     
     template <typename R>
-    boost::multiprecision::mpz_int DependencyGraph<R>::mutate_global(int connected_component_ID) {
+    SolutionSizeType DependencyGraph<R>::mutate_global(int connected_component_ID) {
         // if local_global=1 we will mutate only connected components
         return g->mutate_global(connected_component_ID);
     }
     
     template <typename R>
-    boost::multiprecision::mpz_int DependencyGraph<R>::mutate(int position) {
+    SolutionSizeType DependencyGraph<R>::mutate(int position) {
         return g->mutate(position);
     }
     
     template <typename R>
-    boost::multiprecision::mpz_int DependencyGraph<R>::mutate(int start, int end) {
+    SolutionSizeType DependencyGraph<R>::mutate(int start, int end) {
         return g->mutate(start, end);
     }
 
     template <typename R>
-    boost::multiprecision::mpz_int DependencyGraph<R>::number_of_sequences() {
+    SolutionSizeType DependencyGraph<R>::number_of_sequences() {
         return g->number_of_sequences();
     }
     
     template <typename R>
-    boost::multiprecision::mpz_int DependencyGraph<R>::number_of_sequences(int connected_component_ID) {
+    SolutionSizeType DependencyGraph<R>::number_of_sequences(int connected_component_ID) {
         return g->number_of_sequences(connected_component_ID);
     }
     

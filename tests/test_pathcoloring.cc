@@ -103,7 +103,7 @@ BOOST_AUTO_TEST_CASE(generateSeq) {
         g[boost::vertex(boost::num_vertices(g) - 1, g)].base = t.last;
 
         //call the function
-        boost::multiprecision::mpz_int nos = color_path_graph(g, &rand_gen);
+        SolutionSizeType nos = color_path_graph(g, &rand_gen);
         Sequence sequence = get_vertex_colors(g);
         // do the comparison of the results
         ss.str(std::string());
@@ -162,7 +162,7 @@ BOOST_AUTO_TEST_CASE(generateConstraintSeq) {
         }
 
         //call the function
-        boost::multiprecision::mpz_int nos = color_path_graph(g, &rand_gen);
+        SolutionSizeType nos = color_path_graph(g, &rand_gen);
         Sequence sequence = get_vertex_colors(g);
         // do the comparison of the results
         ss.str(std::string());

@@ -44,7 +44,7 @@ namespace design {
         };
 
         // Class to get Pairing numbers
-        typedef std::unordered_map< ProbabilityKey, boost::multiprecision::mpz_int, ProbabilityKeyHash> ProbabilityMap;
+        typedef std::unordered_map< ProbabilityKey, SolutionSizeType, ProbabilityKeyHash> ProbabilityMap;
 
         class ProbabilityMatrix {
         public:
@@ -52,12 +52,12 @@ namespace design {
             // default copy constructor
             //ProbabilityMatrix( const ProbabilityMatrix &pm ) = default;
             // get probability for ProbabilityKeys... key of Aks (12/A) (4/C) ()...
-            //boost::multiprecision::mpz_int get(ProbabilityKey pk);
-            boost::multiprecision::mpz_int operator[](ProbabilityKey& pk);
+            //SolutionSizeType get(ProbabilityKey pk);
+            SolutionSizeType operator[](ProbabilityKey& pk);
             // fill a nos for a certain key
-            void put(ProbabilityKey& pk, boost::multiprecision::mpz_int nos);
+            void put(ProbabilityKey& pk, SolutionSizeType nos);
             // get maximal number of sequences for the whole matrix/subgraph
-            boost::multiprecision::mpz_int mnos();
+            SolutionSizeType mnos();
             // return if this is a initialized PM or not
 
             bool is_initialized() {
@@ -71,10 +71,10 @@ namespace design {
             // sample one combination randomly given a ProbabilityKey with the constraints and a random number generator
             // return a pair with the chosen ProbabilityKey and the number_of_sequences for the given input constraints
             template <typename R>
-            std::pair<ProbabilityKey, boost::multiprecision::mpz_int> sample(ProbabilityKey pk, R* rand_ptr);
+            std::pair<ProbabilityKey, SolutionSizeType> sample(ProbabilityKey pk, R* rand_ptr);
             // special case without probability key (and therefore constraints)
             template <typename R>
-            std::pair<ProbabilityKey, boost::multiprecision::mpz_int> sample(R* rand_ptr);
+            std::pair<ProbabilityKey, SolutionSizeType> sample(R* rand_ptr);
             // My custom hash key used for n
             friend class ProbabilityKeyHash;
             friend ProbabilityMatrix operator*(ProbabilityMatrix& x, ProbabilityMatrix& y);

@@ -28,13 +28,25 @@
 #include <boost/config.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/iteration_macros.hpp>
+#ifdef LIBGMP
 #include <boost/multiprecision/gmp.hpp>
 #include <boost/multiprecision/random.hpp>
-
+#endif
 // modified boost headers
 #include "uninduced_subgraph.hpp"
 
 namespace design {
+    
+    // Typedef for nos values
+    #ifdef LIBGMP
+    typedef boost::multiprecision::mpz_int SolutionSizeType;
+    typedef boost::random::uniform_int_distribution<boost::multiprecision::mpz_int> RandomDistType;
+    #else
+    typedef double SolutionSizeType;
+    typedef std::uniform_real_distribution<double> RandomDistType;
+    #endif
+
+    
     namespace detail {
 
         //Global variables

@@ -71,11 +71,11 @@ BOOST_AUTO_TEST_CASE(BigMatrix) {
     BOOST_TEST_MESSAGE("Creating big Matrix and ask for things");
     PairingMatrix * p = PairingMatrix::Instance();
     std::cerr << p->get(100, A, A) << std::endl;
-    BOOST_CHECK(p->get(100, A, A) == boost::multiprecision::mpz_int("218922995834555169026"));
-    BOOST_CHECK(p->get(56, U, C) == boost::multiprecision::mpz_int("225851433717"));
-    BOOST_CHECK(p->get(45, U, G) == boost::multiprecision::mpz_int("1836311903"));
+    BOOST_CHECK(p->get(100, A, A) == SolutionSizeType("218922995834555169026"));
+    BOOST_CHECK(p->get(56, U, C) == SolutionSizeType("225851433717"));
+    BOOST_CHECK(p->get(45, U, G) == SolutionSizeType("1836311903"));
     std::cerr << p->get(156, A, A) << std::endl;
-    BOOST_CHECK(p->get(156, A, A) == boost::multiprecision::mpz_int("110560307156090817237632754212345"));
+    BOOST_CHECK(p->get(156, A, A) == SolutionSizeType("110560307156090817237632754212345"));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

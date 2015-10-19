@@ -29,8 +29,8 @@ namespace design {
         public:
             DependencyGraph(std::vector<std::string> structures, std::string constraints, R rand);
 
-            boost::multiprecision::mpz_int number_of_sequences();
-            boost::multiprecision::mpz_int number_of_sequences(int connected_component_ID);
+            SolutionSizeType number_of_sequences();
+            SolutionSizeType number_of_sequences(int connected_component_ID);
             bool is_bipartite() {
                 return bipartite;
             }
@@ -40,10 +40,10 @@ namespace design {
             void set_sequence_string(std::string seq_str);
             void set_sequence();
             // call this function to mutate a random subgraph (either a path, if graph_type=-1 or a connected component, if graph_type=1)
-            boost::multiprecision::mpz_int mutate_local_global(int graph_type, int min_num_pos, int max_num_pos);
-            boost::multiprecision::mpz_int mutate_global(int connected_component_ID);
-            boost::multiprecision::mpz_int mutate(int position);
-            boost::multiprecision::mpz_int mutate(int start, int end);
+            SolutionSizeType mutate_local_global(int graph_type, int min_num_pos, int max_num_pos);
+            SolutionSizeType mutate_global(int connected_component_ID);
+            SolutionSizeType mutate(int position);
+            SolutionSizeType mutate(int start, int end);
             int number_of_connected_components();
             std::vector< int > component_vertices(int connected_component_ID);
             std::vector< int > special_vertices();
@@ -54,9 +54,9 @@ namespace design {
             bool bipartite; // if dependency graph is bipartite and a therefore a solution exists
             R rand;
             void calculate_probabilities(Graph& g);
-            boost::multiprecision::mpz_int sample_sequence(Graph& g);
+            SolutionSizeType sample_sequence(Graph& g);
             void reset_colors(Graph& g);
-            boost::multiprecision::mpz_int mutate(Graph& g);
+            SolutionSizeType mutate(Graph& g);
             Graph* find_path_subgraph(Vertex v_global, Graph& g);
             // this function fills the subgraphs set with all the sugraphs of the given type (root, cc, bc, path)
             // if int type= -1, then it returns all subgraphs which are actual paths (gp.is_path == true).

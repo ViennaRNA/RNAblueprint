@@ -102,7 +102,7 @@ namespace design {
         *  int min_num_pos, int max_num_pos set the minimal/maximal number of mutated positions, e.g., for (3,5) only paths
         *  with minimal 3 and maximal 5 non-special vertices will be chosen for mutation. 0 defines infinity. The range is inclusive!
         */
-        boost::multiprecision::mpz_int mutate_local(int min_num_pos, int max_num_pos);
+        SolutionSizeType mutate_local(int min_num_pos, int max_num_pos);
         /*! \brief Randomly chooses a connected component and samples a new sequence for the whole component.
         *  
         *  This is a more global way of mutating the structure as it probably exchanges a much bigger graph object.
@@ -111,14 +111,14 @@ namespace design {
         * 
         *  Returns: The number of possible sequences for this mutation.
         */
-        boost::multiprecision::mpz_int mutate_global(int min_num_pos, int max_num_pos);
+        SolutionSizeType mutate_global(int min_num_pos, int max_num_pos);
         /*! \brief Takes the connected component with the ID (int connected_component_ID) and samples a new sequence for the whole component.
         *  
         *  The connected_component_IDs can be retrieved by calling connected_components()
         *  
         *  Returns: The number of possible sequences for this mutation.
         */
-        boost::multiprecision::mpz_int mutate_global(int connected_component_ID);
+        SolutionSizeType mutate_global(int connected_component_ID);
         /*! \brief Resets only the smallest subgraph(s) possible containing the vertex at the given position in the sequence.
         *  
         *  This way you can optimise by targeted mutagenesis at the given positions. All positions dependent on the chosen one
@@ -128,7 +128,7 @@ namespace design {
         * 
         *  Returns: The number of possible sequences for this mutation.
         */
-        boost::multiprecision::mpz_int mutate(int position);
+        SolutionSizeType mutate(int position);
         /*! \brief Resets only the smallest subgraph(s) possible containing the vertices from position start to end.
         *  
         *  This way you can optimize by targeted mutagenesis at the given positions. All positions dependent on the chosen ones
@@ -138,18 +138,18 @@ namespace design {
         * 
         *  Returns: The number of possible sequences for this mutation.
         */
-        boost::multiprecision::mpz_int mutate(int start, int end);
+        SolutionSizeType mutate(int start, int end);
         /*! \brief Returns the amount of solutions given the dependency graph and sequence constraints
         *  
         *  Number of sequences is the total amount of sequences possible for the given structural and sequence constraints.
         */
-        boost::multiprecision::mpz_int number_of_sequences();
+        SolutionSizeType number_of_sequences();
         /*! \brief Returns the amount of solutions for the connected component with the given ID.
         *  
         *  Number of sequences is the total amount of sequences possible for the given structural and sequence constraints.
         *  The connected_component_IDs can be retrieved by calling connected_components()
         */
-        boost::multiprecision::mpz_int number_of_sequences(int connected_component_ID);
+        SolutionSizeType number_of_sequences(int connected_component_ID);
         /*! \brief Returns the number of connected components
         *  
         */

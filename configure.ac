@@ -83,10 +83,17 @@ AC_CHECK_LIB([m], [exp],
 	[LIBS="-lm $LIBS"],
 	AC_MSG_ERROR([libMath not found!]))
 	
-# Checks for libraries: gmp.
-AC_CHECK_LIB([gmp], [exp],
-	[LIBS="-lgmp $LIBS"],
-	AC_MSG_ERROR([libGMP not found!]))
+# Checks for libraries: gmp enabled?
+AC_ARG_ENABLE([libGMP],
+    [AS_HELP_STRING([--enable-libGMP],
+        [Enable this to calculate everything using boost multiprecision integers])])
+
+AS_IF([test "x$enable_libGMP" = "xyes"], [
+    AC_CHECK_LIB([gmp], [__gmp_printf],
+        [LIBS="-lgmp $LIBS"],
+        AC_MSG_ERROR([libGMP not found!]))
+    AC_DEFINE([LIBGMP],[1],[Using libGMP])
+])
 
 # introduce the optional configure parameter for a non-standard install prefix of RNAlib
 AC_ARG_WITH([RNAlib],
