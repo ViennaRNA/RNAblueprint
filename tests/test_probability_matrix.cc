@@ -614,7 +614,7 @@ BOOST_AUTO_TEST_CASE(RandomlySampleKey1) {
     
     PermuteKeyFactory pkf(input);
     while (true) {
-        m.put(*pkf.key(), static_cast<SolutionSizeType>(dist(rand_gen) * 400));
+        m.put(*pkf.key(), static_cast<SolutionSizeType>(trunc(dist(rand_gen) * 400)));
         if (!pkf.next_permutation())
             break;
     }
@@ -647,7 +647,7 @@ BOOST_AUTO_TEST_CASE(RandomlySampleKey2) {
 
     PermuteKeyFactory pkf(input);
     while (true) {
-        m.put(*pkf.key(), static_cast<SolutionSizeType>(dist(rand_gen) * 400));
+        m.put(*pkf.key(), static_cast<SolutionSizeType>(trunc(dist(rand_gen) * 400)));
         if (!pkf.next_permutation())
             break;
     }
