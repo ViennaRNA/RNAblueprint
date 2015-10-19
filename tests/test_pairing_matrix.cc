@@ -71,11 +71,18 @@ BOOST_AUTO_TEST_CASE(BigMatrix) {
     BOOST_TEST_MESSAGE("Creating big Matrix and ask for things");
     PairingMatrix * p = PairingMatrix::Instance();
     std::cerr << p->get(100, A, A) << std::endl;
+#ifdef LIBGMP
     BOOST_CHECK(p->get(100, A, A) == SolutionSizeType("218922995834555169026"));
     BOOST_CHECK(p->get(56, U, C) == SolutionSizeType("225851433717"));
     BOOST_CHECK(p->get(45, U, G) == SolutionSizeType("1836311903"));
-    std::cerr << p->get(156, A, A) << std::endl;
     BOOST_CHECK(p->get(156, A, A) == SolutionSizeType("110560307156090817237632754212345"));
+#else
+    BOOST_CHECK_CLOSE(p->get(100, A, A), 218922995834555169026.0, 0.0001);
+    BOOST_CHECK_CLOSE(p->get(56, U, C), 225851433717.0, 0.0001);
+    BOOST_CHECK_CLOSE(p->get(45, U, G), 1836311903.0, 0.0001);
+    BOOST_CHECK_CLOSE(p->get(156, A, A), 110560307156090817237632754212345.0, 0.0001);
+#endif
+
 }
 
 BOOST_AUTO_TEST_SUITE_END()
