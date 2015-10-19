@@ -223,7 +223,7 @@ namespace design {
         PermuteKeyFactory::PermuteKeyFactory(ProbabilityKey pk) {
             //std::map<int, std::list<int> > storage;
             //std::map<int, std::list<int>::iterator> state;
-
+            
             // fill storage container with all possibilities
             for (auto k : pk) {
                 for (int b : base_conversion[k.second]) {
@@ -255,27 +255,45 @@ namespace design {
         }
 
         bool PermuteKeyFactory::make_next_step(std::map<int, std::list<int>::iterator>::iterator state_it) {
-            state_it->second++;
-            if (state_it->second == storage[state_it->first].end()) {
-                state_it->second = storage[state_it->first].begin();
-                state_it++;
-                if (state_it != state.end())
-                    return make_next_step(state_it);
-                else
-                    return false;
-            } else {
-                return true;
+            if (state.empty())
+                return false;
+            else {
+                state_it->second++;
+                if (state_it->second == storage[state_it->first].end()) {
+                    state_it->second = storage[state_it->first].begin();
+                    state_it++;
+                    if (state_it != state.end())
+                        return make_next_step(state_it);
+                    else
+                        return false;
+                } else {
+                    return true;
+                }
             }
         }
         
         bool PermuteKeyFactory::previous_permutation() {
-            //TODO
-            return false;
+            // move to previous step
+            return make_previous_step(state.begin());
         }
         
         bool PermuteKeyFactory::make_previous_step(std::map<int, std::list<int>::iterator>::iterator state_it) {
-            //TODO
-            return false;
+            if (state.empty())
+                return false;
+            else {
+                if (state_it->second == storage[state_it->first].begin()) {
+                    state_it->second = storage[state_it->first].end();
+                    state_it->second--;
+                    state_it++;
+                    if (state_it != state.end())
+                        return make_previous_step(state_it);
+                    else
+                        return false;
+                } else {
+                    state_it->second--;
+                    return true;
+                }
+            }
         }
         
         // overload << operator to print ProbabilityKeys
