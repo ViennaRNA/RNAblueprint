@@ -154,6 +154,119 @@ class SwigPyIterator(_object):
 SwigPyIterator_swigregister = _RNAdesign.SwigPyIterator_swigregister
 SwigPyIterator_swigregister(SwigPyIterator)
 
+class StringVector(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, StringVector, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, StringVector, name)
+    __repr__ = _swig_repr
+
+    def iterator(self):
+        return _RNAdesign.StringVector_iterator(self)
+    def __iter__(self):
+        return self.iterator()
+
+    def __nonzero__(self):
+        return _RNAdesign.StringVector___nonzero__(self)
+
+    def __bool__(self):
+        return _RNAdesign.StringVector___bool__(self)
+
+    def __len__(self):
+        return _RNAdesign.StringVector___len__(self)
+
+    def pop(self):
+        return _RNAdesign.StringVector_pop(self)
+
+    def __getslice__(self, i, j):
+        return _RNAdesign.StringVector___getslice__(self, i, j)
+
+    def __setslice__(self, *args):
+        return _RNAdesign.StringVector___setslice__(self, *args)
+
+    def __delslice__(self, i, j):
+        return _RNAdesign.StringVector___delslice__(self, i, j)
+
+    def __delitem__(self, *args):
+        return _RNAdesign.StringVector___delitem__(self, *args)
+
+    def __getitem__(self, *args):
+        return _RNAdesign.StringVector___getitem__(self, *args)
+
+    def __setitem__(self, *args):
+        return _RNAdesign.StringVector___setitem__(self, *args)
+
+    def append(self, x):
+        return _RNAdesign.StringVector_append(self, x)
+
+    def empty(self):
+        return _RNAdesign.StringVector_empty(self)
+
+    def size(self):
+        return _RNAdesign.StringVector_size(self)
+
+    def clear(self):
+        return _RNAdesign.StringVector_clear(self)
+
+    def swap(self, v):
+        return _RNAdesign.StringVector_swap(self, v)
+
+    def get_allocator(self):
+        return _RNAdesign.StringVector_get_allocator(self)
+
+    def begin(self):
+        return _RNAdesign.StringVector_begin(self)
+
+    def end(self):
+        return _RNAdesign.StringVector_end(self)
+
+    def rbegin(self):
+        return _RNAdesign.StringVector_rbegin(self)
+
+    def rend(self):
+        return _RNAdesign.StringVector_rend(self)
+
+    def pop_back(self):
+        return _RNAdesign.StringVector_pop_back(self)
+
+    def erase(self, *args):
+        return _RNAdesign.StringVector_erase(self, *args)
+
+    def __init__(self, *args):
+        this = _RNAdesign.new_StringVector(*args)
+        try:
+            self.this.append(this)
+        except:
+            self.this = this
+
+    def push_back(self, x):
+        return _RNAdesign.StringVector_push_back(self, x)
+
+    def front(self):
+        return _RNAdesign.StringVector_front(self)
+
+    def back(self):
+        return _RNAdesign.StringVector_back(self)
+
+    def assign(self, n, x):
+        return _RNAdesign.StringVector_assign(self, n, x)
+
+    def resize(self, *args):
+        return _RNAdesign.StringVector_resize(self, *args)
+
+    def insert(self, *args):
+        return _RNAdesign.StringVector_insert(self, *args)
+
+    def reserve(self, n):
+        return _RNAdesign.StringVector_reserve(self, n)
+
+    def capacity(self):
+        return _RNAdesign.StringVector_capacity(self)
+    __swig_destroy__ = _RNAdesign.delete_StringVector
+    __del__ = lambda self: None
+StringVector_swigregister = _RNAdesign.StringVector_swigregister
+StringVector_swigregister(StringVector)
+
 class IntVector(_object):
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, IntVector, name, value)

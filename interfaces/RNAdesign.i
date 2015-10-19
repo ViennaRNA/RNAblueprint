@@ -33,10 +33,9 @@
 
 %include "std_string.i"
 %include "std_vector.i"
-%include "std_map.i"
 
 namespace std {
-   %template() std::vector<std::string>;
+   %template(StringVector) std::vector<std::string>;
    %template(IntVector) std::vector<int>;
  }
 
@@ -54,13 +53,13 @@ namespace design {
     std::string get_sequence();
     void set_sequence(std::string sequence);
     void set_sequence();
-    boost::multiprecision::mpz_int mutate_local(int min_num_pos, int max_num_pos);
-    boost::multiprecision::mpz_int mutate_global(int min_num_pos, int max_num_pos);
-    boost::multiprecision::mpz_int mutate_global(int connected_component_ID);
-    boost::multiprecision::mpz_int mutate(int position);
-    boost::multiprecision::mpz_int mutate(int start, int end);
-    boost::multiprecision::mpz_int number_of_sequences();
-    boost::multiprecision::mpz_int number_of_sequences(int connected_component_ID);
+    double mutate_local(int min_num_pos, int max_num_pos);
+    double mutate_global(int min_num_pos, int max_num_pos);
+    double mutate_global(int connected_component_ID);
+    double mutate(int position);
+    double mutate(int start, int end);
+    double number_of_sequences();
+    double number_of_sequences(int connected_component_ID);
     int number_of_connected_components();
     std::vector< int > component_vertices(int connected_component_ID);
     std::vector< int > special_vertices();

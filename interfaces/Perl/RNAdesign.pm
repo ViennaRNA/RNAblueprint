@@ -51,6 +51,50 @@ package RNAdesign;
 
 *initialize_library = *RNAdesignc::initialize_library;
 
+############# Class : RNAdesign::StringVector ##############
+
+package RNAdesign::StringVector;
+use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
+@ISA = qw( RNAdesign );
+%OWNER = ();
+%ITERATORS = ();
+sub new {
+    my $pkg = shift;
+    my $self = RNAdesignc::new_StringVector(@_);
+    bless $self, $pkg if defined($self);
+}
+
+*size = *RNAdesignc::StringVector_size;
+*empty = *RNAdesignc::StringVector_empty;
+*clear = *RNAdesignc::StringVector_clear;
+*push = *RNAdesignc::StringVector_push;
+*pop = *RNAdesignc::StringVector_pop;
+*get = *RNAdesignc::StringVector_get;
+*set = *RNAdesignc::StringVector_set;
+sub DESTROY {
+    return unless $_[0]->isa('HASH');
+    my $self = tied(%{$_[0]});
+    return unless defined $self;
+    delete $ITERATORS{$self};
+    if (exists $OWNER{$self}) {
+        RNAdesignc::delete_StringVector($self);
+        delete $OWNER{$self};
+    }
+}
+
+sub DISOWN {
+    my $self = shift;
+    my $ptr = tied(%$self);
+    delete $OWNER{$ptr};
+}
+
+sub ACQUIRE {
+    my $self = shift;
+    my $ptr = tied(%$self);
+    $OWNER{$ptr} = 1;
+}
+
+
 ############# Class : RNAdesign::IntVector ##############
 
 package RNAdesign::IntVector;

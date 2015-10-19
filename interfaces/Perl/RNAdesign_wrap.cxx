@@ -1527,16 +1527,15 @@ SWIG_Perl_SetModule(swig_module_info *module) {
 
 /* -------- TYPES TABLE (BEGIN) -------- */
 
-#define SWIGTYPE_p_boost__multiprecision__mpz_int swig_types[0]
-#define SWIGTYPE_p_char swig_types[1]
-#define SWIGTYPE_p_design__DependencyGraphT_std__mt19937_t swig_types[2]
-#define SWIGTYPE_p_size_type swig_types[3]
-#define SWIGTYPE_p_std__out_of_range swig_types[4]
-#define SWIGTYPE_p_std__vectorT_int_t swig_types[5]
-#define SWIGTYPE_p_std__vectorT_std__string_t swig_types[6]
-#define SWIGTYPE_p_value_type swig_types[7]
-static swig_type_info *swig_types[9];
-static swig_module_info swig_module = {swig_types, 8, 0, 0, 0, 0};
+#define SWIGTYPE_p_char swig_types[0]
+#define SWIGTYPE_p_design__DependencyGraphT_std__mt19937_t swig_types[1]
+#define SWIGTYPE_p_size_type swig_types[2]
+#define SWIGTYPE_p_std__out_of_range swig_types[3]
+#define SWIGTYPE_p_std__vectorT_int_t swig_types[4]
+#define SWIGTYPE_p_std__vectorT_std__string_t swig_types[5]
+#define SWIGTYPE_p_value_type swig_types[6]
+static swig_type_info *swig_types[8];
+static swig_module_info swig_module = {swig_types, 7, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -1601,9 +1600,6 @@ void SwigSvFromString(SV* sv, const std::string& s) {
 
 
 #include <algorithm>
-
-
-#include <map>
 
 
 #include <limits.h>
@@ -1747,152 +1743,6 @@ SWIG_AsVal_unsigned_SS_int SWIG_PERL_DECL_ARGS_2(SV * obj, unsigned int *val)
 }
 
 
-SWIGINTERN int
-SWIG_AsVal_long SWIG_PERL_DECL_ARGS_2(SV *obj, long* val)
-{
-  if (SvUOK(obj)) {
-    UV v = SvUV(obj);
-    if (v <= LONG_MAX) {
-      if (val) *val = v;
-      return SWIG_OK;
-    }
-    return SWIG_OverflowError;
-  } else if (SvIOK(obj)) {
-    IV v = SvIV(obj);
-    if (v >= LONG_MIN && v <= LONG_MAX) {
-      if(val) *val = v;
-      return SWIG_OK;
-    }
-    return SWIG_OverflowError;
-  } else {
-    int dispatch = 0;
-    const char *nptr = SvPV_nolen(obj);
-    if (nptr) {
-      char *endptr;
-      long v;
-      errno = 0;
-      v = strtol(nptr, &endptr,0);
-      if (errno == ERANGE) {
-	errno = 0;
-	return SWIG_OverflowError;
-      } else {
-	if (*endptr == '\0') {
-	  if (val) *val = v;
-	  return SWIG_Str2NumCast(SWIG_OK);
-	}
-      }
-    }
-    if (!dispatch) {
-      double d;
-      int res = SWIG_AddCast(SWIG_AsVal_double SWIG_PERL_CALL_ARGS_2(obj,&d));
-      if (SWIG_IsOK(res) && SWIG_CanCastAsInteger(&d, LONG_MIN, LONG_MAX)) {
-	if (val) *val = (long)(d);
-	return res;
-      }
-    }
-  }
-  return SWIG_TypeError;
-}
-
-
-SWIGINTERN int
-SWIG_AsVal_int SWIG_PERL_DECL_ARGS_2(SV * obj, int *val)
-{
-  long v;
-  int res = SWIG_AsVal_long SWIG_PERL_CALL_ARGS_2(obj, &v);
-  if (SWIG_IsOK(res)) {
-    if ((v < INT_MIN || v > INT_MAX)) {
-      return SWIG_OverflowError;
-    } else {
-      if (val) *val = static_cast< int >(v);
-    }
-  }  
-  return res;
-}
-
-
-SWIGINTERNINLINE SV *
-SWIG_From_unsigned_SS_long  SWIG_PERL_DECL_ARGS_1(unsigned long value)
-{
-  SV *sv;
-  if (value <= UV_MAX)
-    sv = newSVuv(value);
-  else
-    sv = newSVpvf("%lu", value);
-  return sv_2mortal(sv);
-}
-
-
-SWIGINTERNINLINE SV *
-SWIG_From_unsigned_SS_int  SWIG_PERL_DECL_ARGS_1(unsigned int value)
-{    
-  return SWIG_From_unsigned_SS_long  SWIG_PERL_CALL_ARGS_1(value);
-}
-
-
-SWIGINTERNINLINE SV *
-SWIG_From_bool  SWIG_PERL_DECL_ARGS_1(bool value)
-{
-  return boolSV(value);
-}
-
-SWIGINTERN int std_vector_Sl_int_Sg__pop(std::vector< int > *self){
-                if (self->size() == 0)
-                    throw std::out_of_range("pop from empty vector");
-                int x = self->back();
-                self->pop_back();
-                return x;
-            }
-
-SWIGINTERNINLINE SV *
-SWIG_From_long  SWIG_PERL_DECL_ARGS_1(long value)
-{
-  SV *sv;
-  if (value >= IV_MIN && value <= IV_MAX)
-    sv = newSViv(value);
-  else
-    sv = newSVpvf("%ld", value);
-  return sv_2mortal(sv);
-}
-
-
-SWIGINTERNINLINE SV *
-SWIG_From_int  SWIG_PERL_DECL_ARGS_1(int value)
-{    
-  return SWIG_From_long  SWIG_PERL_CALL_ARGS_1(value);
-}
-
-SWIGINTERN int std_vector_Sl_int_Sg__get(std::vector< int > *self,int i){
-                int size = int(self->size());
-                if (i>=0 && i<size)
-                    return (*self)[i];
-                else
-                    throw std::out_of_range("vector index out of range");
-            }
-SWIGINTERN void std_vector_Sl_int_Sg__set(std::vector< int > *self,int i,int x){
-                int size = int(self->size());
-                if (i>=0 && i<size)
-                    (*self)[i] = x;
-                else
-                    throw std::out_of_range("vector index out of range");
-            }
-
-SWIGINTERN int
-SWIG_AsVal_bool SWIG_PERL_DECL_ARGS_2(SV *obj, bool* val)
-{
-  if (obj == &PL_sv_yes) {
-    if (val) *val = true;
-    return SWIG_OK;
-  } else if (obj == &PL_sv_no) { 
-    if (val) *val = false;
-    return SWIG_OK;
-  } else {
-    if (val) *val = SvTRUE(obj) ? true : false;
-    return SWIG_AddCast(SWIG_OK);    
-  }
-}
-
-
 SWIGINTERN swig_type_info*
 SWIG_pchar_descriptor(void)
 {
@@ -1978,6 +1828,39 @@ SWIG_AsPtr_std_string SWIG_PERL_DECL_ARGS_2(SV * obj, std::string **val)
 
 
 SWIGINTERNINLINE SV *
+SWIG_From_unsigned_SS_long  SWIG_PERL_DECL_ARGS_1(unsigned long value)
+{
+  SV *sv;
+  if (value <= UV_MAX)
+    sv = newSVuv(value);
+  else
+    sv = newSVpvf("%lu", value);
+  return sv_2mortal(sv);
+}
+
+
+SWIGINTERNINLINE SV *
+SWIG_From_unsigned_SS_int  SWIG_PERL_DECL_ARGS_1(unsigned int value)
+{    
+  return SWIG_From_unsigned_SS_long  SWIG_PERL_CALL_ARGS_1(value);
+}
+
+
+SWIGINTERNINLINE SV *
+SWIG_From_bool  SWIG_PERL_DECL_ARGS_1(bool value)
+{
+  return boolSV(value);
+}
+
+SWIGINTERN std::string std_vector_Sl_std_string_Sg__pop(std::vector< std::string > *self){
+                if (self->size() == 0)
+                    throw std::out_of_range("pop from empty vector");
+                std::string x = self->back();
+                self->pop_back();
+                return x;
+            }
+
+SWIGINTERNINLINE SV *
 SWIG_FromCharPtrAndSize(const char* carray, size_t size)
 {
   SV *obj = sv_newmortal();
@@ -1994,6 +1877,147 @@ SWIGINTERNINLINE SV *
 SWIG_From_std_string  SWIG_PERL_DECL_ARGS_1(const std::string& s)
 {
   return SWIG_FromCharPtrAndSize(s.data(), s.size());
+}
+
+
+SWIGINTERN int
+SWIG_AsVal_long SWIG_PERL_DECL_ARGS_2(SV *obj, long* val)
+{
+  if (SvUOK(obj)) {
+    UV v = SvUV(obj);
+    if (v <= LONG_MAX) {
+      if (val) *val = v;
+      return SWIG_OK;
+    }
+    return SWIG_OverflowError;
+  } else if (SvIOK(obj)) {
+    IV v = SvIV(obj);
+    if (v >= LONG_MIN && v <= LONG_MAX) {
+      if(val) *val = v;
+      return SWIG_OK;
+    }
+    return SWIG_OverflowError;
+  } else {
+    int dispatch = 0;
+    const char *nptr = SvPV_nolen(obj);
+    if (nptr) {
+      char *endptr;
+      long v;
+      errno = 0;
+      v = strtol(nptr, &endptr,0);
+      if (errno == ERANGE) {
+	errno = 0;
+	return SWIG_OverflowError;
+      } else {
+	if (*endptr == '\0') {
+	  if (val) *val = v;
+	  return SWIG_Str2NumCast(SWIG_OK);
+	}
+      }
+    }
+    if (!dispatch) {
+      double d;
+      int res = SWIG_AddCast(SWIG_AsVal_double SWIG_PERL_CALL_ARGS_2(obj,&d));
+      if (SWIG_IsOK(res) && SWIG_CanCastAsInteger(&d, LONG_MIN, LONG_MAX)) {
+	if (val) *val = (long)(d);
+	return res;
+      }
+    }
+  }
+  return SWIG_TypeError;
+}
+
+
+SWIGINTERN int
+SWIG_AsVal_int SWIG_PERL_DECL_ARGS_2(SV * obj, int *val)
+{
+  long v;
+  int res = SWIG_AsVal_long SWIG_PERL_CALL_ARGS_2(obj, &v);
+  if (SWIG_IsOK(res)) {
+    if ((v < INT_MIN || v > INT_MAX)) {
+      return SWIG_OverflowError;
+    } else {
+      if (val) *val = static_cast< int >(v);
+    }
+  }  
+  return res;
+}
+
+SWIGINTERN std::string std_vector_Sl_std_string_Sg__get(std::vector< std::string > *self,int i){
+                int size = int(self->size());
+                if (i>=0 && i<size)
+                    return (*self)[i];
+                else
+                    throw std::out_of_range("vector index out of range");
+            }
+SWIGINTERN void std_vector_Sl_std_string_Sg__set(std::vector< std::string > *self,int i,std::string x){
+                int size = int(self->size());
+                if (i>=0 && i<size)
+                    (*self)[i] = x;
+                else
+                    throw std::out_of_range("vector index out of range");
+            }
+SWIGINTERN int std_vector_Sl_int_Sg__pop(std::vector< int > *self){
+                if (self->size() == 0)
+                    throw std::out_of_range("pop from empty vector");
+                int x = self->back();
+                self->pop_back();
+                return x;
+            }
+
+SWIGINTERNINLINE SV *
+SWIG_From_long  SWIG_PERL_DECL_ARGS_1(long value)
+{
+  SV *sv;
+  if (value >= IV_MIN && value <= IV_MAX)
+    sv = newSViv(value);
+  else
+    sv = newSVpvf("%ld", value);
+  return sv_2mortal(sv);
+}
+
+
+SWIGINTERNINLINE SV *
+SWIG_From_int  SWIG_PERL_DECL_ARGS_1(int value)
+{    
+  return SWIG_From_long  SWIG_PERL_CALL_ARGS_1(value);
+}
+
+SWIGINTERN int std_vector_Sl_int_Sg__get(std::vector< int > *self,int i){
+                int size = int(self->size());
+                if (i>=0 && i<size)
+                    return (*self)[i];
+                else
+                    throw std::out_of_range("vector index out of range");
+            }
+SWIGINTERN void std_vector_Sl_int_Sg__set(std::vector< int > *self,int i,int x){
+                int size = int(self->size());
+                if (i>=0 && i<size)
+                    (*self)[i] = x;
+                else
+                    throw std::out_of_range("vector index out of range");
+            }
+
+SWIGINTERN int
+SWIG_AsVal_bool SWIG_PERL_DECL_ARGS_2(SV *obj, bool* val)
+{
+  if (obj == &PL_sv_yes) {
+    if (val) *val = true;
+    return SWIG_OK;
+  } else if (obj == &PL_sv_no) { 
+    if (val) *val = false;
+    return SWIG_OK;
+  } else {
+    if (val) *val = SvTRUE(obj) ? true : false;
+    return SWIG_AddCast(SWIG_OK);    
+  }
+}
+
+
+SWIGINTERNINLINE SV *
+SWIG_From_double  SWIG_PERL_DECL_ARGS_1(double value)
+{
+  return sv_2mortal(newSVnv(value));
 }
 
 #ifdef __cplusplus
@@ -2025,6 +2049,695 @@ SWIGCLASS_STATIC int swig_magic_readonly(pTHX_ SV *SWIGUNUSEDPARM(sv), MAGIC *SW
 #ifdef __cplusplus
 extern "C" {
 #endif
+XS(_wrap_new_StringVector__SWIG_0) {
+  {
+    unsigned int arg1 ;
+    unsigned int val1 ;
+    int ecode1 = 0 ;
+    int argvi = 0;
+    std::vector< std::string > *result = 0 ;
+    dXSARGS;
+    
+    if ((items < 1) || (items > 1)) {
+      SWIG_croak("Usage: new_StringVector(size);");
+    }
+    ecode1 = SWIG_AsVal_unsigned_SS_int SWIG_PERL_CALL_ARGS_2(ST(0), &val1);
+    if (!SWIG_IsOK(ecode1)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "new_StringVector" "', argument " "1"" of type '" "unsigned int""'");
+    } 
+    arg1 = static_cast< unsigned int >(val1);
+    {
+      try {
+        result = (std::vector< std::string > *)new std::vector< std::string >(arg1);
+      }
+      
+      catch(const std::exception & e) {
+        SWIG_exception_fail(SWIG_RuntimeError, e.what());
+      }
+    }
+    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_std__string_t, SWIG_OWNER | SWIG_SHADOW); argvi++ ;
+    
+    XSRETURN(argvi);
+  fail:
+    
+    SWIG_croak_null();
+  }
+}
+
+
+XS(_wrap_new_StringVector__SWIG_1) {
+  {
+    int argvi = 0;
+    std::vector< std::string > *result = 0 ;
+    dXSARGS;
+    
+    if ((items < 0) || (items > 0)) {
+      SWIG_croak("Usage: new_StringVector();");
+    }
+    {
+      try {
+        result = (std::vector< std::string > *)new std::vector< std::string >();
+      }
+      
+      catch(const std::exception & e) {
+        SWIG_exception_fail(SWIG_RuntimeError, e.what());
+      }
+    }
+    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_std__string_t, SWIG_OWNER | SWIG_SHADOW); argvi++ ;
+    XSRETURN(argvi);
+  fail:
+    SWIG_croak_null();
+  }
+}
+
+
+XS(_wrap_new_StringVector__SWIG_2) {
+  {
+    unsigned int arg1 ;
+    std::string arg2 ;
+    unsigned int val1 ;
+    int ecode1 = 0 ;
+    int argvi = 0;
+    std::vector< std::string > *result = 0 ;
+    dXSARGS;
+    
+    if ((items < 2) || (items > 2)) {
+      SWIG_croak("Usage: new_StringVector(size,value);");
+    }
+    ecode1 = SWIG_AsVal_unsigned_SS_int SWIG_PERL_CALL_ARGS_2(ST(0), &val1);
+    if (!SWIG_IsOK(ecode1)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "new_StringVector" "', argument " "1"" of type '" "unsigned int""'");
+    } 
+    arg1 = static_cast< unsigned int >(val1);
+    {
+      std::string *ptr = (std::string *)0;
+      int res = SWIG_AsPtr_std_string SWIG_PERL_CALL_ARGS_2(ST(1), &ptr);
+      if (!SWIG_IsOK(res) || !ptr) {
+        SWIG_exception_fail(SWIG_ArgError((ptr ? res : SWIG_TypeError)), "in method '" "new_StringVector" "', argument " "2"" of type '" "std::string""'"); 
+      }
+      arg2 = *ptr;
+      if (SWIG_IsNewObj(res)) delete ptr;
+    }
+    {
+      try {
+        result = (std::vector< std::string > *)new std::vector< std::string >(arg1,arg2);
+      }
+      
+      catch(const std::exception & e) {
+        SWIG_exception_fail(SWIG_RuntimeError, e.what());
+      }
+    }
+    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_std__string_t, SWIG_OWNER | SWIG_SHADOW); argvi++ ;
+    
+    
+    XSRETURN(argvi);
+  fail:
+    
+    
+    SWIG_croak_null();
+  }
+}
+
+
+XS(_wrap_new_StringVector__SWIG_3) {
+  {
+    std::vector< std::string > *arg1 = 0 ;
+    std::vector< std::string > temp1 ;
+    std::vector< std::string > *v1 ;
+    int argvi = 0;
+    std::vector< std::string > *result = 0 ;
+    dXSARGS;
+    
+    if ((items < 1) || (items > 1)) {
+      SWIG_croak("Usage: new_StringVector(std::vector< std::string > const &);");
+    }
+    {
+      if (SWIG_ConvertPtr(ST(0),(void **) &v1, 
+          SWIGTYPE_p_std__vectorT_std__string_t,1) != -1) {
+        arg1 = v1;
+      } else if (SvROK(ST(0))) {
+        AV *av = (AV *)SvRV(ST(0));
+        if (SvTYPE(av) != SVt_PVAV)
+        SWIG_croak("Type error in argument 1 of new_StringVector. "
+          "Expected an array of ""std::string");
+        SV **tv;
+        I32 len = av_len(av) + 1;
+        for (int i=0; i<len; i++) {
+          tv = av_fetch(av, i, 0);
+          if (SvPOK(*tv)) {
+            temp1.push_back((std::string)SwigSvToString(*tv));
+          } else {
+            SWIG_croak("Type error in argument 1 of "
+              "new_StringVector. "
+              "Expected an array of ""std::string");
+          }
+        }
+        arg1 = &temp1;
+      } else {
+        SWIG_croak("Type error in argument 1 of new_StringVector. "
+          "Expected an array of ""std::string");
+      }
+    }
+    {
+      try {
+        result = (std::vector< std::string > *)new std::vector< std::string >((std::vector< std::string > const &)*arg1);
+      }
+      
+      catch(const std::exception & e) {
+        SWIG_exception_fail(SWIG_RuntimeError, e.what());
+      }
+    }
+    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_std__string_t, SWIG_OWNER | SWIG_SHADOW); argvi++ ;
+    
+    XSRETURN(argvi);
+  fail:
+    
+    SWIG_croak_null();
+  }
+}
+
+
+XS(_wrap_new_StringVector) {
+  dXSARGS;
+  
+  {
+    unsigned long _index = 0;
+    SWIG_TypeRank _rank = 0; 
+    if (items == 0) {
+      SWIG_TypeRank _ranki = 0;
+      SWIG_TypeRank _rankm = 0;
+      if (!_index || (_ranki < _rank)) {
+        _rank = _ranki; _index = 1;
+        if (_rank == _rankm) goto dispatch;
+      }
+    }
+    if (items == 1) {
+      SWIG_TypeRank _ranki = 0;
+      SWIG_TypeRank _rankm = 0;
+      SWIG_TypeRank _pi = 1;
+      int _v = 0;
+      {
+        {
+          int res = SWIG_AsVal_unsigned_SS_int SWIG_PERL_CALL_ARGS_2(ST(0), NULL);
+          _v = SWIG_CheckState(res);
+        }
+      }
+      if (!_v) goto check_2;
+      _ranki += _v*_pi;
+      _rankm += _pi;
+      _pi *= SWIG_MAXCASTRANK;
+      if (!_index || (_ranki < _rank)) {
+        _rank = _ranki; _index = 2;
+        if (_rank == _rankm) goto dispatch;
+      }
+    }
+  check_2:
+    
+    if (items == 1) {
+      SWIG_TypeRank _ranki = 0;
+      SWIG_TypeRank _rankm = 0;
+      SWIG_TypeRank _pi = 1;
+      int _v = 0;
+      {
+        {
+          {
+            /* wrapped vector? */
+            std::vector<std::string >* v;
+            if (SWIG_ConvertPtr(ST(0),(void **) &v, 
+                SWIGTYPE_p_std__vectorT_std__string_t,0) != -1) {
+              _v = 1;
+            } else if (SvROK(ST(0))) {
+              /* native sequence? */
+              AV *av = (AV *)SvRV(ST(0));
+              if (SvTYPE(av) == SVt_PVAV) {
+                I32 len = av_len(av) + 1;
+                if (len == 0) {
+                  /* an empty sequence can be of any type */
+                  _v = 1;
+                } else {
+                  /* check the first element only */
+                  SV **tv = av_fetch(av, 0, 0);
+                  if (SvPOK(*tv))
+                  _v = 1;
+                  else
+                  _v = 0;
+                }
+              }
+            } else {
+              _v = 0;
+            }
+          }
+        }
+      }
+      if (!_v) goto check_3;
+      _ranki += _v*_pi;
+      _rankm += _pi;
+      _pi *= SWIG_MAXCASTRANK;
+      if (!_index || (_ranki < _rank)) {
+        _rank = _ranki; _index = 3;
+        if (_rank == _rankm) goto dispatch;
+      }
+    }
+  check_3:
+    
+    if (items == 2) {
+      SWIG_TypeRank _ranki = 0;
+      SWIG_TypeRank _rankm = 0;
+      SWIG_TypeRank _pi = 1;
+      int _v = 0;
+      {
+        {
+          int res = SWIG_AsVal_unsigned_SS_int SWIG_PERL_CALL_ARGS_2(ST(0), NULL);
+          _v = SWIG_CheckState(res);
+        }
+      }
+      if (!_v) goto check_4;
+      _ranki += _v*_pi;
+      _rankm += _pi;
+      _pi *= SWIG_MAXCASTRANK;
+      {
+        int res = SWIG_AsPtr_std_string SWIG_PERL_CALL_ARGS_2(ST(1), (std::string**)(0));
+        _v = SWIG_CheckState(res);
+      }
+      if (!_v) goto check_4;
+      _ranki += _v*_pi;
+      _rankm += _pi;
+      _pi *= SWIG_MAXCASTRANK;
+      if (!_index || (_ranki < _rank)) {
+        _rank = _ranki; _index = 4;
+        if (_rank == _rankm) goto dispatch;
+      }
+    }
+  check_4:
+    
+  dispatch:
+    switch(_index) {
+    case 1:
+      PUSHMARK(MARK); SWIG_CALLXS(_wrap_new_StringVector__SWIG_1); return;
+    case 2:
+      PUSHMARK(MARK); SWIG_CALLXS(_wrap_new_StringVector__SWIG_0); return;
+    case 3:
+      PUSHMARK(MARK); SWIG_CALLXS(_wrap_new_StringVector__SWIG_3); return;
+    case 4:
+      PUSHMARK(MARK); SWIG_CALLXS(_wrap_new_StringVector__SWIG_2); return;
+    }
+  }
+  
+  croak("No matching function for overloaded 'new_StringVector'");
+  XSRETURN(0);
+}
+
+
+XS(_wrap_StringVector_size) {
+  {
+    std::vector< std::string > *arg1 = (std::vector< std::string > *) 0 ;
+    std::vector< std::string > temp1 ;
+    std::vector< std::string > *v1 ;
+    int argvi = 0;
+    unsigned int result;
+    dXSARGS;
+    
+    if ((items < 1) || (items > 1)) {
+      SWIG_croak("Usage: StringVector_size(self);");
+    }
+    {
+      if (SWIG_ConvertPtr(ST(0),(void **) &v1, 
+          SWIGTYPE_p_std__vectorT_std__string_t,1) != -1) {
+        arg1 = v1;
+      } else if (SvROK(ST(0))) {
+        AV *av = (AV *)SvRV(ST(0));
+        if (SvTYPE(av) != SVt_PVAV)
+        SWIG_croak("Type error in argument 1 of StringVector_size. "
+          "Expected an array of ""std::string");
+        SV **tv;
+        I32 len = av_len(av) + 1;
+        for (int i=0; i<len; i++) {
+          tv = av_fetch(av, i, 0);
+          if (SvPOK(*tv)) {
+            temp1.push_back((std::string)SwigSvToString(*tv));
+          } else {
+            SWIG_croak("Type error in argument 1 of "
+              "StringVector_size. "
+              "Expected an array of ""std::string");
+          }
+        }
+        arg1 = &temp1;
+      } else {
+        SWIG_croak("Type error in argument 1 of StringVector_size. "
+          "Expected an array of ""std::string");
+      }
+    }
+    {
+      try {
+        result = (unsigned int)((std::vector< std::string > const *)arg1)->size();
+      }
+      
+      catch(const std::exception & e) {
+        SWIG_exception_fail(SWIG_RuntimeError, e.what());
+      }
+    }
+    ST(argvi) = SWIG_From_unsigned_SS_int  SWIG_PERL_CALL_ARGS_1(static_cast< unsigned int >(result)); argvi++ ;
+    
+    XSRETURN(argvi);
+  fail:
+    
+    SWIG_croak_null();
+  }
+}
+
+
+XS(_wrap_StringVector_empty) {
+  {
+    std::vector< std::string > *arg1 = (std::vector< std::string > *) 0 ;
+    std::vector< std::string > temp1 ;
+    std::vector< std::string > *v1 ;
+    int argvi = 0;
+    bool result;
+    dXSARGS;
+    
+    if ((items < 1) || (items > 1)) {
+      SWIG_croak("Usage: StringVector_empty(self);");
+    }
+    {
+      if (SWIG_ConvertPtr(ST(0),(void **) &v1, 
+          SWIGTYPE_p_std__vectorT_std__string_t,1) != -1) {
+        arg1 = v1;
+      } else if (SvROK(ST(0))) {
+        AV *av = (AV *)SvRV(ST(0));
+        if (SvTYPE(av) != SVt_PVAV)
+        SWIG_croak("Type error in argument 1 of StringVector_empty. "
+          "Expected an array of ""std::string");
+        SV **tv;
+        I32 len = av_len(av) + 1;
+        for (int i=0; i<len; i++) {
+          tv = av_fetch(av, i, 0);
+          if (SvPOK(*tv)) {
+            temp1.push_back((std::string)SwigSvToString(*tv));
+          } else {
+            SWIG_croak("Type error in argument 1 of "
+              "StringVector_empty. "
+              "Expected an array of ""std::string");
+          }
+        }
+        arg1 = &temp1;
+      } else {
+        SWIG_croak("Type error in argument 1 of StringVector_empty. "
+          "Expected an array of ""std::string");
+      }
+    }
+    {
+      try {
+        result = (bool)((std::vector< std::string > const *)arg1)->empty();
+      }
+      
+      catch(const std::exception & e) {
+        SWIG_exception_fail(SWIG_RuntimeError, e.what());
+      }
+    }
+    ST(argvi) = SWIG_From_bool  SWIG_PERL_CALL_ARGS_1(static_cast< bool >(result)); argvi++ ;
+    
+    XSRETURN(argvi);
+  fail:
+    
+    SWIG_croak_null();
+  }
+}
+
+
+XS(_wrap_StringVector_clear) {
+  {
+    std::vector< std::string > *arg1 = (std::vector< std::string > *) 0 ;
+    void *argp1 = 0 ;
+    int res1 = 0 ;
+    int argvi = 0;
+    dXSARGS;
+    
+    if ((items < 1) || (items > 1)) {
+      SWIG_croak("Usage: StringVector_clear(self);");
+    }
+    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_std__vectorT_std__string_t, 0 |  0 );
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "StringVector_clear" "', argument " "1"" of type '" "std::vector< std::string > *""'"); 
+    }
+    arg1 = reinterpret_cast< std::vector< std::string > * >(argp1);
+    {
+      try {
+        (arg1)->clear();
+      }
+      
+      catch(const std::exception & e) {
+        SWIG_exception_fail(SWIG_RuntimeError, e.what());
+      }
+    }
+    ST(argvi) = sv_newmortal();
+    
+    XSRETURN(argvi);
+  fail:
+    
+    SWIG_croak_null();
+  }
+}
+
+
+XS(_wrap_StringVector_push) {
+  {
+    std::vector< std::string > *arg1 = (std::vector< std::string > *) 0 ;
+    std::string arg2 ;
+    void *argp1 = 0 ;
+    int res1 = 0 ;
+    int argvi = 0;
+    dXSARGS;
+    
+    if ((items < 2) || (items > 2)) {
+      SWIG_croak("Usage: StringVector_push(self,x);");
+    }
+    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_std__vectorT_std__string_t, 0 |  0 );
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "StringVector_push" "', argument " "1"" of type '" "std::vector< std::string > *""'"); 
+    }
+    arg1 = reinterpret_cast< std::vector< std::string > * >(argp1);
+    {
+      std::string *ptr = (std::string *)0;
+      int res = SWIG_AsPtr_std_string SWIG_PERL_CALL_ARGS_2(ST(1), &ptr);
+      if (!SWIG_IsOK(res) || !ptr) {
+        SWIG_exception_fail(SWIG_ArgError((ptr ? res : SWIG_TypeError)), "in method '" "StringVector_push" "', argument " "2"" of type '" "std::string""'"); 
+      }
+      arg2 = *ptr;
+      if (SWIG_IsNewObj(res)) delete ptr;
+    }
+    {
+      try {
+        (arg1)->push_back(arg2);
+      }
+      
+      catch(const std::exception & e) {
+        SWIG_exception_fail(SWIG_RuntimeError, e.what());
+      }
+    }
+    ST(argvi) = sv_newmortal();
+    
+    
+    XSRETURN(argvi);
+  fail:
+    
+    
+    SWIG_croak_null();
+  }
+}
+
+
+XS(_wrap_StringVector_pop) {
+  {
+    std::vector< std::string > *arg1 = (std::vector< std::string > *) 0 ;
+    void *argp1 = 0 ;
+    int res1 = 0 ;
+    int argvi = 0;
+    std::string result;
+    dXSARGS;
+    
+    if ((items < 1) || (items > 1)) {
+      SWIG_croak("Usage: StringVector_pop(self);");
+    }
+    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_std__vectorT_std__string_t, 0 |  0 );
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "StringVector_pop" "', argument " "1"" of type '" "std::vector< std::string > *""'"); 
+    }
+    arg1 = reinterpret_cast< std::vector< std::string > * >(argp1);
+    {
+      try {
+        try {
+          result = std_vector_Sl_std_string_Sg__pop(arg1);
+        }
+        catch(std::out_of_range &_e) {
+          sv_setsv(get_sv("@", GV_ADD), SWIG_NewPointerObj((new std::out_of_range(static_cast< const std::out_of_range& >(_e))),SWIGTYPE_p_std__out_of_range,SWIG_POINTER_OWN)); SWIG_fail ;
+        }
+        
+      }
+      
+      catch(const std::exception & e) {
+        SWIG_exception_fail(SWIG_RuntimeError, e.what());
+      }
+    }
+    ST(argvi) = SWIG_From_std_string  SWIG_PERL_CALL_ARGS_1(static_cast< std::string >(result)); argvi++ ;
+    
+    XSRETURN(argvi);
+  fail:
+    
+    SWIG_croak_null();
+  }
+}
+
+
+XS(_wrap_StringVector_get) {
+  {
+    std::vector< std::string > *arg1 = (std::vector< std::string > *) 0 ;
+    int arg2 ;
+    void *argp1 = 0 ;
+    int res1 = 0 ;
+    int val2 ;
+    int ecode2 = 0 ;
+    int argvi = 0;
+    std::string result;
+    dXSARGS;
+    
+    if ((items < 2) || (items > 2)) {
+      SWIG_croak("Usage: StringVector_get(self,i);");
+    }
+    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_std__vectorT_std__string_t, 0 |  0 );
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "StringVector_get" "', argument " "1"" of type '" "std::vector< std::string > *""'"); 
+    }
+    arg1 = reinterpret_cast< std::vector< std::string > * >(argp1);
+    ecode2 = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(1), &val2);
+    if (!SWIG_IsOK(ecode2)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "StringVector_get" "', argument " "2"" of type '" "int""'");
+    } 
+    arg2 = static_cast< int >(val2);
+    {
+      try {
+        try {
+          result = std_vector_Sl_std_string_Sg__get(arg1,arg2);
+        }
+        catch(std::out_of_range &_e) {
+          sv_setsv(get_sv("@", GV_ADD), SWIG_NewPointerObj((new std::out_of_range(static_cast< const std::out_of_range& >(_e))),SWIGTYPE_p_std__out_of_range,SWIG_POINTER_OWN)); SWIG_fail ;
+        }
+        
+      }
+      
+      catch(const std::exception & e) {
+        SWIG_exception_fail(SWIG_RuntimeError, e.what());
+      }
+    }
+    ST(argvi) = SWIG_From_std_string  SWIG_PERL_CALL_ARGS_1(static_cast< std::string >(result)); argvi++ ;
+    
+    
+    XSRETURN(argvi);
+  fail:
+    
+    
+    SWIG_croak_null();
+  }
+}
+
+
+XS(_wrap_StringVector_set) {
+  {
+    std::vector< std::string > *arg1 = (std::vector< std::string > *) 0 ;
+    int arg2 ;
+    std::string arg3 ;
+    void *argp1 = 0 ;
+    int res1 = 0 ;
+    int val2 ;
+    int ecode2 = 0 ;
+    int argvi = 0;
+    dXSARGS;
+    
+    if ((items < 3) || (items > 3)) {
+      SWIG_croak("Usage: StringVector_set(self,i,x);");
+    }
+    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_std__vectorT_std__string_t, 0 |  0 );
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "StringVector_set" "', argument " "1"" of type '" "std::vector< std::string > *""'"); 
+    }
+    arg1 = reinterpret_cast< std::vector< std::string > * >(argp1);
+    ecode2 = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(1), &val2);
+    if (!SWIG_IsOK(ecode2)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "StringVector_set" "', argument " "2"" of type '" "int""'");
+    } 
+    arg2 = static_cast< int >(val2);
+    {
+      std::string *ptr = (std::string *)0;
+      int res = SWIG_AsPtr_std_string SWIG_PERL_CALL_ARGS_2(ST(2), &ptr);
+      if (!SWIG_IsOK(res) || !ptr) {
+        SWIG_exception_fail(SWIG_ArgError((ptr ? res : SWIG_TypeError)), "in method '" "StringVector_set" "', argument " "3"" of type '" "std::string""'"); 
+      }
+      arg3 = *ptr;
+      if (SWIG_IsNewObj(res)) delete ptr;
+    }
+    {
+      try {
+        try {
+          std_vector_Sl_std_string_Sg__set(arg1,arg2,arg3);
+        }
+        catch(std::out_of_range &_e) {
+          sv_setsv(get_sv("@", GV_ADD), SWIG_NewPointerObj((new std::out_of_range(static_cast< const std::out_of_range& >(_e))),SWIGTYPE_p_std__out_of_range,SWIG_POINTER_OWN)); SWIG_fail ;
+        }
+        
+      }
+      
+      catch(const std::exception & e) {
+        SWIG_exception_fail(SWIG_RuntimeError, e.what());
+      }
+    }
+    ST(argvi) = sv_newmortal();
+    
+    
+    
+    XSRETURN(argvi);
+  fail:
+    
+    
+    
+    SWIG_croak_null();
+  }
+}
+
+
+XS(_wrap_delete_StringVector) {
+  {
+    std::vector< std::string > *arg1 = (std::vector< std::string > *) 0 ;
+    void *argp1 = 0 ;
+    int res1 = 0 ;
+    int argvi = 0;
+    dXSARGS;
+    
+    if ((items < 1) || (items > 1)) {
+      SWIG_croak("Usage: delete_StringVector(self);");
+    }
+    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_std__vectorT_std__string_t, SWIG_POINTER_DISOWN |  0 );
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_StringVector" "', argument " "1"" of type '" "std::vector< std::string > *""'"); 
+    }
+    arg1 = reinterpret_cast< std::vector< std::string > * >(argp1);
+    {
+      try {
+        delete arg1;
+      }
+      
+      catch(const std::exception & e) {
+        SWIG_exception_fail(SWIG_RuntimeError, e.what());
+      }
+    }
+    ST(argvi) = sv_newmortal();
+    
+    XSRETURN(argvi);
+  fail:
+    
+    SWIG_croak_null();
+  }
+}
+
+
 XS(_wrap_new_IntVector__SWIG_0) {
   {
     unsigned int arg1 ;
@@ -3365,7 +4078,7 @@ XS(_wrap_DependencyGraphMT_mutate_local) {
     int val3 ;
     int ecode3 = 0 ;
     int argvi = 0;
-    boost::multiprecision::mpz_int result;
+    double result;
     dXSARGS;
     
     if ((items < 3) || (items > 3)) {
@@ -3388,14 +4101,14 @@ XS(_wrap_DependencyGraphMT_mutate_local) {
     arg3 = static_cast< int >(val3);
     {
       try {
-        result = (arg1)->mutate_local(arg2,arg3);
+        result = (double)(arg1)->mutate_local(arg2,arg3);
       }
       
       catch(const std::exception & e) {
         SWIG_exception_fail(SWIG_RuntimeError, e.what());
       }
     }
-    ST(argvi) = SWIG_NewPointerObj((new boost::multiprecision::mpz_int(static_cast< const boost::multiprecision::mpz_int& >(result))), SWIGTYPE_p_boost__multiprecision__mpz_int, SWIG_POINTER_OWN | 0); argvi++ ;
+    ST(argvi) = SWIG_From_double  SWIG_PERL_CALL_ARGS_1(static_cast< double >(result)); argvi++ ;
     
     
     
@@ -3421,7 +4134,7 @@ XS(_wrap_DependencyGraphMT_mutate_global__SWIG_0) {
     int val3 ;
     int ecode3 = 0 ;
     int argvi = 0;
-    boost::multiprecision::mpz_int result;
+    double result;
     dXSARGS;
     
     if ((items < 3) || (items > 3)) {
@@ -3444,14 +4157,14 @@ XS(_wrap_DependencyGraphMT_mutate_global__SWIG_0) {
     arg3 = static_cast< int >(val3);
     {
       try {
-        result = (arg1)->mutate_global(arg2,arg3);
+        result = (double)(arg1)->mutate_global(arg2,arg3);
       }
       
       catch(const std::exception & e) {
         SWIG_exception_fail(SWIG_RuntimeError, e.what());
       }
     }
-    ST(argvi) = SWIG_NewPointerObj((new boost::multiprecision::mpz_int(static_cast< const boost::multiprecision::mpz_int& >(result))), SWIGTYPE_p_boost__multiprecision__mpz_int, SWIG_POINTER_OWN | 0); argvi++ ;
+    ST(argvi) = SWIG_From_double  SWIG_PERL_CALL_ARGS_1(static_cast< double >(result)); argvi++ ;
     
     
     
@@ -3474,7 +4187,7 @@ XS(_wrap_DependencyGraphMT_mutate_global__SWIG_1) {
     int val2 ;
     int ecode2 = 0 ;
     int argvi = 0;
-    boost::multiprecision::mpz_int result;
+    double result;
     dXSARGS;
     
     if ((items < 2) || (items > 2)) {
@@ -3492,14 +4205,14 @@ XS(_wrap_DependencyGraphMT_mutate_global__SWIG_1) {
     arg2 = static_cast< int >(val2);
     {
       try {
-        result = (arg1)->mutate_global(arg2);
+        result = (double)(arg1)->mutate_global(arg2);
       }
       
       catch(const std::exception & e) {
         SWIG_exception_fail(SWIG_RuntimeError, e.what());
       }
     }
-    ST(argvi) = SWIG_NewPointerObj((new boost::multiprecision::mpz_int(static_cast< const boost::multiprecision::mpz_int& >(result))), SWIGTYPE_p_boost__multiprecision__mpz_int, SWIG_POINTER_OWN | 0); argvi++ ;
+    ST(argvi) = SWIG_From_double  SWIG_PERL_CALL_ARGS_1(static_cast< double >(result)); argvi++ ;
     
     
     XSRETURN(argvi);
@@ -3612,7 +4325,7 @@ XS(_wrap_DependencyGraphMT_mutate__SWIG_0) {
     int val2 ;
     int ecode2 = 0 ;
     int argvi = 0;
-    boost::multiprecision::mpz_int result;
+    double result;
     dXSARGS;
     
     if ((items < 2) || (items > 2)) {
@@ -3630,14 +4343,14 @@ XS(_wrap_DependencyGraphMT_mutate__SWIG_0) {
     arg2 = static_cast< int >(val2);
     {
       try {
-        result = (arg1)->mutate(arg2);
+        result = (double)(arg1)->mutate(arg2);
       }
       
       catch(const std::exception & e) {
         SWIG_exception_fail(SWIG_RuntimeError, e.what());
       }
     }
-    ST(argvi) = SWIG_NewPointerObj((new boost::multiprecision::mpz_int(static_cast< const boost::multiprecision::mpz_int& >(result))), SWIGTYPE_p_boost__multiprecision__mpz_int, SWIG_POINTER_OWN | 0); argvi++ ;
+    ST(argvi) = SWIG_From_double  SWIG_PERL_CALL_ARGS_1(static_cast< double >(result)); argvi++ ;
     
     
     XSRETURN(argvi);
@@ -3661,7 +4374,7 @@ XS(_wrap_DependencyGraphMT_mutate__SWIG_1) {
     int val3 ;
     int ecode3 = 0 ;
     int argvi = 0;
-    boost::multiprecision::mpz_int result;
+    double result;
     dXSARGS;
     
     if ((items < 3) || (items > 3)) {
@@ -3684,14 +4397,14 @@ XS(_wrap_DependencyGraphMT_mutate__SWIG_1) {
     arg3 = static_cast< int >(val3);
     {
       try {
-        result = (arg1)->mutate(arg2,arg3);
+        result = (double)(arg1)->mutate(arg2,arg3);
       }
       
       catch(const std::exception & e) {
         SWIG_exception_fail(SWIG_RuntimeError, e.what());
       }
     }
-    ST(argvi) = SWIG_NewPointerObj((new boost::multiprecision::mpz_int(static_cast< const boost::multiprecision::mpz_int& >(result))), SWIGTYPE_p_boost__multiprecision__mpz_int, SWIG_POINTER_OWN | 0); argvi++ ;
+    ST(argvi) = SWIG_From_double  SWIG_PERL_CALL_ARGS_1(static_cast< double >(result)); argvi++ ;
     
     
     
@@ -3803,7 +4516,7 @@ XS(_wrap_DependencyGraphMT_number_of_sequences__SWIG_0) {
     void *argp1 = 0 ;
     int res1 = 0 ;
     int argvi = 0;
-    boost::multiprecision::mpz_int result;
+    double result;
     dXSARGS;
     
     if ((items < 1) || (items > 1)) {
@@ -3816,14 +4529,14 @@ XS(_wrap_DependencyGraphMT_number_of_sequences__SWIG_0) {
     arg1 = reinterpret_cast< design::DependencyGraph< std::mt19937 > * >(argp1);
     {
       try {
-        result = (arg1)->number_of_sequences();
+        result = (double)(arg1)->number_of_sequences();
       }
       
       catch(const std::exception & e) {
         SWIG_exception_fail(SWIG_RuntimeError, e.what());
       }
     }
-    ST(argvi) = SWIG_NewPointerObj((new boost::multiprecision::mpz_int(static_cast< const boost::multiprecision::mpz_int& >(result))), SWIGTYPE_p_boost__multiprecision__mpz_int, SWIG_POINTER_OWN | 0); argvi++ ;
+    ST(argvi) = SWIG_From_double  SWIG_PERL_CALL_ARGS_1(static_cast< double >(result)); argvi++ ;
     
     XSRETURN(argvi);
   fail:
@@ -3842,7 +4555,7 @@ XS(_wrap_DependencyGraphMT_number_of_sequences__SWIG_1) {
     int val2 ;
     int ecode2 = 0 ;
     int argvi = 0;
-    boost::multiprecision::mpz_int result;
+    double result;
     dXSARGS;
     
     if ((items < 2) || (items > 2)) {
@@ -3860,14 +4573,14 @@ XS(_wrap_DependencyGraphMT_number_of_sequences__SWIG_1) {
     arg2 = static_cast< int >(val2);
     {
       try {
-        result = (arg1)->number_of_sequences(arg2);
+        result = (double)(arg1)->number_of_sequences(arg2);
       }
       
       catch(const std::exception & e) {
         SWIG_exception_fail(SWIG_RuntimeError, e.what());
       }
     }
-    ST(argvi) = SWIG_NewPointerObj((new boost::multiprecision::mpz_int(static_cast< const boost::multiprecision::mpz_int& >(result))), SWIGTYPE_p_boost__multiprecision__mpz_int, SWIG_POINTER_OWN | 0); argvi++ ;
+    ST(argvi) = SWIG_From_double  SWIG_PERL_CALL_ARGS_1(static_cast< double >(result)); argvi++ ;
     
     
     XSRETURN(argvi);
@@ -4096,17 +4809,15 @@ XS(_wrap_DependencyGraphMT_special_vertices) {
 
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
-static swig_type_info _swigt__p_boost__multiprecision__mpz_int = {"_p_boost__multiprecision__mpz_int", "boost::multiprecision::mpz_int *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_char = {"_p_char", "char *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_design__DependencyGraphT_std__mt19937_t = {"_p_design__DependencyGraphT_std__mt19937_t", "design::DependencyGraph< std::mt19937 > *", 0, 0, (void*)"RNAdesign::DependencyGraphMT", 0};
 static swig_type_info _swigt__p_size_type = {"_p_size_type", "size_type *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__out_of_range = {"_p_std__out_of_range", "std::out_of_range *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__vectorT_int_t = {"_p_std__vectorT_int_t", "std::vector< int > *", 0, 0, (void*)"RNAdesign::IntVector", 0};
-static swig_type_info _swigt__p_std__vectorT_std__string_t = {"_p_std__vectorT_std__string_t", "std::vector< std::string > *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_std__vectorT_std__string_t = {"_p_std__vectorT_std__string_t", "std::vector< std::string > *", 0, 0, (void*)"RNAdesign::StringVector", 0};
 static swig_type_info _swigt__p_value_type = {"_p_value_type", "value_type *", 0, 0, (void*)0, 0};
 
 static swig_type_info *swig_type_initial[] = {
-  &_swigt__p_boost__multiprecision__mpz_int,
   &_swigt__p_char,
   &_swigt__p_design__DependencyGraphT_std__mt19937_t,
   &_swigt__p_size_type,
@@ -4116,7 +4827,6 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_value_type,
 };
 
-static swig_cast_info _swigc__p_boost__multiprecision__mpz_int[] = {  {&_swigt__p_boost__multiprecision__mpz_int, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_char[] = {  {&_swigt__p_char, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_design__DependencyGraphT_std__mt19937_t[] = {  {&_swigt__p_design__DependencyGraphT_std__mt19937_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_size_type[] = {  {&_swigt__p_size_type, 0, 0, 0},{0, 0, 0, 0}};
@@ -4126,7 +4836,6 @@ static swig_cast_info _swigc__p_std__vectorT_std__string_t[] = {  {&_swigt__p_st
 static swig_cast_info _swigc__p_value_type[] = {  {&_swigt__p_value_type, 0, 0, 0},{0, 0, 0, 0}};
 
 static swig_cast_info *swig_cast_initial[] = {
-  _swigc__p_boost__multiprecision__mpz_int,
   _swigc__p_char,
   _swigc__p_design__DependencyGraphT_std__mt19937_t,
   _swigc__p_size_type,
@@ -4149,6 +4858,15 @@ static swig_variable_info swig_variables[] = {
 {0,0,0,0}
 };
 static swig_command_info swig_commands[] = {
+{"RNAdesignc::new_StringVector", _wrap_new_StringVector},
+{"RNAdesignc::StringVector_size", _wrap_StringVector_size},
+{"RNAdesignc::StringVector_empty", _wrap_StringVector_empty},
+{"RNAdesignc::StringVector_clear", _wrap_StringVector_clear},
+{"RNAdesignc::StringVector_push", _wrap_StringVector_push},
+{"RNAdesignc::StringVector_pop", _wrap_StringVector_pop},
+{"RNAdesignc::StringVector_get", _wrap_StringVector_get},
+{"RNAdesignc::StringVector_set", _wrap_StringVector_set},
+{"RNAdesignc::delete_StringVector", _wrap_delete_StringVector},
 {"RNAdesignc::new_IntVector", _wrap_new_IntVector},
 {"RNAdesignc::IntVector_size", _wrap_IntVector_size},
 {"RNAdesignc::IntVector_empty", _wrap_IntVector_empty},
@@ -4463,6 +5181,7 @@ XS(SWIG_init) {
     SvREADONLY_on(sv);
   }
   
+  SWIG_TypeClientData(SWIGTYPE_p_std__vectorT_std__string_t, (void*) "RNAdesign::StringVector");
   SWIG_TypeClientData(SWIGTYPE_p_std__vectorT_int_t, (void*) "RNAdesign::IntVector");
   SWIG_TypeClientData(SWIGTYPE_p_design__DependencyGraphT_std__mt19937_t, (void*) "RNAdesign::DependencyGraphMT");
   ST(0) = &PL_sv_yes;
