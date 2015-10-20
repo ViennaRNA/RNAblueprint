@@ -39,7 +39,7 @@ namespace design {
     
     // Typedef for nos values
     #ifdef LIBGMP
-    
+    // This subclass is needed to get a uniform_int_distribution with the upper boundary _excluded_ to be compatible to uniform_float_distribution.
     template<typename IntegerType>
     class uniform_int_distribution : public boost::random::uniform_int_distribution<IntegerType> {
     public:
