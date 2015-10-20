@@ -61,9 +61,12 @@ BOOST_AUTO_TEST_CASE(generateSeq) {
     initialize_library(true);
 
     std::vector < TestCase > testcases;
-    testcases.push_back(TestCase(G, G, 2, 2,{G, U, G}));
     testcases.push_back(TestCase(A, A, 0, 1,{A}));
     testcases.push_back(TestCase(N, C, 0, 1,{C}));
+    testcases.push_back(TestCase(C, R, 1, 1,{C, G}));
+    testcases.push_back(TestCase(H, A, 2, 1,{A, U, A}));
+#ifdef LIBGMP
+    testcases.push_back(TestCase(G, G, 2, 2,{G, U, G}));
     testcases.push_back(TestCase(Y, Y, 0, 2,{C}));
     testcases.push_back(TestCase(N, G, 3, 5,{U, G, U, G}));
     testcases.push_back(TestCase(U, U, 6, 13,{U, G, C, G, U, G, U}));
@@ -72,9 +75,19 @@ BOOST_AUTO_TEST_CASE(generateSeq) {
     testcases.push_back(TestCase(C, N, 4, 5,{C, G, U, G, U}));
     testcases.push_back(TestCase(N, N, 1, 6,{U, G}));
     testcases.push_back(TestCase(N, N, 5, 42,{U, A, U, G, U, G}));
-    testcases.push_back(TestCase(C, R, 1, 1,{C, G}));
     testcases.push_back(TestCase(R, Y, 1, 3,{G, U}));
-    testcases.push_back(TestCase(H, A, 2, 1,{A, U, A}));
+#else
+    testcases.push_back(TestCase(G, G, 2, 2,{G, U, G}));
+    testcases.push_back(TestCase(Y, Y, 0, 2,{U}));
+    testcases.push_back(TestCase(N, G, 3, 5,{U, A, U, G}));
+    testcases.push_back(TestCase(U, U, 6, 13,{U, G, C, G, C, G, U}));
+    testcases.push_back(TestCase(R, U, 3, 5,{G, C, G, U}));
+    testcases.push_back(TestCase(Y, U, 6, 21,{C, G, C, G, C, G, U}));
+    testcases.push_back(TestCase(C, N, 4, 5,{C, G, C, G, U}));
+    testcases.push_back(TestCase(N, N, 1, 6,{G, U}));
+    testcases.push_back(TestCase(N, N, 5, 42,{G, C, G, C, G, U}));
+    testcases.push_back(TestCase(R, Y, 1, 3,{G, U}));
+#endif
 
     for (auto t : testcases) {
         // tell the user what is going on right now
@@ -125,18 +138,29 @@ BOOST_AUTO_TEST_CASE(generateConstraintSeq) {
     {
         G, U, G
     }));
-    testcases.push_back(TestCase({N, N, C, N, N}, 4,
-    {
-        C, G, C, G, C
-    }));
     testcases.push_back(TestCase({N, N, G, N, N}, 9,
     {
         A, U, G, U, G
+    }));
+#ifdef LIBGMP
+    testcases.push_back(TestCase({N, N, C, N, N}, 4,
+    {
+        C, G, C, G, C
     }));
     testcases.push_back(TestCase({N, N, S, N, N}, 13,
     {
         A, U, G, U, G
     }));
+#else
+    testcases.push_back(TestCase({N, N, C, N, N}, 4,
+    {
+        C, G, C, G, U
+    }));
+    testcases.push_back(TestCase({N, N, S, N, N}, 13,
+    {
+        C, G, C, G, U
+    }));
+#endif
 
     for (auto t : testcases) {
         // tell the user what is going on right now

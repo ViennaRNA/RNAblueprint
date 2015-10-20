@@ -40,8 +40,8 @@ BOOST_AUTO_TEST_CASE(EqualDistribution) {
         {'A', 0},
         {'C', 0},
         {'G', 0},
-        {'U', 0}};
-    ;
+        {'U', 0}
+    };
 
     for (int i = 0; i < 10000; i++) {
         try{

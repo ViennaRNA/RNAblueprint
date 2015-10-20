@@ -634,36 +634,48 @@ BOOST_AUTO_TEST_CASE(RandomlySampleKey1) {
 BOOST_AUTO_TEST_CASE(RandomlySampleKey2) {
 
     BOOST_TEST_MESSAGE("randomly sample a probability key from a matrix, no constraints");
-
-    std::uniform_real_distribution<float> dist(0, 1);
+    
     std::mt19937 rand_gen(1);
 
     ProbabilityMatrix m;
 
     ProbabilityKey input;
-    input[1] = N;
+    input[1] = A;
     input[4] = N;
     input[7] = Y;
 
     PermuteKeyFactory pkf(input);
     while (true) {
-        m.put(*pkf.key(), static_cast<SolutionSizeType>(trunc(dist(rand_gen) * 400)));
+        m.put(*pkf.key(), 16);
         if (!pkf.next_permutation())
             break;
     }
     ProbabilityMatrix c = m;
 
     std::pair<ProbabilityKey, SolutionSizeType> result = m.sample(&rand_gen);
-    BOOST_CHECK(result.first[1] == U);
-    BOOST_CHECK(result.first[4] == U);
-    BOOST_CHECK(result.first[7] == C);
-    BOOST_CHECK(result.second == 6191);
-
-    for (int i = 0; i < 1000; i++) {
+    // remember for every < vertex, a map of < base, count > to get mean value in the end
+    std::unordered_map<int, std::unordered_map<int, SolutionSizeType> > result_stats;
+    std::unordered_map<int, std::unordered_map<int, double> > stats_check {
+        {1, { {A, 1.00}, {C, 0.00}, {G, 0.00}, {U, 0.00} } },
+        {4, { {A, 0.25}, {C, 0.25}, {G, 0.25}, {U, 0.25} } },
+        {7, { {U, 0.50}, {C, 0.50}, {G, 0.00}, {U, 0.00} } },
+    };
+    
+    for (int i = 0; i < 10000; i++) {
         std::pair<ProbabilityKey, SolutionSizeType> test = m.sample(&rand_gen);
-        //std::cerr << "One hundred Test:" << std::endl << test << std::endl;
+        for (auto p : test.first) {
+            result_stats[p.first][p.second]++;
+        }
+    }
+    
+    for (auto e : stats_check) {
+        for (auto b : e.second) {
+            BOOST_CHECK_CLOSE((double)result_stats[e.first][b.first] / 10000, b.second, 5);
+        }
     }
     BOOST_CHECK(m.mnos() == c.mnos());
+    
+    
 }
 
 BOOST_AUTO_TEST_SUITE_END()

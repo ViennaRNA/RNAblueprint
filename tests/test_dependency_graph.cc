@@ -279,20 +279,23 @@ BOOST_AUTO_TEST_CASE(mutate_cc_with_ID) {
     design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "WN", rand_gen);
     BOOST_CHECK(dependency_graph.number_of_sequences() == 8);
     dependency_graph.set_sequence();
+    
     std::cerr << dependency_graph.get_sequence_string() << std::endl;
-    BOOST_CHECK(dependency_graph.get_sequence_string() == "UG");
+    std::string result = dependency_graph.get_sequence_string();
+    for (int i = 0; i < 100; i++) {
+        SolutionSizeType cnos = dependency_graph.mutate_global(1);
+        BOOST_CHECK(cnos == 4);
+        BOOST_CHECK(dependency_graph.get_sequence_string()[0] == result[0]);
+    }
     
-    SolutionSizeType cnos = dependency_graph.mutate_global(1);
-    BOOST_CHECK(cnos == 4);
-    BOOST_CHECK(dependency_graph.get_sequence_string() == "UA");
-    
-    cnos = dependency_graph.mutate_global(0);
-    BOOST_CHECK(cnos == 2);
-    BOOST_CHECK(dependency_graph.get_sequence_string() == "AA");
-    
-    cnos = dependency_graph.mutate_global(0);
-    BOOST_CHECK(cnos == 2);
-    BOOST_CHECK(dependency_graph.get_sequence_string() == "UA");
+    std::cerr << dependency_graph.get_sequence_string() << std::endl;
+    result = dependency_graph.get_sequence_string();
+    for (int i = 0; i < 100; i++) {
+        SolutionSizeType cnos = dependency_graph.mutate_global(0);
+        BOOST_CHECK(cnos == 2);
+        BOOST_CHECK(dependency_graph.get_sequence_string()[0] == 'A' || dependency_graph.get_sequence_string()[0] == 'U');
+        BOOST_CHECK(dependency_graph.get_sequence_string()[1] == result[1]);
+    }
 }
 
 BOOST_AUTO_TEST_CASE(mutate_global1) {
@@ -306,15 +309,18 @@ BOOST_AUTO_TEST_CASE(mutate_global1) {
     design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "WN", rand_gen);
     BOOST_CHECK(dependency_graph.number_of_sequences() == 8);
     dependency_graph.set_sequence();
-    BOOST_CHECK(dependency_graph.get_sequence_string() == "AG");
+    BOOST_CHECK(dependency_graph.get_sequence_string()[0] == 'A' || dependency_graph.get_sequence_string()[0] == 'U');
     
-    SolutionSizeType cnos = dependency_graph.mutate_local_global(1, 0, 0);
-    BOOST_CHECK(cnos == 2);
-    BOOST_CHECK(dependency_graph.get_sequence_string() == "UG");
-    
-    cnos = dependency_graph.mutate_local_global(1, 0, 1);
-    BOOST_CHECK(cnos == 2);
-    BOOST_CHECK(dependency_graph.get_sequence_string() == "UG");
+    for (int i = 0; i < 100; i++) {
+        std::string result = dependency_graph.get_sequence_string();
+        SolutionSizeType cnos = dependency_graph.mutate_local_global(1, 0, 0);
+        if (dependency_graph.get_sequence_string()[0] != result[0]) {
+            BOOST_CHECK(cnos == 2);
+        } else if (dependency_graph.get_sequence_string()[1] != result[1]) {
+            BOOST_CHECK(cnos == 4);
+        }
+    }
+    // TODO make nice check if the base distributions are alright
 }
 
 BOOST_AUTO_TEST_CASE(mutate_local1) {
@@ -329,17 +335,18 @@ BOOST_AUTO_TEST_CASE(mutate_local1) {
     BOOST_CHECK(dependency_graph.number_of_sequences() == 8);
     dependency_graph.set_sequence();
     std::cerr << dependency_graph.get_sequence_string() << std::endl;
-    BOOST_CHECK(dependency_graph.get_sequence_string() == "UG");
+    BOOST_CHECK(dependency_graph.get_sequence_string()[0] == 'A' || dependency_graph.get_sequence_string()[0] == 'U');
     
-    SolutionSizeType cnos = dependency_graph.mutate_local_global(-1, 0, 0);
-    BOOST_CHECK(cnos == 4);
-    std::cerr << dependency_graph.get_sequence_string() << std::endl;
-    BOOST_CHECK(dependency_graph.get_sequence_string() == "UC");
-    
-    cnos = dependency_graph.mutate_local_global(-1, 0, 1);
-    BOOST_CHECK(cnos == 2);
-    std::cerr << dependency_graph.get_sequence_string() << std::endl;
-    BOOST_CHECK(dependency_graph.get_sequence_string() == "AC");
+    for (int i = 0; i < 100; i++) {
+        std::string result = dependency_graph.get_sequence_string();
+        SolutionSizeType cnos = dependency_graph.mutate_local_global(-1, 0, 0);
+        if (dependency_graph.get_sequence_string()[0] != result[0]) {
+            BOOST_CHECK(cnos == 2);
+        } else if (dependency_graph.get_sequence_string()[1] != result[1]) {
+            BOOST_CHECK(cnos == 4);
+        }
+    }
+    // TODO make nice check if the base distributions are alright
 }
 
 BOOST_AUTO_TEST_CASE(number_of_sequences_cc) {
@@ -374,14 +381,40 @@ BOOST_AUTO_TEST_CASE(mutate_pos) {
     BOOST_CHECK(dependency_graph.number_of_sequences() == 12096);
     dependency_graph.set_sequence();
     // mutate CCs which are paths
-    BOOST_CHECK(dependency_graph.mutate(5) == 4);
-    BOOST_CHECK(dependency_graph.mutate(10) == 6);
-    // check sequence
-    BOOST_CHECK(dependency_graph.get_sequence_string() == "GUGGUACGCCAU");
+    for (int i = 0; i<100; i++) {
+        // get sequence
+        std::string result = dependency_graph.get_sequence_string();
+        BOOST_CHECK(dependency_graph.mutate(5) == 4);
+        // check if only position 5 changed
+        for (int j=0; j < result.length(); j++) {
+            if (j != 5 ) {
+                BOOST_CHECK(result[j] == dependency_graph.get_sequence_string()[j]);
+            }
+        }
+    }
+    
+    // mutate CCs which are paths
+    for (int i = 0; i<100; i++) {
+        std::string result = dependency_graph.get_sequence_string();
+        BOOST_CHECK(dependency_graph.mutate(10) == 6);
+        // check if only position 10 and 11 changed
+        for (int j=0; j < 10; j++) {
+            BOOST_CHECK(result[j] == dependency_graph.get_sequence_string()[j]);
+        }
+    }
     
     // mutate more nested subgraphs
-    BOOST_CHECK(dependency_graph.mutate(2) == 2);
-    BOOST_CHECK(dependency_graph.get_sequence_string() == "GUGGUACGCCAU");
+    // mutate CCs which are paths
+    for (int i = 0; i<100; i++) {
+        std::string result = dependency_graph.get_sequence_string();
+        BOOST_CHECK(dependency_graph.mutate(2) == 2);
+        // check if only position 2 changed
+        for (int j=0; j < result.length(); j++) {
+            if (j != 2 ) {
+                BOOST_CHECK(result[j] == dependency_graph.get_sequence_string()[j]);
+            }
+        }
+    }
 }
 
 BOOST_AUTO_TEST_CASE(mutate_pos_range) {
@@ -398,16 +431,24 @@ BOOST_AUTO_TEST_CASE(mutate_pos_range) {
     BOOST_CHECK(dependency_graph.number_of_sequences() == 12096);
     dependency_graph.set_sequence();
     // mutate positions which are in one path
-    BOOST_CHECK(dependency_graph.mutate(10, 11) == 6);
-    // check sequence
-    std::cerr << dependency_graph.get_sequence_string() << std::endl;
-    BOOST_CHECK(dependency_graph.get_sequence_string() == "GUGGUCCGCCGC");
+    // mutate CCs which are paths
+    for (int i = 0; i<100; i++) {
+        std::string result = dependency_graph.get_sequence_string();
+        BOOST_CHECK(dependency_graph.mutate(10, 11) == 6);
+        // check if only position 10 and 11 changed
+        for (int j=0; j < 10; j++) {
+            BOOST_CHECK(result[j] == dependency_graph.get_sequence_string()[j]);
+        }
+    }
     // mutate on different CCs
-    std::cerr << dependency_graph.mutate(9, 11) << std::endl;
-    BOOST_CHECK(dependency_graph.mutate(9, 11) == 12);
-    // check sequence
-    std::cerr << dependency_graph.get_sequence_string() << std::endl;
-    BOOST_CHECK(dependency_graph.get_sequence_string() == "GUGGUCCGCUAU");
+    for (int i = 0; i<100; i++) {
+        std::string result = dependency_graph.get_sequence_string();
+        BOOST_CHECK(dependency_graph.mutate(9, 11) == 12);
+        // check if only position 10 and 11 changed
+        for (int j=0; j < 9; j++) {
+            BOOST_CHECK(result[j] == dependency_graph.get_sequence_string()[j]);
+        }
+    }
 }
 
 
