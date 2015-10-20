@@ -117,11 +117,7 @@ namespace design {
             if (constrained_mnos == 0) {
                 throw std::logic_error( "Cannot fulfill constraints while sampling a key!" );
             }
-#ifdef LIBGMP
-            RandomDistType dist(0, constrained_mnos-1);
-#else
             RandomDistType dist(0, constrained_mnos);
-#endif
             SolutionSizeType random = dist(*rand_ptr);
             // stochastically take one of the possibilities
             // start at the probability of first possible character and add each other base probability as long long as the random number is bigger.

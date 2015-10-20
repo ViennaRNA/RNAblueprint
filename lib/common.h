@@ -39,8 +39,18 @@ namespace design {
     
     // Typedef for nos values
     #ifdef LIBGMP
+    
+    template<typename IntegerType>
+    class uniform_int_distribution : public boost::random::uniform_int_distribution<IntegerType> {
+    public:
+        uniform_int_distribution(
+            IntegerType min_arg = 0,
+            IntegerType max_arg = (std::numeric_limits<IntegerType>::max)())
+        : boost::random::uniform_int_distribution<IntegerType>(min_arg, max_arg-1) {  }
+    };
+    
     typedef boost::multiprecision::mpz_int SolutionSizeType;
-    typedef boost::random::uniform_int_distribution<boost::multiprecision::mpz_int> RandomDistType;
+    typedef design::uniform_int_distribution<boost::multiprecision::mpz_int> RandomDistType;
     #else
     typedef double SolutionSizeType;
     typedef std::uniform_real_distribution<double> RandomDistType;

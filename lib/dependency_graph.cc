@@ -324,7 +324,7 @@ namespace design
 
         template <typename R>
         SolutionSizeType DependencyGraph<R>::mutate_local_global(int graph_type, int min_num_pos, int max_num_pos) {
-            // get all paths which fulfil the requirements of the range
+            // get all paths which fulfill the requirements of the range
             std::unordered_set< Graph* > subgraphs;
             get_subgraphs(graph, subgraphs, graph_type, min_num_pos, max_num_pos);
             if (debug) {
@@ -335,11 +335,7 @@ namespace design
             }
             
             // and multiply the count it with a random number
-#ifdef LIBGMP
-            RandomDistType dist(0, subgraphs.size()-1);
-#else
             RandomDistType dist(0, subgraphs.size());
-#endif
             SolutionSizeType random = dist(*rand_ptr);
             
             SolutionSizeType sum = 0;
@@ -351,7 +347,7 @@ namespace design
                     break;
                 }
             }
-            throw std::out_of_range("Could not find any component which fulfils your requirements!");
+            throw std::out_of_range("Could not find any component which fulfill your requirements!");
         }
         
         template <typename R>
