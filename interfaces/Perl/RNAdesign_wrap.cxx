@@ -4066,7 +4066,7 @@ XS(_wrap_DependencyGraphMT_set_sequence) {
 }
 
 
-XS(_wrap_DependencyGraphMT_mutate_local) {
+XS(_wrap_DependencyGraphMT_mutate_local__SWIG_0) {
   {
     design::DependencyGraph< std::mt19937 > *arg1 = (design::DependencyGraph< std::mt19937 > *) 0 ;
     int arg2 ;
@@ -4119,6 +4119,124 @@ XS(_wrap_DependencyGraphMT_mutate_local) {
     
     SWIG_croak_null();
   }
+}
+
+
+XS(_wrap_DependencyGraphMT_mutate_local__SWIG_1) {
+  {
+    design::DependencyGraph< std::mt19937 > *arg1 = (design::DependencyGraph< std::mt19937 > *) 0 ;
+    void *argp1 = 0 ;
+    int res1 = 0 ;
+    int argvi = 0;
+    double result;
+    dXSARGS;
+    
+    if ((items < 1) || (items > 1)) {
+      SWIG_croak("Usage: DependencyGraphMT_mutate_local(self);");
+    }
+    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_design__DependencyGraphT_std__mt19937_t, 0 |  0 );
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DependencyGraphMT_mutate_local" "', argument " "1"" of type '" "design::DependencyGraph< std::mt19937 > *""'"); 
+    }
+    arg1 = reinterpret_cast< design::DependencyGraph< std::mt19937 > * >(argp1);
+    {
+      try {
+        result = (double)(arg1)->mutate_local();
+      }
+      
+      catch(const std::exception & e) {
+        SWIG_exception_fail(SWIG_RuntimeError, e.what());
+      }
+    }
+    ST(argvi) = SWIG_From_double  SWIG_PERL_CALL_ARGS_1(static_cast< double >(result)); argvi++ ;
+    
+    XSRETURN(argvi);
+  fail:
+    
+    SWIG_croak_null();
+  }
+}
+
+
+XS(_wrap_DependencyGraphMT_mutate_local) {
+  dXSARGS;
+  
+  {
+    unsigned long _index = 0;
+    SWIG_TypeRank _rank = 0; 
+    if (items == 1) {
+      SWIG_TypeRank _ranki = 0;
+      SWIG_TypeRank _rankm = 0;
+      SWIG_TypeRank _pi = 1;
+      int _v = 0;
+      {
+        void *vptr = 0;
+        int res = SWIG_ConvertPtr(ST(0), &vptr, SWIGTYPE_p_design__DependencyGraphT_std__mt19937_t, 0);
+        _v = SWIG_CheckState(res);
+      }
+      if (!_v) goto check_1;
+      _ranki += _v*_pi;
+      _rankm += _pi;
+      _pi *= SWIG_MAXCASTRANK;
+      if (!_index || (_ranki < _rank)) {
+        _rank = _ranki; _index = 1;
+        if (_rank == _rankm) goto dispatch;
+      }
+    }
+  check_1:
+    
+    if (items == 3) {
+      SWIG_TypeRank _ranki = 0;
+      SWIG_TypeRank _rankm = 0;
+      SWIG_TypeRank _pi = 1;
+      int _v = 0;
+      {
+        void *vptr = 0;
+        int res = SWIG_ConvertPtr(ST(0), &vptr, SWIGTYPE_p_design__DependencyGraphT_std__mt19937_t, 0);
+        _v = SWIG_CheckState(res);
+      }
+      if (!_v) goto check_2;
+      _ranki += _v*_pi;
+      _rankm += _pi;
+      _pi *= SWIG_MAXCASTRANK;
+      {
+        {
+          int res = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(1), NULL);
+          _v = SWIG_CheckState(res);
+        }
+      }
+      if (!_v) goto check_2;
+      _ranki += _v*_pi;
+      _rankm += _pi;
+      _pi *= SWIG_MAXCASTRANK;
+      {
+        {
+          int res = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(2), NULL);
+          _v = SWIG_CheckState(res);
+        }
+      }
+      if (!_v) goto check_2;
+      _ranki += _v*_pi;
+      _rankm += _pi;
+      _pi *= SWIG_MAXCASTRANK;
+      if (!_index || (_ranki < _rank)) {
+        _rank = _ranki; _index = 2;
+        if (_rank == _rankm) goto dispatch;
+      }
+    }
+  check_2:
+    
+  dispatch:
+    switch(_index) {
+    case 1:
+      PUSHMARK(MARK); SWIG_CALLXS(_wrap_DependencyGraphMT_mutate_local__SWIG_1); return;
+    case 2:
+      PUSHMARK(MARK); SWIG_CALLXS(_wrap_DependencyGraphMT_mutate_local__SWIG_0); return;
+    }
+  }
+  
+  croak("No matching function for overloaded 'DependencyGraphMT_mutate_local'");
+  XSRETURN(0);
 }
 
 
@@ -4224,13 +4342,49 @@ XS(_wrap_DependencyGraphMT_mutate_global__SWIG_1) {
 }
 
 
+XS(_wrap_DependencyGraphMT_mutate_global__SWIG_2) {
+  {
+    design::DependencyGraph< std::mt19937 > *arg1 = (design::DependencyGraph< std::mt19937 > *) 0 ;
+    void *argp1 = 0 ;
+    int res1 = 0 ;
+    int argvi = 0;
+    double result;
+    dXSARGS;
+    
+    if ((items < 1) || (items > 1)) {
+      SWIG_croak("Usage: DependencyGraphMT_mutate_global(self);");
+    }
+    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_design__DependencyGraphT_std__mt19937_t, 0 |  0 );
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DependencyGraphMT_mutate_global" "', argument " "1"" of type '" "design::DependencyGraph< std::mt19937 > *""'"); 
+    }
+    arg1 = reinterpret_cast< design::DependencyGraph< std::mt19937 > * >(argp1);
+    {
+      try {
+        result = (double)(arg1)->mutate_global();
+      }
+      
+      catch(const std::exception & e) {
+        SWIG_exception_fail(SWIG_RuntimeError, e.what());
+      }
+    }
+    ST(argvi) = SWIG_From_double  SWIG_PERL_CALL_ARGS_1(static_cast< double >(result)); argvi++ ;
+    
+    XSRETURN(argvi);
+  fail:
+    
+    SWIG_croak_null();
+  }
+}
+
+
 XS(_wrap_DependencyGraphMT_mutate_global) {
   dXSARGS;
   
   {
     unsigned long _index = 0;
     SWIG_TypeRank _rank = 0; 
-    if (items == 2) {
+    if (items == 1) {
       SWIG_TypeRank _ranki = 0;
       SWIG_TypeRank _rankm = 0;
       SWIG_TypeRank _pi = 1;
@@ -4239,16 +4393,6 @@ XS(_wrap_DependencyGraphMT_mutate_global) {
         void *vptr = 0;
         int res = SWIG_ConvertPtr(ST(0), &vptr, SWIGTYPE_p_design__DependencyGraphT_std__mt19937_t, 0);
         _v = SWIG_CheckState(res);
-      }
-      if (!_v) goto check_1;
-      _ranki += _v*_pi;
-      _rankm += _pi;
-      _pi *= SWIG_MAXCASTRANK;
-      {
-        {
-          int res = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(1), NULL);
-          _v = SWIG_CheckState(res);
-        }
       }
       if (!_v) goto check_1;
       _ranki += _v*_pi;
@@ -4261,7 +4405,7 @@ XS(_wrap_DependencyGraphMT_mutate_global) {
     }
   check_1:
     
-    if (items == 3) {
+    if (items == 2) {
       SWIG_TypeRank _ranki = 0;
       SWIG_TypeRank _rankm = 0;
       SWIG_TypeRank _pi = 1;
@@ -4278,16 +4422,6 @@ XS(_wrap_DependencyGraphMT_mutate_global) {
       {
         {
           int res = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(1), NULL);
-          _v = SWIG_CheckState(res);
-        }
-      }
-      if (!_v) goto check_2;
-      _ranki += _v*_pi;
-      _rankm += _pi;
-      _pi *= SWIG_MAXCASTRANK;
-      {
-        {
-          int res = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(2), NULL);
           _v = SWIG_CheckState(res);
         }
       }
@@ -4302,11 +4436,54 @@ XS(_wrap_DependencyGraphMT_mutate_global) {
     }
   check_2:
     
+    if (items == 3) {
+      SWIG_TypeRank _ranki = 0;
+      SWIG_TypeRank _rankm = 0;
+      SWIG_TypeRank _pi = 1;
+      int _v = 0;
+      {
+        void *vptr = 0;
+        int res = SWIG_ConvertPtr(ST(0), &vptr, SWIGTYPE_p_design__DependencyGraphT_std__mt19937_t, 0);
+        _v = SWIG_CheckState(res);
+      }
+      if (!_v) goto check_3;
+      _ranki += _v*_pi;
+      _rankm += _pi;
+      _pi *= SWIG_MAXCASTRANK;
+      {
+        {
+          int res = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(1), NULL);
+          _v = SWIG_CheckState(res);
+        }
+      }
+      if (!_v) goto check_3;
+      _ranki += _v*_pi;
+      _rankm += _pi;
+      _pi *= SWIG_MAXCASTRANK;
+      {
+        {
+          int res = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(2), NULL);
+          _v = SWIG_CheckState(res);
+        }
+      }
+      if (!_v) goto check_3;
+      _ranki += _v*_pi;
+      _rankm += _pi;
+      _pi *= SWIG_MAXCASTRANK;
+      if (!_index || (_ranki < _rank)) {
+        _rank = _ranki; _index = 3;
+        if (_rank == _rankm) goto dispatch;
+      }
+    }
+  check_3:
+    
   dispatch:
     switch(_index) {
     case 1:
-      PUSHMARK(MARK); SWIG_CALLXS(_wrap_DependencyGraphMT_mutate_global__SWIG_1); return;
+      PUSHMARK(MARK); SWIG_CALLXS(_wrap_DependencyGraphMT_mutate_global__SWIG_2); return;
     case 2:
+      PUSHMARK(MARK); SWIG_CALLXS(_wrap_DependencyGraphMT_mutate_global__SWIG_1); return;
+    case 3:
       PUSHMARK(MARK); SWIG_CALLXS(_wrap_DependencyGraphMT_mutate_global__SWIG_0); return;
     }
   }

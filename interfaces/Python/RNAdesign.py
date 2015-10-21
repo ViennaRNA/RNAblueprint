@@ -406,8 +406,8 @@ class DependencyGraphMT(_object):
     def set_sequence(self, *args):
         return _RNAdesign.DependencyGraphMT_set_sequence(self, *args)
 
-    def mutate_local(self, min_num_pos, max_num_pos):
-        return _RNAdesign.DependencyGraphMT_mutate_local(self, min_num_pos, max_num_pos)
+    def mutate_local(self, *args):
+        return _RNAdesign.DependencyGraphMT_mutate_local(self, *args)
 
     def mutate_global(self, *args):
         return _RNAdesign.DependencyGraphMT_mutate_global(self, *args)

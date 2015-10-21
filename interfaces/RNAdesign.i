@@ -54,8 +54,10 @@ namespace design {
     void set_sequence(std::string sequence);
     void set_sequence();
     double mutate_local(int min_num_pos, int max_num_pos);
+    double mutate_local();
     double mutate_global(int min_num_pos, int max_num_pos);
     double mutate_global(int connected_component_ID);
+    double mutate_global();
     double mutate(int position);
     double mutate(int start, int end);
     double number_of_sequences();

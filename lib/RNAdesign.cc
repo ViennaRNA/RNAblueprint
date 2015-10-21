@@ -87,6 +87,12 @@ namespace design {
     }
     
     template <typename R>
+    SolutionSizeType DependencyGraph<R>::mutate_local() {
+        // if local_global=-1 we will mutate only actual graphs, with 0,0 we choose any
+        return g->mutate_local_global(-1, 0, 0);
+    }
+    
+    template <typename R>
     SolutionSizeType DependencyGraph<R>::mutate_global(int min_num_pos, int max_num_pos) {
         // if local_global=1 we will mutate only connected components
         return g->mutate_local_global(1, min_num_pos, max_num_pos);
@@ -94,8 +100,14 @@ namespace design {
     
     template <typename R>
     SolutionSizeType DependencyGraph<R>::mutate_global(int connected_component_ID) {
-        // if local_global=1 we will mutate only connected components
+        // mutate the connected component with the ID
         return g->mutate_global(connected_component_ID);
+    }
+    
+    template <typename R>
+    SolutionSizeType DependencyGraph<R>::mutate_global() {
+        // mutate any component with any size
+        return g->mutate_local_global(1, 0, 0);
     }
     
     template <typename R>
