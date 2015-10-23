@@ -2972,18 +2972,19 @@ SWIG_Python_NonDynamicSetAttr(PyObject *obj, PyObject *name, PyObject *value) {
 
 #define SWIGTYPE_p_allocator_type swig_types[0]
 #define SWIGTYPE_p_char swig_types[1]
-#define SWIGTYPE_p_difference_type swig_types[2]
-#define SWIGTYPE_p_p_PyObject swig_types[3]
-#define SWIGTYPE_p_size_type swig_types[4]
-#define SWIGTYPE_p_std__allocatorT_int_t swig_types[5]
-#define SWIGTYPE_p_std__allocatorT_std__string_t swig_types[6]
-#define SWIGTYPE_p_std__invalid_argument swig_types[7]
-#define SWIGTYPE_p_std__vectorT_int_std__allocatorT_int_t_t swig_types[8]
-#define SWIGTYPE_p_std__vectorT_std__string_std__allocatorT_std__string_t_t swig_types[9]
-#define SWIGTYPE_p_swig__SwigPyIterator swig_types[10]
-#define SWIGTYPE_p_value_type swig_types[11]
-static swig_type_info *swig_types[13];
-static swig_module_info swig_module = {swig_types, 12, 0, 0, 0, 0};
+#define SWIGTYPE_p_design__DependencyGraphT_std__mt19937_t swig_types[2]
+#define SWIGTYPE_p_difference_type swig_types[3]
+#define SWIGTYPE_p_p_PyObject swig_types[4]
+#define SWIGTYPE_p_size_type swig_types[5]
+#define SWIGTYPE_p_std__allocatorT_int_t swig_types[6]
+#define SWIGTYPE_p_std__allocatorT_std__string_t swig_types[7]
+#define SWIGTYPE_p_std__invalid_argument swig_types[8]
+#define SWIGTYPE_p_std__vectorT_int_std__allocatorT_int_t_t swig_types[9]
+#define SWIGTYPE_p_std__vectorT_std__string_std__allocatorT_std__string_t_t swig_types[10]
+#define SWIGTYPE_p_swig__SwigPyIterator swig_types[11]
+#define SWIGTYPE_p_value_type swig_types[12]
+static swig_type_info *swig_types[14];
+static swig_module_info swig_module = {swig_types, 13, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -3092,7 +3093,7 @@ namespace swig {
   /* Includes the header in the wrapper code */
 #include "../lib/RNAdesign.h"
 
-
+  
 
 #include <string>
 
@@ -5040,6 +5041,9 @@ SWIG_AsVal_bool (PyObject *obj, bool *val)
   if (val) *val = r ? true : false;
   return SWIG_OK;
 }
+
+
+  #define SWIG_From_double   PyFloat_FromDouble 
 
 #ifdef __cplusplus
 extern "C" {
@@ -10647,6 +10651,1089 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_new_DependencyGraphMT__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< std::string,std::allocator< std::string > > arg1 ;
+  std::string arg2 ;
+  unsigned long arg3 ;
+  unsigned long val3 ;
+  int ecode3 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  design::DependencyGraph< std::mt19937 > *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOO:new_DependencyGraphMT",&obj0,&obj1,&obj2)) SWIG_fail;
+  {
+    std::vector<std::string,std::allocator< std::string > > *ptr = (std::vector<std::string,std::allocator< std::string > > *)0;
+    int res = swig::asptr(obj0, &ptr);
+    if (!SWIG_IsOK(res) || !ptr) {
+      SWIG_exception_fail(SWIG_ArgError((ptr ? res : SWIG_TypeError)), "in method '" "new_DependencyGraphMT" "', argument " "1"" of type '" "std::vector< std::string,std::allocator< std::string > >""'"); 
+    }
+    arg1 = *ptr;
+    if (SWIG_IsNewObj(res)) delete ptr;
+  }
+  {
+    std::string *ptr = (std::string *)0;
+    int res = SWIG_AsPtr_std_string(obj1, &ptr);
+    if (!SWIG_IsOK(res) || !ptr) {
+      SWIG_exception_fail(SWIG_ArgError((ptr ? res : SWIG_TypeError)), "in method '" "new_DependencyGraphMT" "', argument " "2"" of type '" "std::string""'"); 
+    }
+    arg2 = *ptr;
+    if (SWIG_IsNewObj(res)) delete ptr;
+  }
+  ecode3 = SWIG_AsVal_unsigned_SS_long(obj2, &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "new_DependencyGraphMT" "', argument " "3"" of type '" "unsigned long""'");
+  } 
+  arg3 = static_cast< unsigned long >(val3);
+  {
+    try {
+      result = (design::DependencyGraph< std::mt19937 > *)new design::DependencyGraph< std::mt19937 >(arg1,arg2,arg3);
+    }
+    
+    catch(const std::exception & e) {
+      SWIG_exception_fail(SWIG_RuntimeError, e.what());
+    }
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_design__DependencyGraphT_std__mt19937_t, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_DependencyGraphMT__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< std::string,std::allocator< std::string > > arg1 ;
+  std::string arg2 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  design::DependencyGraph< std::mt19937 > *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:new_DependencyGraphMT",&obj0,&obj1)) SWIG_fail;
+  {
+    std::vector<std::string,std::allocator< std::string > > *ptr = (std::vector<std::string,std::allocator< std::string > > *)0;
+    int res = swig::asptr(obj0, &ptr);
+    if (!SWIG_IsOK(res) || !ptr) {
+      SWIG_exception_fail(SWIG_ArgError((ptr ? res : SWIG_TypeError)), "in method '" "new_DependencyGraphMT" "', argument " "1"" of type '" "std::vector< std::string,std::allocator< std::string > >""'"); 
+    }
+    arg1 = *ptr;
+    if (SWIG_IsNewObj(res)) delete ptr;
+  }
+  {
+    std::string *ptr = (std::string *)0;
+    int res = SWIG_AsPtr_std_string(obj1, &ptr);
+    if (!SWIG_IsOK(res) || !ptr) {
+      SWIG_exception_fail(SWIG_ArgError((ptr ? res : SWIG_TypeError)), "in method '" "new_DependencyGraphMT" "', argument " "2"" of type '" "std::string""'"); 
+    }
+    arg2 = *ptr;
+    if (SWIG_IsNewObj(res)) delete ptr;
+  }
+  {
+    try {
+      result = (design::DependencyGraph< std::mt19937 > *)new design::DependencyGraph< std::mt19937 >(arg1,arg2);
+    }
+    
+    catch(const std::exception & e) {
+      SWIG_exception_fail(SWIG_RuntimeError, e.what());
+    }
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_design__DependencyGraphT_std__mt19937_t, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_DependencyGraphMT__SWIG_2(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< std::string,std::allocator< std::string > > arg1 ;
+  PyObject * obj0 = 0 ;
+  design::DependencyGraph< std::mt19937 > *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:new_DependencyGraphMT",&obj0)) SWIG_fail;
+  {
+    std::vector<std::string,std::allocator< std::string > > *ptr = (std::vector<std::string,std::allocator< std::string > > *)0;
+    int res = swig::asptr(obj0, &ptr);
+    if (!SWIG_IsOK(res) || !ptr) {
+      SWIG_exception_fail(SWIG_ArgError((ptr ? res : SWIG_TypeError)), "in method '" "new_DependencyGraphMT" "', argument " "1"" of type '" "std::vector< std::string,std::allocator< std::string > >""'"); 
+    }
+    arg1 = *ptr;
+    if (SWIG_IsNewObj(res)) delete ptr;
+  }
+  {
+    try {
+      result = (design::DependencyGraph< std::mt19937 > *)new design::DependencyGraph< std::mt19937 >(arg1);
+    }
+    
+    catch(const std::exception & e) {
+      SWIG_exception_fail(SWIG_RuntimeError, e.what());
+    }
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_design__DependencyGraphT_std__mt19937_t, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_DependencyGraphMT__SWIG_3(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  design::DependencyGraph< std::mt19937 > *arg1 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  design::DependencyGraph< std::mt19937 > *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:new_DependencyGraphMT",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1, SWIGTYPE_p_design__DependencyGraphT_std__mt19937_t,  0  | 0);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_DependencyGraphMT" "', argument " "1"" of type '" "design::DependencyGraph< std::mt19937 > const &""'"); 
+  }
+  if (!argp1) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "new_DependencyGraphMT" "', argument " "1"" of type '" "design::DependencyGraph< std::mt19937 > const &""'"); 
+  }
+  arg1 = reinterpret_cast< design::DependencyGraph< std::mt19937 > * >(argp1);
+  {
+    try {
+      result = (design::DependencyGraph< std::mt19937 > *)new design::DependencyGraph< std::mt19937 >((design::DependencyGraph< std::mt19937 > const &)*arg1);
+    }
+    
+    catch(const std::exception & e) {
+      SWIG_exception_fail(SWIG_RuntimeError, e.what());
+    }
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_design__DependencyGraphT_std__mt19937_t, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_DependencyGraphMT(PyObject *self, PyObject *args) {
+  int argc;
+  PyObject *argv[4] = {
+    0
+  };
+  int ii;
+  
+  if (!PyTuple_Check(args)) SWIG_fail;
+  argc = args ? (int)PyObject_Length(args) : 0;
+  for (ii = 0; (ii < 3) && (ii < argc); ii++) {
+    argv[ii] = PyTuple_GET_ITEM(args,ii);
+  }
+  if (argc == 1) {
+    int _v;
+    int res = SWIG_ConvertPtr(argv[0], 0, SWIGTYPE_p_design__DependencyGraphT_std__mt19937_t, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      return _wrap_new_DependencyGraphMT__SWIG_3(self, args);
+    }
+  }
+  if (argc == 1) {
+    int _v;
+    int res = swig::asptr(argv[0], (std::vector<std::string,std::allocator< std::string > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      return _wrap_new_DependencyGraphMT__SWIG_2(self, args);
+    }
+  }
+  if (argc == 2) {
+    int _v;
+    int res = swig::asptr(argv[0], (std::vector<std::string,std::allocator< std::string > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      int res = SWIG_AsPtr_std_string(argv[1], (std::string**)(0));
+      _v = SWIG_CheckState(res);
+      if (_v) {
+        return _wrap_new_DependencyGraphMT__SWIG_1(self, args);
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v;
+    int res = swig::asptr(argv[0], (std::vector<std::string,std::allocator< std::string > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      int res = SWIG_AsPtr_std_string(argv[1], (std::string**)(0));
+      _v = SWIG_CheckState(res);
+      if (_v) {
+        {
+          int res = SWIG_AsVal_unsigned_SS_long(argv[2], NULL);
+          _v = SWIG_CheckState(res);
+        }
+        if (_v) {
+          return _wrap_new_DependencyGraphMT__SWIG_0(self, args);
+        }
+      }
+    }
+  }
+  
+fail:
+  SWIG_SetErrorMsg(PyExc_NotImplementedError,"Wrong number or type of arguments for overloaded function 'new_DependencyGraphMT'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    design::DependencyGraph< std::mt19937 >::DependencyGraph(std::vector< std::string,std::allocator< std::string > >,std::string,unsigned long)\n"
+    "    design::DependencyGraph< std::mt19937 >::DependencyGraph(std::vector< std::string,std::allocator< std::string > >,std::string)\n"
+    "    design::DependencyGraph< std::mt19937 >::DependencyGraph(std::vector< std::string,std::allocator< std::string > >)\n"
+    "    design::DependencyGraph< std::mt19937 >::DependencyGraph(design::DependencyGraph< std::mt19937 > const &)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_delete_DependencyGraphMT(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  design::DependencyGraph< std::mt19937 > *arg1 = (design::DependencyGraph< std::mt19937 > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:delete_DependencyGraphMT",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_design__DependencyGraphT_std__mt19937_t, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_DependencyGraphMT" "', argument " "1"" of type '" "design::DependencyGraph< std::mt19937 > *""'"); 
+  }
+  arg1 = reinterpret_cast< design::DependencyGraph< std::mt19937 > * >(argp1);
+  {
+    try {
+      delete arg1;
+    }
+    
+    catch(const std::exception & e) {
+      SWIG_exception_fail(SWIG_RuntimeError, e.what());
+    }
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_DependencyGraphMT_get_sequence(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  design::DependencyGraph< std::mt19937 > *arg1 = (design::DependencyGraph< std::mt19937 > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  std::string result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:DependencyGraphMT_get_sequence",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_design__DependencyGraphT_std__mt19937_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DependencyGraphMT_get_sequence" "', argument " "1"" of type '" "design::DependencyGraph< std::mt19937 > *""'"); 
+  }
+  arg1 = reinterpret_cast< design::DependencyGraph< std::mt19937 > * >(argp1);
+  {
+    try {
+      result = (arg1)->get_sequence();
+    }
+    
+    catch(const std::exception & e) {
+      SWIG_exception_fail(SWIG_RuntimeError, e.what());
+    }
+  }
+  resultobj = SWIG_From_std_string(static_cast< std::string >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_DependencyGraphMT_set_sequence__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  design::DependencyGraph< std::mt19937 > *arg1 = (design::DependencyGraph< std::mt19937 > *) 0 ;
+  std::string arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:DependencyGraphMT_set_sequence",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_design__DependencyGraphT_std__mt19937_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DependencyGraphMT_set_sequence" "', argument " "1"" of type '" "design::DependencyGraph< std::mt19937 > *""'"); 
+  }
+  arg1 = reinterpret_cast< design::DependencyGraph< std::mt19937 > * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    int res = SWIG_AsPtr_std_string(obj1, &ptr);
+    if (!SWIG_IsOK(res) || !ptr) {
+      SWIG_exception_fail(SWIG_ArgError((ptr ? res : SWIG_TypeError)), "in method '" "DependencyGraphMT_set_sequence" "', argument " "2"" of type '" "std::string""'"); 
+    }
+    arg2 = *ptr;
+    if (SWIG_IsNewObj(res)) delete ptr;
+  }
+  {
+    try {
+      (arg1)->set_sequence(arg2);
+    }
+    
+    catch(const std::exception & e) {
+      SWIG_exception_fail(SWIG_RuntimeError, e.what());
+    }
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_DependencyGraphMT_set_sequence__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  design::DependencyGraph< std::mt19937 > *arg1 = (design::DependencyGraph< std::mt19937 > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:DependencyGraphMT_set_sequence",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_design__DependencyGraphT_std__mt19937_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DependencyGraphMT_set_sequence" "', argument " "1"" of type '" "design::DependencyGraph< std::mt19937 > *""'"); 
+  }
+  arg1 = reinterpret_cast< design::DependencyGraph< std::mt19937 > * >(argp1);
+  {
+    try {
+      (arg1)->set_sequence();
+    }
+    
+    catch(const std::exception & e) {
+      SWIG_exception_fail(SWIG_RuntimeError, e.what());
+    }
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_DependencyGraphMT_set_sequence(PyObject *self, PyObject *args) {
+  int argc;
+  PyObject *argv[3] = {
+    0
+  };
+  int ii;
+  
+  if (!PyTuple_Check(args)) SWIG_fail;
+  argc = args ? (int)PyObject_Length(args) : 0;
+  for (ii = 0; (ii < 2) && (ii < argc); ii++) {
+    argv[ii] = PyTuple_GET_ITEM(args,ii);
+  }
+  if (argc == 1) {
+    int _v;
+    void *vptr = 0;
+    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_design__DependencyGraphT_std__mt19937_t, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      return _wrap_DependencyGraphMT_set_sequence__SWIG_1(self, args);
+    }
+  }
+  if (argc == 2) {
+    int _v;
+    void *vptr = 0;
+    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_design__DependencyGraphT_std__mt19937_t, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      int res = SWIG_AsPtr_std_string(argv[1], (std::string**)(0));
+      _v = SWIG_CheckState(res);
+      if (_v) {
+        return _wrap_DependencyGraphMT_set_sequence__SWIG_0(self, args);
+      }
+    }
+  }
+  
+fail:
+  SWIG_SetErrorMsg(PyExc_NotImplementedError,"Wrong number or type of arguments for overloaded function 'DependencyGraphMT_set_sequence'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    design::DependencyGraph< std::mt19937 >::set_sequence(std::string)\n"
+    "    design::DependencyGraph< std::mt19937 >::set_sequence()\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_DependencyGraphMT_mutate_local__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  design::DependencyGraph< std::mt19937 > *arg1 = (design::DependencyGraph< std::mt19937 > *) 0 ;
+  int arg2 ;
+  int arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  int val3 ;
+  int ecode3 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  double result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOO:DependencyGraphMT_mutate_local",&obj0,&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_design__DependencyGraphT_std__mt19937_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DependencyGraphMT_mutate_local" "', argument " "1"" of type '" "design::DependencyGraph< std::mt19937 > *""'"); 
+  }
+  arg1 = reinterpret_cast< design::DependencyGraph< std::mt19937 > * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "DependencyGraphMT_mutate_local" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  ecode3 = SWIG_AsVal_int(obj2, &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "DependencyGraphMT_mutate_local" "', argument " "3"" of type '" "int""'");
+  } 
+  arg3 = static_cast< int >(val3);
+  {
+    try {
+      result = (double)(arg1)->mutate_local(arg2,arg3);
+    }
+    
+    catch(const std::exception & e) {
+      SWIG_exception_fail(SWIG_RuntimeError, e.what());
+    }
+  }
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_DependencyGraphMT_mutate_local__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  design::DependencyGraph< std::mt19937 > *arg1 = (design::DependencyGraph< std::mt19937 > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  double result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:DependencyGraphMT_mutate_local",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_design__DependencyGraphT_std__mt19937_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DependencyGraphMT_mutate_local" "', argument " "1"" of type '" "design::DependencyGraph< std::mt19937 > *""'"); 
+  }
+  arg1 = reinterpret_cast< design::DependencyGraph< std::mt19937 > * >(argp1);
+  {
+    try {
+      result = (double)(arg1)->mutate_local();
+    }
+    
+    catch(const std::exception & e) {
+      SWIG_exception_fail(SWIG_RuntimeError, e.what());
+    }
+  }
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_DependencyGraphMT_mutate_local(PyObject *self, PyObject *args) {
+  int argc;
+  PyObject *argv[4] = {
+    0
+  };
+  int ii;
+  
+  if (!PyTuple_Check(args)) SWIG_fail;
+  argc = args ? (int)PyObject_Length(args) : 0;
+  for (ii = 0; (ii < 3) && (ii < argc); ii++) {
+    argv[ii] = PyTuple_GET_ITEM(args,ii);
+  }
+  if (argc == 1) {
+    int _v;
+    void *vptr = 0;
+    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_design__DependencyGraphT_std__mt19937_t, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      return _wrap_DependencyGraphMT_mutate_local__SWIG_1(self, args);
+    }
+  }
+  if (argc == 3) {
+    int _v;
+    void *vptr = 0;
+    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_design__DependencyGraphT_std__mt19937_t, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_int(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        {
+          int res = SWIG_AsVal_int(argv[2], NULL);
+          _v = SWIG_CheckState(res);
+        }
+        if (_v) {
+          return _wrap_DependencyGraphMT_mutate_local__SWIG_0(self, args);
+        }
+      }
+    }
+  }
+  
+fail:
+  SWIG_SetErrorMsg(PyExc_NotImplementedError,"Wrong number or type of arguments for overloaded function 'DependencyGraphMT_mutate_local'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    design::DependencyGraph< std::mt19937 >::mutate_local(int,int)\n"
+    "    design::DependencyGraph< std::mt19937 >::mutate_local()\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_DependencyGraphMT_mutate_global__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  design::DependencyGraph< std::mt19937 > *arg1 = (design::DependencyGraph< std::mt19937 > *) 0 ;
+  int arg2 ;
+  int arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  int val3 ;
+  int ecode3 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  double result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOO:DependencyGraphMT_mutate_global",&obj0,&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_design__DependencyGraphT_std__mt19937_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DependencyGraphMT_mutate_global" "', argument " "1"" of type '" "design::DependencyGraph< std::mt19937 > *""'"); 
+  }
+  arg1 = reinterpret_cast< design::DependencyGraph< std::mt19937 > * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "DependencyGraphMT_mutate_global" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  ecode3 = SWIG_AsVal_int(obj2, &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "DependencyGraphMT_mutate_global" "', argument " "3"" of type '" "int""'");
+  } 
+  arg3 = static_cast< int >(val3);
+  {
+    try {
+      result = (double)(arg1)->mutate_global(arg2,arg3);
+    }
+    
+    catch(const std::exception & e) {
+      SWIG_exception_fail(SWIG_RuntimeError, e.what());
+    }
+  }
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_DependencyGraphMT_mutate_global__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  design::DependencyGraph< std::mt19937 > *arg1 = (design::DependencyGraph< std::mt19937 > *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  double result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:DependencyGraphMT_mutate_global",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_design__DependencyGraphT_std__mt19937_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DependencyGraphMT_mutate_global" "', argument " "1"" of type '" "design::DependencyGraph< std::mt19937 > *""'"); 
+  }
+  arg1 = reinterpret_cast< design::DependencyGraph< std::mt19937 > * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "DependencyGraphMT_mutate_global" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  {
+    try {
+      result = (double)(arg1)->mutate_global(arg2);
+    }
+    
+    catch(const std::exception & e) {
+      SWIG_exception_fail(SWIG_RuntimeError, e.what());
+    }
+  }
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_DependencyGraphMT_mutate_global__SWIG_2(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  design::DependencyGraph< std::mt19937 > *arg1 = (design::DependencyGraph< std::mt19937 > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  double result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:DependencyGraphMT_mutate_global",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_design__DependencyGraphT_std__mt19937_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DependencyGraphMT_mutate_global" "', argument " "1"" of type '" "design::DependencyGraph< std::mt19937 > *""'"); 
+  }
+  arg1 = reinterpret_cast< design::DependencyGraph< std::mt19937 > * >(argp1);
+  {
+    try {
+      result = (double)(arg1)->mutate_global();
+    }
+    
+    catch(const std::exception & e) {
+      SWIG_exception_fail(SWIG_RuntimeError, e.what());
+    }
+  }
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_DependencyGraphMT_mutate_global(PyObject *self, PyObject *args) {
+  int argc;
+  PyObject *argv[4] = {
+    0
+  };
+  int ii;
+  
+  if (!PyTuple_Check(args)) SWIG_fail;
+  argc = args ? (int)PyObject_Length(args) : 0;
+  for (ii = 0; (ii < 3) && (ii < argc); ii++) {
+    argv[ii] = PyTuple_GET_ITEM(args,ii);
+  }
+  if (argc == 1) {
+    int _v;
+    void *vptr = 0;
+    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_design__DependencyGraphT_std__mt19937_t, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      return _wrap_DependencyGraphMT_mutate_global__SWIG_2(self, args);
+    }
+  }
+  if (argc == 2) {
+    int _v;
+    void *vptr = 0;
+    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_design__DependencyGraphT_std__mt19937_t, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_int(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        return _wrap_DependencyGraphMT_mutate_global__SWIG_1(self, args);
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v;
+    void *vptr = 0;
+    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_design__DependencyGraphT_std__mt19937_t, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_int(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        {
+          int res = SWIG_AsVal_int(argv[2], NULL);
+          _v = SWIG_CheckState(res);
+        }
+        if (_v) {
+          return _wrap_DependencyGraphMT_mutate_global__SWIG_0(self, args);
+        }
+      }
+    }
+  }
+  
+fail:
+  SWIG_SetErrorMsg(PyExc_NotImplementedError,"Wrong number or type of arguments for overloaded function 'DependencyGraphMT_mutate_global'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    design::DependencyGraph< std::mt19937 >::mutate_global(int,int)\n"
+    "    design::DependencyGraph< std::mt19937 >::mutate_global(int)\n"
+    "    design::DependencyGraph< std::mt19937 >::mutate_global()\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_DependencyGraphMT_mutate__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  design::DependencyGraph< std::mt19937 > *arg1 = (design::DependencyGraph< std::mt19937 > *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  double result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:DependencyGraphMT_mutate",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_design__DependencyGraphT_std__mt19937_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DependencyGraphMT_mutate" "', argument " "1"" of type '" "design::DependencyGraph< std::mt19937 > *""'"); 
+  }
+  arg1 = reinterpret_cast< design::DependencyGraph< std::mt19937 > * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "DependencyGraphMT_mutate" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  {
+    try {
+      result = (double)(arg1)->mutate(arg2);
+    }
+    
+    catch(const std::exception & e) {
+      SWIG_exception_fail(SWIG_RuntimeError, e.what());
+    }
+  }
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_DependencyGraphMT_mutate__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  design::DependencyGraph< std::mt19937 > *arg1 = (design::DependencyGraph< std::mt19937 > *) 0 ;
+  int arg2 ;
+  int arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  int val3 ;
+  int ecode3 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  double result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOO:DependencyGraphMT_mutate",&obj0,&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_design__DependencyGraphT_std__mt19937_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DependencyGraphMT_mutate" "', argument " "1"" of type '" "design::DependencyGraph< std::mt19937 > *""'"); 
+  }
+  arg1 = reinterpret_cast< design::DependencyGraph< std::mt19937 > * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "DependencyGraphMT_mutate" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  ecode3 = SWIG_AsVal_int(obj2, &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "DependencyGraphMT_mutate" "', argument " "3"" of type '" "int""'");
+  } 
+  arg3 = static_cast< int >(val3);
+  {
+    try {
+      result = (double)(arg1)->mutate(arg2,arg3);
+    }
+    
+    catch(const std::exception & e) {
+      SWIG_exception_fail(SWIG_RuntimeError, e.what());
+    }
+  }
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_DependencyGraphMT_mutate(PyObject *self, PyObject *args) {
+  int argc;
+  PyObject *argv[4] = {
+    0
+  };
+  int ii;
+  
+  if (!PyTuple_Check(args)) SWIG_fail;
+  argc = args ? (int)PyObject_Length(args) : 0;
+  for (ii = 0; (ii < 3) && (ii < argc); ii++) {
+    argv[ii] = PyTuple_GET_ITEM(args,ii);
+  }
+  if (argc == 2) {
+    int _v;
+    void *vptr = 0;
+    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_design__DependencyGraphT_std__mt19937_t, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_int(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        return _wrap_DependencyGraphMT_mutate__SWIG_0(self, args);
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v;
+    void *vptr = 0;
+    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_design__DependencyGraphT_std__mt19937_t, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_int(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        {
+          int res = SWIG_AsVal_int(argv[2], NULL);
+          _v = SWIG_CheckState(res);
+        }
+        if (_v) {
+          return _wrap_DependencyGraphMT_mutate__SWIG_1(self, args);
+        }
+      }
+    }
+  }
+  
+fail:
+  SWIG_SetErrorMsg(PyExc_NotImplementedError,"Wrong number or type of arguments for overloaded function 'DependencyGraphMT_mutate'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    design::DependencyGraph< std::mt19937 >::mutate(int)\n"
+    "    design::DependencyGraph< std::mt19937 >::mutate(int,int)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_DependencyGraphMT_number_of_sequences__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  design::DependencyGraph< std::mt19937 > *arg1 = (design::DependencyGraph< std::mt19937 > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  double result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:DependencyGraphMT_number_of_sequences",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_design__DependencyGraphT_std__mt19937_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DependencyGraphMT_number_of_sequences" "', argument " "1"" of type '" "design::DependencyGraph< std::mt19937 > *""'"); 
+  }
+  arg1 = reinterpret_cast< design::DependencyGraph< std::mt19937 > * >(argp1);
+  {
+    try {
+      result = (double)(arg1)->number_of_sequences();
+    }
+    
+    catch(const std::exception & e) {
+      SWIG_exception_fail(SWIG_RuntimeError, e.what());
+    }
+  }
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_DependencyGraphMT_number_of_sequences__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  design::DependencyGraph< std::mt19937 > *arg1 = (design::DependencyGraph< std::mt19937 > *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  double result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:DependencyGraphMT_number_of_sequences",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_design__DependencyGraphT_std__mt19937_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DependencyGraphMT_number_of_sequences" "', argument " "1"" of type '" "design::DependencyGraph< std::mt19937 > *""'"); 
+  }
+  arg1 = reinterpret_cast< design::DependencyGraph< std::mt19937 > * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "DependencyGraphMT_number_of_sequences" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  {
+    try {
+      result = (double)(arg1)->number_of_sequences(arg2);
+    }
+    
+    catch(const std::exception & e) {
+      SWIG_exception_fail(SWIG_RuntimeError, e.what());
+    }
+  }
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_DependencyGraphMT_number_of_sequences(PyObject *self, PyObject *args) {
+  int argc;
+  PyObject *argv[3] = {
+    0
+  };
+  int ii;
+  
+  if (!PyTuple_Check(args)) SWIG_fail;
+  argc = args ? (int)PyObject_Length(args) : 0;
+  for (ii = 0; (ii < 2) && (ii < argc); ii++) {
+    argv[ii] = PyTuple_GET_ITEM(args,ii);
+  }
+  if (argc == 1) {
+    int _v;
+    void *vptr = 0;
+    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_design__DependencyGraphT_std__mt19937_t, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      return _wrap_DependencyGraphMT_number_of_sequences__SWIG_0(self, args);
+    }
+  }
+  if (argc == 2) {
+    int _v;
+    void *vptr = 0;
+    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_design__DependencyGraphT_std__mt19937_t, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_int(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        return _wrap_DependencyGraphMT_number_of_sequences__SWIG_1(self, args);
+      }
+    }
+  }
+  
+fail:
+  SWIG_SetErrorMsg(PyExc_NotImplementedError,"Wrong number or type of arguments for overloaded function 'DependencyGraphMT_number_of_sequences'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    design::DependencyGraph< std::mt19937 >::number_of_sequences()\n"
+    "    design::DependencyGraph< std::mt19937 >::number_of_sequences(int)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_DependencyGraphMT_number_of_connected_components(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  design::DependencyGraph< std::mt19937 > *arg1 = (design::DependencyGraph< std::mt19937 > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:DependencyGraphMT_number_of_connected_components",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_design__DependencyGraphT_std__mt19937_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DependencyGraphMT_number_of_connected_components" "', argument " "1"" of type '" "design::DependencyGraph< std::mt19937 > *""'"); 
+  }
+  arg1 = reinterpret_cast< design::DependencyGraph< std::mt19937 > * >(argp1);
+  {
+    try {
+      result = (int)(arg1)->number_of_connected_components();
+    }
+    
+    catch(const std::exception & e) {
+      SWIG_exception_fail(SWIG_RuntimeError, e.what());
+    }
+  }
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_DependencyGraphMT_component_vertices(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  design::DependencyGraph< std::mt19937 > *arg1 = (design::DependencyGraph< std::mt19937 > *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  std::vector< int,std::allocator< int > > result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:DependencyGraphMT_component_vertices",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_design__DependencyGraphT_std__mt19937_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DependencyGraphMT_component_vertices" "', argument " "1"" of type '" "design::DependencyGraph< std::mt19937 > *""'"); 
+  }
+  arg1 = reinterpret_cast< design::DependencyGraph< std::mt19937 > * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "DependencyGraphMT_component_vertices" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  {
+    try {
+      result = (arg1)->component_vertices(arg2);
+    }
+    
+    catch(const std::exception & e) {
+      SWIG_exception_fail(SWIG_RuntimeError, e.what());
+    }
+  }
+  resultobj = swig::from(static_cast< std::vector<int,std::allocator< int > > >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_DependencyGraphMT_special_vertices(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  design::DependencyGraph< std::mt19937 > *arg1 = (design::DependencyGraph< std::mt19937 > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  std::vector< int,std::allocator< int > > result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:DependencyGraphMT_special_vertices",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_design__DependencyGraphT_std__mt19937_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DependencyGraphMT_special_vertices" "', argument " "1"" of type '" "design::DependencyGraph< std::mt19937 > *""'"); 
+  }
+  arg1 = reinterpret_cast< design::DependencyGraph< std::mt19937 > * >(argp1);
+  {
+    try {
+      result = (arg1)->special_vertices();
+    }
+    
+    catch(const std::exception & e) {
+      SWIG_exception_fail(SWIG_RuntimeError, e.what());
+    }
+  }
+  resultobj = swig::from(static_cast< std::vector<int,std::allocator< int > > >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *DependencyGraphMT_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *obj;
+  if (!PyArg_ParseTuple(args,(char*)"O:swigregister", &obj)) return NULL;
+  SWIG_TypeNewClientData(SWIGTYPE_p_design__DependencyGraphT_std__mt19937_t, SWIG_NewClientData(obj));
+  return SWIG_Py_Void();
+}
+
 static PyMethodDef SwigMethods[] = {
 	 { (char *)"SWIG_PyInstanceMethod_New", (PyCFunction)SWIG_PyInstanceMethod_New, METH_O, NULL},
 	 { (char *)"delete_SwigPyIterator", _wrap_delete_SwigPyIterator, METH_VARARGS, NULL},
@@ -10736,6 +11823,18 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"delete_IntVector", _wrap_delete_IntVector, METH_VARARGS, NULL},
 	 { (char *)"IntVector_swigregister", IntVector_swigregister, METH_VARARGS, NULL},
 	 { (char *)"initialize_library", _wrap_initialize_library, METH_VARARGS, NULL},
+	 { (char *)"new_DependencyGraphMT", _wrap_new_DependencyGraphMT, METH_VARARGS, NULL},
+	 { (char *)"delete_DependencyGraphMT", _wrap_delete_DependencyGraphMT, METH_VARARGS, NULL},
+	 { (char *)"DependencyGraphMT_get_sequence", _wrap_DependencyGraphMT_get_sequence, METH_VARARGS, NULL},
+	 { (char *)"DependencyGraphMT_set_sequence", _wrap_DependencyGraphMT_set_sequence, METH_VARARGS, NULL},
+	 { (char *)"DependencyGraphMT_mutate_local", _wrap_DependencyGraphMT_mutate_local, METH_VARARGS, NULL},
+	 { (char *)"DependencyGraphMT_mutate_global", _wrap_DependencyGraphMT_mutate_global, METH_VARARGS, NULL},
+	 { (char *)"DependencyGraphMT_mutate", _wrap_DependencyGraphMT_mutate, METH_VARARGS, NULL},
+	 { (char *)"DependencyGraphMT_number_of_sequences", _wrap_DependencyGraphMT_number_of_sequences, METH_VARARGS, NULL},
+	 { (char *)"DependencyGraphMT_number_of_connected_components", _wrap_DependencyGraphMT_number_of_connected_components, METH_VARARGS, NULL},
+	 { (char *)"DependencyGraphMT_component_vertices", _wrap_DependencyGraphMT_component_vertices, METH_VARARGS, NULL},
+	 { (char *)"DependencyGraphMT_special_vertices", _wrap_DependencyGraphMT_special_vertices, METH_VARARGS, NULL},
+	 { (char *)"DependencyGraphMT_swigregister", DependencyGraphMT_swigregister, METH_VARARGS, NULL},
 	 { NULL, NULL, 0, NULL }
 };
 
@@ -10744,6 +11843,7 @@ static PyMethodDef SwigMethods[] = {
 
 static swig_type_info _swigt__p_allocator_type = {"_p_allocator_type", "allocator_type *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_char = {"_p_char", "char *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_design__DependencyGraphT_std__mt19937_t = {"_p_design__DependencyGraphT_std__mt19937_t", "design::DependencyGraph< std::mt19937 > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_difference_type = {"_p_difference_type", "difference_type *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_p_PyObject = {"_p_p_PyObject", "PyObject **", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_size_type = {"_p_size_type", "size_type *", 0, 0, (void*)0, 0};
@@ -10758,6 +11858,7 @@ static swig_type_info _swigt__p_value_type = {"_p_value_type", "value_type *", 0
 static swig_type_info *swig_type_initial[] = {
   &_swigt__p_allocator_type,
   &_swigt__p_char,
+  &_swigt__p_design__DependencyGraphT_std__mt19937_t,
   &_swigt__p_difference_type,
   &_swigt__p_p_PyObject,
   &_swigt__p_size_type,
@@ -10772,6 +11873,7 @@ static swig_type_info *swig_type_initial[] = {
 
 static swig_cast_info _swigc__p_allocator_type[] = {  {&_swigt__p_allocator_type, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_char[] = {  {&_swigt__p_char, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_design__DependencyGraphT_std__mt19937_t[] = {  {&_swigt__p_design__DependencyGraphT_std__mt19937_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_difference_type[] = {  {&_swigt__p_difference_type, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p_PyObject[] = {  {&_swigt__p_p_PyObject, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_size_type[] = {  {&_swigt__p_size_type, 0, 0, 0},{0, 0, 0, 0}};
@@ -10786,6 +11888,7 @@ static swig_cast_info _swigc__p_value_type[] = {  {&_swigt__p_value_type, 0, 0, 
 static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_allocator_type,
   _swigc__p_char,
+  _swigc__p_design__DependencyGraphT_std__mt19937_t,
   _swigc__p_difference_type,
   _swigc__p_p_PyObject,
   _swigc__p_size_type,

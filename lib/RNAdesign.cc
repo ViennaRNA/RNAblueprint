@@ -20,10 +20,10 @@ namespace design {
         g = new detail::DependencyGraph<R>(structures, constraints, rand);
     }
     
-    template <typename R>
-    DependencyGraph<R>::DependencyGraph(std::vector<std::string> structures, std::string constraints, unsigned long seed) {
+    template <>
+    DependencyGraph<std::mt19937>::DependencyGraph(std::vector<std::string> structures, std::string constraints, unsigned long seed) {
         // initialize mersenne twister with the given seed
-        g = new detail::DependencyGraph<R>(structures, constraints, std::mt19937());
+        g = new detail::DependencyGraph<std::mt19937>(structures, constraints, std::mt19937());
         g->set_seed(seed);
     }
     

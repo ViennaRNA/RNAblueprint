@@ -25,7 +25,7 @@
   /* Includes the header in the wrapper code */
 #include "../lib/RNAdesign.h"
 
-%}
+  %}
 
 /*
  * stuff necessary to get the RNAdesign DependencyGraph stuff working
@@ -37,19 +37,20 @@
 namespace std {
    %template(StringVector) std::vector<std::string>;
    %template(IntVector) std::vector<int>;
-}
+ }
 
 
 namespace design {
   void initialize_library(bool debug);
   
-  class DependencyGraph<std::mt19937> {
+  template<typename R>
+    class DependencyGraph {
   public:
-    DependencyGraph<std::mt19937>(std::vector<std::string> structures, std::string constraints, unsigned long seed);
-    DependencyGraph<std::mt19937>(std::vector<std::string> structures, std::string constraints);
-    DependencyGraph<std::mt19937>(std::vector<std::string> structures);
-    DependencyGraph<std::mt19937>(const DependencyGraph& copy);
-    ~DependencyGraph<std::mt19937>();
+    DependencyGraph(std::vector<std::string> structures, std::string constraints, unsigned long seed);
+    DependencyGraph(std::vector<std::string> structures, std::string constraints);
+    DependencyGraph(std::vector<std::string> structures);
+    DependencyGraph(const DependencyGraph& copy);
+    ~DependencyGraph();
     std::string get_sequence();
     void set_sequence(std::string sequence);
     void set_sequence();
@@ -66,12 +67,13 @@ namespace design {
     std::vector< int > component_vertices(int connected_component_ID);
     std::vector< int > special_vertices();
   };
+    
+  %template(DependencyGraphMT) DependencyGraph<std::mt19937>;
 }
 
 
 /*
  * START WITH THE STUFF NECESSARY TO HANDLE vector<int> AND map<int, vector<int>>
- * %template(DependencyGraphMT) DependencyGraph<std::mt19937>;
  */
 
 /*
