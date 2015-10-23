@@ -42,49 +42,32 @@ BOOST_AUTO_TEST_CASE(rand_test) {
 
 }
 
-BOOST_AUTO_TEST_CASE(rand_library) {
-    BOOST_TEST_MESSAGE("test random number generator in library");
-    design::initialize_library(false);
-    std::vector<std::string> structures = {"."};
-    std::mt19937 rand_gen(1);
-    design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "A", rand_gen);
-#ifdef LIBGMP
-    RandomDistType dist(0, SolutionSizeType("748047938274"));
-#else
-    RandomDistType dist(0, 745942039874.8042);
-#endif
-    SolutionSizeType random = dist(*dependency_graph.rand_ptr);
-    std::cerr << random << std::endl;
-#ifdef LIBGMP
-    BOOST_CHECK(random == SolutionSizeType("703173439372"));
-#else
-    BOOST_CHECK_CLOSE(random, 743842069983.44971, 0.0001);
-#endif
+BOOST_AUTO_TEST_CASE(rand_copy) {
+    //TODO think of a nice way to check if copy construction works
 }
 
-#ifdef LIBGMP
-BOOST_AUTO_TEST_CASE(int_dist) {
-    BOOST_TEST_MESSAGE("test int distribution in library");
+BOOST_AUTO_TEST_CASE(int_dist_set) {
+    BOOST_TEST_MESSAGE("test int distribution in set_sequence function");
     design::initialize_library(false);
     std::vector<std::string> structures = {"."};
     std::mt19937 rand_gen(1);
-    design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "A", rand_gen);
-
-    RandomDistType dist(0, 10);
+    design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "N", rand_gen);
     
-    std::map<SolutionSizeType, int> count;
+    std::map<int, int> count;
+    // set initial sequence
+    dependency_graph.set_sequence();
     
     for (int i = 0; i < 100000; i++) {
-        SolutionSizeType random = dist(*dependency_graph.rand_ptr);
-        count[random]++;
+        dependency_graph.set_sequence();
+        Sequence r = dependency_graph.get_sequence();
+        count[r[0]]++;
     }
     
     for (auto c : count) {
-        BOOST_CHECK_CLOSE((double)c.second / 100000, 0.1, 5);
+        BOOST_CHECK_CLOSE(c.second / 100000.0, 0.25, 1);
     }
     // 10 must be 0!
-    BOOST_CHECK(count[10] == 0);
+    BOOST_CHECK(count[4] == 0);
 }
-#endif
 
 BOOST_AUTO_TEST_SUITE_END()

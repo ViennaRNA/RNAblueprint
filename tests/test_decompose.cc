@@ -181,7 +181,8 @@ BOOST_AUTO_TEST_CASE(EarDecomposition) {
     BOOST_TEST_MESSAGE("decompose connected components");
     // set random generator to a static seed;
     initialize_library(true);
-    ear_decomposition_to_subgraphs(g, new std::mt19937(1));
+    std::mt19937 mt(1);
+    ear_decomposition_to_subgraphs(g, mt);
 
     int number_of_children = 0;
 
@@ -259,7 +260,8 @@ BOOST_AUTO_TEST_CASE(partsBetweenArticulationPoints) {
     BOOST_TEST_MESSAGE("parts between attachment points to subgraphs");
     // set random generator to a static seed;
     initialize_library(true);
-    ear_decomposition_to_subgraphs(g, new std::mt19937(1));
+    std::mt19937 mt(1);
+    ear_decomposition_to_subgraphs(g, mt);
     print_subgraphs(g, &std::cout, "ears");
     // now the decomposed graph looks different than above, as the random generator went further
     // However, lets call our method on all children:
@@ -350,7 +352,8 @@ BOOST_AUTO_TEST_CASE(simpleCircle) {
     boost::add_edge(boost::vertex(0, g), boost::vertex(3, g), g);
     
     // decompose into subgraphs
-    decompose_recursion(g, new std::mt19937(1));
+    std::mt19937 mt(1);
+    decompose_recursion(g, mt);
     // check
     int number_of_children = 0;
     

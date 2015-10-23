@@ -76,7 +76,7 @@ namespace design {
         }
         
         template <typename RG>
-        SolutionSizeType color_path_graph(Graph& g, RG* rand_ptr) {
+        SolutionSizeType color_path_graph(Graph& g, RG& rand) {
 
             SolutionSizeType max_number_of_sequences = 0;
 
@@ -101,12 +101,12 @@ namespace design {
             class color_dfs_visitor : public boost::default_dfs_visitor {
             public:
 
-                color_dfs_visitor(SolutionSizeType& max_number_of_sequences, RG * rand_ptr, PairingMatrix * pair,
+                color_dfs_visitor(SolutionSizeType& max_number_of_sequences, RG& rand, PairingMatrix * pair,
                         nosMap& n, std::unordered_map<Vertex, int>& c, int& prev)
-                : mnos(max_number_of_sequences), r_ptr(rand_ptr), p(pair), nos_map(n), colors(c), previous(prev) {
+                : mnos(max_number_of_sequences), r(rand), p(pair), nos_map(n), colors(c), previous(prev) {
                 }
                 SolutionSizeType& mnos;
-                RG * r_ptr;
+                RG& r;
                 PairingMatrix * p;
                 nosMap& nos_map;
                 std::unordered_map<Vertex, int>& colors;
@@ -180,7 +180,7 @@ namespace design {
                         throw std::logic_error(ss.str());
                     }
                     RandomDistType dist(0, nos);
-                    SolutionSizeType random = dist(*r_ptr);
+                    SolutionSizeType random = dist(r);
 
                     // stochastically take one of the possibilities
                     // start at the probability of first possible character and add each other base probability as long long as the random number is bigger.
@@ -209,7 +209,7 @@ namespace design {
             std::unordered_map<Vertex, int> colors;
             int prev = N;
             
-            color_dfs_visitor vis(max_number_of_sequences, rand_ptr, p, nos_map, colors, prev);
+            color_dfs_visitor vis(max_number_of_sequences, rand, p, nos_map, colors, prev);
 
             // start is the 0 node in case of a circle
             Vertex start = boost::vertex(0, g); //boost::graph_traits<Graph>::null_vertex();
@@ -234,6 +234,6 @@ namespace design {
             return max_number_of_sequences;
         }
 
-        template SolutionSizeType color_path_graph<std::mt19937> (Graph&, std::mt19937*);
+        template SolutionSizeType color_path_graph<std::mt19937> (Graph&, std::mt19937&);
     }
 }

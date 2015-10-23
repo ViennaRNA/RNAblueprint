@@ -23,24 +23,15 @@ namespace design {
     template <typename R>
     DependencyGraph<R>::DependencyGraph(std::vector<std::string> structures, std::string constraints, unsigned long seed) {
         // initialize mersenne twister with the given seed
-        std::mt19937 rand_gen;
-        rand_gen.seed(seed);
-        if (*detail::debug_ptr) {
-            std::cerr << "Using this seed: " << seed << std::endl;
-        }
-        g = new detail::DependencyGraph<R>(structures, constraints, rand_gen);
+        g = new detail::DependencyGraph<R>(structures, constraints, std::mt19937());
+        g->set_seed(seed);
     }
     
-    template <typename R>
-    DependencyGraph<R>::DependencyGraph(std::vector<std::string> structures, std::string constraints) {
-        // initialize mersenne twister with our seed
-        unsigned long seed = std::chrono::system_clock::now().time_since_epoch().count();
-        std::mt19937 rand_gen;
-        rand_gen.seed(seed);
-        if (*detail::debug_ptr) {
-            std::cerr << "Using this seed: " << seed << std::endl;
-        }
-        g = new detail::DependencyGraph<R>(structures, constraints, rand_gen);
+    template<>
+    DependencyGraph<std::mt19937>::DependencyGraph(std::vector<std::string> structures, std::string constraints) {
+        // initialize mersenne twister and set a clock seed
+        g = new detail::DependencyGraph<std::mt19937>(structures, constraints, std::mt19937());
+        g->set_seed();
     }
     
     template <typename R>
@@ -48,16 +39,18 @@ namespace design {
         g = new detail::DependencyGraph<R>(structures, "", rand);
     }
     
+    template<>
+    DependencyGraph<std::mt19937>::DependencyGraph(std::vector<std::string> structures) {
+        // initialize mersenne twister with a mersenne twister engine and set a clock seed
+        g = new detail::DependencyGraph<std::mt19937>(structures, "", std::mt19937());
+        g->set_seed();
+    }
+    
     template <typename R>
-    DependencyGraph<R>::DependencyGraph(std::vector<std::string> structures) {
-        // initialize mersenne twister with our seed
-        unsigned long seed = std::chrono::system_clock::now().time_since_epoch().count();
-        std::mt19937 rand_gen;
-        rand_gen.seed(seed);
-        if (*detail::debug_ptr) {
-            std::cerr << "Using this seed: " << seed << std::endl;
-        }
-        g = new detail::DependencyGraph<R>(structures, "", rand_gen);
+    DependencyGraph<R>::DependencyGraph(const DependencyGraph& copy) {
+        g = new detail::DependencyGraph<R>(*copy.g);
+        // TODO set new seed from old seed to make it reproduce able!
+        g->set_seed();
     }
 
     template <typename R>

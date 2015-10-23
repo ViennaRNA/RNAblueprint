@@ -90,18 +90,18 @@ namespace design {
         }
         
         template <typename R>
-        std::pair<ProbabilityKey, SolutionSizeType> ProbabilityMatrix::sample(R* rand_ptr) {
+        std::pair<ProbabilityKey, SolutionSizeType> ProbabilityMatrix::sample(R& rand) {
             ProbabilityKey pk;
             
             for (auto s : getSpecials()) {
                 pk[s] = N; //TODO maybe we could check sequence constraints here?
             }
             
-            return sample(pk, rand_ptr);
+            return sample(pk, rand);
         }
         
         template <typename R>
-        std::pair<ProbabilityKey, SolutionSizeType> ProbabilityMatrix::sample(ProbabilityKey pk, R* rand_ptr) {
+        std::pair<ProbabilityKey, SolutionSizeType> ProbabilityMatrix::sample(ProbabilityKey pk, R& rand) {
             ProbabilityKey result;
             
             // get all possible keys for the constraints set in pk
@@ -118,7 +118,7 @@ namespace design {
                 throw std::logic_error( "Cannot fulfill constraints while sampling a key!" );
             }
             RandomDistType dist(0, constrained_mnos);
-            SolutionSizeType random = dist(*rand_ptr);
+            SolutionSizeType random = dist(rand);
             // stochastically take one of the possibilities
             // start at the probability of first possible character and add each other base probability as long long as the random number is bigger.
             SolutionSizeType sum = 0;
@@ -327,7 +327,7 @@ namespace design {
             return os;
         }
         
-        template std::pair<ProbabilityKey, SolutionSizeType> ProbabilityMatrix::sample<std::mt19937> (std::mt19937*);
-        template std::pair<ProbabilityKey, SolutionSizeType> ProbabilityMatrix::sample<std::mt19937> (ProbabilityKey, std::mt19937*);
+        template std::pair<ProbabilityKey, SolutionSizeType> ProbabilityMatrix::sample<std::mt19937> (std::mt19937&);
+        template std::pair<ProbabilityKey, SolutionSizeType> ProbabilityMatrix::sample<std::mt19937> (ProbabilityKey, std::mt19937&);
     }
 }

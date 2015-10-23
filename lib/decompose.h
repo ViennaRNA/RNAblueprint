@@ -38,10 +38,10 @@ namespace design {
 
         // does the graph decomposition, and calls the coloring of the subgraphs
         template <typename RG>
-        bool decompose_graph(Graph& graph, RG* rand_ptr);
+        bool decompose_graph(Graph& graph, RG& rand);
         // does the graph decomposition recursion
         template <typename RG>
-        void decompose_recursion(Graph& g, RG* rand_ptr);
+        void decompose_recursion(Graph& g, RG& rand);
         
         // get a vector of all vertices with their component id. finds connected components with DFS
         void connected_components_to_subgraphs(Graph& g);
@@ -54,7 +54,7 @@ namespace design {
 
         // ear decomposition of blocks
         template <typename RG>
-        void ear_decomposition_to_subgraphs(Graph& g, RG* rand_ptr);
+        void ear_decomposition_to_subgraphs(Graph& g, RG& rand);
 
         // identify attachment points and add them as graph property Ak
         void color_attachment_points(Graph& g);

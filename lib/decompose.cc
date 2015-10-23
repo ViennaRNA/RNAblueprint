@@ -18,7 +18,7 @@ namespace design {
     namespace detail {
 
         template <typename RG>
-        bool decompose_graph(Graph& graph, RG* rand_ptr) {
+        bool decompose_graph(Graph& graph, RG& rand) {
             
             if (debug) {
                 std::cerr << "root graph:" << std::endl;
@@ -43,7 +43,7 @@ namespace design {
                     return false;
                 }
                 // start a recursion
-                decompose_recursion(*cc, rand_ptr);
+                decompose_recursion(*cc, rand);
             }
             
             // return that the dependency graph is bipartite
@@ -51,7 +51,7 @@ namespace design {
         }
         
         template <typename RG>
-        void decompose_recursion(Graph& g, RG* rand_ptr) {
+        void decompose_recursion(Graph& g, RG& rand) {
             // calculate the max degree of this graph
             int max_degree;
             int min_degree;
@@ -78,7 +78,7 @@ namespace design {
                 // this is a block
                 } else {
                     // do the ear decomposition and create to subgraphs
-                    ear_decomposition_to_subgraphs(g, rand_ptr);
+                    ear_decomposition_to_subgraphs(g, rand);
 
                     if (debug) {
                         std::cerr << "subgraphs ear decomposition:" << std::endl;
@@ -113,7 +113,7 @@ namespace design {
             // call recursion for all children
             Graph::children_iterator gc, gc_end;
             for (boost::tie(gc, gc_end) = g.children(); gc != gc_end; ++gc) {
-                decompose_recursion(*gc, rand_ptr);
+                decompose_recursion(*gc, rand);
             }
         }
 
@@ -242,13 +242,13 @@ namespace design {
         }
 
         template <typename RG>
-        void ear_decomposition_to_subgraphs(Graph& g, RG* rand_ptr) {
+        void ear_decomposition_to_subgraphs(Graph& g, RG& rand) {
             // blocks need to be decomposed into path. this can be done by Ear Decomposition
 
             // predecessor map
             boost::vector_property_map<Vertex> pred(boost::num_vertices(g));
             // get a random spanning tree
-            boost::random_spanning_tree(g, *rand_ptr, boost::predecessor_map(pred));
+            boost::random_spanning_tree(g, rand, boost::predecessor_map(pred));
             // ear map (this is what we want to fill!)
             auto em = boost::get(&edge_property::ear, g);
             // container to store attatchment points
@@ -351,7 +351,7 @@ namespace design {
             }
         }
 
-        template bool decompose_graph<std::mt19937> (Graph&, std::mt19937*);
-        template void ear_decomposition_to_subgraphs<std::mt19937> (Graph&, std::mt19937*);
+        template bool decompose_graph<std::mt19937> (Graph&, std::mt19937&);
+        template void ear_decomposition_to_subgraphs<std::mt19937> (Graph&, std::mt19937&);
     }
 }

@@ -384,51 +384,6 @@ IntVector_swigregister(IntVector)
 def initialize_library(debug):
     return _RNAdesign.initialize_library(debug)
 initialize_library = _RNAdesign.initialize_library
-class DependencyGraphMT(_object):
-    __swig_setmethods__ = {}
-    __setattr__ = lambda self, name, value: _swig_setattr(self, DependencyGraphMT, name, value)
-    __swig_getmethods__ = {}
-    __getattr__ = lambda self, name: _swig_getattr(self, DependencyGraphMT, name)
-    __repr__ = _swig_repr
-
-    def __init__(self, *args):
-        this = _RNAdesign.new_DependencyGraphMT(*args)
-        try:
-            self.this.append(this)
-        except:
-            self.this = this
-    __swig_destroy__ = _RNAdesign.delete_DependencyGraphMT
-    __del__ = lambda self: None
-
-    def get_sequence(self):
-        return _RNAdesign.DependencyGraphMT_get_sequence(self)
-
-    def set_sequence(self, *args):
-        return _RNAdesign.DependencyGraphMT_set_sequence(self, *args)
-
-    def mutate_local(self, *args):
-        return _RNAdesign.DependencyGraphMT_mutate_local(self, *args)
-
-    def mutate_global(self, *args):
-        return _RNAdesign.DependencyGraphMT_mutate_global(self, *args)
-
-    def mutate(self, *args):
-        return _RNAdesign.DependencyGraphMT_mutate(self, *args)
-
-    def number_of_sequences(self, *args):
-        return _RNAdesign.DependencyGraphMT_number_of_sequences(self, *args)
-
-    def number_of_connected_components(self):
-        return _RNAdesign.DependencyGraphMT_number_of_connected_components(self)
-
-    def component_vertices(self, connected_component_ID):
-        return _RNAdesign.DependencyGraphMT_component_vertices(self, connected_component_ID)
-
-    def special_vertices(self):
-        return _RNAdesign.DependencyGraphMT_special_vertices(self)
-DependencyGraphMT_swigregister = _RNAdesign.DependencyGraphMT_swigregister
-DependencyGraphMT_swigregister(DependencyGraphMT)
-
 # This file is compatible with both classic and new-style classes.
 
 

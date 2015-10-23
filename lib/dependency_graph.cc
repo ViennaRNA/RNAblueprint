@@ -29,9 +29,6 @@ namespace design
             if (debug) {
                 std::cerr << "Initializing DependencyGraph..." << std::endl;
             }
-            
-            // initialize random generator
-            rand_ptr = &rand;
 
             // generate graph from input vector
             try {
@@ -48,7 +45,7 @@ namespace design
             // decompose the graph into its connected components, biconnected
             // components and decompose blocks via ear decomposition
             try {
-                bipartite = decompose_graph(graph, rand_ptr);
+                bipartite = decompose_graph(graph, rand);
             } catch (std::exception& e) {
                 std::stringstream ss;
                 ss << "Error while decomposing the dependency graph: " << std::endl << e.what();
@@ -191,7 +188,7 @@ namespace design
             SolutionSizeType cnos = 0;
             
             try {
-                std::tie(colors, cnos) = pms[&g].sample(constraints, rand_ptr);
+                std::tie(colors, cnos) = pms[&g].sample(constraints, rand);
             } catch (std::exception& e) {
                 std::stringstream ss;
                 ss << "Error while sampling from a ProbabilityMatrix: " << std::endl 
@@ -209,7 +206,7 @@ namespace design
                     std::cerr << "Path Coloring!" << std::endl;
                 }
                 try {
-                    color_path_graph(g, rand_ptr);
+                    color_path_graph(g, rand);
                 } catch (std::exception& e) {
                     std::stringstream ss;
                     ss << "Error while sampling a path sequence: " << std::endl 
@@ -229,6 +226,15 @@ namespace design
                 } 
             }
             return cnos;
+        }
+        
+        template <typename R>
+        unsigned long DependencyGraph<R>::set_seed() {
+            unsigned long seed = std::chrono::system_clock::now().time_since_epoch().count();
+            if (debug) {
+                std::cerr << "Using this seed: " << seed << std::endl;
+            }
+            rand.seed(seed);
         }
 
         template <typename R>
@@ -336,7 +342,7 @@ namespace design
             
             // and multiply the count it with a random number
             RandomDistType dist(0, subgraphs.size());
-            SolutionSizeType random = dist(*rand_ptr);
+            SolutionSizeType random = dist(rand);
             
             SolutionSizeType sum = 0;
             for (auto s : subgraphs) {

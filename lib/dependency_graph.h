@@ -18,6 +18,7 @@
 
 #include <sstream>
 #include <unordered_set>
+#include <chrono>
 
 namespace design {
     namespace detail {
@@ -28,12 +29,16 @@ namespace design {
         class DependencyGraph {
         public:
             DependencyGraph(std::vector<std::string> structures, std::string constraints, R rand);
-
             SolutionSizeType number_of_sequences();
             SolutionSizeType number_of_sequences(int connected_component_ID);
             bool is_bipartite() {
                 return bipartite;
             }
+            unsigned long set_seed(int seed) {
+                rand.seed(seed);
+                return seed;
+            }
+            unsigned long set_seed();
             Sequence get_sequence();
             std::string get_sequence_string();
             void set_sequence(Sequence sequence);
@@ -47,7 +52,6 @@ namespace design {
             int number_of_connected_components();
             std::vector< int > component_vertices(int connected_component_ID);
             std::vector< int > special_vertices();
-            R * rand_ptr;
         private:
             Graph graph;
             ProbabilityMatrixStorage pms;

@@ -139,52 +139,6 @@ sub ACQUIRE {
 }
 
 
-############# Class : RNAdesign::DependencyGraphMT ##############
-
-package RNAdesign::DependencyGraphMT;
-use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
-@ISA = qw( RNAdesign );
-%OWNER = ();
-%ITERATORS = ();
-sub new {
-    my $pkg = shift;
-    my $self = RNAdesignc::new_DependencyGraphMT(@_);
-    bless $self, $pkg if defined($self);
-}
-
-sub DESTROY {
-    return unless $_[0]->isa('HASH');
-    my $self = tied(%{$_[0]});
-    return unless defined $self;
-    delete $ITERATORS{$self};
-    if (exists $OWNER{$self}) {
-        RNAdesignc::delete_DependencyGraphMT($self);
-        delete $OWNER{$self};
-    }
-}
-
-*get_sequence = *RNAdesignc::DependencyGraphMT_get_sequence;
-*set_sequence = *RNAdesignc::DependencyGraphMT_set_sequence;
-*mutate_local = *RNAdesignc::DependencyGraphMT_mutate_local;
-*mutate_global = *RNAdesignc::DependencyGraphMT_mutate_global;
-*mutate = *RNAdesignc::DependencyGraphMT_mutate;
-*number_of_sequences = *RNAdesignc::DependencyGraphMT_number_of_sequences;
-*number_of_connected_components = *RNAdesignc::DependencyGraphMT_number_of_connected_components;
-*component_vertices = *RNAdesignc::DependencyGraphMT_component_vertices;
-*special_vertices = *RNAdesignc::DependencyGraphMT_special_vertices;
-sub DISOWN {
-    my $self = shift;
-    my $ptr = tied(%$self);
-    delete $OWNER{$ptr};
-}
-
-sub ACQUIRE {
-    my $self = shift;
-    my $ptr = tied(%$self);
-    $OWNER{$ptr} = 1;
-}
-
-
 # ------- VARIABLE STUBS --------
 
 package RNAdesign;

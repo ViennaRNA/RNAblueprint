@@ -38,9 +38,6 @@
 #include "common.h"
 #include "dependency_graph.h"
 
-// include standard library parts
-#include <chrono>
-
 /*! \brief All classes and functions for the RNA design library are under the design namespace.
  */
 namespace design {
@@ -77,6 +74,9 @@ namespace design {
          * sequence constraints.
         */
         DependencyGraph(std::vector<std::string> structures);
+        /*! \brief Simple copy constructor which sets a new random seed in the copy sampled from the old generator.
+        */
+        DependencyGraph(const DependencyGraph& copy);
         /*! \brief Simple destructor for the dependency graph object.
         */
         ~DependencyGraph();
