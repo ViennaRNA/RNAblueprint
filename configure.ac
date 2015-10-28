@@ -138,7 +138,7 @@ AC_SUBST([LIBS])
 
 # Python support
 ##########################################################################
-AC_ARG_ENABLE([ENABLE_PYTHON],
+AC_ARG_ENABLE([PYTHON],
     [AS_HELP_STRING([--disable-python],
         [Disable the Python interface.])])
 
@@ -155,9 +155,11 @@ AS_IF([test "x$enable_python" = "xno"], [
     AC_SUBST(PKGPYEXECDIR,$pkgpyexecdir)
 ])
 
+AM_CONDITIONAL([ENABLE_PYTHON],[test x$PYTHON = xyes])
+
 # Perl5 support
 ##########################################################################
-AC_ARG_ENABLE([ENABLE_PERL5],
+AC_ARG_ENABLE([PERL5],
     [AS_HELP_STRING([--disable-perl],
         [Disable the Perl5 interface.])])
 
@@ -167,6 +169,8 @@ AS_IF([test "x$enable_perl" = "xno"], [
         AC_MSG_ERROR([Perl is required to build.])
     fi
 ])
+
+AM_CONDITIONAL([ENABLE_PERL5],[test x$PERL5 = xyes])
 
 # files to generate via autotools (.am or .in source files)
 ##########################################################################
