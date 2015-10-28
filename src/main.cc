@@ -9,7 +9,6 @@
 
 // include header
 #include "main.h"
-#include "energy.h"
 
 // boost components
 #include <boost/graph/iteration_macros.hpp>
@@ -38,8 +37,6 @@ int main(int ac, char* av[]) {
     if (vm.count("seed")) {
         seed = vm["seed"].as<unsigned long>();
     }
-    std::mt19937 rand_gen;
-    rand_gen.seed(seed);
     if (verbose) {
         std::cerr << "Using this seed: " << seed << std::endl;
     }
@@ -95,7 +92,7 @@ int main(int ac, char* av[]) {
     
     design::DependencyGraph<std::mt19937>* dependency_graph;
     try {
-        dependency_graph = new design::DependencyGraph<std::mt19937>(structures, constraints, rand_gen);
+        dependency_graph = new design::DependencyGraph<std::mt19937>(structures, constraints, seed);
     } catch (std::exception& e) {
         std::cerr << e.what() << std::endl;
         exit(EXIT_FAILURE);
@@ -115,13 +112,6 @@ int main(int ac, char* av[]) {
         
         std::string sequence = dependency_graph->get_sequence();
         *out << sequence << std::endl;
-        for (auto s : structures) {
-            *out << s << "\t" << energy_of_structure(sequence, s) << std::endl; // calculate the energies
-        }
-        *out << "mfe: " << std::endl;
-        std::string mfe_structure;
-        float mfe = fold(sequence, mfe_structure);
-        *out << mfe_structure << "\t" << mfe << std::endl << std::endl;
         number_of_designs--;
     }
     

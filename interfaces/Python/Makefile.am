@@ -1,24 +1,24 @@
 # this is: interfaces/Python/Makefile.am
+if ENABLE_PYTHON
 
-SOURCES = setup.py
+pyexec_LTLIBRARIES = _RNAdesign.la
+_RNAdesign_la_CPPFLAGS = -I$(top_srcdir)/lib $(PYTHON_CPPFLAGS)
+# link to the library
+_RNAdesign_la_LIBADD = ../lib/RNAdesign.la
+# the source code for our extensions module
+nodist__RNAdesign_la_SOURCES = RNAdesign_wrap.cxx
+# -module forces libtool to generate a dynamically loadable module
+_RNAdesign_la_LDFLAGS = -avoid-version -module -shared -export-dynamic
 
-EXTRA_DIST = RNAdesign_wrap.cxx RNAdesign.py
+nodist_python_PYTHON = RNAdesign.py
 
-RNAdesign_wrap.cxx: ../RNAdesign.i
-	$(SWIG) -python -outcurrentdir ../RNAdesign.i
+# this line assumes that the swig interface file RNAdesign.i is located in the interfaces subdirectory
+RNAdesign_wrap.cxx: $(top_srcdir)/interfaces/RNAdesign.i
+  $(SWIG) -I${top_srcdir}/lib -includeall -o RNAdesign_wrap.cxx -python ${top_srcdir}/interfaces/RNAdesign.i
 
-all-local: RNAdesign_wrap.cxx setup.py
-	@PYTHON@ setup.py build
+RNAdesign.py: RNAdesign_wrap.cxx
 
-install-exec-local: all-local
-	@PYTHON@ setup.py install --prefix=$(prefix) --record install.record
+clean-local:
+  rm -rf RNAdesign_wrap.cxx RNAdesign.py RNAdesign.pyc
 
-uninstall-local:
-	cat install.record | xargs rm -rf
-	
-mostlyclean-local: 
-	@PYTHON@ setup.py clean --all
-	
-# remove all generated content
-maintainer-clean-local:
-	rm -f RNAdesign.py RNAdesign_wrap.cxx
+endif

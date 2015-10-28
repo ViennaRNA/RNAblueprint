@@ -1,29 +1,29 @@
 # this is: interfaces/Perl/Makefile.am
 
-SOURCES = Makefile.PL
+if ENABLE_PERL5
 
-EXTRA_DIST = RNAdesign.pm RNAdesign_wrap.cxx
+perlextdir = $(PERL_EXT_LIB)
 
-Makefile.perl: Makefile.PL Makefile
-	@PERL@ Makefile.PL PREFIX=$(prefix) INSTALL_BASE= 
+perlext_LTLIBRARIES = RNAdesign.la
 
-RNAdesign_wrap.cxx: ../RNAdesign.i
-	$(SWIG) -perl -outcurrentdir ../RNAdesign.i
+RNAdesign_la_CPPFLAGS = -I$(top_srcdir)/lib $(PERL_EXT_CPPFLAGS)
+# link to the library
+RNAdesign_la_LIBADD = ../lib/RNAdesign.la
+# the source code for our extensions module
 
-all-local: RNAdesign_wrap.cxx Makefile.perl
-	$(MAKE) -f Makefile.perl
+nodist_RNAdesign_la_SOURCES = RNAdesign_wrap.cxx
+# -module forces libtool to generate a dynamically loadable module
+RNAdesign_la_LDFLAGS = -avoid-version -module -shared -export-dynamic
 
-install-exec-local: all-local
-	$(MAKE) -f Makefile.perl install
+nodist_perlext_SCRIPTS = RNAdesign.pm
 
-uninstall-local:
-	$(MAKE) -f Makefile.perl uninstall-custom
+# this line assumes that the swig interface file RNAdesign.i is located in the interfaces subdirectory
+RNAdesign_wrap.cxx: $(top_srcdir)/interfaces/RNAdesign.i
+  $(SWIG) -I${top_srcdir}/lib -includeall -o RNAdesign_wrap.cxx -perl ${top_srcdir}/interfaces/RNAdesign.i
 
-mostlyclean-local:
-	$(MAKE) -f Makefile.perl clean
-	rm -f Makefile.perl Makefile.perl.old
-	
-# remove all generated content
-maintainer-clean-local:
-	rm -f RNAdesign.pm RNAdesign_wrap.cxx 
+RNAdesign.pm: RNAdesign_wrap.cxx
 
+clean-local:
+  rm -rf RNAdesign_wrap.cxx RNAdesign.pm
+
+endif
