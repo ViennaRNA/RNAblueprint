@@ -6,6 +6,9 @@ lib_LTLIBRARIES = libRNAdesign.la
 # where to install the headers on the system
 libRNAdesign_ladir = $(includedir)/RNAdesign
 
+# ldflags to avoid version information
+libRNAdesign_la_LDFLAGS = -avoid-version
+
 # additional include pathes necessary to compile the C++ library
 AM_CPPFLAGS = $(BOOST_CPPFLAGS) @AM_CXXFLAGS@
 
