@@ -142,20 +142,14 @@ AC_ARG_ENABLE([PYTHON],
     [AS_HELP_STRING([--disable-python],
         [Disable the Python interface.])])
 
-AS_IF([test "x$enable_python" = "xno"], [
+AS_IF([test "x$enable_python" != "xno"], [
+    AC_MSG_NOTICE([Building with Python bindings])
     AM_PATH_PYTHON(2.7, [], [ AC_MSG_ERROR([Python is required to build.]) ])
-    PYTHON_CPPFLAGS=
-    PYTHON_LDFLAGS=
     AX_PYTHON_DEVEL
-    pythondir=$PYTHON_SITE_PKG
-    pyexecdir=$PYTHON_SITE_PKG_EXEC
-    AC_SUBST(PYTHONDIR,$pythondir)
-    AC_SUBST(PKGPYTHONDIR,$pkgpythondir)
-    AC_SUBST(PYEXECDIR,$pyexecdir)
-    AC_SUBST(PKGPYEXECDIR,$pkgpyexecdir)
+    AX_SWIG_PYTHON
 ])
 
-AM_CONDITIONAL([ENABLE_PYTHON],[test x$PYTHON = xyes])
+AM_CONDITIONAL([ENABLE_PYTHON],[test "x$enable_python" != "xno"])
 
 # Perl5 support
 ##########################################################################
@@ -163,14 +157,18 @@ AC_ARG_ENABLE([PERL5],
     [AS_HELP_STRING([--disable-perl],
         [Disable the Perl5 interface.])])
 
-AS_IF([test "x$enable_perl" = "xno"], [
-    AX_PERL_EXT
+AS_IF([test "x$enable_perl" != "xno"], [
+    AC_MSG_NOTICE([Building with Perl bindings])
+    AX_PERL_EXT([$prefix])
     if test x"$PERL" = x; then
         AC_MSG_ERROR([Perl is required to build.])
     fi
+    AX_PERL_EXT_FLAGS([PERLXS_CFLAGS], [PERLXS_LDFLAGS])
+    AC_SUBST([PERLXS_CFLAGS])
+    AC_SUBST([PERLXS_LDFLAGS])
 ])
 
-AM_CONDITIONAL([ENABLE_PERL5],[test x$PERL5 = xyes])
+AM_CONDITIONAL([ENABLE_PERL5],[test "x$enable_perl" != "xno"])
 
 # files to generate via autotools (.am or .in source files)
 ##########################################################################
