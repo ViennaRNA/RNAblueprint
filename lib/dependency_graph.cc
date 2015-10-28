@@ -353,7 +353,7 @@ namespace design
                     break;
                 }
             }
-            throw std::out_of_range("Could not find any component which fulfill your requirements!");
+            throw std::out_of_range("Could not find any component which fulfills your requirements!");
         }
         
         template <typename R>
