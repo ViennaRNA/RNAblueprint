@@ -81,7 +81,7 @@ namespace design
                 if (debug) {
                     std::cerr << "current graph path? " << gprop.is_path << std::endl;
                     std::cerr << "Graph (" << gprop.type << "-" << gprop.id << "):" << std::endl;
-                    print_graph(*cg, &std::cerr, "current graph");
+                    print_graph(*cg, &std::cerr);
                 }
                 
                 if (gprop.is_path) {
@@ -168,7 +168,6 @@ namespace design
             
             // get graph properties
             graph_property& gprop = boost::get_property(g, boost::graph_name);
-            //print_graph(*current, &std::cerr, "iterator");
             // build a key containing the constraints of already sampled bases
             ProbabilityKey constraints;
 
@@ -226,6 +225,26 @@ namespace design
                 } 
             }
             return cnos;
+        }
+        
+        template <typename R>
+        std::string DependencyGraph<R>::get_graphml() {
+            std::ostringstream stream;
+            print_graph(graph, dynamic_cast<std::ostream*>(&stream));
+            return stream.str();
+        }
+        
+        template <typename R>
+        std::string DependencyGraph<R>::get_graphml(int connected_component_ID) {
+            Graph::children_iterator cc, cc_end;
+            for (boost::tie(cc, cc_end) = graph.children(); cc != cc_end; ++cc) {
+                if (boost::get_property(*cc, boost::graph_name).id == connected_component_ID) {
+                    std::ostringstream stream;
+                    print_graph(*cc, dynamic_cast<std::ostream*>(&stream));
+                    return stream.str();
+                }
+            }
+            throw std::out_of_range("Could not find a connected component with this ID!");
         }
         
         template <typename R>
@@ -404,7 +423,7 @@ namespace design
                     // return pointer to this path, or go deeper
                     if (gprop.is_path) {
                         if (debug)
-                            print_graph(*c, &std::cerr, "mutated graph");
+                            print_graph(*c, &std::cerr);
                         return &*c;
                     } else {
                         return find_path_subgraph(v_global, *c);

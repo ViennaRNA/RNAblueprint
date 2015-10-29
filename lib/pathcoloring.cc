@@ -91,10 +91,6 @@ namespace design {
             } else if (min_degree > 1) {
                 throw std::logic_error("cannot color circles this way.");
             }
-            
-            /*if (debug) {
-                print_graph(g, &std::cerr, "this path will be colored");
-            }*/
 
             // visitor declaration
 

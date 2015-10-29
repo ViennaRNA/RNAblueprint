@@ -118,7 +118,7 @@ BOOST_AUTO_TEST_CASE(biconnectedComponents) {
     initialize_library(true);
     // get graph
     Graph g = createGraph(BC);
-    // print_graph(g, &std::cout, "graph");
+    // print_graph(g, &std::cout);
     BOOST_TEST_MESSAGE("decompose biconnected components 1");
     biconnected_components_to_subgraphs(g);
 
@@ -127,7 +127,7 @@ BOOST_AUTO_TEST_CASE(biconnectedComponents) {
     Graph::children_iterator child, child_end;
     for (boost::tie(child, child_end) = g.children(); child != child_end; ++child) {
         number_of_children++;
-        // print_graph(*child, &std::cout, "bc");
+        // print_graph(*child, &std::cout);
         // for the smaller connected component (12---13)
         if (boost::num_vertices(*child) == 4) {
             std::unordered_set<int> testcase{7, 9, 10, 11};
@@ -156,7 +156,7 @@ BOOST_AUTO_TEST_CASE(biconnectedComponents) {
 
     for (boost::tie(child, child_end) = h.children(); child != child_end; ++child) {
         number_of_children++;
-        // print_graph(*child, &std::cout, "bc");
+        // print_graph(*child, &std::cout);
         // for the smaller connected component (12---13)
         if (boost::num_vertices(*child) == 4) {
             std::unordered_set<int> testcase{7, 9, 10, 11};
@@ -195,7 +195,8 @@ BOOST_AUTO_TEST_CASE(EarDecomposition) {
         int ear = (*child)[*ei.first].ear;
         switch (ear) {
             case 1:
-                print_graph(*child, &std::cout, "ear-1");
+                std::cerr << "ear-1" << std::endl;
+                print_graph(*child, &std::cout);
                 BOOST_CHECK(boost::num_vertices(*child) == 2);
                 // check if both vertices exist and are labeled right
                 testcase = {6, 8};
@@ -209,7 +210,8 @@ BOOST_AUTO_TEST_CASE(EarDecomposition) {
                 }
                 break;
             case 2:
-                print_graph(*child, &std::cout, "ear-2");
+                std::cerr << "ear-2" << std::endl;
+                print_graph(*child, &std::cout);
                 BOOST_CHECK(boost::num_vertices(*child) == 7);
                 // check if both vertices exist and are labeled right
                 testcase = { 2, 3, 4, 5, 6, 7, 0 };
@@ -223,7 +225,8 @@ BOOST_AUTO_TEST_CASE(EarDecomposition) {
                 }
                 break;
             case 3:
-                print_graph(*child, &std::cout, "ear-3");
+                std::cerr << "ear-3" << std::endl;
+                print_graph(*child, &std::cout);
                 BOOST_CHECK(boost::num_vertices(*child) == 4);
                 // check if both vertices exist and are labeled right
                 testcase = {0, 1, 2, 8};
@@ -262,14 +265,15 @@ BOOST_AUTO_TEST_CASE(partsBetweenArticulationPoints) {
     initialize_library(true);
     std::mt19937 mt(1);
     ear_decomposition_to_subgraphs(g, mt);
-    print_subgraphs(g, &std::cout, "ears");
+    std::cerr << "ears:" << std::endl;
+    print_subgraphs(g, &std::cout);
     // now the decomposed graph looks different than above, as the random generator went further
     // However, lets call our method on all children:
     int number_of_children = 0;
     Graph::children_iterator ear, ear_end;
     for (boost::tie(ear, ear_end) = g.children(); ear != ear_end; ++ear) {
         parts_between_specials_to_subgraphs(*ear);
-        // print_subgraphs(*ear, &std::cout, "ear-parts");
+        // print_subgraphs(*ear, &std::cout);
         // there should be sugraphs for all ears now representing the paths and cycles between special nodes (like attatchment points and constraints)
         // or in case of no Ak or Ai, the whole ear is another sugraph
         std::pair<Graph::edge_iterator, Graph::edge_iterator> ei = edges(*ear);

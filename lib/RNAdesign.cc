@@ -57,6 +57,16 @@ namespace design {
     DependencyGraph<R>::~DependencyGraph() {
         delete g;
     }
+    
+    template <typename R>
+    std::string DependencyGraph<R>::get_graphml() {
+        return g->get_graphml();
+    }
+    
+    template <typename R>
+    std::string DependencyGraph<R>::get_graphml(int connected_component_ID) {
+        return g->get_graphml(connected_component_ID);
+    }
 
     template <typename R>
     std::string DependencyGraph<R>::get_sequence() {

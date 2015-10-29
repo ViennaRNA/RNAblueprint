@@ -23,7 +23,7 @@ namespace design {
             if (debug) {
                 std::cerr << "root graph:" << std::endl;
                 // print the just created subgraphs
-                print_graph(graph, &std::cerr, "root");
+                print_graph(graph, &std::cerr);
             }
             
             connected_components_to_subgraphs(graph); // get connected components and make subgraphs
@@ -31,7 +31,7 @@ namespace design {
             if (debug) {
                 std::cerr << "subgraphs connected components:" << std::endl;
                 // print the just created subgraphs
-                print_subgraphs(graph, &std::cerr, "connected-component");
+                print_subgraphs(graph, &std::cerr);
             }
 
             // iterate over all subgraphs (connected components)
@@ -73,7 +73,7 @@ namespace design {
                     if (debug) {
                         std::cerr << "subgraphs biconnected components:" << std::endl;
                         // print the just created subgraphs
-                        print_subgraphs(g, &std::cerr, "biconnected-component");
+                        print_subgraphs(g, &std::cerr);
                     }
                 // this is a block
                 } else {
@@ -83,7 +83,7 @@ namespace design {
                     if (debug) {
                         std::cerr << "subgraphs ear decomposition:" << std::endl;
                         // print the just created subgraphs
-                        print_subgraphs(g, &std::cerr, "decomposed-ear");
+                        print_subgraphs(g, &std::cerr);
                     }
                 }
             // this is a circle
@@ -327,7 +327,8 @@ namespace design {
                     }
                 }
                 if (debug) {
-                    print_subgraphs(g, &std::cerr, "parts-between-specials");
+                    std::cerr << "subgraphs parts between specials:" << std::endl;
+                    print_subgraphs(g, &std::cerr);
                 }
             } else {
                 // mark this subgraph as a path

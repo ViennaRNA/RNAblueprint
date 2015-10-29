@@ -184,7 +184,7 @@ boost::program_options::variables_map init_options(int ac, char* av[]) {
     po::options_description config("Program options");
     config.add_options()
             ("in,i", po::value<std::string>(), "input file which contains the structures [string]")
-            ("out,o", po::value<std::string>(), "output file which contains the sequences [string]")
+            ("out,o", po::value<std::string>(), "output file for writing the sequences [string]")
             ("mode,m", po::value<std::string>(), "mode for sequence generation\n\tsampling: stochastic sampling of all positions\n\
                                                 \tmutate-global: Sample a initial sequence and then only mutate one connected component\n\
                                                 \tmutate-local: Mutate only paths starting from an initial sequence  [string]")

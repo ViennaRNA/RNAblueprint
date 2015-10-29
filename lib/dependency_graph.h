@@ -29,6 +29,8 @@ namespace design {
         class DependencyGraph {
         public:
             DependencyGraph(std::vector<std::string> structures, std::string constraints, R rand);
+            std::string get_graphml();
+            std::string get_graphml(int connected_component_ID);
             SolutionSizeType number_of_sequences();
             SolutionSizeType number_of_sequences(int connected_component_ID);
             bool is_bipartite() {

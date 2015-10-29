@@ -80,6 +80,16 @@ namespace design {
         /*! \brief Simple destructor for the dependency graph object.
         */
         ~DependencyGraph();
+        /*! \brief Returns the root graph in GraphML format as a std::string
+        *  
+        *  Get the dependency graph in the xml based GraphML format for further analysis or visualization.
+        */
+        std::string get_graphml();
+        /*! \brief Returns the connected component graph with the connected_component_ID in GraphML format as a std::string
+        *  
+        *  Get the connected component graph in the xml based GraphML format for further analysis or visualization.
+        */
+        std::string get_graphml(int connected_component_ID);
         /*! \brief Returns the current RNA sequence as a std::string
         *  
         *  This sequence is only N directly after construction. You need to call mutate() first to sample a initial sequence.
