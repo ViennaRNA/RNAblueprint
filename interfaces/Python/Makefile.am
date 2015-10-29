@@ -1,24 +1,22 @@
 # this is: interfaces/Python/Makefile.am
+if ENABLE_PYTHON
 
-SOURCES = setup.py
+pyexec_LTLIBRARIES = _RNAdesign.la
 
-EXTRA_DIST = RNAdesign_wrap.cxx RNAdesign.py
+_RNAdesign_la_SOURCES = $(top_srcdir)/interfaces/RNAdesign.i
+nodist__RNAdesign_la_SOURCES = RNAdesign_wrap.cxx $(SWIG_SOURCES)
+nodist_python_PYTHON = RNAdesign.py
 
-RNAdesign_wrap.cxx: ../RNAdesign.i
-	$(SWIG) -python -outcurrentdir ../RNAdesign.i
+_RNAdesign_la_CPPFLAGS = -I$(top_srcdir)/lib $(PYTHON_CPPFLAGS) $(SWIG_PYTHON_CPPFLAGS)
+_RNAdesign_la_LIBADD = $(LDADD) $(top_srcdir)/lib/libRNAdesign.la
+_RNAdesign_la_LDFLAGS = -avoid-version -module -shared -export-dynamic
 
-all-local: RNAdesign_wrap.cxx setup.py
-	@PYTHON@ setup.py build
+RNAdesign_wrap.cxx: $(top_srcdir)/interfaces/RNAdesign.i
+	$(SWIG) -I${top_srcdir}/lib -includeall -o RNAdesign_wrap.cxx -python ${top_srcdir}/interfaces/RNAdesign.i
 
-install-exec-local: all-local
-	@PYTHON@ setup.py install --prefix=$(prefix) --record install.record
+RNAdesign.py: RNAdesign_wrap.cxx
 
-uninstall-local:
-	cat install.record | xargs rm -rf
-	
-mostlyclean-local: 
-	@PYTHON@ setup.py clean --all
-	
-# remove all generated content
-maintainer-clean-local:
-	rm -f RNAdesign.py RNAdesign_wrap.cxx
+clean-local:
+	rm -rf RNAdesign_wrap.cxx RNAdesign.py RNAdesign.pyc
+
+endif

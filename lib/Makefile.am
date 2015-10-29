@@ -1,16 +1,19 @@
 # this is: lib/Makefile.am
 
 # the library names to build
-lib_LIBRARIES = libRNAdesign.a
+lib_LTLIBRARIES = libRNAdesign.la
 
 # where to install the headers on the system
-libRNAdesign_adir = $(includedir)/RNAdesign
+libRNAdesign_ladir = $(includedir)/RNAdesign
+
+# ldflags to avoid version information
+libRNAdesign_la_LDFLAGS = -avoid-version
 
 # additional include pathes necessary to compile the C++ library
 AM_CPPFLAGS = $(BOOST_CPPFLAGS) @AM_CXXFLAGS@
 
 # the list of header files that belong to the library
-libRNAdesign_a_HEADERS = RNAdesign.h
+libRNAdesign_la_HEADERS = RNAdesign.h
 
 noinst_HEADERS = \
 			common.h \
@@ -26,7 +29,7 @@ noinst_HEADERS = \
 			ear-decomposition.hpp
 
 # the sources to add to the library and to add to the source distribution
-libRNAdesign_a_SOURCES =	\
+libRNAdesign_la_SOURCES =	\
 			$(libRNAdesign_a_HEADERS) \
 			RNAdesign.cc \
 			common.cc \

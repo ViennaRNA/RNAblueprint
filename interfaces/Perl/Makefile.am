@@ -1,29 +1,22 @@
 # this is: interfaces/Perl/Makefile.am
+if ENABLE_PERL5
+perlextdir = $(PERL_EXT_LIB)
+perlext_LTLIBRARIES = RNAdesign.la
 
-SOURCES = Makefile.PL
+RNAdesign_la_SOURCES = $(top_srcdir)/interfaces/RNAdesign.i
+nodist_RNAdesign_la_SOURCES = RNAdesign_wrap.cxx $(SWIG_SOURCES)
+nodist_perlext_SCRIPTS = RNAdesign.pm
 
-EXTRA_DIST = RNAdesign.pm RNAdesign_wrap.cxx
+RNAdesign_la_CPPFLAGS = -I$(top_srcdir)/lib $(PERL_EXT_CPPFLAGS) $(SWIG_PERL_CPPFLAGS) $(PERLXS_CFLAGS)
+RNAdesign_la_LIBADD = $(LDADD) $(top_srcdir)/lib/libRNAdesign.la
+RNAdesign_la_LDFLAGS = -avoid-version -module -shared -export-dynamic $(PERLXS_LDFLAGS)
 
-Makefile.perl: Makefile.PL Makefile
-	@PERL@ Makefile.PL PREFIX=$(prefix) INSTALL_BASE= 
+RNAdesign_wrap.cxx: $(top_srcdir)/interfaces/RNAdesign.i
+	$(SWIG) -I${top_srcdir}/lib -includeall -o RNAdesign_wrap.cxx -perl ${top_srcdir}/interfaces/RNAdesign.i
 
-RNAdesign_wrap.cxx: ../RNAdesign.i
-	$(SWIG) -perl -outcurrentdir ../RNAdesign.i
+RNAdesign.pm: RNAdesign_wrap.cxx
 
-all-local: RNAdesign_wrap.cxx Makefile.perl
-	$(MAKE) -f Makefile.perl
+clean-local:
+	rm -rf RNAdesign_wrap.cxx RNAdesign.pm
 
-install-exec-local: all-local
-	$(MAKE) -f Makefile.perl install
-
-uninstall-local:
-	$(MAKE) -f Makefile.perl uninstall-custom
-
-mostlyclean-local:
-	$(MAKE) -f Makefile.perl clean
-	rm -f Makefile.perl Makefile.perl.old
-	
-# remove all generated content
-maintainer-clean-local:
-	rm -f RNAdesign.pm RNAdesign_wrap.cxx 
-
+endif
