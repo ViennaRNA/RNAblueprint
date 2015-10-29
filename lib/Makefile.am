@@ -13,9 +13,8 @@ libRNAdesign_la_LDFLAGS = -avoid-version
 AM_CPPFLAGS = $(BOOST_CPPFLAGS) @AM_CXXFLAGS@
 
 # the list of header files that belong to the library
-libRNAdesign_la_HEADERS = RNAdesign.h
-
-noinst_HEADERS = \
+libRNAdesign_la_HEADERS = \
+            RNAdesign.h \
 			common.h \
 			decompose.h \
 			printgraph.h \
