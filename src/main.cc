@@ -13,25 +13,28 @@
 // boost components
 #include <boost/graph/iteration_macros.hpp>
 
-//declare global variables
+
+// global debug variable
 bool debug = false;
 
 //! main program starts here
-
 int main(int ac, char* av[]) {
 
     // initialize command line options
     boost::program_options::variables_map vm = init_options(ac, av);
-    int num_trees = 0;
-    unsigned int number_of_designs = 4;
-    if (vm.count("stat-trees")) {
-        num_trees = vm["stat-trees"].as<int>();
-    }
+    bool debug = vm["debug"].as<bool>();
+    bool verbose = vm["verbose"].as<bool>();
+    
+    unsigned int number_of_designs = 10;
     if (vm.count("num")) {
         number_of_designs = vm["num"].as<unsigned int>();
     }
-    bool verbose = vm["verbose"].as<bool>();
-
+    
+    std::string mode = "sample";
+    if (vm.count("mode")) {
+        mode = vm["mode"].as<std::string>();
+    }
+    
     // initialize mersenne twister with our seed
     unsigned long seed = std::chrono::system_clock::now().time_since_epoch().count();
     if (vm.count("seed")) {
@@ -98,13 +101,22 @@ int main(int ac, char* av[]) {
         exit(EXIT_FAILURE);
     }
 
-    if (debug) {
+    if (verbose) {
         std::cerr << "Size of solution space: " << dependency_graph->number_of_sequences() << std::endl;
     }
-
+    // get an initial sequence
+    dependency_graph->set_sequence(); // color the graph and get the sequence
+    
     while (number_of_designs > 0) {
         try {
-            dependency_graph->set_sequence(); // color the graph and get the sequence
+            if (mode == "sample")
+                dependency_graph->set_sequence(); // color the graph and get the sequence
+            else if (mode == "mutate-global")
+                dependency_graph->mutate_global(); 
+            else if (mode == "mutate-local")
+                dependency_graph->mutate_local();
+            else
+                dependency_graph->set_sequence();
         } catch (std::exception& e) {
             std::cerr << e.what() << std::endl;
             exit(EXIT_FAILURE);
@@ -118,81 +130,83 @@ int main(int ac, char* av[]) {
     delete dependency_graph;
     return EXIT_SUCCESS;
     
+}
+
+std::vector<std::string> read_input(std::istream * in) {
+    // read input file
+    std::string line;
+    std::vector<std::string> structures;
+    while (!in->eof()) {
+        getline(*in, line);
+        if (line == "@") {
+            std::fclose(stdin);
+        } else if (line.length() != 0) {
+            structures.push_back(line);
+        }
     }
 
-    std::vector<std::string> read_input(std::istream * in) {
-        // read input file
-        std::string line;
-        std::vector<std::string> structures;
-        while (!in->eof()) {
-            getline(*in, line);
-            if (line == "@") {
-                std::fclose(stdin);
-            } else if (line.length() != 0) {
-                structures.push_back(line);
-            }
-        }
+    // exit if there is no input
+    if (structures.empty()) {
+        exit(EXIT_FAILURE);
+    }
 
-        // exit if there is no input
-        if (structures.empty()) {
-            exit(EXIT_FAILURE);
-        }
-
+    if (debug) {
+        std::cerr << "Read following structures:" << std::endl;
+    }
+    // check if structures have equal length
+    unsigned int length = 0;
+    for (auto elem : structures) {
         if (debug) {
-            std::cerr << "Read following structures:" << std::endl;
+            std::cerr << elem << std::endl;
         }
-        // check if structures have equal length
-        unsigned int length = 0;
-        for (auto elem : structures) {
-            if (debug) {
-                std::cerr << elem << std::endl;
-            }
-            if ((length != elem.length()) && (length != 0)) {
-                std::cerr << "Structures have unequal length." << std::endl;
-                exit(EXIT_FAILURE);
-            }
-            length = elem.length();
-        }
-        return structures;
-    }
-
-    boost::program_options::variables_map init_options(int ac, char* av[]) {
-        // boost option parser
-        // http://www.boost.org/doc/libs/1_53_0/doc/html/program_options/tutorial.html
-        namespace po = boost::program_options;
-        // Group of options that will be allowed only on command line
-        po::options_description generic("Generic options");
-        generic.add_options()
-                ("help,h", "print help message")
-                ("verbose,v", po::bool_switch()->default_value(false)->zero_tokens(), "be verbose")
-                ("debug,d", po::value(&debug)->zero_tokens(), "be verbose for debugging")
-                ;
-
-        // Group of options that will be allowed on command line and in a config file
-        po::options_description config("Program options");
-        config.add_options()
-                ("in,i", po::value<std::string>(), "input file which contains the structures [string]")
-                ("out,o", po::value<std::string>(), "output file which contains the sequences [string]")
-                ("seed,s", po::value<unsigned long>(), "random number generator seed [unsigned long]")
-                ("num,n", po::value<unsigned int>(), "number of designs (default: 4) [unsigned int]")
-                ("stat-trees,t", po::value<int>(), "only do ear-decomposition statistics: define amount of different spanning trees for every root to calculate [int]")
-                ;
-
-        po::positional_options_description p;
-        p.add("in", 1).add("out", 2);
-
-        po::options_description cmdline_options;
-        cmdline_options.add(generic).add(config);
-
-        po::variables_map vm;
-        po::store(po::command_line_parser(ac, av).options(cmdline_options).positional(p).run(), vm);
-        po::notify(vm);
-
-        if (vm.count("help")) {
-            std::cout << cmdline_options << "\n";
+        if ((length != elem.length()) && (length != 0)) {
+            std::cerr << "Structures have unequal length." << std::endl;
             exit(EXIT_FAILURE);
         }
-
-        return vm;
+        length = elem.length();
     }
+    return structures;
+}
+
+boost::program_options::variables_map init_options(int ac, char* av[]) {
+    // boost option parser
+    // http://www.boost.org/doc/libs/1_53_0/doc/html/program_options/tutorial.html
+    namespace po = boost::program_options;
+    // Group of options that will be allowed only on command line
+    po::options_description generic("Generic options");
+    generic.add_options()
+            ("help,h", "print help message")
+            ("verbose,v", po::bool_switch()->default_value(false)->zero_tokens(), "be verbose")
+            ("debug,d", po::bool_switch()->default_value(false)->zero_tokens(), "be verbose for debugging")
+            ;
+
+    // Group of options that will be allowed on command line and in a config file
+    po::options_description config("Program options");
+    config.add_options()
+            ("in,i", po::value<std::string>(), "input file which contains the structures [string]")
+            ("out,o", po::value<std::string>(), "output file which contains the sequences [string]")
+            ("mode,m", po::value<std::string>(), "mode for sequence generation\n\tsampling: stochastic sampling of all positions\n\
+                                                \tmutate-global: Sample a initial sequence and then only mutate one connected component\n\
+                                                \tmutate-local: Mutate only paths starting from an initial sequence  [string]")
+            ("seed,s", po::value<unsigned long>(), "random number generator seed [unsigned long]")
+            ("num,n", po::value<unsigned int>(), "number of designs (default: 10) [unsigned int]")
+            ;
+
+    po::positional_options_description p;
+    p.add("in", 1).add("out", 2);
+
+    po::options_description cmdline_options;
+    cmdline_options.add(generic).add(config);
+
+    po::variables_map vm;
+    po::store(po::command_line_parser(ac, av).options(cmdline_options).positional(p).run(), vm);
+    po::notify(vm);
+
+    if (vm.count("help")) {
+        std::cout << cmdline_options << "\n";
+        exit(EXIT_FAILURE);
+    }
+
+    return vm;
+}
 
