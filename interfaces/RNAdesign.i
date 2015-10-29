@@ -51,6 +51,8 @@ namespace design {
     DependencyGraph(std::vector<std::string> structures);
     DependencyGraph(const DependencyGraph& copy);
     ~DependencyGraph();
+    std::string get_graphml();
+    std::string get_graphml(int connected_component_ID);
     std::string get_sequence();
     void set_sequence(std::string sequence);
     void set_sequence();
