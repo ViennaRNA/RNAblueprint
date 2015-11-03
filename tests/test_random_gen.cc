@@ -57,14 +57,14 @@ BOOST_AUTO_TEST_CASE(int_dist_set) {
     // set initial sequence
     dependency_graph.set_sequence();
     
-    for (int i = 0; i < 100000; i++) {
+    for (int i = 0; i < 10000; i++) {
         dependency_graph.set_sequence();
         Sequence r = dependency_graph.get_sequence();
         count[r[0]]++;
     }
     
     for (auto c : count) {
-        BOOST_CHECK_CLOSE(c.second / 100000.0, 0.25, 1);
+        BOOST_CHECK_CLOSE(c.second / 10000.0, 0.25, 2);
     }
     // 10 must be 0!
     BOOST_CHECK(count[4] == 0);

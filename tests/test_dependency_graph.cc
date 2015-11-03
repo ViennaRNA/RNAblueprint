@@ -451,6 +451,56 @@ BOOST_AUTO_TEST_CASE(mutate_pos_range) {
     }
 }
 
-
+BOOST_AUTO_TEST_CASE(revert_sequence) {
+    design::initialize_library(true);
+    std::vector<std::string> structures = {"....."};
+    std::mt19937 rand_gen(1);
+    design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "NNNNN", rand_gen);
+    
+    BOOST_CHECK(!dependency_graph.revert_sequence(1));
+    dependency_graph.set_sequence();
+    std::string sequence = dependency_graph.get_sequence_string();
+    BOOST_CHECK(!dependency_graph.revert_sequence(1));
+    
+    dependency_graph.mutate_global(1);
+    BOOST_CHECK(dependency_graph.revert_sequence(1));
+    BOOST_CHECK(dependency_graph.get_sequence_string() == sequence);
+    
+    dependency_graph.mutate(0, 3);
+    dependency_graph.mutate_local_global(1, 0, 0);
+    BOOST_CHECK(dependency_graph.revert_sequence(2));
+    BOOST_CHECK(dependency_graph.get_sequence_string() == sequence);
+    BOOST_CHECK(!dependency_graph.revert_sequence(1));
+    
+    dependency_graph.set_sequence();
+    dependency_graph.set_sequence();
+    BOOST_CHECK(!dependency_graph.revert_sequence(4));
+    
+    // now make history big so that we have to forget
+    for (int i = 0; i < 10; i++) {
+        dependency_graph.set_sequence();
+    }
+    BOOST_CHECK(!dependency_graph.revert_sequence(12));
+    // go all the way back
+    while (1) {
+        if (!dependency_graph.revert_sequence(1))
+        break;
+    }
+    // check if we did not arrive at initial sequence and indeed forgot something
+    BOOST_CHECK(dependency_graph.get_sequence_string() != sequence);
+    
+    // now the same with bigger history stack
+    dependency_graph.set_history_size(20);
+    sequence = dependency_graph.get_sequence_string();
+    for (int i = 0; i < 14; i++) {
+        dependency_graph.set_sequence();
+    }
+    while (1) {
+        if (!dependency_graph.revert_sequence(1))
+        break;
+    }
+    // check if we did not arrive at initial sequence and indeed forgot something
+    BOOST_CHECK(dependency_graph.get_sequence_string() == sequence);
+}
 
 BOOST_AUTO_TEST_SUITE_END()

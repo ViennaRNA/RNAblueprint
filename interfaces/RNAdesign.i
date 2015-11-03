@@ -56,6 +56,8 @@ namespace design {
     std::string get_sequence();
     void set_sequence(std::string sequence);
     void set_sequence();
+    bool revert_sequence();
+    bool revert_sequence(unsigned int jump);
     double mutate_local(int min_num_pos, int max_num_pos);
     double mutate_local();
     double mutate_global(int min_num_pos, int max_num_pos);

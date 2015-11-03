@@ -84,6 +84,16 @@ namespace design {
     }
     
     template <typename R>
+    bool DependencyGraph<R>::revert_sequence() {
+        return g->revert_sequence(1);
+    }
+    
+    template <typename R>
+    bool DependencyGraph<R>::revert_sequence(unsigned int jump) {
+        return g->revert_sequence((int)jump);
+    }
+    
+    template <typename R>
     SolutionSizeType DependencyGraph<R>::mutate_local(int min_num_pos, int max_num_pos) {
         // if local_global=-1 we will mutate only actual graphs (independent of their type)
         return g->mutate_local_global(-1, min_num_pos, max_num_pos);

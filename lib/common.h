@@ -18,6 +18,7 @@
 #include <array>
 #include <unordered_map>
 #include <set>
+#include <list>
 #include <iostream>
 #include <utility>
 #include <exception>

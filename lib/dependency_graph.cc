@@ -20,16 +20,14 @@
 namespace design
 {
 
-    namespace detail{
-
+    namespace detail {
         template <typename R>
         DependencyGraph<R>::DependencyGraph(std::vector<std::string> structures, std::string constraints, R _rand)
-        : rand(_rand) {
+        : rand(_rand), history_size(10) {
 
             if (debug) {
                 std::cerr << "Initializing DependencyGraph..." << std::endl;
             }
-
             // generate graph from input vector
             try {
                 graph = parse_structures(structures);
@@ -290,8 +288,6 @@ namespace design
         
         template <typename R>
         void DependencyGraph<R>::set_sequence(Sequence sequence) {
-            // remember current sequence in case of emergency
-            Sequence previous = get_sequence();
             // reset all the colors to N
             reset_colors(graph);
             // write bases to graph
@@ -299,13 +295,10 @@ namespace design
                 if (sequence[s] < A_Size) {
                     graph[int_to_vertex(s, graph)].base = sequence[s];
                 } else {
-                    // reset to previous sequence
-                    for (unsigned int p = 0; p < previous.size(); p++) {
-                        graph[int_to_vertex(p, graph)].base = previous[p];
-                    }
+                    revert_sequence(0);
                     std::stringstream ss;
                     ss << "Error while setting the given sequence: " << sequence << std::endl
-                            << "Resetting to previous sequence: " << previous << std::endl
+                            << "Resetting to previous sequence: " << get_sequence_string() << std::endl
                             << "Only real nucleotides allowed as a fixed base" << std::endl;
                     throw std::logic_error(ss.str());
                 }
@@ -314,37 +307,34 @@ namespace design
                 sample_sequence(graph);
             } catch (std::exception& e) {
                 // reset to previous sequence
-                for (unsigned int p = 0; p < previous.size(); p++) {
-                    graph[int_to_vertex(p, graph)].base = previous[p];
-                }
+                revert_sequence(0);
                 std::stringstream ss;
                 ss << "Error while setting the given sequence: " << sequence << std::endl
-                        << "Resetting to previous sequence: " << previous << std::endl 
+                        << "Resetting to previous sequence: " << get_sequence_string() << std::endl 
                         << "Maybe constraints are not fulfilled?" << std::endl << e.what();
                 throw std::logic_error(ss.str());
             }
+            // remember this new sequence in the history
+            remember_sequence();
         }
 
         template <typename R>
         void DependencyGraph<R>::set_sequence() {
-            // remember current sequence in case of emergency
-            Sequence previous = get_sequence();
             // reset all the colors to N
             reset_colors(graph);
             
             try {
                 sample_sequence(graph);
             } catch (std::exception& e) {
-                // reset to previous sequence
-                for (unsigned int p = 0; p < previous.size(); p++) {
-                    graph[int_to_vertex(p, graph)].base = previous[p];
-                }
+                revert_sequence(0);
                 std::stringstream ss;
                 ss << "Error while setting an initial sequence!" << std::endl
-                        << "Resetting to previous sequence: " << previous << e.what();
+                        << "Resetting to previous sequence: " << get_sequence_string() << e.what();
                     std::cerr << ss.str() << std::endl;
                 throw std::logic_error(ss.str());
             }
+            // remember this new sequence in the history
+            remember_sequence();
         }
 
         template <typename R>
@@ -368,7 +358,9 @@ namespace design
                 sum ++;
                 // if the random number is bigger than our probability, take this base as the current base!
                 if (random < sum) {
-                    return mutate(*s);
+                    SolutionSizeType cnos = mutate(*s);
+                    remember_sequence();
+                    return cnos;
                     break;
                 }
             }
@@ -380,7 +372,9 @@ namespace design
             Graph::children_iterator cc, cc_end;
             for (boost::tie(cc, cc_end) = graph.children(); cc != cc_end; ++cc) {
                 if (boost::get_property(*cc, boost::graph_name).id == connected_component_ID) {
-                    return mutate(*cc);
+                    SolutionSizeType cnos = mutate(*cc);
+                    remember_sequence();
+                    return cnos;
                 }
             }
             throw std::out_of_range("Could not find a connected component with this ID!");
@@ -441,7 +435,9 @@ namespace design
                 std::cerr << "vertex is: " << v_global << std::endl;
             // search for the lowest path subgraph and mutate
             Graph* g = find_path_subgraph(v_global, graph);
-            return mutate(*g);
+            SolutionSizeType cnos = mutate(*g);
+            remember_sequence();
+            return cnos;
         }
 
         template <typename R>
@@ -460,6 +456,7 @@ namespace design
             for (auto sg : subgraphs) {
                 nos *= mutate(*sg);
             }
+            remember_sequence();
             return nos;
         }
         
@@ -468,21 +465,21 @@ namespace design
             // get graph properties
             graph_property& gprop = boost::get_property(g, boost::graph_name);
             
-            // if it is a connected component, do a sample_sequence (also if it is a path too)
+            // reset the whole subgraph for CCs
             if (gprop.type == 1) {
                 if (debug) {
                     std::cerr << "Mutating a connected component!" << std::endl;
                 }
                 // reset the whole connected component and sample everything
+                reset_colors(g);
                 try {
-                    reset_colors(g);
                     return sample_sequence(g);
                 } catch (std::exception& e) {
                     std::stringstream ss;
-                    ss << "Error while mutating a connected component: " << std::endl << e.what();
+                    ss << "Error while mutating a connected component (" << gprop.type << "-" << gprop.id << "): " << std::endl << e.what();
                     throw std::logic_error(ss.str());
                 }
-            // in case this is a path, do a path sampling!
+                // in case this is a path, only reset without specials
             } else if (gprop.is_path) {
                 if (debug) {
                     std::cerr << "Mutating a path!" << std::endl;
@@ -498,12 +495,13 @@ namespace design
                     return sample_sequence(g);
                 } catch (std::exception& e) {
                     std::stringstream ss;
-                    ss << "Error while mutating a path sequence: " << std::endl << e.what();
+                    ss << "Error while mutating a path (" << gprop.type << "-" << gprop.id << "): " << std::endl << e.what();
                     throw std::logic_error(ss.str());
                 }
             } else {
+                // This should never be reached
                 std::stringstream ss;
-                ss << "I thing it is not allowed to mutate only this subgraph: "
+                ss << "I think it is not allowed to mutate only this subgraph: "
                         << gprop.type << "-" << gprop.id << std::endl;
                 throw std::logic_error(ss.str());
             }
@@ -569,6 +567,52 @@ namespace design
             }
             return result;
         }
+        
+        template <typename R>
+        bool DependencyGraph<R>::revert_sequence(int jump) {
+            // check if we already reached the beginning or do a boundary jump
+            if (debug) {
+                std::cerr << "Going back in time some steps: " << jump << std::endl;
+                std::cerr << "History size: " << history.size() << "/" << history_size << std::endl;
+            }
+            if (jump < history.size()) {
+                if (debug) {
+                    std::cerr << "Lets do the time warp again!" << std::endl;
+                }
+                // go to the last position
+                std::list<Sequence>::iterator current = std::prev(history.end());
+                // jump back in time
+                try {
+                    std::advance(current, (jump * -1));
+                } catch (std::exception& e) {
+                    std::stringstream ss;
+                    ss << "Error while reverting the sequence: " << std::endl << e.what();
+                    throw std::logic_error(ss.str());
+                }
+                // set the sequence on the graph
+                for (unsigned int s = 0; s < current->size(); s++) {
+                    graph[int_to_vertex(s, graph)].base = (*current)[s];
+                }
+                // erase everything behind the new current
+                history.erase(++current, history.end());
+                return true;
+            } else {
+                if (debug) {
+                    std::cerr << "We already arrived at big bang!" << std::endl;
+                }
+                return false;
+            }
+        }
+        
+        template <typename R>
+        void DependencyGraph<R>::remember_sequence() {
+            // push current sequence to the end
+            history.push_back(get_sequence());
+            // if our stack is bigger than the maximum, clear the oldest one
+            if (history.size() > history_size)
+                history.erase(history.begin());
+        }
+        
 
         template class DependencyGraph<std::mt19937>;
     }

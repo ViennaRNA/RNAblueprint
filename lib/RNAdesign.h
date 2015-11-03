@@ -80,10 +80,15 @@ namespace design {
         /*! \brief Simple destructor for the dependency graph object.
         */
         ~DependencyGraph();
+        /*! \brief Set the maximum number of previous sampled sequences to memorize (Default: 10).
+        *  
+        *  A history of all sampled sequences is stored in the dependency graph object. This sets the size of the stack in number of sequences.
+        */ 
+        void set_history_size(int size);
         /*! \brief Returns the root graph in GraphML format as a std::string
         *  
         *  Get the dependency graph in the xml based GraphML format for further analysis or visualization.
-        */
+        */        
         std::string get_graphml();
         /*! \brief Returns the connected component graph with the connected_component_ID in GraphML format as a std::string
         *  
@@ -105,6 +110,16 @@ namespace design {
         *  Call get_sequence() after you sampled a new sequence.
         */
         void set_sequence();
+        /*! \brief Reverts the sequence to the previous one
+        *  
+        *  Call revert_sequence() to set the dependency graph to the previous sampled sequence
+        */
+        bool revert_sequence();
+        /*! \brief Reverts the sequence to a previous one being (jump) steps in the history;
+        *  
+        *  revert_sequence(2) would for example revert the sequence to the one before the previous one.
+        */
+        bool revert_sequence(unsigned int jump);
         /*! \brief Randomly chooses one path (either top-level a connected component, or within a block, etc.) with the given length and mutates all positions.
         *  
         *  Special vertices such as cut points or articulation points will stay the same. Therefore it is guaranteed that the sampling is correct,
