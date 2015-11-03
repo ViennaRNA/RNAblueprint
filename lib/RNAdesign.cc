@@ -74,13 +74,13 @@ namespace design {
     }
     
     template <typename R>
-    void DependencyGraph<R>::set_sequence(std::string sequence) {
-        g->set_sequence_string(sequence);
+    SolutionSizeType DependencyGraph<R>::set_sequence(std::string sequence) {
+        return g->set_sequence_string(sequence);
     }
 
     template <typename R>
-    void DependencyGraph<R>::set_sequence() {
-        g->set_sequence();
+    SolutionSizeType DependencyGraph<R>::set_sequence() {
+        return g->set_sequence();
     }
     
     template <typename R>

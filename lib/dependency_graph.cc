@@ -275,7 +275,7 @@ namespace design
         }
         
         template <typename R>
-        void DependencyGraph<R>::set_sequence_string(std::string seq_str) {
+        SolutionSizeType DependencyGraph<R>::set_sequence_string(std::string seq_str) {
             // get a sequence object
             Sequence sequence(seq_str.length());
             
@@ -283,11 +283,12 @@ namespace design
                 sequence[pos] = char_to_enum(std::toupper(seq_str[pos]));
             }
             // not set this sequence to graph
-            set_sequence(sequence);
+            return set_sequence(sequence);
         }
         
         template <typename R>
-        void DependencyGraph<R>::set_sequence(Sequence sequence) {
+        SolutionSizeType DependencyGraph<R>::set_sequence(Sequence sequence) {
+            SolutionSizeType cnos;
             // reset all the colors to N
             reset_colors(graph);
             // write bases to graph
@@ -304,7 +305,7 @@ namespace design
                 }
             }
             try {
-                sample_sequence(graph);
+                cnos = sample_sequence(graph);
             } catch (std::exception& e) {
                 // reset to previous sequence
                 revert_sequence(0);
@@ -316,15 +317,16 @@ namespace design
             }
             // remember this new sequence in the history
             remember_sequence();
+            return cnos;
         }
 
         template <typename R>
-        void DependencyGraph<R>::set_sequence() {
+        SolutionSizeType DependencyGraph<R>::set_sequence() {
+            SolutionSizeType cnos;
             // reset all the colors to N
             reset_colors(graph);
-            
             try {
-                sample_sequence(graph);
+                cnos = sample_sequence(graph);
             } catch (std::exception& e) {
                 revert_sequence(0);
                 std::stringstream ss;
@@ -335,6 +337,7 @@ namespace design
             }
             // remember this new sequence in the history
             remember_sequence();
+            return cnos;
         }
 
         template <typename R>

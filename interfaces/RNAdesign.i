@@ -54,8 +54,8 @@ namespace design {
     std::string get_graphml();
     std::string get_graphml(int connected_component_ID);
     std::string get_sequence();
-    void set_sequence(std::string sequence);
-    void set_sequence();
+    double set_sequence(std::string sequence);
+    double set_sequence();
     bool revert_sequence();
     bool revert_sequence(unsigned int jump);
     double mutate_local(int min_num_pos, int max_num_pos);

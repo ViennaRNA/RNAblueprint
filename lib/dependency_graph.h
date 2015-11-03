@@ -49,9 +49,9 @@ namespace design {
             
             Sequence get_sequence();
             std::string get_sequence_string();
-            void set_sequence(Sequence sequence);
-            void set_sequence_string(std::string seq_str);
-            void set_sequence();
+            SolutionSizeType set_sequence(Sequence sequence);
+            SolutionSizeType set_sequence_string(std::string seq_str);
+            SolutionSizeType set_sequence();
             // call this function to mutate a random subgraph (either a path, if graph_type=-1 or a connected component, if graph_type=1)
             SolutionSizeType mutate_local_global(int graph_type, int min_num_pos, int max_num_pos);
             SolutionSizeType mutate_global(int connected_component_ID);

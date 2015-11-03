@@ -104,12 +104,12 @@ namespace design {
         *  
         *  Only real bases are allowed and the sequence has to fulfill all structural constraints, otherwise an error is thrown.
         */
-        void set_sequence(std::string sequence);
+        SolutionSizeType set_sequence(std::string sequence);
         /*! \brief Resets all bases to N in the whole dependency graph and samples a new initial sequence randomly
         *  
         *  Call get_sequence() after you sampled a new sequence.
         */
-        void set_sequence();
+        SolutionSizeType set_sequence();
         /*! \brief Reverts the sequence to the previous one
         *  
         *  Call revert_sequence() to set the dependency graph to the previous sampled sequence
