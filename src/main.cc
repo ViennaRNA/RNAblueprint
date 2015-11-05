@@ -162,12 +162,12 @@ std::tuple<std::vector<std::string>, std::string, std::string > read_input(std::
     
     for (auto s = structures.begin(); s != structures.end();) {
         if (std::regex_match (*s, con)) {
-            if (constraints == "")
-                constraints = *s;
-            else if (std::regex_match (*s, con))
+            if (std::regex_match (*s, seq) && start_seq == "")
                 start_seq = *s;
+            else if (constraints == "")
+                constraints = *s;
             else {
-                std::cerr << "Multiple constraint lines or unknown start_seq characters: " << *s << std::endl;
+                std::cerr << "Too many constraints or start sequences: " << *s << std::endl;
                 exit(EXIT_FAILURE);
             }
             s = structures.erase(s);
@@ -209,7 +209,7 @@ boost::program_options::variables_map init_options(int ac, char* av[]) {
             ("in,i", po::value<std::string>(), "input file which contains the structures, sequence constraints and the start sequence [string]\n"
                                     "structures: \tsecondary structures in dot-bracket notation. one structure per input line\n"
                                     "sequence constraints: \tPermanent sequence constraints in IUPAC notation [ACGTUWSMKRYBDHVN] (optional)\n"
-                                    "start sequence: \t A initial RNA sequence to start the sampling/mutation from [ACGU]. This has to be the last input (optional)")
+                                    "start sequence: \t A initial RNA sequence to start the sampling/mutation from [ACGU] (optional)")
             ("out,o", po::value<std::string>(), "output file for writing the sequences (default: stdout) [string]")
             ("graphml,g", po::value<std::string>(), "write a GraphML file representing the dependency graph to the given filename (optional) [string]")
             ("mode,m", po::value<std::string>()->default_value("sampling"), "mode for sequence generation [string]:\n"
