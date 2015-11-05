@@ -24,16 +24,8 @@ int main(int ac, char* av[]) {
     boost::program_options::variables_map vm = init_options(ac, av);
     bool debug = vm["debug"].as<bool>();
     bool verbose = vm["verbose"].as<bool>();
-    
-    unsigned int number_of_designs = 10;
-    if (vm.count("num")) {
-        number_of_designs = vm["num"].as<unsigned int>();
-    }
-    
-    std::string mode = "sample";
-    if (vm.count("mode")) {
-        mode = vm["mode"].as<std::string>();
-    }
+    unsigned int number_of_designs = vm["num"].as<unsigned int>();
+    std::string mode = vm["mode"].as<std::string>();
     
     // initialize mersenne twister with our seed
     unsigned long seed = std::chrono::system_clock::now().time_since_epoch().count();
@@ -49,11 +41,12 @@ int main(int ac, char* av[]) {
     // std::in will provide a pseudo interface to enter structures directly!
     std::vector<std::string> structures;
     std::string constraints;
+    std::string start_seq;
 
     if (vm.count("in")) {
         std::ifstream* infile = new std::ifstream(vm["in"].as<std::string>(), std::ifstream::in);
         if (infile->is_open()) {
-            std::tie(structures, constraints) = read_input(infile);
+            std::tie(structures, constraints, start_seq) = read_input(infile);
             infile->close();
             std::cerr << "....,....1....,....2....,....3....,....4....,....5....,....6....,....7....,....8" << std::endl;
         } else {
@@ -61,9 +54,9 @@ int main(int ac, char* av[]) {
             exit(EXIT_FAILURE);
         }
     } else {
-        std::cerr << "Input structures (one per line); @ to quit" << std::endl
+        std::cerr << "Input structures (one per line), constraints and start sequence; @ to quit" << std::endl
                 << "....,....1....,....2....,....3....,....4....,....5....,....6....,....7....,....8" << std::endl;
-        std::tie(structures, constraints) = read_input(&std::cin); // read infile into array
+        std::tie(structures, constraints, start_seq) = read_input(&std::cin); // read infile into array
     }
 
     std::ostream* out = &std::cout;
@@ -78,12 +71,22 @@ int main(int ac, char* av[]) {
         std::cerr << e.what() << std::endl;
         exit(EXIT_FAILURE);
     }
+    
+    if (vm.count("graphml")) {
+        std::ostream* graphml = new std::ofstream(vm["graphml"].as<std::string>(), std::ofstream::out);
+        *graphml << dependency_graph->get_graphml();
+        delete graphml;
+    }
 
     if (verbose) {
         std::cerr << "Size of solution space: " << dependency_graph->number_of_sequences() << std::endl;
     }
-    // get an initial sequence
-    dependency_graph->set_sequence(); // color the graph and get the sequence
+    // get or set an initial sequence
+    if (start_seq == "") {
+        dependency_graph->set_sequence(); // color the graph and get the sequence
+    } else {
+        dependency_graph->set_sequence(start_seq);
+    }
     
     while (number_of_designs > 0) {
         try {
@@ -93,7 +96,13 @@ int main(int ac, char* av[]) {
                 dependency_graph->mutate_global(); 
             else if (mode == "mutate-local")
                 dependency_graph->mutate_local();
-            else
+            else if (mode == "global-neighbors") {
+                dependency_graph->revert_sequence();
+                dependency_graph->mutate_global();
+            } else if (mode == "local-neighbors") {
+                dependency_graph->revert_sequence();
+                dependency_graph->mutate_local();
+            } else
                 dependency_graph->set_sequence();
         } catch (std::exception& e) {
             std::cerr << e.what() << std::endl;
@@ -110,7 +119,7 @@ int main(int ac, char* av[]) {
     
 }
 
-std::tuple<std::vector<std::string>, std::string > read_input(std::istream * in) {
+std::tuple<std::vector<std::string>, std::string, std::string > read_input(std::istream * in) {
     // read input file
     std::string line;
     std::vector<std::string> structures;
@@ -146,12 +155,21 @@ std::tuple<std::vector<std::string>, std::string > read_input(std::istream * in)
     
         // find sequence constraints in structures
     std::string constraints = "";
-    std::regex seq ("[ACGTUWSMKRYBDHVN\\-]{1,}");
+    std::string start_seq = "";
+    std::regex con ("[ACGTUWSMKRYBDHVN\\-]{1,}");
+    std::regex seq ("[ACGTU]{1,}");
     std::regex str ("[\\(\\)\\.]{1,}");
     
     for (auto s = structures.begin(); s != structures.end();) {
-        if (std::regex_match (*s, seq)) {
-            constraints = *s;
+        if (std::regex_match (*s, con)) {
+            if (constraints == "")
+                constraints = *s;
+            else if (std::regex_match (*s, con))
+                start_seq = *s;
+            else {
+                std::cerr << "Multiple constraint lines or unknown start_seq characters: " << *s << std::endl;
+                exit(EXIT_FAILURE);
+            }
             s = structures.erase(s);
         } else if (!std::regex_match (*s, str)) {
             std::cerr << "Unknown characters in line: " << *s << std::endl;
@@ -165,10 +183,12 @@ std::tuple<std::vector<std::string>, std::string > read_input(std::istream * in)
         std::cerr << "structures: " << std::endl 
                 << structures << std::endl
                 << "constraints: " << std::endl
-                << constraints << std::endl;
+                << constraints << std::endl
+                << "start_seq: " << std::endl
+                << start_seq << std::endl;
     }
     
-    return std::make_tuple(structures, constraints);
+    return std::make_tuple(structures, constraints, start_seq);
 }
 
 boost::program_options::variables_map init_options(int ac, char* av[]) {
@@ -186,13 +206,21 @@ boost::program_options::variables_map init_options(int ac, char* av[]) {
     // Group of options that will be allowed on command line and in a config file
     po::options_description config("Program options");
     config.add_options()
-            ("in,i", po::value<std::string>(), "input file which contains the structures [string]")
-            ("out,o", po::value<std::string>(), "output file for writing the sequences [string]")
-            ("mode,m", po::value<std::string>(), "mode for sequence generation\n\tsampling: stochastic sampling of all positions\n\
-                                                \tmutate-global: Sample a initial sequence and then only mutate one connected component\n\
-                                                \tmutate-local: Mutate only paths starting from an initial sequence  [string]")
+            ("in,i", po::value<std::string>(), "input file which contains the structures, sequence constraints and the start sequence [string]\n"
+                                    "structures: \tsecondary structures in dot-bracket notation. one structure per input line\n"
+                                    "sequence constraints: \tPermanent sequence constraints in IUPAC notation [ACGTUWSMKRYBDHVN] (optional)\n"
+                                    "start sequence: \t A initial RNA sequence to start the sampling/mutation from [ACGU]. This has to be the last input (optional)")
+            ("out,o", po::value<std::string>(), "output file for writing the sequences (default: stdout) [string]")
+            ("graphml,g", po::value<std::string>(), "write a GraphML file representing the dependency graph to the given filename (optional) [string]")
+            ("mode,m", po::value<std::string>()->default_value("sampling"), "mode for sequence generation [string]:\n"
+                                    "sampling: \tstochastic sampling of all positions (default)\n"
+                                    "mutate-global: \tOnly mutate one connected component at a time starting from an initial sequence\n"
+                                    "mutate-local: \tMutate only single paths starting from an initial sequence\n"
+                                    "global-neighbors: \tOnly find neighboring sequences to the initial start sequence by mutating one connected component only\n"
+                                    "local-neighbors: \tOnly find neighboring sequences to the initial start sequence by mutating one path only\n"
+            )
             ("seed,s", po::value<unsigned long>(), "random number generator seed [unsigned long]")
-            ("num,n", po::value<unsigned int>(), "number of designs (default: 10) [unsigned int]")
+            ("num,n", po::value<unsigned int>()->default_value(10), "number of designs (default: 10) [unsigned int]")
             ;
 
     po::positional_options_description p;

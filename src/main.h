@@ -30,7 +30,7 @@
 boost::program_options::variables_map init_options(int ac, char* av[]);
 
 // read the input file into a string
-std::tuple<std::vector<std::string>, std::string > read_input(std::istream* in);
+std::tuple<std::vector<std::string>, std::string, std::string > read_input(std::istream* in);
 
 // overload << operator to print vectors with any content
 
