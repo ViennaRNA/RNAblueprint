@@ -48,11 +48,12 @@ int main(int ac, char* av[]) {
     // input handling ( we read from std::in per default and switch to a file if it is given in the --in option
     // std::in will provide a pseudo interface to enter structures directly!
     std::vector<std::string> structures;
+    std::string constraints;
 
     if (vm.count("in")) {
         std::ifstream* infile = new std::ifstream(vm["in"].as<std::string>(), std::ifstream::in);
         if (infile->is_open()) {
-            structures = read_input(infile);
+            std::tie(structures, constraints) = read_input(infile);
             infile->close();
             std::cerr << "....,....1....,....2....,....3....,....4....,....5....,....6....,....7....,....8" << std::endl;
         } else {
@@ -62,35 +63,12 @@ int main(int ac, char* av[]) {
     } else {
         std::cerr << "Input structures (one per line); @ to quit" << std::endl
                 << "....,....1....,....2....,....3....,....4....,....5....,....6....,....7....,....8" << std::endl;
-        structures = read_input(&std::cin); // read infile into array
+        std::tie(structures, constraints) = read_input(&std::cin); // read infile into array
     }
 
     std::ostream* out = &std::cout;
     if (vm.count("out")) {
         out = new std::ofstream(vm["out"].as<std::string>(), std::ofstream::out);
-    }
-    // find sequence constraints in structures
-    std::string constraints = "";
-    std::regex seq ("[ACGTUWSMKRYBDHVN\\-]{1,}");
-    std::regex str ("[\\(\\)\\.]{1,}");
-    
-    for (auto s = structures.begin(); s != structures.end();) {
-        if (std::regex_match (*s, seq)) {
-            constraints = *s;
-            s = structures.erase(s);
-        } else if (!std::regex_match (*s, str)) {
-            std::cerr << "Unknown characters in line: " << *s << std::endl;
-            exit(EXIT_FAILURE);
-        } else {
-            s++;
-        }
-    }
-    
-    if (debug) {
-        std::cerr << "structures: " << std::endl 
-                << structures << std::endl
-                << "constraints: " << std::endl
-                << constraints << std::endl;
     }
     
     design::DependencyGraph<std::mt19937>* dependency_graph;
@@ -132,7 +110,7 @@ int main(int ac, char* av[]) {
     
 }
 
-std::vector<std::string> read_input(std::istream * in) {
+std::tuple<std::vector<std::string>, std::string > read_input(std::istream * in) {
     // read input file
     std::string line;
     std::vector<std::string> structures;
@@ -165,7 +143,32 @@ std::vector<std::string> read_input(std::istream * in) {
         }
         length = elem.length();
     }
-    return structures;
+    
+        // find sequence constraints in structures
+    std::string constraints = "";
+    std::regex seq ("[ACGTUWSMKRYBDHVN\\-]{1,}");
+    std::regex str ("[\\(\\)\\.]{1,}");
+    
+    for (auto s = structures.begin(); s != structures.end();) {
+        if (std::regex_match (*s, seq)) {
+            constraints = *s;
+            s = structures.erase(s);
+        } else if (!std::regex_match (*s, str)) {
+            std::cerr << "Unknown characters in line: " << *s << std::endl;
+            exit(EXIT_FAILURE);
+        } else {
+            s++;
+        }
+    }
+    
+    if (debug) {
+        std::cerr << "structures: " << std::endl 
+                << structures << std::endl
+                << "constraints: " << std::endl
+                << constraints << std::endl;
+    }
+    
+    return std::make_tuple(structures, constraints);
 }
 
 boost::program_options::variables_map init_options(int ac, char* av[]) {
