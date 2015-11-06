@@ -64,7 +64,7 @@ BOOST_AUTO_TEST_CASE(int_dist_set) {
     }
     
     for (auto c : count) {
-        BOOST_CHECK_CLOSE(c.second / 10000.0, 0.25, 2);
+        BOOST_CHECK_CLOSE(c.second / 10000.0, 0.25, 3);
     }
     // 10 must be 0!
     BOOST_CHECK(count[4] == 0);
