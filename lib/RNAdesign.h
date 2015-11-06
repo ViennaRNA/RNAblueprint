@@ -5,7 +5,7 @@
  * All important functions on the graph are available as member functions.
  *
  * Created on: 26.06.2014
- * @Author: Stefan Hammer <s.hammer@univie.ac.at>
+ * @author: Stefan Hammer <s.hammer@univie.ac.at>
  * License: GPLv3
  *
  */

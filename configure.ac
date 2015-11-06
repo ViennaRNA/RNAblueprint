@@ -126,7 +126,7 @@ AC_TYPE_SIZE_T
 
 # SWIG Interface
 ##########################################################################
-AX_PKG_SWIG(1.3.17, [], [ AC_MSG_ERROR([SWIG is required to build.]) ])
+AX_PKG_SWIG(3.0.0, [], [ AC_MSG_ERROR([SWIG is required to build.]) ])
 AX_SWIG_ENABLE_CXX
 AX_SWIG_MULTI_MODULE_SUPPORT
 
