@@ -45,6 +45,8 @@
 // include header
 #include "common.h"
 #include "dependency_graph.h"
+#include "parsestruct.h"
+
 
 /*! \brief All classes and functions for the RNA design library are under the design namespace.
  */
@@ -54,6 +56,13 @@ namespace design {
      *  Set the debug boolean to true if you want to get verbose output to std:err
      */
     void initialize_library(bool debug);
+    /*! \brief Generate a graphml representation of structural and sequence constraints
+     * 
+     *  This function generates a graphml representation of the dependency graph given some structural
+     *  and sequence constraints without constructing a DependencyGraph object.
+     *  It is mainly thought to be useful for developmental purposes and analysis of hard problems.
+     */
+    std::string structures_to_graphml(std::vector<std::string> structures, std::string constraints);
 
     /*! \brief Dependency Graph which holds all structural constraints.
      * 

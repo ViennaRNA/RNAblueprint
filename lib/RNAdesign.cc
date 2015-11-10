@@ -14,6 +14,25 @@ namespace design {
     void initialize_library(bool debug) {
         *detail::debug_ptr = debug;
     }
+    
+    std::string structures_to_graphml(std::vector<std::string> structures, std::string constraints) {
+        detail::Graph graph;
+        // generate graph from input vector
+        try {
+            graph = detail::parse_structures(structures);
+        } catch (std::exception& e) {
+            std::stringstream ss;
+            ss << "Error while parsing the structures: " << std::endl << e.what();
+            throw std::logic_error(ss.str());
+        }
+            
+        // set sequence constraints
+        detail::set_constraints(graph, constraints);
+        
+        std::ostringstream stream;
+        detail::print_graph(graph, dynamic_cast<std::ostream*>(&stream));
+        return stream.str();
+    }
 
     template <typename R>
     DependencyGraph<R>::DependencyGraph(std::vector<std::string> structures, std::string constraints, R rand) {
