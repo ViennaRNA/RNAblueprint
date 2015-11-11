@@ -55,6 +55,9 @@ namespace design {
         // ear decomposition of blocks
         template <typename RG>
         void ear_decomposition_to_subgraphs(Graph& g, RG& rand);
+        
+        // calculate alpha and beta values as measure for the complexity of this ear_decomposition
+        std::pair<int, int> get_alpha_beta(Graph& g, std::vector<Vertex> att_points, int num);
 
         // identify attachment points and add them as graph property Ak
         void color_attachment_points(Graph& g);

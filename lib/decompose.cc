@@ -244,25 +244,50 @@ namespace design {
         template <typename RG>
         void ear_decomposition_to_subgraphs(Graph& g, RG& rand) {
             // blocks need to be decomposed into path. this can be done by Ear Decomposition
-
-            // predecessor map
-            boost::vector_property_map<Vertex> pred(boost::num_vertices(g));
-            // get a random spanning tree
-            boost::random_spanning_tree(g, rand, boost::predecessor_map(pred));
-            // ear map (this is what we want to fill!)
-            auto em = boost::get(&edge_property::ear, g);
-            // container to store attatchment points
-            std::vector<Vertex> att_points;
-            // run the ear decomposition
-            int num = boost::ear_decomposition(g, pred, em, std::back_inserter(att_points));
             
-            // print the EarMap
-            if (debug) {
-                BGL_FORALL_EDGES_T(e, g, Graph) {
-                    std::cout << "(" << boost::source(e, g) << "/" << boost::target(e, g) << "): " << g[e].ear << std::endl;
+            // ear map (this is what we want to fill!)
+            boost::property_map<Graph, int edge_property::*>::type em = boost::get(&edge_property::ear, g);
+            
+            //best pred map
+            boost::vector_property_map<Vertex> best_pred(boost::num_vertices(g));
+            int best_alpha, best_beta = std::numeric_limits<int>::max();
+            // TODO think of a better way to get the best spanning tree. 
+            // for now do a stupid optimization
+            for (int i =0; i < 1000; i++) {
+                // container to store attachment points
+                std::vector<Vertex> att_points;
+                // predecessor map
+                boost::vector_property_map<Vertex> pred(boost::num_vertices(g));
+                // get a random spanning tree
+                boost::random_spanning_tree(g, rand, boost::predecessor_map(pred));
+                
+                // run the ear decomposition
+                int num = boost::ear_decomposition(g, pred, em, std::back_inserter(att_points));
+                
+                // print the EarMap
+                if (debug) {
+                    BGL_FORALL_EDGES_T(e, g, Graph) {
+                        std::cout << "(" << boost::source(e, g) << "/" << boost::target(e, g) << "): " << g[e].ear << std::endl;
+                    }
+                }
+                int alpha, beta;
+                boost::tie(alpha, beta) = get_alpha_beta(g, att_points, num);
+                //std::cerr << alpha << "/" << beta << std::endl;
+                if ((alpha < best_alpha && beta <= best_beta) || (beta < best_beta && alpha <= best_alpha)) {
+                    best_alpha = alpha;
+                    best_beta = beta;
+                    best_pred = pred;
                 }
             }
-
+            // redo best ear decomposition
+            // container to store attachment points
+            std::vector<Vertex> att_points;
+            // run the ear decomposition with best_pred
+            if (debug) {
+                std::cerr << "Best alpha/beta: " << best_alpha << "/" << best_beta << std::endl;
+            }
+            int num = boost::ear_decomposition(g, best_pred, em, std::back_inserter(att_points));
+            
             // create subgraphs from decomposed ears
             // map with subgraphs
             std::map<int, Graph*> ear_graphs;
@@ -280,12 +305,56 @@ namespace design {
                 boost::add_edge(g.local_to_global(e), *ear_graphs[g[e].ear]);
             }
             
+            // attachment points are special vertices
             for (Vertex v : att_points) {
                 g[v].special = true;
                 if (debug) {
                     std::cout << "Vertex " << vertex_to_int(v, g) << " is a attachment point!" << std::endl;
                 }
             }
+        }
+        
+        std::pair<int, int> get_alpha_beta(Graph& g, std::vector<Vertex> att_points, int num) {
+            // return values
+            int alpha = 0;
+            int beta = 0;
+            // map to store all attachment points ordered by ear index
+            // A[k] = { vertex, vertex, vertex }
+            std::map<int, std::vector<Vertex> > Ak;
+            
+            for (Vertex v : att_points) {
+                int min_ear_index = std::numeric_limits<int>::max();
+                int max_ear_index = 0;
+                BGL_FORALL_OUTEDGES_T(v, e, g, Graph) {
+                    if (min_ear_index > g[e].ear)
+                        min_ear_index = g[e].ear;
+                    else if (max_ear_index < g[e].ear)
+                        max_ear_index = g[e].ear;
+                }
+                for (int k = min_ear_index; k < max_ear_index; k++)
+                    Ak[k].push_back(v);
+            }
+            Ak[0] = {}; // this is important, because for the first and last ear we have no attachment points
+            Ak[num] = {};
+            
+            for (int k = 0; k < num-1; ++k) {
+                // for making set_difference we need a sorted vector (Ak[0] is empty and therfore already sorted)
+                std::sort(Ak[k+1].begin(), Ak[k+1].end());
+                // get the Ak+1 but not Ak set
+                std::vector<Vertex> complement(Ak[k].size() + Ak[k+1].size());
+                std::vector<Vertex>::iterator c_it = std::set_difference(Ak[k+1].begin(), Ak[k+1].end(), Ak[k].begin(), Ak[k].end(), complement.begin());
+                complement.resize(c_it-complement.begin());
+                
+                // calculate alpha = max_k(|Ak|)
+                int current_alpha = Ak[k].size();
+                if (current_alpha > alpha)
+                    alpha = current_alpha;
+                // calculate beta = max_k(|Ak| + |Ak+1 \ Ak|)
+                int current_beta = current_alpha + complement.size();
+                if (current_beta > beta)
+                    beta = current_beta;
+            }
+            return std::make_pair(alpha, beta);
         }
 
         void parts_between_specials_to_subgraphs(Graph& g) {
