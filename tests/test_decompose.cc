@@ -182,7 +182,7 @@ BOOST_AUTO_TEST_CASE(EarDecomposition) {
     // set random generator to a static seed;
     initialize_library(true);
     std::mt19937 mt(1);
-    ear_decomposition_to_subgraphs(g, mt);
+    ear_decomposition_to_subgraphs(g, mt, false);
 
     int number_of_children = 0;
 
@@ -264,7 +264,7 @@ BOOST_AUTO_TEST_CASE(partsBetweenArticulationPoints) {
     // set random generator to a static seed;
     initialize_library(true);
     std::mt19937 mt(1);
-    ear_decomposition_to_subgraphs(g, mt);
+    ear_decomposition_to_subgraphs(g, mt, false);
     std::cerr << "ears:" << std::endl;
     print_subgraphs(g, &std::cout);
     // now the decomposed graph looks different than above, as the random generator went further
