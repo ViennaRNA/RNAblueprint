@@ -18,6 +18,7 @@
 
 // include boost components
 #include <boost/graph/iteration_macros.hpp>
+#include <boost/graph/random_spanning_tree.hpp>
 
 // define heads
 using namespace design;
@@ -256,6 +257,35 @@ BOOST_AUTO_TEST_CASE(EarDecomposition) {
     }
 }
 
+BOOST_AUTO_TEST_CASE(alpha_beta) {
+
+    BOOST_TEST_MESSAGE("calculate alpha and beta for our test graph");
+
+    design::initialize_library(true);
+    // create a graph
+    Graph g = createGraph(ED);
+    std::mt19937 mt(1);
+    // predecessor map
+    boost::vector_property_map<Vertex> pred(boost::num_vertices(g));
+    // get a random spanning tree
+    boost::random_spanning_tree(g, mt, boost::predecessor_map(pred));
+    // container to store attachment points
+    std::vector<Vertex> att_points;
+    // ear map (this is what we want to fill!)
+    boost::property_map<Graph, int edge_property::*>::type em = boost::get(&edge_property::ear, g);
+    // run the ear decomposition
+    int num = boost::ear_decomposition(g, pred, em, std::back_inserter(att_points));
+    print_graph(g, &std::cout);
+    // calculate alpha and beta
+    int alpha, beta;
+    boost::tie(alpha, beta) = get_alpha_beta(g, att_points, num);
+    std::cerr << alpha << "/" << beta << std::endl;
+    BOOST_CHECK(alpha == 3);
+    BOOST_CHECK(beta == 4);
+    BOOST_CHECK(num == 3);
+    
+}
+
 BOOST_AUTO_TEST_CASE(partsBetweenArticulationPoints) {
 
     // create a graph
@@ -274,8 +304,8 @@ BOOST_AUTO_TEST_CASE(partsBetweenArticulationPoints) {
     for (boost::tie(ear, ear_end) = g.children(); ear != ear_end; ++ear) {
         parts_between_specials_to_subgraphs(*ear);
         // print_subgraphs(*ear, &std::cout);
-        // there should be sugraphs for all ears now representing the paths and cycles between special nodes (like attatchment points and constraints)
-        // or in case of no Ak or Ai, the whole ear is another sugraph
+        // there should be sugraphs for all ears now representing the paths and cycles between special nodes (like attachment points and constraints)
+        // or in case of no Ak or Ai, the whole ear is another subgraph
         std::pair<Graph::edge_iterator, Graph::edge_iterator> ei = edges(*ear);
         int k = (*ear)[*ei.first].ear;
         

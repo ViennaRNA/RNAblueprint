@@ -357,9 +357,9 @@ namespace design {
                     Ak[k].push_back(v);
             }
             if (debug)
-                std::cerr << Ak << std::endl;
+                std::cerr << "Ak: " << std::endl << Ak << std::endl;
             
-            for (int k = 0; k < num-1; ++k) {
+            for (int k = 0; k < num; ++k) {
                 // for making set_difference we need a sorted vector (Ak[0] is empty and therfore already sorted)
                 std::sort(Ak[k+1].begin(), Ak[k+1].end());
                 // get the Ak+1 but not Ak set
@@ -368,7 +368,7 @@ namespace design {
                 complement.resize(c_it-complement.begin());
                 
                 if (debug)
-                    std::cerr << complement << std::endl;
+                    std::cerr << "complement (k=" << k << "): " << std::endl << complement << std::endl;
                 // calculate alpha = max_k(|Ak|)
                 int current_alpha = Ak[k].size();
                 if (current_alpha > alpha)
