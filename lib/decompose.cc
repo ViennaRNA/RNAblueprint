@@ -297,7 +297,7 @@ namespace design {
                     if (debug)
                         std::cerr << "Optimization Count: " << count << " - " << alpha << "/" << beta << std::endl;
                     // optimization exit
-                    if (count > 10)
+                    if (count > 50)
                         break;
                 }
             }
