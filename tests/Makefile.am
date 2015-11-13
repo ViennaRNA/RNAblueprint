@@ -5,8 +5,8 @@ check_PROGRAMS = testRNAdesign
 
 # additional include pathes necessary to compile the C++ programs
 testRNAdesign_CPPFLAGS = -I$(top_srcdir)/lib $(BOOST_CPPFLAGS) @AM_CXXFLAGS@
-testRNAdesign_LDFLAGS = $(BOOST_THREADS_LDFLAGS) $(BOOST_PROGRAM_OPTIONS_LDFLAGS)
-testRNAdesign_LDADD = $(LDADD) $(top_builddir)/lib/libRNAdesign.la $(BOOST_THREAD_LIBS) $(BOOST_PROGRAM_OPTIONS_LIBS) $(AM_LDFLAGS)
+testRNAdesign_LDFLAGS = $(BOOST_THREADS_LDFLAGS) $(BOOST_PROGRAM_OPTIONS_LDFLAGS) $(BOOST_UNIT_TEST_FRAMEWORK_LDFLAGS)
+testRNAdesign_LDADD = $(LDADD) $(top_builddir)/lib/libRNAdesign.la $(BOOST_THREAD_LIBS) $(BOOST_PROGRAM_OPTIONS_LIBS) $(BOOST_UNIT_TEST_FRAMEWORK_LIBS) $(AM_LDFLAGS)
 
 # list of sources for the 'testRNAdesign' binary
 testRNAdesign_SOURCES =	main.cc \

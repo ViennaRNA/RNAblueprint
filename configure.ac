@@ -39,7 +39,7 @@ AC_SUBST(LIBTOOL_DEPS)
 AC_LANG([C++])
 
 # C++11 dependent program!
-AX_CXX_COMPILE_STDCXX_11
+AX_CXX_COMPILE_STDCXX_11([noext], [mandatory])
 
 # Require Boost Library
 # https://raw.githubusercontent.com/tsuna/boost.m4/master/README
@@ -123,21 +123,21 @@ AC_CHECK_HEADERS([vector])
 
 AC_CHECK_HEADERS([boost/config.hpp])
 AC_CHECK_HEADERS([boost/functional/hash.hpp])
-AC_CHECK_HEADERS([boost/graph/adjacency_list.hpp])
-AC_CHECK_HEADERS([boost/graph/biconnected_components.hpp])
-AC_CHECK_HEADERS([boost/graph/bipartite.hpp])
-AC_CHECK_HEADERS([boost/graph/breadth_first_search.hpp])
-AC_CHECK_HEADERS([boost/graph/connected_components.hpp])
-AC_CHECK_HEADERS([boost/graph/graphml.hpp])
-AC_CHECK_HEADERS([boost/graph/iteration_macros.hpp])
-AC_CHECK_HEADERS([boost/graph/random_spanning_tree.hpp])
-AC_CHECK_HEADERS([boost/graph/undirected_dfs.hpp])
+#AC_CHECK_HEADERS([boost/graph/adjacency_list.hpp])
+#AC_CHECK_HEADERS([boost/graph/biconnected_components.hpp])
+#AC_CHECK_HEADERS([boost/graph/bipartite.hpp])
+#AC_CHECK_HEADERS([boost/graph/breadth_first_search.hpp])
+#AC_CHECK_HEADERS([boost/graph/connected_components.hpp])
+#AC_CHECK_HEADERS([boost/graph/graphml.hpp])
+#AC_CHECK_HEADERS([boost/graph/iteration_macros.hpp])
+#AC_CHECK_HEADERS([boost/graph/random_spanning_tree.hpp])
+#AC_CHECK_HEADERS([boost/graph/undirected_dfs.hpp])
 AC_CHECK_HEADERS([boost/lexical_cast.hpp])
-AC_CHECK_HEADERS([boost/program_options.hpp])
+#AC_CHECK_HEADERS([boost/program_options.hpp])
 AC_CHECK_HEADERS([boost/property_map/property_map.hpp])
 AC_CHECK_HEADERS([boost/property_map/shared_array_property_map.hpp])
 AC_CHECK_HEADERS([boost/property_map/vector_property_map.hpp])
-AC_CHECK_HEADERS([boost/test/unit_test.hpp])
+#AC_CHECK_HEADERS([boost/test/unit_test.hpp])
 
 AM_COND_IF([ENABLE_LIBGMP], [
     AC_CHECK_HEADERS([boost/multiprecision/gmp.hpp])
