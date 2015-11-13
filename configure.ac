@@ -62,12 +62,12 @@ AC_ARG_ENABLE([UNIT_TESTS],
 AS_IF([test "x$enable_tests" != "xno"], [
     AC_MSG_NOTICE([Building with Boost UNIT tests])
     BOOST_TEST([s])
-    [enable_tests_status="enabled"]
+    [enable_tests_status="yes"]
 ], [
-    [enable_tests_status="disabled"]
+    [enable_tests_status="no"]
 ])
 
-AM_CONDITIONAL([ENABLE_TESTS],[test "x$enable_tests_status" = x"enabled"])
+AM_CONDITIONAL([ENABLE_TESTS],[test "x$enable_tests_status" = x"yes"])
 
 
 # debug compilation support
@@ -106,11 +106,11 @@ AS_IF([test x"$enable_libGMP" = x"yes"], [
         [enable_libgmp_status="libGMP not found!"]
         AC_MSG_ERROR([libGMP not found!]))
     AC_DEFINE([LIBGMP],[1],[Using libGMP])
-    [enable_libgmp_status="enabled"]
+    [enable_libgmp_status="yes"]
 ], [
-    [enable_libgmp_status="disabled"]
+    [enable_libgmp_status="no"]
 ])
-AM_CONDITIONAL([ENABLE_LIBGMP], [test x"$enable_libgmp_status" = x"enabled"])
+AM_CONDITIONAL([ENABLE_LIBGMP], [test x"$enable_libgmp_status" = x"yes"])
 
 # Checks for header files.
 ##########################################################################
@@ -175,15 +175,15 @@ AC_ARG_ENABLE([SWIG],
 
 AS_IF([test "x$enable_swig" != "xno"], [
     AX_PKG_SWIG(3.0.7, [
-        [enable_swig_status="enabled"]
+        [enable_swig_status="yes"]
     ], [ 
         AC_MSG_ERROR([SWIG (>= 3.0.7) is required to build.])
         [enable_swig_status="SWIG (>= 3.0.7) is required to build."]
     ])
 ], [
-    [enable_swig_status="disabled"]
+    [enable_swig_status="no"]
 ])
-AM_CONDITIONAL([ENABLE_SWIG], [test x"$enable_swig_status" = x"enabled"])
+AM_CONDITIONAL([ENABLE_SWIG], [test x"$enable_swig_status" = x"yes"])
 
 AM_COND_IF([ENABLE_SWIG], [
     AX_SWIG_ENABLE_CXX
@@ -203,9 +203,9 @@ AM_COND_IF([ENABLE_SWIG], [
         ])
         AX_PYTHON_DEVEL
         AX_SWIG_PYTHON
-        [enable_python_status="enabled"]
+        [enable_python_status="yes"]
     ], [
-        [enable_python_status="disabled"]
+        [enable_python_status="no"]
     ])
     
     # Perl5 support
@@ -224,14 +224,14 @@ AM_COND_IF([ENABLE_SWIG], [
         AX_PERL_EXT_FLAGS([PERLXS_CFLAGS], [PERLXS_LDFLAGS])
         AC_SUBST([PERLXS_CFLAGS])
         AC_SUBST([PERLXS_LDFLAGS])
-        [enable_perl_status="enabled"]
+        [enable_perl_status="yes"]
     ], [
-        [enable_perl_status="disabled"]
+        [enable_perl_status="no"]
     ])
 ])
 
-AM_CONDITIONAL([ENABLE_PYTHON],[test "x$enable_python_status" = x"enabled"])
-AM_CONDITIONAL([ENABLE_PERL5],[test "x$enable_perl_status" = x"enabled"])
+AM_CONDITIONAL([ENABLE_PYTHON],[test "x$enable_python_status" = x"yes"])
+AM_CONDITIONAL([ENABLE_PERL5],[test "x$enable_perl_status" = x"yes"])
 
 # distribute additional compiler and linker flags
 # set these variables instead of CXXFLAGS or LDFLAGS
@@ -260,6 +260,12 @@ AM_COND_IF([ENABLE_PERL5], [
 ##########################################################################
 AC_OUTPUT
 
+AS_IF([test x"$DX_FLAG_doc" = x"yes"], [doxygen_doc="yes"],[doxygen_doc="no"])
+AS_IF([test x"$DX_FLAG_html" = x"yes"], [doxygen_html="yes"],[doxygen_html="no"])
+AS_IF([test x"$DX_FLAG_pdf" = x"yes"], [doxygen_pdf="yes"],[doxygen_pdf="no"])
+AS_IF([test x"$DX_FLAG_man" = x"yes"], [doxygen_man="yes"],[doxygen_man="no"])
+AS_IF([test x"$DX_FLAG_ps" = x"yes"], [doxygen_ps="yes"],[doxygen_ps="no"])
+
 AC_MSG_NOTICE(
 [
 ------------------------------------------------
@@ -269,18 +275,17 @@ Options:
   Prefix path:          $prefix
   Custom BOOST path:    $with_boost
   Debug information:    $enable_debug
-  libGMP integers:      $enable_libgmp_status
+  Use GMP integers:     $enable_libgmp_status
 
-SWIG:                   $enable_swig_status
+SWIG enabled:           $enable_swig_status
   Perl interface:       $enable_perl_status
   Python interface:     $enable_python_status
 
-Documentation:          ${DX_FLAG_doc:-1}
-  (HTML):               ${DX_FLAG_html:-1}
-  (PDF):                ${DX_FLAG_pdf:-1}
-  (MAN):                ${DX_FLAG_man:-1}
-  (PS):                 ${DX_FLAG_ps:-1}
+Documentation enabled:  $doxygen_doc
+  (HTML):               $doxygen_html
+  (PDF):                $doxygen_pdf
+  (MAN):                $doxygen_man
+  (PS):                 $doxygen_ps
 
-Unit Tests:
-  check:                $enable_tests_status
+Unit Tests enabled:     $enable_tests_status
 ])
