@@ -85,39 +85,64 @@ AC_ARG_ENABLE([libGMP],
     [AS_HELP_STRING([--enable-libGMP],
         [Enable this to calculate everything using boost multiprecision integers])])
 
-AS_IF([test "x$enable_libGMP" = "xyes"], [
+AS_IF([test x"$enable_libGMP" = x"yes"], [
     AC_CHECK_LIB([gmp], [__gmp_printf],
         [LIBS="-lgmp $LIBS"],
         AC_MSG_ERROR([libGMP not found!]))
     AC_DEFINE([LIBGMP],[1],[Using libGMP])
+    [libgmpit=true]
 ])
+AM_CONDITIONAL([ENABLE_LIBGMP], [test x"$libgmpit" = x"true"])
 
 # Checks for header files.
 ##########################################################################
 OLD_CXXFLAGS=$CXXFLAGS
 CPPFLAGS="-std=c++11 $CPPFLAGS"
 
-AC_HEADER_STDC
-AC_CHECK_HEADERS([iostream])
-AC_CHECK_HEADERS([sstream])
-AC_CHECK_HEADERS([fstream])
-AC_CHECK_HEADERS([iomanip])
-
-AC_CHECK_HEADERS([string])
-AC_CHECK_HEADERS([vector])
+AC_CHECK_HEADERS([algorithm])
 AC_CHECK_HEADERS([array])
-AC_CHECK_HEADERS([set])
-AC_CHECK_HEADERS([unordered_map])
-
-AC_CHECK_HEADERS([functional])
-AC_CHECK_HEADERS([limits])
 AC_CHECK_HEADERS([chrono])
+AC_CHECK_HEADERS([cctype])
+AC_CHECK_HEADERS([exception])
+AC_CHECK_HEADERS([fstream])
+AC_CHECK_HEADERS([functional])
+AC_CHECK_HEADERS([iomanip])
+AC_CHECK_HEADERS([iostream])
+AC_CHECK_HEADERS([iterator])
+AC_CHECK_HEADERS([limits])
+AC_CHECK_HEADERS([list])
 AC_CHECK_HEADERS([random])
+AC_CHECK_HEADERS([regex])
+AC_CHECK_HEADERS([set])
+AC_CHECK_HEADERS([sstream])
+AC_CHECK_HEADERS([string])
+AC_CHECK_HEADERS([unordered_map])
+AC_CHECK_HEADERS([unordered_set])
+AC_CHECK_HEADERS([utility])
+AC_CHECK_HEADERS([vector])
 
-AC_CHECK_HEADERS([boost/lexical_cast.hpp])
 AC_CHECK_HEADERS([boost/config.hpp])
 AC_CHECK_HEADERS([boost/functional/hash.hpp])
-AC_CHECK_HEADERS([boost/iterator/reverse_iterator.hpp])
+AC_CHECK_HEADERS([boost/graph/adjacency_list.hpp])
+AC_CHECK_HEADERS([boost/graph/biconnected_components.hpp])
+AC_CHECK_HEADERS([boost/graph/bipartite.hpp])
+AC_CHECK_HEADERS([boost/graph/breadth_first_search.hpp])
+AC_CHECK_HEADERS([boost/graph/connected_components.hpp])
+AC_CHECK_HEADERS([boost/graph/graphml.hpp])
+AC_CHECK_HEADERS([boost/graph/iteration_macros.hpp])
+AC_CHECK_HEADERS([boost/graph/random_spanning_tree.hpp])
+AC_CHECK_HEADERS([boost/graph/undirected_dfs.hpp])
+AC_CHECK_HEADERS([boost/lexical_cast.hpp])
+AC_CHECK_HEADERS([boost/program_options.hpp])
+AC_CHECK_HEADERS([boost/property_map/property_map.hpp])
+AC_CHECK_HEADERS([boost/property_map/shared_array_property_map.hpp])
+AC_CHECK_HEADERS([boost/property_map/vector_property_map.hpp])
+AC_CHECK_HEADERS([boost/test/unit_test.hpp])
+
+AM_COND_IF([ENABLE_LIBGMP], [
+    AC_CHECK_HEADERS([boost/multiprecision/gmp.hpp])
+    AC_CHECK_HEADERS([boost/multiprecision/random.hpp])
+])
 
 CPPFLAGS=$OLD_CPPFLAGS
 # Checks for typedefs, structures, and compiler characteristics.
@@ -126,12 +151,12 @@ AC_TYPE_SIZE_T
 
 # SWIG Interface
 ##########################################################################
-AX_PKG_SWIG(3.0.0, [], [ AC_MSG_ERROR([SWIG is required to build.]) ])
+AX_PKG_SWIG(3.0.7, [], [ AC_MSG_ERROR([SWIG (>= 3.0.7) is required to build.]) ])
 AX_SWIG_ENABLE_CXX
 AX_SWIG_MULTI_MODULE_SUPPORT
 
 # distribute additional compiler and linker flags
-# --> set these variables instead of CXXFLAGS or LDFLAGS
+# set these variables instead of CXXFLAGS or LDFLAGS
 AC_SUBST([AM_CXXFLAGS])
 AC_SUBST([AM_LDFLAGS])
 AC_SUBST([LIBS])

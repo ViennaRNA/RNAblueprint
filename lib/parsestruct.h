@@ -17,7 +17,7 @@
 
 // include standard library parts
 #include <sstream>
-#include <ctype.h>
+#include <cctype>
 
 // include boost components
 
