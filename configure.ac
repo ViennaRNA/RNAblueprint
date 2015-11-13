@@ -52,8 +52,23 @@ BOOST_REQUIRE([1.55])
 # Check lib boost_program_options
 BOOST_PROGRAM_OPTIONS([s])
 BOOST_GRAPH([s])
-BOOST_TEST([s])
-#AC_CHECK_LIB([boost_program_options],[_init])
+
+# build with unit tests
+##########################################################################tests
+AC_ARG_ENABLE([UNIT_TESTS],
+    [AS_HELP_STRING([--disable-tests],
+        [Disable support for Boost UNIT tests.])])
+
+AS_IF([test "x$enable_tests" != "xno"], [
+    AC_MSG_NOTICE([Building with Boost UNIT tests])
+    BOOST_TEST([s])
+    [enable_tests_status="enabled"]
+], [
+    [enable_tests_status="disabled"]
+])
+
+AM_CONDITIONAL([ENABLE_TESTS],[test "x$enable_tests_status" = x"enabled"])
+
 
 # debug compilation support
 ##########################################################################
@@ -62,11 +77,11 @@ AC_MSG_CHECKING([whether to build with debug information])
 AC_ARG_ENABLE([debug],
     [AS_HELP_STRING([--enable-debug],
         [enable debug data generation (def=no)])],
-    [debugit="$enableval"],
-    [debugit=no])
-AC_MSG_RESULT([$debugit])
+    [enable_debug="$enableval"],
+    [enable_debug=no])
+AC_MSG_RESULT([$enable_debug])
 
-if test x"$debugit" = x"yes"; then
+if test x"$enable_debug" = x"yes"; then
     AC_DEFINE([DEBUG],[],[Debug Mode])
     AM_CXXFLAGS="$AM_CXXFLAGS -g -Wall -Werror -Wno-uninitialized -O0"
 else
@@ -88,11 +103,14 @@ AC_ARG_ENABLE([libGMP],
 AS_IF([test x"$enable_libGMP" = x"yes"], [
     AC_CHECK_LIB([gmp], [__gmp_printf],
         [LIBS="-lgmp $LIBS"],
+        [enable_libgmp_status="libGMP not found!"]
         AC_MSG_ERROR([libGMP not found!]))
     AC_DEFINE([LIBGMP],[1],[Using libGMP])
-    [libgmpit=true]
+    [enable_libgmp_status="enabled"]
+], [
+    [enable_libgmp_status="disabled"]
 ])
-AM_CONDITIONAL([ENABLE_LIBGMP], [test x"$libgmpit" = x"true"])
+AM_CONDITIONAL([ENABLE_LIBGMP], [test x"$enable_libgmp_status" = x"enabled"])
 
 # Checks for header files.
 ##########################################################################
@@ -151,56 +169,85 @@ AC_TYPE_SIZE_T
 
 # SWIG Interface
 ##########################################################################
-AX_PKG_SWIG(3.0.7, [], [ AC_MSG_ERROR([SWIG (>= 3.0.7) is required to build.]) ])
-AX_SWIG_ENABLE_CXX
-AX_SWIG_MULTI_MODULE_SUPPORT
+AC_ARG_ENABLE([SWIG],
+    [AS_HELP_STRING([--disable-swig],
+        [Disable all SWIG interfaces.])])
+
+AS_IF([test "x$enable_swig" != "xno"], [
+    AX_PKG_SWIG(3.0.7, [
+        [enable_swig_status="enabled"]
+    ], [ 
+        AC_MSG_ERROR([SWIG (>= 3.0.7) is required to build.])
+        [enable_swig_status="SWIG (>= 3.0.7) is required to build."]
+    ])
+], [
+    [enable_swig_status="disabled"]
+])
+AM_CONDITIONAL([ENABLE_SWIG], [test x"$enable_swig_status" = x"enabled"])
+
+AM_COND_IF([ENABLE_SWIG], [
+    AX_SWIG_ENABLE_CXX
+    AX_SWIG_MULTI_MODULE_SUPPORT
+
+    # Python support
+    ######################################################################
+    AC_ARG_ENABLE([PYTHON],
+        [AS_HELP_STRING([--disable-python],
+            [Disable the Python interface.])])
+
+    AS_IF([test "x$enable_python" != "xno"], [
+        AC_MSG_NOTICE([Building with Python bindings])
+        AM_PATH_PYTHON(2.7, [], [ 
+            AC_MSG_ERROR([Python is required to build.])
+            [enable_python_status="Python is required to build."]
+        ])
+        AX_PYTHON_DEVEL
+        AX_SWIG_PYTHON
+        [enable_python_status="enabled"]
+    ], [
+        [enable_python_status="disabled"]
+    ])
+    
+    # Perl5 support
+    ######################################################################
+    AC_ARG_ENABLE([PERL5],
+        [AS_HELP_STRING([--disable-perl],
+            [Disable the Perl5 interface.])])
+
+    AS_IF([test "x$enable_perl" != "xno"], [
+        AC_MSG_NOTICE([Building with Perl bindings])
+        AX_PERL_EXT([$prefix])
+        if test x"$PERL" = x; then
+            AC_MSG_ERROR([Perl is required to build.])
+            [enable_python_status="Perl is required to build."]
+        fi
+        AX_PERL_EXT_FLAGS([PERLXS_CFLAGS], [PERLXS_LDFLAGS])
+        AC_SUBST([PERLXS_CFLAGS])
+        AC_SUBST([PERLXS_LDFLAGS])
+        [enable_perl_status="enabled"]
+    ], [
+        [enable_perl_status="disabled"]
+    ])
+])
+
+AM_CONDITIONAL([ENABLE_PYTHON],[test "x$enable_python_status" = x"enabled"])
+AM_CONDITIONAL([ENABLE_PERL5],[test "x$enable_perl_status" = x"enabled"])
 
 # distribute additional compiler and linker flags
 # set these variables instead of CXXFLAGS or LDFLAGS
+##########################################################################
 AC_SUBST([AM_CXXFLAGS])
 AC_SUBST([AM_LDFLAGS])
 AC_SUBST([LIBS])
-
-# Python support
-##########################################################################
-AC_ARG_ENABLE([PYTHON],
-    [AS_HELP_STRING([--disable-python],
-        [Disable the Python interface.])])
-
-AS_IF([test "x$enable_python" != "xno"], [
-    AC_MSG_NOTICE([Building with Python bindings])
-    AM_PATH_PYTHON(2.7, [], [ AC_MSG_ERROR([Python is required to build.]) ])
-    AX_PYTHON_DEVEL
-    AX_SWIG_PYTHON
-])
-
-AM_CONDITIONAL([ENABLE_PYTHON],[test "x$enable_python" != "xno"])
-
-# Perl5 support
-##########################################################################
-AC_ARG_ENABLE([PERL5],
-    [AS_HELP_STRING([--disable-perl],
-        [Disable the Perl5 interface.])])
-
-AS_IF([test "x$enable_perl" != "xno"], [
-    AC_MSG_NOTICE([Building with Perl bindings])
-    AX_PERL_EXT([$prefix])
-    if test x"$PERL" = x; then
-        AC_MSG_ERROR([Perl is required to build.])
-    fi
-    AX_PERL_EXT_FLAGS([PERLXS_CFLAGS], [PERLXS_LDFLAGS])
-    AC_SUBST([PERLXS_CFLAGS])
-    AC_SUBST([PERLXS_LDFLAGS])
-])
-
-AM_CONDITIONAL([ENABLE_PERL5],[test "x$enable_perl" != "xno"])
 
 # files to generate via autotools (.am or .in source files)
 ##########################################################################
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_FILES([lib/Makefile])
 AC_CONFIG_FILES([src/Makefile])
-AC_CONFIG_FILES([tests/Makefile])
+AM_COND_IF([ENABLE_TESTS], [
+    AC_CONFIG_FILES([tests/Makefile])
+])
 AC_CONFIG_FILES([interfaces/Makefile])
 AM_COND_IF([ENABLE_PYTHON], [
     AC_CONFIG_FILES([interfaces/Python/Makefile])
@@ -209,6 +256,31 @@ AM_COND_IF([ENABLE_PERL5], [
     AC_CONFIG_FILES([interfaces/Perl/Makefile])
 ])
 
-# generate the final Makefile etc.
+# generate the final Makefile etc. and display summary
 ##########################################################################
 AC_OUTPUT
+
+AC_MSG_NOTICE(
+[
+------------------------------------------------
+Configure successful with the following options:
+
+Options:
+  Prefix path:          $prefix
+  Custom BOOST path:    $with_boost
+  Debug information:    $enable_debug
+  libGMP integers:      $enable_libgmp_status
+
+SWIG:                   $enable_swig_status
+  Perl interface:       $enable_perl_status
+  Python interface:     $enable_python_status
+
+Documentation:          ${DX_FLAG_doc:-1}
+  (HTML):               ${DX_FLAG_html:-1}
+  (PDF):                ${DX_FLAG_pdf:-1}
+  (MAN):                ${DX_FLAG_man:-1}
+  (PS):                 ${DX_FLAG_ps:-1}
+
+Unit Tests:
+  check:                $enable_tests_status
+])
