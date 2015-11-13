@@ -202,8 +202,12 @@ AC_CONFIG_FILES([lib/Makefile])
 AC_CONFIG_FILES([src/Makefile])
 AC_CONFIG_FILES([tests/Makefile])
 AC_CONFIG_FILES([interfaces/Makefile])
-AC_CONFIG_FILES([interfaces/Python/Makefile])
-AC_CONFIG_FILES([interfaces/Perl/Makefile])
+AM_COND_IF([ENABLE_PYTHON], [
+    AC_CONFIG_FILES([interfaces/Python/Makefile])
+])
+AM_COND_IF([ENABLE_PERL5], [
+    AC_CONFIG_FILES([interfaces/Perl/Makefile])
+])
 
 # generate the final Makefile etc.
 ##########################################################################
