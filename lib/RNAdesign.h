@@ -210,9 +210,14 @@ namespace design {
         std::vector<int> component_vertices(int connected_component_ID);
         /*! \brief Returns a list of vertices specified as "special".
         *  
-        *  These special vertices include cut points, articulation points and also sequence constraints.
+        *  These special vertices include cut points, articulation points and also a cycle opening.
         */
         std::vector< int > special_vertices();
+        /*! \brief Returns a list of vertices in the specified connected component specified as "special".
+        *  
+        *  These special vertices include cut points, articulation points and also a cycle opening.
+        */
+        std::vector< int > special_vertices(int connected_component_ID);
         
         // ??? get_special_probabilities(connected components ID)
         // Returns basically the ProbabilityMatrix for all special vertices (remove make_internal() function) of the whole connected component 

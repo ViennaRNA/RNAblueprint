@@ -182,6 +182,11 @@ namespace design {
         return g->special_vertices();
     }
     
+    template <typename R>
+    std::vector< int > DependencyGraph<R>::special_vertices(int connected_component_ID) {
+        return g->special_vertices(connected_component_ID);
+    }
+    
     template class DependencyGraph<std::mt19937>;
 
 }

@@ -572,6 +572,25 @@ namespace design
         }
         
         template <typename R>
+        std::vector< int > DependencyGraph<R>::special_vertices(int connected_component_ID) {
+            // get special vertices as vector
+            std::vector< int > result;
+            // iterate over all connected component and fill up the vector
+            Graph::children_iterator cc, cc_end;
+            for (boost::tie(cc, cc_end) = graph.children(); cc != cc_end; ++cc) {
+                if (boost::get_property(*cc, boost::graph_name).id == connected_component_ID) {
+                    BGL_FORALL_VERTICES_T(v, *cc, Graph) {
+                        if (graph[v].special && (graph[v].constraint == N)) {
+                            result.push_back(vertex_to_int(v, graph));
+                        }
+                    }
+                    return result;
+                }
+            }
+            throw std::out_of_range("Could not find a connected component with this ID!");
+        }
+        
+        template <typename R>
         bool DependencyGraph<R>::revert_sequence(int jump) {
             // check if we already reached the beginning or do a boundary jump
             if (debug) {

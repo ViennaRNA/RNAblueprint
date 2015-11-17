@@ -41,6 +41,7 @@ namespace design {
             int number_of_connected_components();
             std::vector< int > component_vertices(int connected_component_ID);
             std::vector< int > special_vertices();
+            std::vector< int > special_vertices(int connected_component_ID);
             unsigned long set_seed(int seed) {
                 rand.seed(seed);
                 return seed;
