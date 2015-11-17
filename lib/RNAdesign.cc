@@ -78,6 +78,11 @@ namespace design {
     }
     
     template <typename R>
+    void DependencyGraph<R>::set_history_size(int size) {
+        g->set_history_size(size);
+    }
+    
+    template <typename R>
     std::string DependencyGraph<R>::get_graphml() {
         return g->get_graphml();
     }

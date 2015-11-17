@@ -27,12 +27,11 @@
  * make install
  * 
  * Most important configure options are:
- * - --prefix           Specify an installation path prefix
- * - --disable-python   Disable the Python scripting interface
- * - --disable-perl     Disable the Perl scripting interface
- * - --enable-libGMP    Enable the calculation of big numbers with multiprecision
- * - --disable-openmp   Disable the usage of parallel computation
- * - --with-boost       Specify the installation directory of the boost library
+ * --prefix           Specify an installation path prefix
+ * --with-boost       Specify the installation directory of the boost library
+ * --disable-swig     Disable all SWIG scripting interfaces
+ * --enable-libGMP    Enable the calculation of big numbers with multiprecision
+ * --disable-openmp   Disable the usage of parallel computation
  *
  * TIP: You might want call ./configure --help for all install options!
  * 
