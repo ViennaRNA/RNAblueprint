@@ -260,11 +260,11 @@ AM_COND_IF([ENABLE_PERL5], [
 ##########################################################################
 AC_OUTPUT
 
-AS_IF([test x"$DX_FLAG_doc" = x"yes"], [doxygen_doc="yes"],[doxygen_doc="no"])
-AS_IF([test x"$DX_FLAG_html" = x"yes"], [doxygen_html="yes"],[doxygen_html="no"])
-AS_IF([test x"$DX_FLAG_pdf" = x"yes"], [doxygen_pdf="yes"],[doxygen_pdf="no"])
-AS_IF([test x"$DX_FLAG_man" = x"yes"], [doxygen_man="yes"],[doxygen_man="no"])
-AS_IF([test x"$DX_FLAG_ps" = x"yes"], [doxygen_ps="yes"],[doxygen_ps="no"])
+AS_IF([test x"$DX_FLAG_doc" = x"1"], [doxygen_doc="yes"],[doxygen_doc="no"])
+AS_IF([test x"$DX_FLAG_html" = x"1"], [doxygen_html="yes"],[doxygen_html="no"])
+AS_IF([test x"$DX_FLAG_pdf" = x"1"], [doxygen_pdf="yes"],[doxygen_pdf="no"])
+AS_IF([test x"$DX_FLAG_man" = x"1"], [doxygen_man="yes"],[doxygen_man="no"])
+AS_IF([test x"$DX_FLAG_ps" = x"1"], [doxygen_ps="yes"],[doxygen_ps="no"])
 
 AC_MSG_NOTICE(
 [
