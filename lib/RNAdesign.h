@@ -15,6 +15,8 @@
  * \section intro_sec Introduction
  *
  * The RNAdesign library still needs some documentation!
+ * Write here something about the theoretical background
+ * Show how to cite the software
  *
  * \section dependency_sec Dependencies
  *
