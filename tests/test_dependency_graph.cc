@@ -268,9 +268,9 @@ BOOST_AUTO_TEST_CASE(get_specials2) {
     BOOST_CHECK(dependency_graph.special_vertices() == check);
 }
 
-BOOST_AUTO_TEST_CASE(mutate_cc_with_ID) {
+BOOST_AUTO_TEST_CASE(sample_cc_with_ID) {
 
-    BOOST_TEST_MESSAGE("check if we can mutate the cc with ccID");
+    BOOST_TEST_MESSAGE("check if we can sample the cc with ccID");
 
     design::initialize_library(true);
     std::vector<std::string> structures = {".."};
@@ -283,7 +283,7 @@ BOOST_AUTO_TEST_CASE(mutate_cc_with_ID) {
     std::cerr << dependency_graph.get_sequence_string() << std::endl;
     std::string result = dependency_graph.get_sequence_string();
     for (int i = 0; i < 100; i++) {
-        SolutionSizeType cnos = dependency_graph.mutate_global(1);
+        SolutionSizeType cnos = dependency_graph.sample_global(1);
         BOOST_CHECK(cnos == 4);
         BOOST_CHECK(dependency_graph.get_sequence_string()[0] == result[0]);
     }
@@ -291,16 +291,16 @@ BOOST_AUTO_TEST_CASE(mutate_cc_with_ID) {
     std::cerr << dependency_graph.get_sequence_string() << std::endl;
     result = dependency_graph.get_sequence_string();
     for (int i = 0; i < 100; i++) {
-        SolutionSizeType cnos = dependency_graph.mutate_global(0);
+        SolutionSizeType cnos = dependency_graph.sample_global(0);
         BOOST_CHECK(cnos == 2);
         BOOST_CHECK(dependency_graph.get_sequence_string()[0] == 'A' || dependency_graph.get_sequence_string()[0] == 'U');
         BOOST_CHECK(dependency_graph.get_sequence_string()[1] == result[1]);
     }
 }
 
-BOOST_AUTO_TEST_CASE(mutate_global1) {
+BOOST_AUTO_TEST_CASE(sample_global1) {
 
-    BOOST_TEST_MESSAGE("check if we can mutate globally");
+    BOOST_TEST_MESSAGE("check if we can sample globally");
 
     design::initialize_library(true);
     std::vector<std::string> structures = {".."};
@@ -313,7 +313,7 @@ BOOST_AUTO_TEST_CASE(mutate_global1) {
     
     for (int i = 0; i < 100; i++) {
         std::string result = dependency_graph.get_sequence_string();
-        SolutionSizeType cnos = dependency_graph.mutate_local_global(1, 0, 0);
+        SolutionSizeType cnos = dependency_graph.sample_local_global(1, 0, 0);
         if (dependency_graph.get_sequence_string()[0] != result[0]) {
             BOOST_CHECK(cnos == 2);
         } else if (dependency_graph.get_sequence_string()[1] != result[1]) {
@@ -323,9 +323,9 @@ BOOST_AUTO_TEST_CASE(mutate_global1) {
     // TODO make nice check if the base distributions are alright
 }
 
-BOOST_AUTO_TEST_CASE(mutate_local1) {
+BOOST_AUTO_TEST_CASE(sample_local1) {
 
-    BOOST_TEST_MESSAGE("check if we can mutate locally");
+    BOOST_TEST_MESSAGE("check if we can sample locally");
 
     design::initialize_library(true);
     std::vector<std::string> structures = {".."};
@@ -339,7 +339,7 @@ BOOST_AUTO_TEST_CASE(mutate_local1) {
     
     for (int i = 0; i < 100; i++) {
         std::string result = dependency_graph.get_sequence_string();
-        SolutionSizeType cnos = dependency_graph.mutate_local_global(-1, 0, 0);
+        SolutionSizeType cnos = dependency_graph.sample_local_global(-1, 0, 0);
         if (dependency_graph.get_sequence_string()[0] != result[0]) {
             BOOST_CHECK(cnos == 2);
         } else if (dependency_graph.get_sequence_string()[1] != result[1]) {
@@ -367,9 +367,9 @@ BOOST_AUTO_TEST_CASE(number_of_sequences_cc) {
     BOOST_CHECK(dependency_graph.number_of_sequences() == 12096);
 }
 
-BOOST_AUTO_TEST_CASE(mutate_pos) {
+BOOST_AUTO_TEST_CASE(sample_pos) {
 
-    BOOST_TEST_MESSAGE("mutate dependency graph by position");
+    BOOST_TEST_MESSAGE("sample dependency graph by position");
 
     design::initialize_library(true);
     std::vector<std::string> structures = {"()....()..()", ".()()..(.)..", ".(.)...()..."};
@@ -380,11 +380,11 @@ BOOST_AUTO_TEST_CASE(mutate_pos) {
     
     BOOST_CHECK(dependency_graph.number_of_sequences() == 12096);
     dependency_graph.set_sequence();
-    // mutate CCs which are paths
+    // sample CCs which are paths
     for (int i = 0; i<100; i++) {
         // get sequence
         std::string result = dependency_graph.get_sequence_string();
-        BOOST_CHECK(dependency_graph.mutate(5) == 4);
+        BOOST_CHECK(dependency_graph.sample(5) == 4);
         // check if only position 5 changed
         for (int j=0; j < result.length(); j++) {
             if (j != 5 ) {
@@ -393,21 +393,21 @@ BOOST_AUTO_TEST_CASE(mutate_pos) {
         }
     }
     
-    // mutate CCs which are paths
+    // sample CCs which are paths
     for (int i = 0; i<100; i++) {
         std::string result = dependency_graph.get_sequence_string();
-        BOOST_CHECK(dependency_graph.mutate(10) == 6);
+        BOOST_CHECK(dependency_graph.sample(10) == 6);
         // check if only position 10 and 11 changed
         for (int j=0; j < 10; j++) {
             BOOST_CHECK(result[j] == dependency_graph.get_sequence_string()[j]);
         }
     }
     
-    // mutate more nested subgraphs
-    // mutate CCs which are paths
+    // sample more nested subgraphs
+    // sample CCs which are paths
     for (int i = 0; i<100; i++) {
         std::string result = dependency_graph.get_sequence_string();
-        BOOST_CHECK(dependency_graph.mutate(2) == 2);
+        BOOST_CHECK(dependency_graph.sample(2) == 2);
         // check if only position 2 changed
         for (int j=0; j < result.length(); j++) {
             if (j != 2 ) {
@@ -417,9 +417,9 @@ BOOST_AUTO_TEST_CASE(mutate_pos) {
     }
 }
 
-BOOST_AUTO_TEST_CASE(mutate_pos_range) {
+BOOST_AUTO_TEST_CASE(sample_pos_range) {
 
-    BOOST_TEST_MESSAGE("mutate dependency graph by position range");
+    BOOST_TEST_MESSAGE("sample dependency graph by position range");
 
     design::initialize_library(true);
     std::vector<std::string> structures = {"()....()..()", ".()()..(.)..", ".(.)...()..."};
@@ -430,20 +430,20 @@ BOOST_AUTO_TEST_CASE(mutate_pos_range) {
     
     BOOST_CHECK(dependency_graph.number_of_sequences() == 12096);
     dependency_graph.set_sequence();
-    // mutate positions which are in one path
-    // mutate CCs which are paths
+    // sample positions which are in one path
+    // sample CCs which are paths
     for (int i = 0; i<100; i++) {
         std::string result = dependency_graph.get_sequence_string();
-        BOOST_CHECK(dependency_graph.mutate(10, 11) == 6);
+        BOOST_CHECK(dependency_graph.sample(10, 11) == 6);
         // check if only position 10 and 11 changed
         for (int j=0; j < 10; j++) {
             BOOST_CHECK(result[j] == dependency_graph.get_sequence_string()[j]);
         }
     }
-    // mutate on different CCs
+    // sample on different CCs
     for (int i = 0; i<100; i++) {
         std::string result = dependency_graph.get_sequence_string();
-        BOOST_CHECK(dependency_graph.mutate(9, 11) == 12);
+        BOOST_CHECK(dependency_graph.sample(9, 11) == 12);
         // check if only position 10 and 11 changed
         for (int j=0; j < 9; j++) {
             BOOST_CHECK(result[j] == dependency_graph.get_sequence_string()[j]);
@@ -462,12 +462,12 @@ BOOST_AUTO_TEST_CASE(revert_sequence) {
     std::string sequence = dependency_graph.get_sequence_string();
     BOOST_CHECK(!dependency_graph.revert_sequence(1));
     
-    dependency_graph.mutate_global(1);
+    dependency_graph.sample_global(1);
     BOOST_CHECK(dependency_graph.revert_sequence(1));
     BOOST_CHECK(dependency_graph.get_sequence_string() == sequence);
     
-    dependency_graph.mutate(0, 3);
-    dependency_graph.mutate_local_global(1, 0, 0);
+    dependency_graph.sample(0, 3);
+    dependency_graph.sample_local_global(1, 0, 0);
     BOOST_CHECK(dependency_graph.revert_sequence(2));
     BOOST_CHECK(dependency_graph.get_sequence_string() == sequence);
     BOOST_CHECK(!dependency_graph.revert_sequence(1));

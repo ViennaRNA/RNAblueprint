@@ -118,43 +118,43 @@ namespace design {
     }
     
     template <typename R>
-    SolutionSizeType DependencyGraph<R>::mutate_local(int min_num_pos, int max_num_pos) {
-        // if local_global=-1 we will mutate only actual graphs (independent of their type)
-        return g->mutate_local_global(-1, min_num_pos, max_num_pos);
+    SolutionSizeType DependencyGraph<R>::sample_local(int min_num_pos, int max_num_pos) {
+        // if local_global=-1 we will sample only actual graphs (independent of their type)
+        return g->sample_local_global(-1, min_num_pos, max_num_pos);
     }
     
     template <typename R>
-    SolutionSizeType DependencyGraph<R>::mutate_local() {
-        // if local_global=-1 we will mutate only actual graphs, with 0,0 we choose any
-        return g->mutate_local_global(-1, 0, 0);
+    SolutionSizeType DependencyGraph<R>::sample_local() {
+        // if local_global=-1 we will sample only actual graphs, with 0,0 we choose any
+        return g->sample_local_global(-1, 0, 0);
     }
     
     template <typename R>
-    SolutionSizeType DependencyGraph<R>::mutate_global(int min_num_pos, int max_num_pos) {
-        // if local_global=1 we will mutate only connected components
-        return g->mutate_local_global(1, min_num_pos, max_num_pos);
+    SolutionSizeType DependencyGraph<R>::sample_global(int min_num_pos, int max_num_pos) {
+        // if local_global=1 we will sample only connected components
+        return g->sample_local_global(1, min_num_pos, max_num_pos);
     }
     
     template <typename R>
-    SolutionSizeType DependencyGraph<R>::mutate_global(int connected_component_ID) {
-        // mutate the connected component with the ID
-        return g->mutate_global(connected_component_ID);
+    SolutionSizeType DependencyGraph<R>::sample_global(int connected_component_ID) {
+        // sample the connected component with the ID
+        return g->sample_global(connected_component_ID);
     }
     
     template <typename R>
-    SolutionSizeType DependencyGraph<R>::mutate_global() {
-        // mutate any component with any size
-        return g->mutate_local_global(1, 0, 0);
+    SolutionSizeType DependencyGraph<R>::sample_global() {
+        // sample any component with any size
+        return g->sample_local_global(1, 0, 0);
     }
     
     template <typename R>
-    SolutionSizeType DependencyGraph<R>::mutate(int position) {
-        return g->mutate(position);
+    SolutionSizeType DependencyGraph<R>::sample(int position) {
+        return g->sample(position);
     }
     
     template <typename R>
-    SolutionSizeType DependencyGraph<R>::mutate(int start, int end) {
-        return g->mutate(start, end);
+    SolutionSizeType DependencyGraph<R>::sample(int start, int end) {
+        return g->sample(start, end);
     }
 
     template <typename R>

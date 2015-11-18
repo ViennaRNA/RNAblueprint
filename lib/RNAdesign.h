@@ -113,7 +113,7 @@ namespace design {
         std::string get_graphml(int connected_component_ID);
         /*! \brief Returns the current RNA sequence as a std::string
         *  
-        *  This sequence is only N directly after construction. You need to call mutate() first to sample a initial sequence.
+        *  This sequence is only N directly after construction. You need to call sample() first to sample a initial sequence.
         */
         std::string get_sequence();
         /*! \brief Allows you to set a initial sequence as starting point for your optimization.
@@ -136,59 +136,59 @@ namespace design {
         *  revert_sequence(2) would for example revert the sequence to the one before the previous one.
         */
         bool revert_sequence(unsigned int jump);
-        /*! \brief Randomly chooses one path (either top-level a connected component, or within a block, etc.) with the given length and mutates all positions.
+        /*! \brief Randomly chooses one path (either top-level a connected component, or within a block, etc.) with the given length and samples all positions.
         *  
         *  Special vertices such as cut points or articulation points will stay the same. Therefore it is guaranteed that the sampling is correct,
         *  even if we only sample a small local piece of a more complex graph object.
-        *  int min_num_pos, int max_num_pos set the minimal/maximal number of mutated positions, e.g., for (3,5) only paths
-        *  with minimal 3 and maximal 5 non-special vertices will be chosen for mutation. 0 for the upper boundary defines infinity. The range is inclusive!
+        *  int min_num_pos, int max_num_pos set the minimal/maximal number of sampled positions, e.g., for (3,5) only paths
+        *  with minimal 3 and maximal 5 non-special vertices will be chosen for sampling. 0 for the upper boundary defines infinity. The range is inclusive!
         */
-        SolutionSizeType mutate_local(int min_num_pos, int max_num_pos);
-        /*! \brief Randomly chooses one path (either top-level a connected component, or within a block, etc.) and mutates all positions.
+        SolutionSizeType sample_local(int min_num_pos, int max_num_pos);
+        /*! \brief Randomly chooses one path (either top-level a connected component, or within a block, etc.) and samples all positions.
         *  
         */
-        SolutionSizeType mutate_local();
+        SolutionSizeType sample_local();
         /*! \brief Randomly chooses a connected component and samples a new sequence for the whole component.
         *  
-        *  This is a more global way of mutating the structure as it probably exchanges a much bigger graph object.
-        *  int min_num_pos, int max_num_pos set the minimal/maximal number of mutated positions, e.g., for (3,5) only connected components
-        *  with minimal 3 and maximal 5 vertices will be chosen for mutation. 0 for the upper boundary defines infinity. The range is inclusive!
+        *  This is a more global way of sampling a new sequence as it probably exchanges a much bigger graph object.
+        *  int min_num_pos, int max_num_pos set the minimal/maximal number of sampled positions, e.g., for (3,5) only connected components
+        *  with minimal 3 and maximal 5 vertices will be chosen for sampling. 0 for the upper boundary defines infinity. The range is inclusive!
         * 
-        *  Returns: The number of possible sequences for this mutation.
+        *  Returns: The number of possible sequences for this sampling.
         */
-        SolutionSizeType mutate_global(int min_num_pos, int max_num_pos);
+        SolutionSizeType sample_global(int min_num_pos, int max_num_pos);
         /*! \brief Takes the connected component with the ID (int connected_component_ID) and samples a new sequence for the whole component.
         *  
         *  The connected_component_IDs range from 0 to  number_of_connected_components()
         *  
-        *  Returns: The number of possible sequences for this mutation.
+        *  Returns: The number of possible sequences for this sampling.
         */
-        SolutionSizeType mutate_global(int connected_component_ID);
+        SolutionSizeType sample_global(int connected_component_ID);
         /*! \brief Takes a random connected component and samples a new sequence for the whole component.
         *  
-        *  Returns: The number of possible sequences for this mutation.
+        *  Returns: The number of possible sequences for this sampling.
         */
-        SolutionSizeType mutate_global();
+        SolutionSizeType sample_global();
         /*! \brief Resets only the smallest subgraph(s) possible containing the vertex at the given position in the sequence.
         *  
-        *  This way you can optimize by targeted mutagenesis at the given positions. All positions dependent on the chosen one
-        *  will also be mutated.
+        *  This way you can optimize by targeted sampling at the given positions. All positions dependent on the chosen one
+        *  will also be sampled.
         *  If your position is a special vertex, the whole connected component will be re-sampled. Else, in case of being a non-special vertex,
-        *  only the smallest path containing the vertex will be mutated. Positions range from [0,N-1]
+        *  only the smallest path containing the vertex will be sampled. Positions range from [0,N-1]
         * 
-        *  Returns: The number of possible sequences for this mutation.
+        *  Returns: The number of possible sequences for this sampling.
         */
-        SolutionSizeType mutate(int position);
+        SolutionSizeType sample(int position);
         /*! \brief Resets only the smallest subgraph(s) possible containing the vertices from position start to end.
         *  
-        *  This way you can optimize by targeted mutagenesis at the given positions. All positions dependent on the chosen ones
-        *  will also be mutated.
+        *  This way you can optimize by targeted sampling at the given positions. All positions dependent on the chosen ones
+        *  will also be sampled.
         *  If your positions contain special vertices, the whole connected components will be re-sampled. Else, in case of being only non-special vertex,
-        *  only the smallest paths containing the vertices will be mutated. Positions range from [0,N-1]
+        *  only the smallest paths containing the vertices will be sampled. Positions range from [0,N-1]
         * 
-        *  Returns: The number of possible sequences for this mutation.
+        *  Returns: The number of possible sequences for this sampling.
         */
-        SolutionSizeType mutate(int start, int end);
+        SolutionSizeType sample(int start, int end);
         /*! \brief Returns the amount of solutions given the dependency graph and sequence constraints
         *  
         *  Number of sequences is the total amount of sequences possible for the given structural and sequence constraints.

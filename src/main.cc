@@ -92,16 +92,16 @@ int main(int ac, char* av[]) {
         try {
             if (mode == "sample")
                 dependency_graph->set_sequence(); // color the graph and get the sequence
-            else if (mode == "mutate-global")
-                dependency_graph->mutate_global(); 
-            else if (mode == "mutate-local")
-                dependency_graph->mutate_local();
+            else if (mode == "sample-global")
+                dependency_graph->sample_global(); 
+            else if (mode == "sample-local")
+                dependency_graph->sample_local();
             else if (mode == "global-neighbors") {
                 dependency_graph->revert_sequence();
-                dependency_graph->mutate_global();
+                dependency_graph->sample_global();
             } else if (mode == "local-neighbors") {
                 dependency_graph->revert_sequence();
-                dependency_graph->mutate_local();
+                dependency_graph->sample_local();
             } else
                 dependency_graph->set_sequence();
         } catch (std::exception& e) {
@@ -209,15 +209,15 @@ boost::program_options::variables_map init_options(int ac, char* av[]) {
             ("in,i", po::value<std::string>(), "input file which contains the structures, sequence constraints and the start sequence [string]\n"
                                     "structures: \tsecondary structures in dot-bracket notation. one structure per input line\n"
                                     "sequence constraints: \tPermanent sequence constraints in IUPAC notation [ACGTUWSMKRYBDHVN] (optional)\n"
-                                    "start sequence: \t A initial RNA sequence to start the sampling/mutation from [ACGU] (optional)")
+                                    "start sequence: \t A initial RNA sequence to start the sampling from [ACGU] (optional)")
             ("out,o", po::value<std::string>(), "output file for writing the sequences (default: stdout) [string]")
             ("graphml,g", po::value<std::string>(), "write a GraphML file representing the dependency graph to the given filename (optional) [string]")
             ("mode,m", po::value<std::string>()->default_value("sampling"), "mode for sequence generation [string]:\n"
                                     "sampling: \tstochastic sampling of all positions (default)\n"
-                                    "mutate-global: \tOnly mutate one connected component at a time starting from an initial sequence\n"
-                                    "mutate-local: \tMutate only single paths starting from an initial sequence\n"
-                                    "global-neighbors: \tOnly find neighboring sequences to the initial start sequence by mutating one connected component only\n"
-                                    "local-neighbors: \tOnly find neighboring sequences to the initial start sequence by mutating one path only\n"
+                                    "sample-global: \tOnly sample one connected component at a time starting from an initial sequence\n"
+                                    "sample-local: \tSample only single paths starting from an initial sequence\n"
+                                    "global-neighbors: \tOnly find neighboring sequences to the initial start sequence by sampling one connected component only\n"
+                                    "local-neighbors: \tOnly find neighboring sequences to the initial start sequence by sampling one path only\n"
             )
             ("seed,s", po::value<unsigned long>(), "random number generator seed [unsigned long]")
             ("num,n", po::value<unsigned int>()->default_value(10), "number of designs (default: 10) [unsigned int]")

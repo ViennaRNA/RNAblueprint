@@ -341,7 +341,7 @@ namespace design
         }
 
         template <typename R>
-        SolutionSizeType DependencyGraph<R>::mutate_local_global(int graph_type, int min_num_pos, int max_num_pos) {
+        SolutionSizeType DependencyGraph<R>::sample_local_global(int graph_type, int min_num_pos, int max_num_pos) {
             // get all paths which fulfill the requirements of the range
             std::unordered_set< Graph* > subgraphs;
             get_subgraphs(graph, subgraphs, graph_type, min_num_pos, max_num_pos);
@@ -361,7 +361,7 @@ namespace design
                 sum ++;
                 // if the random number is bigger than our probability, take this base as the current base!
                 if (random < sum) {
-                    SolutionSizeType cnos = mutate(*s);
+                    SolutionSizeType cnos = sample(*s);
                     remember_sequence();
                     return cnos;
                     break;
@@ -371,11 +371,11 @@ namespace design
         }
         
         template <typename R>
-        SolutionSizeType DependencyGraph<R>::mutate_global(int connected_component_ID) {
+        SolutionSizeType DependencyGraph<R>::sample_global(int connected_component_ID) {
             Graph::children_iterator cc, cc_end;
             for (boost::tie(cc, cc_end) = graph.children(); cc != cc_end; ++cc) {
                 if (boost::get_property(*cc, boost::graph_name).id == connected_component_ID) {
-                    SolutionSizeType cnos = mutate(*cc);
+                    SolutionSizeType cnos = sample(*cc);
                     remember_sequence();
                     return cnos;
                 }
@@ -431,23 +431,23 @@ namespace design
         }
 
         template <typename R>
-        SolutionSizeType DependencyGraph<R>::mutate(int position) {
+        SolutionSizeType DependencyGraph<R>::sample(int position) {
             // first get the right vertex
             Vertex v_global = int_to_vertex(position, graph);
             if (debug)
                 std::cerr << "vertex is: " << v_global << std::endl;
-            // search for the lowest path subgraph and mutate
+            // search for the lowest path subgraph and sample
             Graph* g = find_path_subgraph(v_global, graph);
-            SolutionSizeType cnos = mutate(*g);
+            SolutionSizeType cnos = sample(*g);
             remember_sequence();
             return cnos;
         }
 
         template <typename R>
-        SolutionSizeType DependencyGraph<R>::mutate(int start, int end) {
+        SolutionSizeType DependencyGraph<R>::sample(int start, int end) {
             // nos
             SolutionSizeType nos = 1;
-            // set with all subgraphs to mutate
+            // set with all subgraphs to sample
             std::set<Graph*> subgraphs;
             
             for (; start <= end; start++) {
@@ -455,23 +455,23 @@ namespace design
                 std::cerr << "vertex is: " << v_global << std::endl;
                 subgraphs.insert(find_path_subgraph(v_global, graph));
             }
-            // mutate collected subgraphs
+            // sample collected subgraphs
             for (auto sg : subgraphs) {
-                nos *= mutate(*sg);
+                nos *= sample(*sg);
             }
             remember_sequence();
             return nos;
         }
         
         template <typename R>
-        SolutionSizeType DependencyGraph<R>::mutate(Graph& g) {
+        SolutionSizeType DependencyGraph<R>::sample(Graph& g) {
             // get graph properties
             graph_property& gprop = boost::get_property(g, boost::graph_name);
             
             // reset the whole subgraph for CCs
             if (gprop.type == 1) {
                 if (debug) {
-                    std::cerr << "Mutating a connected component!" << std::endl;
+                    std::cerr << "Sampling a connected component!" << std::endl;
                 }
                 // reset the whole connected component and sample everything
                 reset_colors(g);
@@ -479,13 +479,13 @@ namespace design
                     return sample_sequence(g);
                 } catch (std::exception& e) {
                     std::stringstream ss;
-                    ss << "Error while mutating a connected component (" << gprop.type << "-" << gprop.id << "): " << std::endl << e.what();
+                    ss << "Error while sampling a connected component (" << gprop.type << "-" << gprop.id << "): " << std::endl << e.what();
                     throw std::logic_error(ss.str());
                 }
                 // in case this is a path, only reset without specials
             } else if (gprop.is_path) {
                 if (debug) {
-                    std::cerr << "Mutating a path!" << std::endl;
+                    std::cerr << "Samplint a path!" << std::endl;
                 }
                 // reset all vertices, except special ones, as those are the important ends
                 // which have to stay the same
@@ -498,13 +498,13 @@ namespace design
                     return sample_sequence(g);
                 } catch (std::exception& e) {
                     std::stringstream ss;
-                    ss << "Error while mutating a path (" << gprop.type << "-" << gprop.id << "): " << std::endl << e.what();
+                    ss << "Error while sampling a path (" << gprop.type << "-" << gprop.id << "): " << std::endl << e.what();
                     throw std::logic_error(ss.str());
                 }
             } else {
                 // This should never be reached
                 std::stringstream ss;
-                ss << "I think it is not allowed to mutate only this subgraph: "
+                ss << "I think it is not allowed to sample only this subgraph: "
                         << gprop.type << "-" << gprop.id << std::endl;
                 throw std::logic_error(ss.str());
             }

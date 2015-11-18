@@ -53,11 +53,11 @@ namespace design {
             SolutionSizeType set_sequence(Sequence sequence);
             SolutionSizeType set_sequence_string(std::string seq_str);
             SolutionSizeType set_sequence();
-            // call this function to mutate a random subgraph (either a path, if graph_type=-1 or a connected component, if graph_type=1)
-            SolutionSizeType mutate_local_global(int graph_type, int min_num_pos, int max_num_pos);
-            SolutionSizeType mutate_global(int connected_component_ID);
-            SolutionSizeType mutate(int position);
-            SolutionSizeType mutate(int start, int end);
+            // call this function to sample a random subgraph (either a path, if graph_type=-1 or a connected component, if graph_type=1)
+            SolutionSizeType sample_local_global(int graph_type, int min_num_pos, int max_num_pos);
+            SolutionSizeType sample_global(int connected_component_ID);
+            SolutionSizeType sample(int position);
+            SolutionSizeType sample(int start, int end);
             
             void set_history_size(int size) {
                 history_size = size;
@@ -74,7 +74,7 @@ namespace design {
             void calculate_probabilities(Graph& g);
             SolutionSizeType sample_sequence(Graph& g);
             void reset_colors(Graph& g);
-            SolutionSizeType mutate(Graph& g);
+            SolutionSizeType sample(Graph& g);
             Graph* find_path_subgraph(Vertex v_global, Graph& g);
             // this function fills the subgraphs set with all the sugraphs of the given type (root, cc, bc, path)
             // if int type= -1, then it returns all subgraphs which are actual paths (gp.is_path == true).
