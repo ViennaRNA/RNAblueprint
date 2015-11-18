@@ -121,11 +121,6 @@ namespace design {
         *  Only real bases are allowed and the sequence has to fulfill all structural constraints, otherwise an error is thrown.
         */
         SolutionSizeType set_sequence(std::string sequence);
-        /*! \brief Resets all bases to N in the whole dependency graph and samples a new initial sequence randomly
-        *  
-        *  Call get_sequence() after you sampled a new sequence.
-        */
-        SolutionSizeType set_sequence();
         /*! \brief Reverts the sequence to the previous one
         *  
         *  Call revert_sequence() to set the dependency graph to the previous sampled sequence
@@ -136,6 +131,11 @@ namespace design {
         *  revert_sequence(2) would for example revert the sequence to the one before the previous one.
         */
         bool revert_sequence(unsigned int jump);
+        /*! \brief Resets all bases to N in the whole dependency graph and samples a new initial sequence randomly
+        *  
+        *  Call get_sequence() after you sampled a new sequence.
+        */
+        SolutionSizeType sample();
         /*! \brief Randomly chooses one path (either top-level a connected component, or within a block, etc.) with the given length and samples all positions.
         *  
         *  Special vertices such as cut points or articulation points will stay the same. Therefore it is guaranteed that the sampling is correct,

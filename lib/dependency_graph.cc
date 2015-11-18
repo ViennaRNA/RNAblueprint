@@ -321,7 +321,7 @@ namespace design
         }
 
         template <typename R>
-        SolutionSizeType DependencyGraph<R>::set_sequence() {
+        SolutionSizeType DependencyGraph<R>::sample() {
             SolutionSizeType cnos;
             // reset all the colors to N
             reset_colors(graph);
@@ -330,7 +330,7 @@ namespace design
             } catch (std::exception& e) {
                 revert_sequence(0);
                 std::stringstream ss;
-                ss << "Error while setting an initial sequence!" << std::endl
+                ss << "Error while sampling an initial sequence!" << std::endl
                         << "Resetting to previous sequence: " << get_sequence_string() << e.what();
                     std::cerr << ss.str() << std::endl;
                 throw std::logic_error(ss.str());

@@ -106,7 +106,7 @@ BOOST_AUTO_TEST_CASE(bc_sampling) {
 
     design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "NNNNNN", rand_gen);
     BOOST_CHECK(dependency_graph.number_of_sequences() == 48);
-    dependency_graph.set_sequence();
+    dependency_graph.sample();
     std::cerr << "Sampled sequence: " << dependency_graph.get_sequence_string() << std::endl;
 }
 
@@ -119,7 +119,7 @@ BOOST_AUTO_TEST_CASE(cc_sampling) {
     std::mt19937 rand_gen(1);
 
     design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "NNNNNNNNN", rand_gen);
-    dependency_graph.set_sequence();
+    dependency_graph.sample();
     std::cerr << "Sampled sequence: " << dependency_graph.get_sequence_string() << std::endl;
     
     BOOST_CHECK(dependency_graph.number_of_sequences() == 134);
@@ -278,7 +278,7 @@ BOOST_AUTO_TEST_CASE(sample_cc_with_ID) {
 
     design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "WN", rand_gen);
     BOOST_CHECK(dependency_graph.number_of_sequences() == 8);
-    dependency_graph.set_sequence();
+    dependency_graph.sample();
     
     std::cerr << dependency_graph.get_sequence_string() << std::endl;
     std::string result = dependency_graph.get_sequence_string();
@@ -308,7 +308,7 @@ BOOST_AUTO_TEST_CASE(sample_global1) {
 
     design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "WN", rand_gen);
     BOOST_CHECK(dependency_graph.number_of_sequences() == 8);
-    dependency_graph.set_sequence();
+    dependency_graph.sample();
     BOOST_CHECK(dependency_graph.get_sequence_string()[0] == 'A' || dependency_graph.get_sequence_string()[0] == 'U');
     
     for (int i = 0; i < 100; i++) {
@@ -333,7 +333,7 @@ BOOST_AUTO_TEST_CASE(sample_local1) {
 
     design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "WN", rand_gen);
     BOOST_CHECK(dependency_graph.number_of_sequences() == 8);
-    dependency_graph.set_sequence();
+    dependency_graph.sample();
     std::cerr << dependency_graph.get_sequence_string() << std::endl;
     BOOST_CHECK(dependency_graph.get_sequence_string()[0] == 'A' || dependency_graph.get_sequence_string()[0] == 'U');
     
@@ -379,7 +379,7 @@ BOOST_AUTO_TEST_CASE(sample_pos) {
     design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "NNNNNNNNNNNN", rand_gen);
     
     BOOST_CHECK(dependency_graph.number_of_sequences() == 12096);
-    dependency_graph.set_sequence();
+    dependency_graph.sample();
     // sample CCs which are paths
     for (int i = 0; i<100; i++) {
         // get sequence
@@ -429,7 +429,7 @@ BOOST_AUTO_TEST_CASE(sample_pos_range) {
     design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "NNNNNNNNNNNN", rand_gen);
     
     BOOST_CHECK(dependency_graph.number_of_sequences() == 12096);
-    dependency_graph.set_sequence();
+    dependency_graph.sample();
     // sample positions which are in one path
     // sample CCs which are paths
     for (int i = 0; i<100; i++) {
@@ -458,7 +458,7 @@ BOOST_AUTO_TEST_CASE(revert_sequence) {
     design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "NNNNN", rand_gen);
     
     BOOST_CHECK(!dependency_graph.revert_sequence(1));
-    dependency_graph.set_sequence();
+    dependency_graph.sample();
     std::string sequence = dependency_graph.get_sequence_string();
     BOOST_CHECK(!dependency_graph.revert_sequence(1));
     
@@ -472,13 +472,13 @@ BOOST_AUTO_TEST_CASE(revert_sequence) {
     BOOST_CHECK(dependency_graph.get_sequence_string() == sequence);
     BOOST_CHECK(!dependency_graph.revert_sequence(1));
     
-    dependency_graph.set_sequence();
-    dependency_graph.set_sequence();
+    dependency_graph.sample();
+    dependency_graph.sample();
     BOOST_CHECK(!dependency_graph.revert_sequence(4));
     
     // now make history big so that we have to forget
     for (int i = 0; i < 10; i++) {
-        dependency_graph.set_sequence();
+        dependency_graph.sample();
     }
     BOOST_CHECK(!dependency_graph.revert_sequence(12));
     // go all the way back
@@ -493,7 +493,7 @@ BOOST_AUTO_TEST_CASE(revert_sequence) {
     dependency_graph.set_history_size(20);
     sequence = dependency_graph.get_sequence_string();
     for (int i = 0; i < 14; i++) {
-        dependency_graph.set_sequence();
+        dependency_graph.sample();
     }
     while (1) {
         if (!dependency_graph.revert_sequence(1))

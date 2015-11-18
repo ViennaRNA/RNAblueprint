@@ -45,7 +45,7 @@ BOOST_AUTO_TEST_CASE(EqualDistribution) {
 
     for (int i = 0; i < 10000; i++) {
         try{
-            dependency_graph->set_sequence(); // color the graph and get the sequence
+            dependency_graph->sample(); // color the graph and get the sequence
         }
 
         catch(std::exception & e) {

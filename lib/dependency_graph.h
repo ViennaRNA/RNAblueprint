@@ -52,7 +52,7 @@ namespace design {
             std::string get_sequence_string();
             SolutionSizeType set_sequence(Sequence sequence);
             SolutionSizeType set_sequence_string(std::string seq_str);
-            SolutionSizeType set_sequence();
+            SolutionSizeType sample();
             // call this function to sample a random subgraph (either a path, if graph_type=-1 or a connected component, if graph_type=1)
             SolutionSizeType sample_local_global(int graph_type, int min_num_pos, int max_num_pos);
             SolutionSizeType sample_global(int connected_component_ID);

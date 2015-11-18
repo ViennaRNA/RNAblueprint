@@ -55,10 +55,10 @@ BOOST_AUTO_TEST_CASE(int_dist_set) {
     
     std::map<int, int> count;
     // set initial sequence
-    dependency_graph.set_sequence();
+    dependency_graph.sample();
     
     for (int i = 0; i < 10000; i++) {
-        dependency_graph.set_sequence();
+        dependency_graph.sample();
         Sequence r = dependency_graph.get_sequence();
         count[r[0]]++;
     }

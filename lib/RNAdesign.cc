@@ -103,8 +103,8 @@ namespace design {
     }
 
     template <typename R>
-    SolutionSizeType DependencyGraph<R>::set_sequence() {
-        return g->set_sequence();
+    SolutionSizeType DependencyGraph<R>::sample() {
+        return g->sample();
     }
     
     template <typename R>

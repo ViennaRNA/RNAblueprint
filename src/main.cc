@@ -83,7 +83,7 @@ int main(int ac, char* av[]) {
     }
     // get or set an initial sequence
     if (start_seq == "") {
-        dependency_graph->set_sequence(); // color the graph and get the sequence
+        dependency_graph->sample(); // color the graph and get the sequence
     } else {
         dependency_graph->set_sequence(start_seq);
     }
@@ -91,7 +91,7 @@ int main(int ac, char* av[]) {
     while (number_of_designs > 0) {
         try {
             if (mode == "sample")
-                dependency_graph->set_sequence(); // color the graph and get the sequence
+                dependency_graph->sample(); // color the graph and get the sequence
             else if (mode == "sample-global")
                 dependency_graph->sample_global(); 
             else if (mode == "sample-local")
@@ -103,7 +103,7 @@ int main(int ac, char* av[]) {
                 dependency_graph->revert_sequence();
                 dependency_graph->sample_local();
             } else
-                dependency_graph->set_sequence();
+                dependency_graph->sample();
         } catch (std::exception& e) {
             std::cerr << e.what() << std::endl;
             exit(EXIT_FAILURE);
