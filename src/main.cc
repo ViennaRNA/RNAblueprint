@@ -158,7 +158,7 @@ std::tuple<std::vector<std::string>, std::string, std::string > read_input(std::
     std::string start_seq = "";
     std::regex con ("[ACGTUWSMKRYBDHVN\\-]{1,}");
     std::regex seq ("[ACGTU]{1,}");
-    std::regex str ("[\\(\\)\\.]{1,}");
+    std::regex str ("[\\(\\)\\.\\[\\]\\{\\}\\<\\>]{1,}");
     
     for (auto s = structures.begin(); s != structures.end();) {
         if (std::regex_match (*s, con)) {

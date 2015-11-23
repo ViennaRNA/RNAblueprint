@@ -18,14 +18,20 @@
 // include standard library parts
 #include <sstream>
 #include <cctype>
+#include <iterator>
+#include <regex>
 
 // include boost components
 
 namespace design {
     namespace detail {
+        
+        typedef std::vector< std::pair<char, char> > BracketList;
+        
         // parse the input string into a graph
         Graph parse_structures(std::vector<std::string> structures);
-
+        // recursion for different brackets
+        void parse_bracket(Graph& g, std::string& structure, BracketList::iterator bracket);
         // set the sequence constraints in the graph object
         void set_constraints(Graph& g, std::string constraints);
     }

@@ -93,6 +93,33 @@ BOOST_AUTO_TEST_CASE(TestFault1) {
     BOOST_REQUIRE_THROW(Graph g = parse_structures(structures), std::exception);
 }
 
+BOOST_AUTO_TEST_CASE(TestPseudoKnot1) {
+    std::vector< std::string > structures;
+    structures.push_back(".((((.[[[.)))).]]]..");
+    
+    Graph g = parse_structures(structures);
+    BOOST_CHECK(num_edges(g) == 7);
+    BOOST_CHECK(num_vertices(g) == 20);
+    BOOST_CHECK(boost::edge(int_to_vertex(1, g), int_to_vertex(13, g), g).second);
+    BOOST_CHECK(boost::edge(int_to_vertex(6, g), int_to_vertex(17, g), g).second);
+    BOOST_CHECK(boost::edge(int_to_vertex(7, g), int_to_vertex(16, g), g).second);
+}
+
+BOOST_AUTO_TEST_CASE(TestPseudoKnot2) {
+    std::vector< std::string > structures;
+    structures.push_back(".((((.[[[.)))).]]]..");
+    structures.push_back(".((((.<<{.)))).>>}..");
+    structures.push_back(".((((.{<<.)))).}>>..");
+    
+    Graph g = parse_structures(structures);
+    std::cerr << num_edges(g) << std::endl;
+    BOOST_CHECK(num_edges(g) == 13);
+    BOOST_CHECK(num_vertices(g) == 20);
+    BOOST_CHECK(boost::edge(int_to_vertex(1, g), int_to_vertex(13, g), g).second);
+    BOOST_CHECK(boost::edge(int_to_vertex(6, g), int_to_vertex(17, g), g).second);
+    BOOST_CHECK(boost::edge(int_to_vertex(7, g), int_to_vertex(16, g), g).second);
+}
+
 BOOST_AUTO_TEST_CASE(SetConstraints) {
     Graph g(9);
     int vertex_name = 0;
