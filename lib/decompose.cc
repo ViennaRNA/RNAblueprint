@@ -306,6 +306,7 @@ namespace design {
             if (debug) {
                 std::cerr << "Best alpha/beta: " << best_alpha << "/" << best_beta << std::endl;
             }
+            std::cout << "(" << best_alpha << "/" << best_beta << ")" << std::endl;
             int num = boost::ear_decomposition(g, best_pred, em, std::back_inserter(att_points));
             
             // create subgraphs from decomposed ears

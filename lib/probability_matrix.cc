@@ -235,12 +235,11 @@ namespace design {
             }
             // fill state container
             reset();
+            // fill current
+            copy_current();
         }
         
         ProbabilityKey* PermuteKeyFactory::key() {
-            for (auto s : state) {
-                current[s.first] = *s.second;
-            }
             return &current;
         }
         
@@ -254,7 +253,10 @@ namespace design {
 
         bool PermuteKeyFactory::next_permutation() {
             // move to next step
-            return make_next_step(state.begin());
+            bool result = make_next_step(state.begin());
+            // update current
+            copy_current();
+            return result;
         }
 
         bool PermuteKeyFactory::make_next_step(std::map<int, std::list<int>::iterator>::iterator state_it) {
@@ -277,7 +279,10 @@ namespace design {
         
         bool PermuteKeyFactory::previous_permutation() {
             // move to previous step
-            return make_previous_step(state.begin());
+            bool result = make_previous_step(state.begin());
+            // update current
+            copy_current();
+            return result;
         }
         
         bool PermuteKeyFactory::make_previous_step(std::map<int, std::list<int>::iterator>::iterator state_it) {

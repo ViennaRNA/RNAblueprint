@@ -102,6 +102,11 @@ namespace design {
             bool make_next_step(std::map<int, std::list<int>::iterator>::iterator state_it);
             bool make_previous_step(std::map<int, std::list<int>::iterator>::iterator state_it);
             ProbabilityKey current;
+            inline void copy_current() {
+                for (auto s : state) {
+                    current[s.first] = *s.second;
+                }
+            }
         };
 
         // multiply operator overloaded which calculates new pm

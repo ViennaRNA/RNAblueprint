@@ -48,7 +48,6 @@ namespace design {
              */
             int type;
             bool is_path = false;
-            
         };
 
         // graph_properties 
