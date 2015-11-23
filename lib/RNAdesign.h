@@ -63,6 +63,9 @@
 #include "dependency_graph.h"
 #include "parsestruct.h"
 
+// boost header
+#include <boost/graph/bipartite.hpp>
+
 
 /*! \brief All classes and functions for the RNA design library are under the design namespace.
  */
@@ -84,7 +87,16 @@ namespace design {
      * \return \b string containing the GraphML notation of the dependency graph.
      */
     std::string structures_to_graphml(std::vector<std::string> structures, std::string constraints);
-
+    /*! \brief Returns whether the dependency graph built from the given input structures is bipartite
+     * 
+     * This helper function checks, if a set of input structures will generate a bipartite dependency graph.
+     * If the graph is not bipartite, it cannot be used to generate a valid RNA sequence.
+     * 
+     * \param structures \b vector of \b string structures in dot-bracket notation.
+     * \exception std::exception if input is invalid or construction fails an exception is thrown.
+     * \return \b boolean specifying whether the input structures can be constructed to a bipartite dependency graph.
+     */
+    bool graph_is_bipartite(std::vector<std::string> structures);
     /*! \brief Dependency Graph which holds all structural constraints.
      * 
      * This graph is used to generate valid sequences compatible to the input structures

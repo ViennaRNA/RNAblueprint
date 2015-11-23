@@ -33,6 +33,21 @@ namespace design {
         detail::print_graph(graph, dynamic_cast<std::ostream*>(&stream));
         return stream.str();
     }
+    
+    bool graph_is_bipartite(std::vector<std::string> structures) {
+        detail::Graph graph;
+        // generate graph from input vector
+        try {
+            graph = detail::parse_structures(structures);
+        } catch (std::exception& e) {
+            std::stringstream ss;
+            ss << "Error while parsing the structures: " << std::endl << e.what();
+            throw std::logic_error(ss.str());
+        }
+            
+        // return if graph is bipartite
+        return boost::is_bipartite(graph);
+    }
 
     template <typename R>
     DependencyGraph<R>::DependencyGraph(std::vector<std::string> structures, std::string constraints, R rand) {

@@ -34,7 +34,6 @@ libRNAdesign_la_SOURCES =	\
 			common.cc \
 			decompose.cc \
 			printgraph.cc \
-			graphcommon.cc \
 			parsestruct.cc \
 			pathcoloring.cc \
 			pairing_matrix.cc \

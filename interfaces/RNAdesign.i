@@ -43,6 +43,7 @@ namespace std {
 namespace design {
   void initialize_library(bool debug);
   std::string structures_to_graphml(std::vector<std::string> structures, std::string constraints);
+  bool graph_is_bipartite(std::vector<std::string> structures);
   
   template<typename R>
     class DependencyGraph {
