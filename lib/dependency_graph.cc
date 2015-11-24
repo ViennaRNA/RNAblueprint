@@ -62,6 +62,8 @@ namespace design
                 ss << "Error while calculating the probabilities: " << std::endl << e.what();
                 throw std::logic_error(ss.str());
             }
+            // get a first initial random sequence
+            sample();
         }
 
         template <typename R>
