@@ -1,11 +1,8 @@
 
- This file is part of the RNAdesign program written by 
- 
- http://www.tbi.univie.ac.at/~jango/
-  
-  by Stefan Hammer (c) 2013
+This file is part of the RNAdesign program written by 
+by Stefan Hammer (c) 2015
+http://www.tbi.univie.ac.at/~jango/ 
 
+version 0.1 - (29-11-2015)
 
-version 0.1 - (<not released yet>)
-
- - initial release
+ * initial release for early testing.
