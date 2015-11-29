@@ -1,18 +1,19 @@
 
-#RNAdesign library written in C++
-##Introduction
+# RNAdesign library written in C++
+
+## Introduction
 
 The RNAdesign library still needs some documentation! Write here something about the theoretical background Show how to cite the software
 Dependencies
 
-###Required:
+### Required:
 
  * GNU Automake
  * Boost Graph Library
  * Boost Programm Options
  * C++ Standard Library
 
-###Optional:
+### Optional:
 
  * SWIG for interfaces
  * Python for interface
@@ -23,9 +24,10 @@ Dependencies
  * openmp for parallel computation
  * Boost Unit Test Framework
 
-##Installation
+## Installation
 
-###Just call these commands:
+### Just call these commands:
+
 ```bash
 ./autogen.sh
 ./configure
@@ -33,7 +35,8 @@ make
 make install
 ```
 
-###Most important configure options are:
+### Most important configure options are:
+
     --prefix Specify an installation path prefix
     --with-boost Specify the installation directory of the boost library
     --disable-swig Disable all SWIG scripting interfaces
@@ -42,12 +45,12 @@ make install
 
 TIP: You might want call ./configure –help for all install options!
 
-##Documentation
+## Documentation
 
 Documentation is done using Doxygen. Call 'make doc' for a offline version in HTML and PDF.
 There is also a online version available here: [http://ribonets.github.io/RNAdesign/](http://ribonets.github.io/RNAdesign/)
 
-##How to cite
+## How to cite
 
 This is a early release for testing purposes only and a publication for this software package is in progress.
 We will update this information as soon as a preprint is available online!
