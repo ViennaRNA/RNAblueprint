@@ -21,6 +21,7 @@
  * \section dependency_sec Dependencies
  *
  * Required:
+ * - GNU Automake
  * - Boost Graph Library
  * - Boost Programm Options
  * - C++ Standard Library
@@ -29,7 +30,8 @@
  * - SWIG for interfaces
  * - Python for interface
  * - Perl for interface
- * - LaTeX for documentation
+ * - Doxygen for documentation
+ * - LaTeX for PDF documentation
  * - libGMP for multiprecision integers
  * - openmp for parallel computation
  * - Boost Unit Test Framework
@@ -51,6 +53,11 @@
  * - \-\-disable-openmp   Disable the usage of parallel computation
  * 
  * TIP: You might want call ./configure --help for all install options!
+ * 
+ * \section cite_sec How to cite
+ * 
+ * This is a early release for testing purposes only and a publication for this software package is in progress.
+ * We will update this information as soon as a preprint is available online!
  * 
  */
 
@@ -232,7 +239,7 @@ namespace design {
          * only the smallest paths containing the vertices will be sampled. Positions for start and end are inclusive [ start, end ]
          *
          * \param start \b integer specifying the first position to re-sample [ 0, N )
-         * \param start \b integer specifying the last position to re-sample [ 0, N )
+         * \param end \b integer specifying the last position to re-sample [ 0, N )
          * \sa get_sequence(), sample(), sample(int position)
          * \return \b number of possible solutions for this sampling.
         */
