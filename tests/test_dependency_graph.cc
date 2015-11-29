@@ -407,10 +407,11 @@ BOOST_AUTO_TEST_CASE(sample_pos) {
     // sample CCs which are paths
     for (int i = 0; i<100; i++) {
         std::string result = dependency_graph.get_sequence_string();
-        BOOST_CHECK(dependency_graph.sample(2) == 2);
+        std::cerr << dependency_graph.sample(8) << std::endl;
+        BOOST_CHECK(dependency_graph.sample(8) == 2);
         // check if only position 2 changed
         for (int j=0; j < result.length(); j++) {
-            if (j != 2 ) {
+            if (j != 8 ) {
                 BOOST_CHECK(result[j] == dependency_graph.get_sequence_string()[j]);
             }
         }
@@ -452,13 +453,14 @@ BOOST_AUTO_TEST_CASE(sample_pos_range) {
 }
 
 BOOST_AUTO_TEST_CASE(revert_sequence) {
+    BOOST_TEST_MESSAGE("test the revert sequence functionality");
+    
     design::initialize_library(true);
     std::vector<std::string> structures = {"....."};
     std::mt19937 rand_gen(1);
     design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "NNNNN", rand_gen);
     
     BOOST_CHECK(!dependency_graph.revert_sequence(1));
-    dependency_graph.sample();
     std::string sequence = dependency_graph.get_sequence_string();
     BOOST_CHECK(!dependency_graph.revert_sequence(1));
     

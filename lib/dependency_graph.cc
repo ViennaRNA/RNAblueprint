@@ -170,10 +170,13 @@ namespace design
             graph_property& gprop = boost::get_property(g, boost::graph_name);
             // build a key containing the constraints of already sampled bases
             ProbabilityKey constraints;
+            bool onlypath = true;
 
             for (auto s : pms[&g].getSpecials()) {
                 //std::cerr << s << "/" << int_to_vertex(s, g.root()) << "/" << enum_to_char(g.root()[int_to_vertex(s, g.root())].base) << std::endl;
                 constraints[s] = g.root()[int_to_vertex(s, g.root())].base;
+                if (constraints[s] >= A_Size)
+                    onlypath = false;
             }
 
             // randomly sample one key from the matrix
@@ -182,9 +185,9 @@ namespace design
                        << constraints << std::endl << "and PM: " << std::endl
                        << pms[&g] << std::endl;
             }
-
-            ProbabilityKey colors;
+            
             SolutionSizeType cnos = 0;
+            ProbabilityKey colors;
             
             try {
                 std::tie(colors, cnos) = pms[&g].sample(constraints, rand);
@@ -198,14 +201,17 @@ namespace design
             for (auto c : colors) {
                 g.root()[int_to_vertex(c.first, g.root())].base = c.second;
             }
-            // if the graph is a path, we need to color everything in between special points as well
+            // if the graph is a path, we need to colour everything in between special points as well
             // else we will start the recursion
             if (gprop.is_path) {
                 if (debug) {
                     std::cerr << "Path Coloring!" << std::endl;
                 }
                 try {
-                    color_path_graph(g, rand);
+                    SolutionSizeType path_nos = color_path_graph(g, rand);
+                    if (onlypath) {
+                        cnos = path_nos;
+                    }
                 } catch (std::exception& e) {
                     std::stringstream ss;
                     ss << "Error while sampling a path sequence: " << std::endl 
@@ -487,7 +493,7 @@ namespace design
                 // in case this is a path, only reset without specials
             } else if (gprop.is_path) {
                 if (debug) {
-                    std::cerr << "Samplint a path!" << std::endl;
+                    std::cerr << "Sampling a path!" << std::endl;
                 }
                 // reset all vertices, except special ones, as those are the important ends
                 // which have to stay the same
