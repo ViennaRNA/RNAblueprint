@@ -376,9 +376,9 @@ BOOST_AUTO_TEST_CASE(sample_pos) {
     
     std::mt19937 rand_gen(1);
     // connected components: cc0 ps 28 #p 5 0,1,2,3,4 cc1 ps 4 #p 1 5 cc2 ps 18 #p 4 6,7,8,9 cc3 ps 6 #p 2 10,11
-    design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "NNNNNNNNNNNN", rand_gen);
-    
-    BOOST_CHECK(dependency_graph.number_of_sequences() == 12096);
+    design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "NNNNNNNGNNNN", rand_gen);
+    std::cerr << dependency_graph.number_of_sequences() << std::endl;
+    BOOST_CHECK(dependency_graph.number_of_sequences() == 5376);
     dependency_graph.sample();
     // sample CCs which are paths
     for (int i = 0; i<100; i++) {
@@ -407,7 +407,6 @@ BOOST_AUTO_TEST_CASE(sample_pos) {
     // sample CCs which are paths
     for (int i = 0; i<100; i++) {
         std::string result = dependency_graph.get_sequence_string();
-        std::cerr << dependency_graph.sample(8) << std::endl;
         BOOST_CHECK(dependency_graph.sample(8) == 2);
         // check if only position 2 changed
         for (int j=0; j < result.length(); j++) {
@@ -427,9 +426,9 @@ BOOST_AUTO_TEST_CASE(sample_pos_range) {
     
     std::mt19937 rand_gen(1);
     // connected components: cc0 ps 28 #p 5 0,1,2,3,4 cc1 ps 4 #p 1 5 cc2 ps 18 #p 4 6,7,8,9 cc3 ps 6 #p 2 10,11
-    design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "NNNNNNNNNNNN", rand_gen);
+    design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "NNNNNNNGNNNN", rand_gen);
     
-    BOOST_CHECK(dependency_graph.number_of_sequences() == 12096);
+    BOOST_CHECK(dependency_graph.number_of_sequences() == 5376);
     dependency_graph.sample();
     // sample positions which are in one path
     // sample CCs which are paths
@@ -445,7 +444,7 @@ BOOST_AUTO_TEST_CASE(sample_pos_range) {
     for (int i = 0; i<100; i++) {
         std::string result = dependency_graph.get_sequence_string();
         BOOST_CHECK(dependency_graph.sample(9, 11) == 12);
-        // check if only position 10 and 11 changed
+        // check if only position 9, 10 and 11 changed
         for (int j=0; j < 9; j++) {
             BOOST_CHECK(result[j] == dependency_graph.get_sequence_string()[j]);
         }
