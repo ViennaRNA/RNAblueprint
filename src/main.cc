@@ -156,13 +156,13 @@ std::tuple<std::vector<std::string>, std::string, std::string > read_input(std::
         // find sequence constraints in structures
     std::string constraints = "";
     std::string start_seq = "";
-    std::regex con ("[ACGTUWSMKRYBDHVN\\-]{1,}");
-    std::regex seq ("[ACGTU]{1,}");
-    std::regex str ("[\\(\\)\\.\\[\\]\\{\\}\\<\\>]{1,}");
+    boost::regex con ("[ACGTUWSMKRYBDHVN\\-]{1,}");
+    boost::regex seq ("[ACGTU]{1,}");
+    boost::regex str ("[\\(\\)\\.\\[\\]\\{\\}\\<\\>]{1,}");
     
     for (auto s = structures.begin(); s != structures.end();) {
-        if (std::regex_match (*s, con)) {
-            if (std::regex_match (*s, seq) && start_seq == "")
+        if (boost::regex_match (*s, con)) {
+            if (boost::regex_match (*s, seq) && start_seq == "")
                 start_seq = *s;
             else if (constraints == "")
                 constraints = *s;
@@ -171,7 +171,7 @@ std::tuple<std::vector<std::string>, std::string, std::string > read_input(std::
                 exit(EXIT_FAILURE);
             }
             s = structures.erase(s);
-        } else if (!std::regex_match (*s, str)) {
+        } else if (!boost::regex_match (*s, str)) {
             std::cerr << "Unknown characters in line: " << *s << std::endl;
             exit(EXIT_FAILURE);
         } else {

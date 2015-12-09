@@ -49,9 +49,10 @@ BOOST_REQUIRE([1.55])
 #BOOST_SYSTEM
 #BOOST_FILESYSTEM
 
-# Check lib boost_program_options
+# Check lib boost_program_options, graph and regex
 BOOST_PROGRAM_OPTIONS([s])
 BOOST_GRAPH([s])
+BOOST_REGEX([s])
 
 # build with unit tests
 ##########################################################################tests
@@ -130,7 +131,6 @@ AC_CHECK_HEADERS([iterator])
 AC_CHECK_HEADERS([limits])
 AC_CHECK_HEADERS([list])
 AC_CHECK_HEADERS([random])
-AC_CHECK_HEADERS([regex])
 AC_CHECK_HEADERS([set])
 AC_CHECK_HEADERS([sstream])
 AC_CHECK_HEADERS([string])

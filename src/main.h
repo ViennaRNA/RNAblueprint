@@ -18,11 +18,11 @@
 #include <fstream>
 #include <random>
 #include <chrono>
-#include <regex>
 #include <exception>
 
 // include boost components
 #include <boost/program_options.hpp>
+#include <boost/regex.hpp>
 
 
 

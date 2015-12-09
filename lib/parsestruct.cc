@@ -38,8 +38,8 @@ namespace design {
             
             // iterate over structures from input
             for (auto s : structures) {
-                std::regex str ("[\\(\\)\\.\\[\\]\\{\\}\\<\\>]{1,}");
-                if (!std::regex_match (s, str)) {
+                boost::regex str ("[\\(\\)\\.\\[\\]\\{\\}\\<\\>]{1,}");
+                if (!boost::regex_match (s, str)) {
                     std::stringstream ss;
                     ss << "Unknown characters in structure: " << s << std::endl;
                     throw ( std::logic_error( ss.str() ));
