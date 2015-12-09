@@ -7,7 +7,7 @@ RNAdesign_la_SOURCES = $(top_srcdir)/interfaces/RNAdesign.i
 nodist_RNAdesign_la_SOURCES = RNAdesign_wrap.cxx $(SWIG_SOURCES)
 nodist_perlext_SCRIPTS = RNAdesign.pm
 
-RNAdesign_la_CPPFLAGS = -I$(top_srcdir)/lib $(PERL_EXT_CPPFLAGS) $(SWIG_PERL_CPPFLAGS) $(PERLXS_CFLAGS)
+RNAdesign_la_CPPFLAGS = -I$(top_srcdir)/lib $(PERL_EXT_CPPFLAGS) $(SWIG_PERL_CPPFLAGS) $(PERLXS_CFLAGS) $(BOOST_CPPFLAGS)
 RNAdesign_la_LIBADD = $(LDADD) $(top_srcdir)/lib/libRNAdesign.la
 RNAdesign_la_LDFLAGS = -avoid-version -module -shared -export-dynamic $(PERLXS_LDFLAGS)
 
