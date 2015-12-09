@@ -156,13 +156,16 @@ std::tuple<std::vector<std::string>, std::string, std::string > read_input(std::
         // find sequence constraints in structures
     std::string constraints = "";
     std::string start_seq = "";
-    boost::regex con ("[ACGTUWSMKRYBDHVN\\-]{1,}");
-    boost::regex seq ("[ACGTU]{1,}");
-    boost::regex str ("[\\(\\)\\.\\[\\]\\{\\}\\<\\>]{1,}");
     
     for (auto s = structures.begin(); s != structures.end();) {
-        if (boost::regex_match (*s, con)) {
-            if (boost::regex_match (*s, seq) && start_seq == "")
+        // find illegal character positions
+        std::size_t illegal_constraint = s->find_first_not_of("ACGTUWSMKRYBDHVN-");
+        std::size_t illegal_structure = s->find_first_not_of("().[]{}<>");
+        // check if it is a constraint
+        if (illegal_constraint == std::string::npos) {
+            // check if it is a start sequence
+            std::size_t illegal_sequence = s->find_first_not_of("ACGTU");
+            if (illegal_sequence == std::string::npos && start_seq == "")
                 start_seq = *s;
             else if (constraints == "")
                 constraints = *s;
@@ -171,8 +174,9 @@ std::tuple<std::vector<std::string>, std::string, std::string > read_input(std::
                 exit(EXIT_FAILURE);
             }
             s = structures.erase(s);
-        } else if (!boost::regex_match (*s, str)) {
-            std::cerr << "Unknown characters in line: " << *s << std::endl;
+        // catch if there is a illegal character
+        } else if (illegal_structure != std::string::npos) {
+            std::cerr << "Illegal character [" << (*s)[illegal_structure] << "] in structure: " << *s << std::endl;
             exit(EXIT_FAILURE);
         } else {
             s++;

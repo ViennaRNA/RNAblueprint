@@ -38,10 +38,10 @@ namespace design {
             
             // iterate over structures from input
             for (auto s : structures) {
-                boost::regex str ("[\\(\\)\\.\\[\\]\\{\\}\\<\\>]{1,}");
-                if (!boost::regex_match (s, str)) {
+                std::size_t found_illegal = s.find_first_not_of("().[]{}<>");
+                if (found_illegal != std::string::npos) {
                     std::stringstream ss;
-                    ss << "Unknown characters in structure: " << s << std::endl;
+                    ss << "Unknown character [" << s[found_illegal] << "] in structure: " << s << std::endl;
                     throw ( std::logic_error( ss.str() ));
                 }
                 for (BracketList::iterator br = brackets.begin(); br != brackets.end(); ++br) {

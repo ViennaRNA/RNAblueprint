@@ -52,7 +52,6 @@ BOOST_REQUIRE([1.55])
 # Check lib boost_program_options, graph and regex
 BOOST_PROGRAM_OPTIONS([s])
 BOOST_GRAPH([s])
-BOOST_REGEX([s])
 
 # build with unit tests
 ##########################################################################tests
@@ -122,6 +121,7 @@ AC_CHECK_HEADERS([algorithm])
 AC_CHECK_HEADERS([array])
 AC_CHECK_HEADERS([chrono])
 AC_CHECK_HEADERS([cctype])
+AC_CHECK_HEADERS([cstddef])
 AC_CHECK_HEADERS([exception])
 AC_CHECK_HEADERS([fstream])
 AC_CHECK_HEADERS([functional])

@@ -19,9 +19,7 @@
 #include <sstream>
 #include <cctype>
 #include <iterator>
-
-// include boost components
-#include <boost/regex.hpp>
+#include <cstddef>
 
 namespace design {
     namespace detail {
