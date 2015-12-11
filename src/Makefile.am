@@ -1,4 +1,5 @@
 # this is: src/Makefile.am
+if ENABLE_PROGRAM
 
 # the program to build (the names of the final binaries)
 bin_PROGRAMS = RNAdesign
@@ -12,3 +13,5 @@ RNAdesign_LDADD = $(LDADD) $(top_builddir)/lib/libRNAdesign.la $(BOOST_GRAPH_LIB
 RNAdesign_SOURCES =	main.cc
 			
 noinst_HEADERS = main.h
+
+endif

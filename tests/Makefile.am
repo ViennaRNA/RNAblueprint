@@ -1,12 +1,13 @@
 # this is: tests/Makefile.am
+if ENABLE_TESTS
 
 # the program to build (the names of the final binaries)
 check_PROGRAMS = testRNAdesign
 
 # additional include pathes necessary to compile the C++ programs
 testRNAdesign_CPPFLAGS = -I$(top_srcdir)/lib $(BOOST_CPPFLAGS) @AM_CXXFLAGS@
-testRNAdesign_LDFLAGS = $(BOOST_GRAPH_LDFLAGS) $(BOOST_PROGRAM_OPTIONS_LDFLAGS) $(BOOST_UNIT_TEST_FRAMEWORK_LDFLAGS)
-testRNAdesign_LDADD = $(LDADD) $(top_builddir)/lib/libRNAdesign.la $(BOOST_GRAPH_LIBS) $(BOOST_PROGRAM_OPTIONS_LIBS) $(BOOST_UNIT_TEST_FRAMEWORK_LIBS) $(AM_LDFLAGS)
+testRNAdesign_LDFLAGS = $(BOOST_GRAPH_LDFLAGS) $(BOOST_UNIT_TEST_FRAMEWORK_LDFLAGS)
+testRNAdesign_LDADD = $(LDADD) $(top_builddir)/lib/libRNAdesign.la $(BOOST_GRAPH_LIBS) $(BOOST_UNIT_TEST_FRAMEWORK_LIBS) $(AM_LDFLAGS)
 
 # list of sources for the 'testRNAdesign' binary
 testRNAdesign_SOURCES =	main.cc \
@@ -25,3 +26,5 @@ testRNAdesign_SOURCES =	main.cc \
 noinst_HEADERS = test_common.h
 
 TESTS = testRNAdesign
+
+endif
