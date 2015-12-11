@@ -40,6 +40,7 @@ make install
     --prefix Specify an installation path prefix
     --with-boost Specify the installation directory of the boost library
     --disable-swig Disable all SWIG scripting interfaces
+    --disable-program  Disable RNAdesign program compilation
     --enable-libGMP Enable the calculation of big numbers with multiprecision
     --disable-openmp Disable the usage of parallel computation
 
