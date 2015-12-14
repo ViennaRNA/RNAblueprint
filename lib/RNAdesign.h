@@ -70,8 +70,10 @@
 #include "common.h"
 #include "dependency_graph.h"
 #include "parsestruct.h"
+#include "decompose.h"
 
 // boost header
+#include <chrono>
 #include <boost/graph/bipartite.hpp>
 
 
@@ -86,12 +88,40 @@ namespace design {
     /*! \brief Generate a graphml representation of structural and sequence constraints
      * 
      * This function generates a graphml representation of the dependency graph given some structural
-     * and sequence constraints without constructing a DependencyGraph object.
-     * It is mainly thought to be useful for developmental purposes and analysis of hard problems.
+     * and sequence constraints without constructing a DependencyGraph object, with or without decomposition of the graph into subpaths.
+     * It is mainly thought to be useful for developmental purposes, analysis of hard problems and vizualisation.
      * 
      * \param structures \b vector of \b string structures in dot-bracket notation.
      * \param constraints \b string containing the sequence constraints in IUPAC notation. Can also be a empty string!
-     * \exception std::exception if input is invalid or construction fails an exception is thrown.
+     * \param decompose \b boolean Whether to decompose the dependency graph into paths and therefore draw special vertices and ears.
+     * \param seed \b unsigned long Seed for the random number generator which is used for some random parts of the decomposition.
+     * \exception std::exception if input is invalid or construction/decomposition fails an exception is thrown.
+     * \return \b string containing the GraphML notation of the dependency graph.
+     */
+    std::string structures_to_graphml(std::vector<std::string> structures, std::string constraints, bool decompose, unsigned long seed);
+    /*! \brief Generate a graphml representation of structural and sequence constraints
+     * 
+     * This function generates a graphml representation of the dependency graph given some structural
+     * and sequence constraints without constructing a DependencyGraph object, with or without decomposition of the graph into subpaths.
+     * It is mainly thought to be useful for developmental purposes, analysis of hard problems and vizualisation.
+     * Caution: There are random parts in the decomposition algorithms. If you want to assign a seed, use structures_to_graphml(std::vector<std::string> structures, std::string constraints, bool decompose, unsigned long seed)
+     * 
+     * \param structures \b vector of \b string structures in dot-bracket notation.
+     * \param constraints \b string containing the sequence constraints in IUPAC notation. Can also be a empty string!
+     * \param decompose \b boolean Whether to decompose the dependency graph into paths and therefore draw special vertices and ears.
+     * \exception std::exception if input is invalid or construction/decomposition fails an exception is thrown.
+     * \return \b string containing the GraphML notation of the dependency graph.
+     */
+    std::string structures_to_graphml(std::vector<std::string> structures, std::string constraints, bool decompose);
+    /*! \brief Generate a graphml representation of structural and sequence constraints
+     * 
+     * This function generates a graphml representation of the dependency graph given some structural
+     * and sequence constraints without constructing a DependencyGraph object, but with decomposition of the graph into subpaths.
+     * It is mainly thought to be useful for developmental purposes, analysis of hard problems and vizualisation.
+     * 
+     * \param structures \b vector of \b string structures in dot-bracket notation.
+     * \param constraints \b string containing the sequence constraints in IUPAC notation. Can also be a empty string!
+     * \exception std::exception if input is invalid or construction/decomposition fails an exception is thrown.
      * \return \b string containing the GraphML notation of the dependency graph.
      */
     std::string structures_to_graphml(std::vector<std::string> structures, std::string constraints);

@@ -15,7 +15,7 @@ namespace design {
         *detail::debug_ptr = debug;
     }
     
-    std::string structures_to_graphml(std::vector<std::string> structures, std::string constraints) {
+    std::string structures_to_graphml(std::vector<std::string> structures, std::string constraints, bool decompose, unsigned long seed) {
         detail::Graph graph;
         // generate graph from input vector
         try {
@@ -25,14 +25,36 @@ namespace design {
             ss << "Error while parsing the structures: " << std::endl << e.what();
             throw std::logic_error(ss.str());
         }
-            
+        
         // set sequence constraints
         detail::set_constraints(graph, constraints);
+        
+        if (decompose) {
+            try {
+                std::mt19937 rand(seed);
+                detail::decompose_graph(graph, rand);
+            } catch (std::exception& e) {
+                std::stringstream ss;
+                ss << "Error while decomposing the dependency graph: " << std::endl << e.what();
+                throw std::logic_error(ss.str());
+            }
+        }
         
         std::ostringstream stream;
         detail::print_graph(graph, dynamic_cast<std::ostream*>(&stream));
         return stream.str();
     }
+    
+    std::string structures_to_graphml(std::vector<std::string> structures, std::string constraints, bool decompose) {
+        unsigned long seed = std::chrono::system_clock::now().time_since_epoch().count();
+        return structures_to_graphml(structures, constraints, decompose, seed);
+    }
+    
+    std::string structures_to_graphml(std::vector<std::string> structures, std::string constraints) {
+        unsigned long seed = std::chrono::system_clock::now().time_since_epoch().count();
+        return structures_to_graphml(structures, constraints, true, seed);
+    }
+    
     
     bool graph_is_bipartite(std::vector<std::string> structures) {
         detail::Graph graph;
