@@ -56,7 +56,8 @@ namespace design
             
             // now calculate all the PMs
             try {
-                calculate_probabilities(graph);
+                std::chrono::steady_clock::time_point start_time = std::chrono::steady_clock::now();
+                calculate_probabilities(graph, start_time);
             } catch (std::exception& e) {
                 std::stringstream ss;
                 ss << "Error while calculating the probabilities: " << std::endl << e.what();
@@ -67,7 +68,7 @@ namespace design
         }
 
         template <typename R>
-        void DependencyGraph<R>::calculate_probabilities(Graph& g) {
+        void DependencyGraph<R>::calculate_probabilities(Graph& g, std::chrono::steady_clock::time_point& start_time) {
             
             // Remember a temporary PM which holds the current state
             ProbabilityMatrix current;
@@ -75,6 +76,15 @@ namespace design
             
             Graph::children_iterator cg, cg_end;
             for (boost::tie(cg, cg_end) = g.children(); cg != cg_end; ++cg) {
+                // check if timeout is already reached
+                std::chrono::duration<double> time_span = std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::steady_clock::now() - start_time);
+                if ((*construction_timeout_ptr != 0) && (time_span.count() > *construction_timeout_ptr)) {
+                    std::stringstream ss;
+                    ss << "Timeout reached: Construction of the dependency graph took longer than expected!" << std::endl <<
+                            "Stopped after " << time_span.count() << " seconds (Timeout: " << *construction_timeout_ptr << " seconds)" << std::endl;
+                    throw std::overflow_error( ss.str() );
+                }
+                
                 // get property map of graph
                 graph_property& gprop = boost::get_property(*cg, boost::graph_name);
                 
@@ -103,7 +113,7 @@ namespace design
                         std::cerr << "Recursion!" << std::endl;
                     }
                     // recursion is here
-                    calculate_probabilities(*cg);
+                    calculate_probabilities(*cg, start_time);
                 }
                 
                 // Multiply current with pm of this child

@@ -10,9 +10,14 @@
 #include "RNAdesign.h"
 
 namespace design {
-
+    
     void initialize_library(bool debug) {
+        initialize_library(debug, 0);
+    }
+    
+    void initialize_library(bool debug, int construction_timeout) {
         *detail::debug_ptr = debug;
+        *detail::construction_timeout_ptr = construction_timeout;
     }
     
     std::string structures_to_graphml(std::vector<std::string> structures, std::string constraints, bool decompose, unsigned long seed) {

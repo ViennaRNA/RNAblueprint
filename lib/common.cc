@@ -15,6 +15,8 @@ namespace design {
 
         bool debug = false;
         bool * debug_ptr = &debug;
+        int construction_timeout = 0;
+        int * construction_timeout_ptr = &construction_timeout;
 
         //A, C, G, U, R, Y, K, M, S, W, B, D, H, V, N
 

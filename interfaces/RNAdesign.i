@@ -42,6 +42,7 @@ namespace std {
 
 namespace design {
   void initialize_library(bool debug);
+  void initialize_library(bool debug, int construction_timeout);
   std::string structures_to_graphml(std::vector<std::string> structures, std::string constraints, bool decompose, unsigned long seed);
   std::string structures_to_graphml(std::vector<std::string> structures, std::string constraints, bool decompose);
   std::string structures_to_graphml(std::vector<std::string> structures, std::string constraints);

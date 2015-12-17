@@ -85,6 +85,12 @@ namespace design {
      * \param debug \b boolean whether to print debugging information to std:err (default: false)
      */
     void initialize_library(bool debug);
+    /*! \brief Initialize the Libraries global variables.
+     * 
+     * \param debug \b boolean whether to print debugging information to std:err (default: false)
+     * \param construction_timeout \b integer specifying the dependency graph construction timeout in seconds. 0 is infinite. (default: 0)
+     */
+    void initialize_library(bool debug, int construction_timeout);
     /*! \brief Generate a graphml representation of structural and sequence constraints
      * 
      * This function generates a graphml representation of the dependency graph given some structural
