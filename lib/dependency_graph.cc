@@ -28,6 +28,9 @@ namespace design
             if (debug) {
                 std::cerr << "Initializing DependencyGraph..." << std::endl;
             }
+            // start to measure time
+            std::chrono::steady_clock::time_point start_time = std::chrono::steady_clock::now();
+            
             // generate graph from input vector
             try {
                 graph = parse_structures(structures);
@@ -56,7 +59,6 @@ namespace design
             
             // now calculate all the PMs
             try {
-                std::chrono::steady_clock::time_point start_time = std::chrono::steady_clock::now();
                 calculate_probabilities(graph, start_time);
             } catch (std::exception& e) {
                 std::stringstream ss;
@@ -77,13 +79,7 @@ namespace design
             Graph::children_iterator cg, cg_end;
             for (boost::tie(cg, cg_end) = g.children(); cg != cg_end; ++cg) {
                 // check if timeout is already reached
-                std::chrono::duration<double> time_span = std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::steady_clock::now() - start_time);
-                if ((*construction_timeout_ptr != 0) && (time_span.count() > *construction_timeout_ptr)) {
-                    std::stringstream ss;
-                    ss << "Timeout reached: Construction of the dependency graph took longer than expected!" << std::endl <<
-                            "Stopped after " << time_span.count() << " seconds (Timeout: " << *construction_timeout_ptr << " seconds)" << std::endl;
-                    throw std::overflow_error( ss.str() );
-                }
+                check_timeout(start_time);
                 
                 // get property map of graph
                 graph_property& gprop = boost::get_property(*cg, boost::graph_name);
@@ -121,6 +117,9 @@ namespace design
                 if (debug) {
                     std::cerr << "current PM: " << std::endl << current << std::endl;
                 }
+                
+                // check if timeout is already reached
+                check_timeout(start_time);
                 
                 // only save PM before first make_internal
                 bool alreadysaved = false;

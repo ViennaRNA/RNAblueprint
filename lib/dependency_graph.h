@@ -81,6 +81,19 @@ namespace design {
             // you can specify also a minimal and maximal size of the subgraph
             void get_subgraphs(Graph& g, std::unordered_set< Graph* >& subgraphs, int type, int min_size, int max_size);
         };
+        
+        
+        inline void check_timeout(std::chrono::steady_clock::time_point& start_time) {
+            if (*construction_timeout_ptr != 0) {
+                std::chrono::duration<double> time_span = std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::steady_clock::now() - start_time);
+                if (time_span.count() > *construction_timeout_ptr) {
+                    std::stringstream ss;
+                    ss << "Timeout: Construction of the dependency graph took longer than expected!" << std::endl <<
+                            "Stopped after " << time_span.count() << " seconds (Timeout: " << *construction_timeout_ptr << " seconds)" << std::endl;
+                    throw std::overflow_error( ss.str() );
+                }
+            }
+        }
     }
 }
 #endif	/* DEPENDENCY_GRAPH_H */
