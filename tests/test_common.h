@@ -19,6 +19,7 @@
 
 // include boost components
 #include <boost/test/unit_test.hpp>
+#include <boost/graph/iteration_macros.hpp>
 
 // typedefs
 
