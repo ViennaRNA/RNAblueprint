@@ -141,15 +141,15 @@ namespace design {
             return std::make_pair(result, constrained_mnos);
         }
         
-        ProbabilityMatrix operator* (ProbabilityMatrix& x, ProbabilityMatrix& y) {
-            if (!x.is_initialized()) {
+        ProbabilityMatrix ProbabilityMatrix::operator* (ProbabilityMatrix& y) {
+            if (!this->is_initialized()) {
                 return y;
             } else if (!y.is_initialized()) {
-                return x;
+                return *this;
             } else {
                 ProbabilityMatrix z;
                 // get all vertices that are present in both PMs
-                std::set< int > xSpecials = x.getSpecials();
+                std::set< int > xSpecials = this->getSpecials();
                 std::set< int > ySpecials = y.getSpecials();
                 //std::cerr << "xSpecials: " << xSpecials << std::endl;
                 //std::cerr << "ySpecials: " << ySpecials << std::endl;
@@ -157,37 +157,30 @@ namespace design {
                 std::insert_iterator< std::set<int> > insert_it (zSpecials, zSpecials.begin());
                 std::set_union(xSpecials.begin(), xSpecials.end(), ySpecials.begin(), ySpecials.end(), insert_it);
                 //std::cerr << "zSpecials: " << zSpecials << std::endl;
-
-                // build all keys needed for new PM
-                ProbabilityKey newkey;
-                for (auto s : zSpecials) {
-                    newkey[s] = N;
-                }
                 
-                PermuteKeyFactory pkf(newkey);
-                // lookup keys from previous and multiply them to insert into new
-                while (true) {
-                    // generate keys for both old PMs
-                    ProbabilityKey xkey;
-                    for (auto s : xSpecials) {
-                        xkey[s] = (*pkf.key())[s];
+                ProbabilityMap::iterator pmap_it = this->pmap.begin();
+                for (pmap_it; pmap_it != this->pmap.end(); ++pmap_it) {
+                    // first get the current key and insert Ns to those vertices not present already
+                    ProbabilityKey newkey = pmap_it->first;
+                    for (auto s : zSpecials) {
+                        if (newkey.find(s) == newkey.end())
+                            newkey[s] = N;
                     }
-                    SolutionSizeType x_value = x[xkey];
-                    // if the first value is 0, we do not need to look up in the second matrix any more
-                    if (x_value != 0) {
+                    
+                    // now generate all combinations
+                    PermuteKeyFactory pkf(newkey);
+                    while (true) {
                         // now access the second value
                         ProbabilityKey ykey;
                         for (auto s : ySpecials) {
                             ykey[s] = (*pkf.key())[s];
                         }
-                        SolutionSizeType y_value = y[ykey];
-                        
                         // read probability for this keys and multiply them
                         // insert this new probability into the new pm z
-                        z.put(*pkf.key(), x_value * y_value);
+                        z.put(*pkf.key(), pmap_it->second * y[ykey]);
+                        if (!pkf.next_permutation())
+                            break;
                     }
-                    if (!pkf.next_permutation())
-                        break;
                 }
                 return z;
             }

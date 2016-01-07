@@ -75,9 +75,10 @@ namespace design {
             // special case without probability key (and therefore constraints)
             template <typename R>
             std::pair<ProbabilityKey, SolutionSizeType> sample(R& rand);
+            // multiplicator
+            ProbabilityMatrix operator*(ProbabilityMatrix& y);
             // My custom hash key used for n
             friend class ProbabilityKeyHash;
-            friend ProbabilityMatrix operator*(ProbabilityMatrix& x, ProbabilityMatrix& y);
             ~ProbabilityMatrix() = default;
         private:
             // map of possibilities saved by key
@@ -108,9 +109,6 @@ namespace design {
                 }
             }
         };
-
-        // multiply operator overloaded which calculates new pm
-        ProbabilityMatrix operator*(ProbabilityMatrix& x, ProbabilityMatrix& y);
 
         // a function which creates a new ProbabilityMatrix where the given key is internal
         ProbabilityMatrix make_internal(ProbabilityMatrix& pm, int v);

@@ -113,7 +113,8 @@ namespace design
                 }
                 
                 // Multiply current with pm of this child
-                current = pms[&*cg] * current;
+                current = current * pms[&*cg];
+                
                 if (debug) {
                     std::cerr << "current PM: " << std::endl << current << std::endl;
                 }
