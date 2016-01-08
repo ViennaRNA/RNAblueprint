@@ -78,7 +78,7 @@ namespace design {
             }*/
         }
         
-        void PairingMatrix::extend(int newlength) {
+        void PairingMatrix::extend(unsigned int newlength) {
             if (debug) { std::cerr << "Extending pairing matrix from length " << length << " to " << newlength << std::endl; }
             // fill pathlength up to length (can be done with matrix multiplication of the pairing matrix
             for (unsigned int i = length+1; i <= newlength; i++) {
@@ -109,40 +109,31 @@ namespace design {
             // return the sum of the probabilities for all characters at this position
 
             //std::cerr << "b1 is " << enum_to_char(b1) << b1 << ", b2 is " << enum_to_char(b2) << b2 << std::endl;
-
-            if ((b1 >= A_Size) || (b2 >= A_Size)) {
-                if ((b1 >= A_Size) && (b2 >= A_Size)) {
-                    //std::cerr << "b1>=Abet; b2>=Abet" << std::endl;
-                    SolutionSizeType sum = 0;
-                    for (auto i : base_conversion[b2]) {
-                        sum += get(l, b1, i);
-                    }
-                    return sum;
-
-                } else if (b1 >= A_Size) {
-                    //std::cerr << "b1>=Abet" << std::endl;
-                    SolutionSizeType sum = 0;
-                    for (auto i : base_conversion[b1]) {
-                        sum += get(l, i, b2);
-                    }
-                    return sum;
-
-                } else if (b2 >= A_Size) {
-                    //std::cerr << "b2>=Abet" << std::endl;
-                    return get(l, b2, b1);
+            if (l > length) {
+                // we need to extend the pairing matrix!
+                extend(l);
+            }
+            
+            if ((b1 >= A_Size) && (b2 >= A_Size)) {
+                //std::cerr << "b1>=Abet; b2>=Abet" << std::endl;
+                SolutionSizeType sum = 0;
+                for (auto i : base_conversion[b2]) {
+                    sum += get(l, b1, i);
                 }
+                return sum;
+
+            } else if (b1 >= A_Size) {
+                //std::cerr << "b1>=Abet" << std::endl;
+                SolutionSizeType sum = 0;
+                for (auto i : base_conversion[b1]) {
+                    sum += get(l, i, b2);
+                }
+                return sum;
+
+            } else if (b2 >= A_Size) {
+                //std::cerr << "b2>=Abet" << std::endl;
+                return get(l, b2, b1);
             } else {
-                //std::cerr << "b1<Abet; b2<Abet" << std::endl;
-                if (l > length) {
-                    // we need to extend the pairing matrix!
-                    extend(l);
-                } else if ((b1 >= A_Size) || (b2 >= A_Size)) {
-                    // check if the requested length is bigger than our initialization or that a base bigger than 3 is requested
-                    // -> to avoid segfaults or unknown behavior!
-                    std::stringstream ss;
-                    ss << "Requested a value in pairing matrix which is out of range: p[" << l << "][" << b1 << "][" << b2 << "]";
-                    throw( new std::out_of_range( ss.str() ));
-                }
                 return p[l][b1][b2];
             }
         }

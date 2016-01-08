@@ -386,7 +386,7 @@ BOOST_AUTO_TEST_CASE(sample_pos) {
         std::string result = dependency_graph.get_sequence_string();
         BOOST_CHECK(dependency_graph.sample(5) == 4);
         // check if only position 5 changed
-        for (int j=0; j < result.length(); j++) {
+        for (unsigned int j=0; j < result.length(); j++) {
             if (j != 5 ) {
                 BOOST_CHECK(result[j] == dependency_graph.get_sequence_string()[j]);
             }
@@ -409,7 +409,7 @@ BOOST_AUTO_TEST_CASE(sample_pos) {
         std::string result = dependency_graph.get_sequence_string();
         BOOST_CHECK(dependency_graph.sample(8) == 2);
         // check if only position 2 changed
-        for (int j=0; j < result.length(); j++) {
+        for (unsigned int j=0; j < result.length(); j++) {
             if (j != 8 ) {
                 BOOST_CHECK(result[j] == dependency_graph.get_sequence_string()[j]);
             }

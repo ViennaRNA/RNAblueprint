@@ -79,9 +79,9 @@ namespace design {
         }
         
         // get the vertex descriptor from a vertex_color_t tag
-        inline Vertex int_to_vertex(int i, Graph& g) {
+        inline Vertex int_to_vertex(unsigned int i, Graph& g) {
             Vertex v = boost::vertex(i, g.root());
-            if (i >= num_vertices(g) || i < 0 || v == Graph::null_vertex()) {
+            if (i >= boost::num_vertices(g) || i < 0 || v == Graph::null_vertex()) {
                 std::stringstream ss;
                 ss << "Error getting vertex descriptor from integer: " << i;
                 throw std::out_of_range(ss.str());

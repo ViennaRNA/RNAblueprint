@@ -62,7 +62,7 @@ namespace design {
             void set_history_size(int size) {
                 history_size = size;
             }
-            bool revert_sequence(int jump);
+            bool revert_sequence(unsigned int jump);
         private:
             Graph graph;
             ProbabilityMatrixStorage pms;
@@ -79,7 +79,7 @@ namespace design {
             // this function fills the subgraphs set with all the sugraphs of the given type (root, cc, bc, path)
             // if int type= -1, then it returns all subgraphs which are actual paths (gp.is_path == true).
             // you can specify also a minimal and maximal size of the subgraph
-            void get_subgraphs(Graph& g, std::unordered_set< Graph* >& subgraphs, int type, int min_size, int max_size);
+            void get_subgraphs(Graph& g, std::unordered_set< Graph* >& subgraphs, int type, unsigned int min_size, unsigned int max_size);
         };
         
         

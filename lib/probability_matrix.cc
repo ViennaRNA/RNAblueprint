@@ -158,15 +158,14 @@ namespace design {
                 std::set_union(xSpecials.begin(), xSpecials.end(), ySpecials.begin(), ySpecials.end(), insert_it);
                 //std::cerr << "zSpecials: " << zSpecials << std::endl;
                 
-                ProbabilityMap::iterator pmap_it = this->pmap.begin();
-                for (pmap_it; pmap_it != this->pmap.end(); ++pmap_it) {
+                for (ProbabilityMap::iterator pmap_it = this->pmap.begin(); pmap_it != this->pmap.end(); ++pmap_it) {
                     // first get the current key and insert Ns to those vertices not present already
                     ProbabilityKey newkey = pmap_it->first;
                     for (auto s : zSpecials) {
                         if (newkey.find(s) == newkey.end())
                             newkey[s] = N;
                     }
-                    
+
                     // now generate all combinations
                     PermuteKeyFactory pkf(newkey);
                     while (true) {

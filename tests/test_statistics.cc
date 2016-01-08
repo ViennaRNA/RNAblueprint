@@ -54,7 +54,7 @@ BOOST_AUTO_TEST_CASE(EqualDistribution) {
         }
 
         std::string sequence = dependency_graph->get_sequence();
-        for (int pos = 0; pos < sequence.length(); pos++) {
+        for (unsigned int pos = 0; pos < sequence.length(); pos++) {
             count[sequence[pos]]++;
         }
     }

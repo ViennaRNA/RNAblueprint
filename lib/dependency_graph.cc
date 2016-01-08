@@ -74,7 +74,7 @@ namespace design
             
             // Remember a temporary PM which holds the current state
             ProbabilityMatrix current;
-            std::unordered_map<Vertex, int> degree_map;
+            std::unordered_map<Vertex, unsigned int> degree_map;
             
             Graph::children_iterator cg, cg_end;
             for (boost::tie(cg, cg_end) = g.children(); cg != cg_end; ++cg) {
@@ -113,7 +113,12 @@ namespace design
                 }
                 
                 // Multiply current with pm of this child
-                current = current * pms[&*cg];
+                // Multiplication is not symmetric in terms of performance, therefore
+                // we want to have the matrix with more special vertices at the front.
+                if (current.getSpecials().size() > pms[&*cg].getSpecials().size())
+                    current = current * pms[&*cg];
+                else
+                    current = pms[&*cg] * current;
                 
                 if (debug) {
                     std::cerr << "current PM: " << std::endl << current << std::endl;
@@ -270,6 +275,7 @@ namespace design
                 std::cerr << "Using this seed: " << seed << std::endl;
             }
             rand.seed(seed);
+            return seed;
         }
 
         template <typename R>
@@ -297,7 +303,7 @@ namespace design
             // get a sequence object
             Sequence sequence(seq_str.length());
             
-            for (int pos = 0; pos < seq_str.length(); pos++) {
+            for (unsigned int pos = 0; pos < seq_str.length(); pos++) {
                 sequence[pos] = char_to_enum(std::toupper(seq_str[pos]));
             }
             // not set this sequence to graph
@@ -402,7 +408,7 @@ namespace design
         }
         
         template <typename R>
-        void DependencyGraph<R>::get_subgraphs(Graph& g, std::unordered_set< Graph* >& subgraphs, int type, int min_size, int max_size) {
+        void DependencyGraph<R>::get_subgraphs(Graph& g, std::unordered_set< Graph* >& subgraphs, int type, unsigned int min_size, unsigned int max_size) {
             // if max is 0, set it to infinite, as defined in the documentation
             if (max_size == 0) {
                 max_size = std::numeric_limits<int>::max();
@@ -417,7 +423,7 @@ namespace design
             
             // if this subgraph is from the given type, insert it into the set
             if (((type == -1 && boost::get_property(g, boost::graph_name).is_path) || (boost::get_property(g, boost::graph_name).type == type))
-                    && (min_size <= boost::num_vertices(g) <= max_size)) {
+                    && ((min_size <= boost::num_vertices(g)) && (boost::num_vertices(g) <= max_size))) {
                 subgraphs.emplace(&g);
             }
             // and now check all children, too
@@ -446,6 +452,8 @@ namespace design
                     break;
                 }
             }
+            // this should never happen
+            return &g;
         }
 
         template <typename R>
@@ -609,7 +617,7 @@ namespace design
         }
         
         template <typename R>
-        bool DependencyGraph<R>::revert_sequence(int jump) {
+        bool DependencyGraph<R>::revert_sequence(unsigned int jump) {
             // check if we already reached the beginning or do a boundary jump
             if (debug) {
                 std::cerr << "Going back in time some steps: " << jump << std::endl;
@@ -623,7 +631,8 @@ namespace design
                 std::list<Sequence>::iterator current = std::prev(history.end());
                 // jump back in time
                 try {
-                    std::advance(current, (jump * -1));
+                    // std::advance can set the iterator forward, but also reverse if jump is negative
+                    std::advance(current, ((int) jump * -1));
                 } catch (std::exception& e) {
                     std::stringstream ss;
                     ss << "Error while reverting the sequence: " << std::endl << e.what();

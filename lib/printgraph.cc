@@ -45,7 +45,6 @@ namespace design {
 
         void print_subgraphs(Graph& g, std::ostream* out) {
             Graph::children_iterator ci, ci_end;
-            int num = 1;
             for (boost::tie(ci, ci_end) = g.children(); ci != ci_end; ++ci) {
                 print_graph(*ci, out);
             }

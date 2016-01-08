@@ -46,7 +46,7 @@ namespace design {
         private:
             static PairingMatrix * _instance;
             std::vector< rnaMatrix > p;
-            void extend(int newlength);
+            void extend(unsigned int newlength);
             rnaMatrix multiply(rnaMatrix a, rnaMatrix b);
             unsigned int length;
         };

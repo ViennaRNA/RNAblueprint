@@ -156,7 +156,7 @@ namespace design {
     
     template <typename R>
     bool DependencyGraph<R>::revert_sequence(unsigned int jump) {
-        return g->revert_sequence((int)jump);
+        return g->revert_sequence(jump);
     }
     
     template <typename R>

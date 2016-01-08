@@ -106,7 +106,7 @@ fi
 # Check for OpenMP enabled and prepare flags
 ##########################################################################
 AC_OPENMP
-AC_SUBST(OPENMP_CFLAGS)
+AC_SUBST(OPENMP_CXXFLAGS)
 
 # Checks for libraries: gmp enabled?
 ##########################################################################
