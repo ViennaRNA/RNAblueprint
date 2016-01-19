@@ -100,8 +100,11 @@ namespace design
                         ss << "Could not get a ProbabilityMatrix for a path: " << std::endl << e.what();
                         throw std::logic_error( ss.str() );
                     }
+                    // save number of solutions as graph property
+                    gprop.nos = pms[&*cg].mnos();
+                    
                     if (debug) {
-                        std::cerr << "Path PM (" << gprop.type << "-" << gprop.id << "):" << std::endl
+                        std::cerr << "Path PM (" << gprop.type << "-" << gprop.id << ") with nos " << gprop.nos << ":" << std::endl
                                 << pms[&*cg] << std::endl;
                     }
                 } else {
@@ -171,9 +174,13 @@ namespace design
             // save final state of PM to the main graph
             
             pms[&g] = current;
+            graph_property& rgprop = boost::get_property(g, boost::graph_name);
+            // remember maximum number of solutions for this subgraph
+            rgprop.nos = current.mnos();
+            
             if (debug) {
                 graph_property& rgprop = boost::get_property(g, boost::graph_name);
-                std::cerr << "final PM (" << rgprop.type << "-" << rgprop.id << "):" << std::endl
+                std::cerr << "final PM (" << rgprop.type << "-" << rgprop.id << ") with nos " << rgprop.nos << ":" << std::endl
                         << pms[&g] << std::endl;
             }
         }
@@ -369,20 +376,23 @@ namespace design
             // get all paths which fulfill the requirements of the range
             std::unordered_set< Graph* > subgraphs;
             get_subgraphs(graph, subgraphs, graph_type, min_num_pos, max_num_pos);
-            if (debug) {
-                for (auto s : subgraphs) {
+            // calculate maximum number of solutions for all subgraphs
+            SolutionSizeType mnos = 0;
+            for (auto s : subgraphs) {
+                mnos += boost::get_property(*s, boost::graph_name).nos;
+                if (debug) {
                     std::vector<int> vertices = getVertexList(*s);
                     std::cerr << "subgraph: " << std::endl << vertices << std::endl;
                 }
             }
             
             // and multiply the count it with a random number
-            RandomDistType dist(0, subgraphs.size());
+            RandomDistType dist(0, mnos);
             SolutionSizeType random = dist(rand);
             
             SolutionSizeType sum = 0;
             for (auto s : subgraphs) {
-                sum ++;
+                sum += boost::get_property(*s, boost::graph_name).nos;
                 // if the random number is bigger than our probability, take this base as the current base!
                 if (random < sum) {
                     SolutionSizeType cnos = sample(*s);
@@ -546,16 +556,19 @@ namespace design
         
         template <typename R>
         SolutionSizeType DependencyGraph<R>::number_of_sequences() {
-            return pms[&graph].mnos();
+            //return pms[&graph].mnos();
+            return boost::get_property(graph, boost::graph_name).nos;
         }
         
         template <typename R>
         SolutionSizeType DependencyGraph<R>::number_of_sequences(int connected_component_ID) {
-            // iterate over all connected component and return pm.mnos() for the one with the right ID
+            // iterate over all connected component and return pm.mnos() or gprop.nos for the one with the right ID
             Graph::children_iterator cc, cc_end;
             for (boost::tie(cc, cc_end) = graph.children(); cc != cc_end; ++cc) {
-                if (boost::get_property(*cc, boost::graph_name).id == connected_component_ID) {
-                    return pms[&*cc].mnos();
+                graph_property& gprop = boost::get_property(*cc, boost::graph_name);
+                if (gprop.id == connected_component_ID) {
+                    //return pms[&*cc].mnos();
+                    return gprop.nos;
                 }
             }
             throw std::out_of_range("Could not find a connected component with this ID!");

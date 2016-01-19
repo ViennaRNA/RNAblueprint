@@ -47,6 +47,7 @@ namespace design {
              4 -> path
              */
             int type;
+            SolutionSizeType nos;
             bool is_path = false;
         };
 
