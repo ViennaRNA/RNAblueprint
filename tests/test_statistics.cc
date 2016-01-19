@@ -66,4 +66,46 @@ BOOST_AUTO_TEST_CASE(EqualDistribution) {
     delete dependency_graph;
 }
 
+BOOST_AUTO_TEST_CASE(ComponentSampling) {
+    BOOST_TEST_MESSAGE("Test if we sample connected components weighted the right way");
+
+    design::initialize_library(false);
+    unsigned long seed = std::chrono::system_clock::now().time_since_epoch().count();
+    std::mt19937 rand_gen(seed);
+
+    design::DependencyGraph<std::mt19937>* dependency_graph;
+    try{
+        dependency_graph = new design::DependencyGraph<std::mt19937>(
+        {"((..))", ".()..."}, "", rand_gen);
+    }
+
+    catch(std::exception & e) {
+        std::cerr << e.what() << std::endl;
+        exit(EXIT_FAILURE);
+    }
+
+    std::unordered_map<double, double> count = {
+        {4, 0},
+        {6, 0},
+        {10, 0}
+    };
+
+    for (int i = 0; i < 100000; i++) {
+        try{
+            count[dependency_graph->sample_global()]++; // color the graph and get the sequence
+        }
+
+        catch(std::exception & e) {
+            std::cerr << e.what() << std::endl;
+            exit(EXIT_FAILURE);
+        }
+    }
+
+    for (auto c : count) {
+        BOOST_CHECK_CLOSE(c.second / 100000, c.first / 20, 1);
+    }
+    
+    delete dependency_graph;
+}
+
 BOOST_AUTO_TEST_SUITE_END()
