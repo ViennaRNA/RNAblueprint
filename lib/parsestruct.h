@@ -20,6 +20,7 @@
 #include <cctype>
 #include <iterator>
 #include <cstddef>
+#include <unordered_map>
 
 namespace design {
     namespace detail {
@@ -32,6 +33,8 @@ namespace design {
         void parse_bracket(Graph& g, std::string& structure, BracketList::iterator bracket);
         // set the sequence constraints in the graph object
         void set_constraints(Graph& g, std::string constraints);
+        // implementation of the function above, just returns incompatible positions and throws an error if requested
+        std::vector<int> set_constraints(Graph& g, std::string constraints, bool throwerror);
     }
 }
 #endif

@@ -60,7 +60,7 @@ BOOST_AUTO_TEST_CASE(EqualDistribution) {
     }
 
     for (auto c : count) {
-        BOOST_CHECK_CLOSE(c.second / 200000, 0.25000f, 1);
+        BOOST_CHECK_CLOSE(c.second / 200000, 0.25000f, 2);
     }
     
     delete dependency_graph;
@@ -102,7 +102,7 @@ BOOST_AUTO_TEST_CASE(ComponentSampling) {
     }
 
     for (auto c : count) {
-        BOOST_CHECK_CLOSE(c.second / 100000, c.first / 20, 1);
+        BOOST_CHECK_CLOSE(c.second / 100000, c.first / 20, 2);
     }
     
     delete dependency_graph;

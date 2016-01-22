@@ -97,6 +97,10 @@ namespace design {
         }
         
         void set_constraints(Graph& g, std::string constraints) {
+            set_constraints(g, constraints, true);
+        }
+        
+        std::vector<int> set_constraints(Graph& g, std::string constraints, bool throwerror) {
             for (unsigned int pos = 0; pos < constraints.length(); pos++) {
                 g[int_to_vertex(pos, g)].constraint = char_to_enum(std::toupper(constraints[pos]));
                 
@@ -105,6 +109,31 @@ namespace design {
                     g[int_to_vertex(pos, g)].special = true;
                 }
             }
+            // check if constraints are compatible with structures
+            PairingMatrix * p = PairingMatrix::Instance();
+            std::vector<int> incompatible;
+            
+            BGL_FORALL_EDGES_T(e, g, Graph) {
+                Vertex v = boost::source(e, g);
+                Vertex u = boost::target(e, g);
+                int vc = g[v].constraint;
+                int uc = g[u].constraint;
+                if (p->get(1, vc, uc) == 0) {
+                    incompatible.push_back(vertex_to_int(v, g));
+                    incompatible.push_back(vertex_to_int(u, g));
+                }
+            }
+            
+            if (throwerror) {
+                if (incompatible.size() != 0) {
+                    std::stringstream ss;
+                    ss << "Error while setting the constraints: These constraints are not compatible to the structures!" << std::endl;
+                    ss << incompatible << std::endl;
+                    throw std::logic_error(ss.str());
+                }
+            }
+            
+            return incompatible;
         }
     }
 }

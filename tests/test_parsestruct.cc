@@ -160,4 +160,20 @@ BOOST_AUTO_TEST_CASE(SetLowerCaseConstraints) {
     }
 }
 
+BOOST_AUTO_TEST_CASE(SetIncompatibleConstraints) {
+    Graph g(3);
+    int vertex_name = 0;
+
+    BGL_FORALL_VERTICES_T(v, g, Graph) {
+        boost::put(boost::vertex_color_t(), g, v, vertex_name++);
+    }
+    boost::add_edge(boost::vertex(0, g), boost::vertex(2, g), g);
+    
+    BOOST_TEST_MESSAGE("set incompatible sequence constraints on graph");
+
+    std::string constraints = "CNW";
+    
+    BOOST_REQUIRE_THROW(set_constraints(g, constraints), std::exception);
+}
+
 BOOST_AUTO_TEST_SUITE_END()

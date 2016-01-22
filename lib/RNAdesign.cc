@@ -32,7 +32,11 @@ namespace design {
         }
         
         // set sequence constraints
-        detail::set_constraints(graph, constraints);
+        try {
+            detail::set_constraints(graph, constraints);
+        } catch (std::exception& e) {
+            throw std::logic_error(e.what());
+        }
         
         if (decompose) {
             try {
@@ -74,6 +78,41 @@ namespace design {
             
         // return if graph is bipartite
         return boost::is_bipartite(graph);
+    }
+    
+    bool sequence_structure_compatible(std::string sequence, std::vector<std::string> structures) {
+        detail::Graph graph;
+        // generate graph from input vector
+        try {
+            graph = detail::parse_structures(structures);
+        } catch (std::exception& e) {
+            std::stringstream ss;
+            ss << "Error while parsing the structures: " << std::endl << e.what();
+            throw std::logic_error(ss.str());
+        }
+        
+        // set sequence constraints
+        try {
+            detail::set_constraints(graph, sequence);
+        } catch (std::exception& e) {
+            return false;
+        }
+        return true;
+    }
+    
+    std::vector<int> incompatible_sequence_positions(std::string sequence, std::string structure) {
+        detail::Graph graph;
+        // generate graph from input vector
+        try {
+            graph = detail::parse_structures({structure});
+        } catch (std::exception& e) {
+            std::stringstream ss;
+            ss << "Error while parsing the structures: " << std::endl << e.what();
+            throw std::logic_error(ss.str());
+        }
+        
+        // set sequence constraints
+        return detail::set_constraints(graph, sequence, false);
     }
 
     template <typename R>

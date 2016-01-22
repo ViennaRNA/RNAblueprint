@@ -41,7 +41,11 @@ namespace design
             }
             
             // set sequence constraints
-            set_constraints(graph, constraints);
+            try {
+                set_constraints(graph, constraints);
+            } catch (std::exception& e) {
+                throw std::logic_error(e.what());
+            }
 
             // decompose the graph into its connected components, biconnected
             // components and decompose blocks via ear decomposition

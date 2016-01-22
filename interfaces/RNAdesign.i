@@ -47,6 +47,8 @@ namespace design {
   std::string structures_to_graphml(std::vector<std::string> structures, std::string constraints, bool decompose);
   std::string structures_to_graphml(std::vector<std::string> structures, std::string constraints);
   bool graph_is_bipartite(std::vector<std::string> structures);
+  bool sequence_structure_compatible(std::string sequence, std::vector<std::string> structures);
+  std::vector<int> incompatible_sequence_positions(std::string sequence, std::string structure);
   
   template<typename R>
     class DependencyGraph {

@@ -141,6 +141,30 @@ namespace design {
      * \return \b boolean specifying whether the input structures can be constructed to a bipartite dependency graph.
      */
     bool graph_is_bipartite(std::vector<std::string> structures);
+    /*! \brief Returns whether the the given sequence is compatible to all the given structures
+     * 
+     * This function checks, if a given sequence can form all base-pairs given by a set of input structures.
+     * Or the other way around, if the given structures could have produced this sequence.
+     * 
+     * \param sequence \b string in IUPAC notation.
+     * \param structures \b vector of \b string structures in dot-bracket notation.
+     * \exception std::exception if input is invalid.
+     * \return \b boolean specifying whether the input sequence is compatible to all the given structures.
+     */
+    bool sequence_structure_compatible(std::string sequence, std::vector<std::string> structures);
+    /*! \brief Returns whether the the given sequence is compatible to all the given structures
+     * 
+     * This function checks, if a given sequence can fold into the given structure and returns 
+     * an empty vector if this is the case. Else, it returns all positions on the sequence which
+     * are incompatible with the given structural constraint.
+     * E.g. incompatible_sequence_positions("ANC", "(.)") would return {(0, 2)}!
+     * 
+     * \param sequence \b string in IUPAC notation.
+     * \param structure \b string in dot-bracket notation.
+     * \exception std::exception if input is invalid.
+     * \return \b map of a pair of \b integers specifying the sequence positions incompatible to the structure input.
+     */
+    std::vector<int> incompatible_sequence_positions(std::string sequence, std::string structure);
     /*! \brief Dependency Graph which holds all structural constraints.
      * 
      * This graph is used to generate valid sequences compatible to the input structures
