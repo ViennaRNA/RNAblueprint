@@ -459,6 +459,8 @@ BOOST_AUTO_TEST_CASE(revert_sequence) {
     std::mt19937 rand_gen(1);
     design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "NNNNN", rand_gen);
     
+    dependency_graph.set_history_size(10);
+    
     BOOST_CHECK(!dependency_graph.revert_sequence(1));
     std::string sequence = dependency_graph.get_sequence_string();
     BOOST_CHECK(!dependency_graph.revert_sequence(1));

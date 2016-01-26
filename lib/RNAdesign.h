@@ -215,7 +215,7 @@ namespace design {
         /*! \brief Destructor for the dependency graph object.
         */
         ~DependencyGraph();
-        /*! \brief Set the maximum number of previous sampled sequences to memorize (Default: 10).
+        /*! \brief Set the maximum number of previous sampled sequences to memorize (Default: 100).
          *  
          * A history of all sampled sequences is stored within the dependency graph object. 
          * Use this function to set the size of the storage stack.

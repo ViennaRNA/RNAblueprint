@@ -23,7 +23,7 @@ namespace design
     namespace detail {
         template <typename R>
         DependencyGraph<R>::DependencyGraph(std::vector<std::string> structures, std::string constraints, R _rand)
-        : rand(_rand), history_size(10) {
+        : rand(_rand), history_size(100) {
 
             if (debug) {
                 std::cerr << "Initializing DependencyGraph..." << std::endl;
