@@ -492,7 +492,8 @@ namespace design
             
             for (; start <= end; start++) {
                 Vertex v_global = int_to_vertex(start, graph);
-                std::cerr << "vertex is: " << v_global << std::endl;
+                if (debug)
+                    std::cerr << "vertex is: " << v_global << std::endl;
                 subgraphs.insert(find_path_subgraph(v_global, graph));
             }
             // sample collected subgraphs
