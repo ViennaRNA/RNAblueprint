@@ -14,7 +14,19 @@ namespace design {
     namespace detail {
         
         Graph parse_structures(std::vector<std::string> structures) {
-
+            // remember cutpoints if cofold is inserted
+            std::map<int, char>  cutpoints;
+            for (auto& s : structures) {
+                // remove ampersands and plusses and remember them as cutpoints
+                std::size_t found_cut;
+                while (true) {
+                    found_cut = s.find_last_of("&+");
+                    if (found_cut == std::string::npos)
+                        break;
+                    cutpoints[found_cut] = s[found_cut];
+                    s.erase(found_cut, 1);
+                }
+            }
             // count the number of positions
             int num_vertices = structures[0].length();
             if (debug) {
@@ -37,7 +49,7 @@ namespace design {
             };
             
             // iterate over structures from input
-            for (auto s : structures) {
+            for (auto& s : structures) {
                 std::size_t found_illegal = s.find_first_not_of("().[]{}<>");
                 if (found_illegal != std::string::npos) {
                     std::stringstream ss;
@@ -54,6 +66,7 @@ namespace design {
             graph_property& gprop = boost::get_property(g, boost::graph_name);
             gprop.type = 0;
             gprop.id = 0;
+            gprop.cutpoints = cutpoints;
             
             return g;
         }

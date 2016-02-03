@@ -159,12 +159,12 @@ std::tuple<std::vector<std::string>, std::string, std::string > read_input(std::
     
     for (auto s = structures.begin(); s != structures.end();) {
         // find illegal character positions
-        std::size_t illegal_constraint = s->find_first_not_of("ACGTUWSMKRYBDHVN-");
-        std::size_t illegal_structure = s->find_first_not_of("().[]{}<>");
+        std::size_t illegal_constraint = s->find_first_not_of("ACGTUWSMKRYBDHVN-&+");
+        std::size_t illegal_structure = s->find_first_not_of("().[]{}<>&+");
         // check if it is a constraint
         if (illegal_constraint == std::string::npos) {
             // check if it is a start sequence
-            std::size_t illegal_sequence = s->find_first_not_of("ACGTU");
+            std::size_t illegal_sequence = s->find_first_not_of("ACGTU&+");
             if (illegal_sequence == std::string::npos && start_seq == "")
                 start_seq = *s;
             else if (constraints == "")

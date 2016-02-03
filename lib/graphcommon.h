@@ -49,6 +49,7 @@ namespace design {
             int type;
             SolutionSizeType nos;
             bool is_path = false;
+            std::map<int, char> cutpoints;
         };
 
         // graph_properties 

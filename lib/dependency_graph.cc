@@ -296,17 +296,25 @@ namespace design
             BGL_FORALL_VERTICES_T(v, graph, Graph) {
                 sequence[vertex_to_int(v, graph)] = graph[v].base;
             }
+            
             return sequence;
         }
 
         template <typename R>
         std::string DependencyGraph<R>::get_sequence_string() {
             Sequence sequence = get_sequence();
-
+            
             std::stringstream stream;
             stream << sequence;
 
-            return stream.str();
+            std::string result_str = stream.str();
+            
+            // insert cutpoints
+            for (auto& c : boost::get_property(graph, boost::graph_name).cutpoints) {
+                result_str.insert(result_str.begin()+c.first, c.second);
+            }
+            
+            return result_str;
         }
         
         template <typename R>
