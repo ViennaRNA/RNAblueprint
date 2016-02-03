@@ -8,6 +8,9 @@
  */
 
 // include header
+#include <vector>
+#include <map>
+
 #include "parsestruct.h"
 
 namespace design {
@@ -16,6 +19,7 @@ namespace design {
         Graph parse_structures(std::vector<std::string> structures) {
             // remember cutpoints if cofold is inserted
             std::map<int, char>  cutpoints;
+            int checksum = 0;
             for (auto& s : structures) {
                 // remove ampersands and plusses and remember them as cutpoints
                 std::size_t found_cut;
@@ -24,9 +28,20 @@ namespace design {
                     if (found_cut == std::string::npos)
                         break;
                     cutpoints[found_cut] = s[found_cut];
+                    checksum += found_cut;
                     s.erase(found_cut, 1);
                 }
             }
+            // lambda calculating the sum of the cut point positions
+            auto sum = [] (std::map<int, char> cp) {
+                int sum = 0;
+                for (auto c: cp)
+                    sum += c.first;
+                return sum;
+            };
+            // now check for invalid cut points
+            if (checksum / structures.size() != sum(cutpoints))
+                throw (std::logic_error("Cut points are not aligned properly or additional cut points!"));
             // count the number of positions
             int num_vertices = structures[0].length();
             if (debug) {
