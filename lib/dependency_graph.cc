@@ -319,6 +319,19 @@ namespace design
         
         template <typename R>
         SolutionSizeType DependencyGraph<R>::set_sequence_string(std::string seq_str) {
+            // remove cut points
+            std::size_t found_cut;
+            std::map<int, char> cutpoints = boost::get_property(graph, boost::graph_name).cutpoints;
+            while (true) {
+                found_cut = seq_str.find_last_of("&+");
+                if (found_cut == std::string::npos)
+                    break;
+                std::map<int, char>::const_iterator found = cutpoints.find(found_cut);
+                if (found == cutpoints.end())
+                    throw std::logic_error("Cut points of the new sequence are not aligned properly!");
+                seq_str.erase(found_cut, 1);
+            }
+            
             // get a sequence object
             Sequence sequence(seq_str.length());
             

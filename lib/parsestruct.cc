@@ -21,7 +21,7 @@ namespace design {
             std::map<int, char>  cutpoints;
             int checksum = 0;
             for (auto& s : structures) {
-                // remove ampersands and plusses and remember them as cutpoints
+                // remove ampersands and pluses and remember them as cut points
                 std::size_t found_cut;
                 while (true) {
                     found_cut = s.find_last_of("&+");
