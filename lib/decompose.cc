@@ -206,7 +206,7 @@ namespace design {
             int j = 0;
             // map with subgraphs
             std::map<int, Graph*> bicomponent_graphs;
-            
+            // TODO fix bug
             // add all edges of the biconnected component to the right subgraph
             BGL_FORALL_EDGES_T(e, g, Graph) {
                 std::map<int, Graph*>::iterator it = bicomponent_graphs.find(component[e]);

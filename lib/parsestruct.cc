@@ -129,9 +129,19 @@ namespace design {
         }
         
         std::vector<int> set_constraints(Graph& g, std::string constraints, bool throwerror) {
-            for (unsigned int pos = 0; pos < constraints.length(); pos++) {
+            
+            // remove ampersands and pluses and remember them as cut points
+            std::size_t found_cut;
+            while (true) {
+                found_cut = constraints.find_last_of("&+");
+                if (found_cut == std::string::npos)
+                    break;
+                constraints.erase(found_cut, 1);
+            }
+            
+            for (unsigned int pos = 0; pos < constraints.length(); pos++) {                
                 g[int_to_vertex(pos, g)].constraint = char_to_enum(std::toupper(constraints[pos]));
-                
+
                 // set constraints other than N to special
                 if (g[int_to_vertex(pos, g)].constraint != N) {
                     g[int_to_vertex(pos, g)].special = true;
