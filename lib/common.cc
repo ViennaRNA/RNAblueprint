@@ -70,6 +70,8 @@ namespace design {
                     break;
                 case 'U': intletter = U;
                     break;
+                case 'T': intletter = U;
+                    break;
                 case 'R': intletter = R;
                     break;
                 case 'Y': intletter = Y;
