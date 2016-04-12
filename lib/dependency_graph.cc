@@ -457,8 +457,12 @@ namespace design
             }
             
             // if this subgraph is from the given type, insert it into the set
+            // check the graph type
+            // check the graph size
+            // ignore subgraphs with only one possibility
             if (((type == -1 && boost::get_property(g, boost::graph_name).is_path) || (boost::get_property(g, boost::graph_name).type == type))
-                    && ((min_size <= boost::num_vertices(g)) && (boost::num_vertices(g) <= max_size))) {
+                    && ((min_size <= boost::num_vertices(g)) && (boost::num_vertices(g) <= max_size))
+                    && (boost::get_property(g, boost::graph_name).nos != 1)) {
                 subgraphs.emplace(&g);
             }
             // and now check all children, too
