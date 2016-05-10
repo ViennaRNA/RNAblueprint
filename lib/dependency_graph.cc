@@ -478,10 +478,11 @@ namespace design
             for (boost::tie(c, c_end) = g.children(); c != c_end; ++c) {
                 // search if this vertex is present
                 if ((*c).find_vertex(v_global).second) {
+                    Vertex v = (*c).find_vertex(v_global).first;
                     // get graph properties
                     graph_property& gprop = boost::get_property(*c, boost::graph_name);
-                    // return pointer to this path, or go deeper
-                    if (gprop.is_path) {
+                    // return pointer to this path or connected component in case of a special position, or go deeper
+                    if (gprop.is_path || (gprop.type == 1 && g[v].special)) {
                         if (debug)
                             print_graph(*c, &std::cerr);
                         return &*c;
