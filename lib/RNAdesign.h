@@ -222,7 +222,7 @@ namespace design {
          * 
          * \param size \b integer to set the size of the history storage container.
         */ 
-        void set_history_size(int size);
+        void set_history_size(unsigned int size);
         /*! \brief Returns the root graph in GraphML format as a string
          * 
          * Get the dependency graph in the XML based GraphML format for further analysis or visualization.
@@ -272,6 +272,12 @@ namespace design {
          * \return \b boolean specifying if this move was possible. If no such previous sequence is stored, it returns false.
         */
         bool revert_sequence(unsigned int jump);
+        /*! \brief Returns the history of previous sampled sequences at this point.
+         * 
+         * \sa set_history_size(int size), revert_sequence(), revert_sequence(unsigned int jump)
+         * \return \b vector of \b string representing the history of previous sampled sequences.
+        */
+        std::vector< std::string > get_history();
         /*! \brief Resets all bases in the whole dependency graph and samples a new sequence randomly.
          * 
          * Call get_sequence() after you sampled a new sequence.

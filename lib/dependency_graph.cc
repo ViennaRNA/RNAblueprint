@@ -302,8 +302,11 @@ namespace design
 
         template <typename R>
         std::string DependencyGraph<R>::get_sequence_string() {
-            Sequence sequence = get_sequence();
-            
+            return sequence_to_string(get_sequence());
+        }
+        
+        template <typename R>
+        std::string DependencyGraph<R>::sequence_to_string(Sequence sequence) {           
             std::stringstream stream;
             stream << sequence;
 
@@ -706,7 +709,28 @@ namespace design
                 history.erase(history.begin());
         }
         
-
+        template <typename R>
+        void DependencyGraph<R>::set_history_size(unsigned int size) {
+            history_size = size;
+            if (history.size() > history_size) {
+                // get an iterator pointing to the first element that should be maintained
+                std::list<Sequence>::iterator end = history.begin();
+                std::advance(end, history.size()-history_size);
+                // erase everything old. from beginning until only history_size elements remain
+                history.erase(history.begin(), end);
+            }
+        }
+        
+        template <typename R>
+        std::vector< std::string > DependencyGraph<R>::get_history() {
+            std::vector< std::string > result;
+            // convert history stack to string
+            for (auto& h : history) {
+                result.push_back(sequence_to_string(h));
+            }
+            return result;
+        }
+        
         template class DependencyGraph<std::mt19937>;
     }
 }

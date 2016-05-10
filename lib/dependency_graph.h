@@ -58,11 +58,9 @@ namespace design {
             SolutionSizeType sample_global(int connected_component_ID);
             SolutionSizeType sample(int position);
             SolutionSizeType sample(int start, int end);
-            
-            void set_history_size(int size) {
-                history_size = size;
-            }
+            void set_history_size(unsigned int size);
             bool revert_sequence(unsigned int jump);
+            std::vector< std::string > get_history();
         private:
             Graph graph;
             ProbabilityMatrixStorage pms;
@@ -80,6 +78,7 @@ namespace design {
             // if int type= -1, then it returns all subgraphs which are actual paths (gp.is_path == true).
             // you can specify also a minimal and maximal size of the subgraph
             void get_subgraphs(Graph& g, std::unordered_set< Graph* >& subgraphs, int type, unsigned int min_size, unsigned int max_size);
+            std::string sequence_to_string(Sequence sequence);
         };
         
         

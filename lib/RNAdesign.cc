@@ -159,7 +159,7 @@ namespace design {
     }
     
     template <typename R>
-    void DependencyGraph<R>::set_history_size(int size) {
+    void DependencyGraph<R>::set_history_size(unsigned int size) {
         g->set_history_size(size);
     }
     
@@ -196,6 +196,11 @@ namespace design {
     template <typename R>
     bool DependencyGraph<R>::revert_sequence(unsigned int jump) {
         return g->revert_sequence(jump);
+    }
+    
+    template <typename R>
+    std::vector< std::string > DependencyGraph<R>::get_history() {
+        return g->get_history();
     }
     
     template <typename R>
