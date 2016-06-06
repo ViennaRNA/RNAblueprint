@@ -19,3 +19,6 @@ for i in range(0, 1000):
 print 'Maximal number of solutions: ' + str(dg.number_of_sequences())
 # print the amount of connected components
 print 'Number of Connected Components: ' + str(dg.number_of_connected_components())
+
+# make a deep copy of the dependency graph
+dg1 = rd.DependencyGraphMT(dg)

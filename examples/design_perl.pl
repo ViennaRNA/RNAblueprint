@@ -19,3 +19,6 @@ for($i=0; $i<1000; $i++) {
 print 'Maximal number of solutions: '.$dg->number_of_sequences()."\n";
 # print the amount of connected components
 print 'Number of Connected Components: '.$dg->number_of_connected_components()."\n";
+
+# make a deep copy of the dependency graph
+$dg1 = new RNAdesign::DependencyGraphMT($dg)
