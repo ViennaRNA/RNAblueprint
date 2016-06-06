@@ -55,6 +55,14 @@
  * 
  * TIP: You might want call ./configure --help for all install options!
  * 
+ * \section examples_sec Interface Examples
+ * \subsection python_ex Python example
+ * \include design_python.py
+ * \subsection perl_ex Perl example
+ * \include design_perl.pl
+ * \subsection cpp_ex C++ example
+ * \include design_cpp.cc
+ * 
  * \section cite_sec How to cite
  * 
  * This is a early release for testing purposes only and a publication for this software package is in progress.
