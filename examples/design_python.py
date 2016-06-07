@@ -14,6 +14,8 @@ print dg.get_sequence()
 for i in range(0, 1000):
     dg.sample_global()
     print dg.get_sequence()
+    # revert to the previous sequence
+    dg.revert_sequence();
 
 # print the amount of solutions
 print 'Maximal number of solutions: ' + str(dg.number_of_sequences())

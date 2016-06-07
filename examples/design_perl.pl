@@ -14,6 +14,8 @@ print $dg->get_sequence()."\n";
 for($i=0; $i<1000; $i++) {
     $dg->sample_global();
     print $dg->get_sequence()."\n";
+    # revert to the previous sequence
+    $dg->revert_sequence();
 }
 # print the amount of solutions
 print 'Maximal number of solutions: '.$dg->number_of_sequences()."\n";
