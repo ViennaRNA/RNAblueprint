@@ -1,4 +1,7 @@
 #!/usr/bin/perl
+# This script is an example implementation on how to use the Perl
+# interface. It generates 1000 neighbors of an initially sampled
+# random sequence.
 
 use RNAdesign;
 

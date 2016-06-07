@@ -1,4 +1,7 @@
 #!/usr/bin/python
+# This script is an example implementation on how to use the Python
+# interface. It generates 1000 neighbors of an initially sampled
+# random sequence.
 
 import RNAdesign as rd
 
