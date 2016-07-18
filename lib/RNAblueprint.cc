@@ -7,7 +7,7 @@
  *
  */
 
-#include "RNAdesign.h"
+#include "RNAblueprint.h"
 
 namespace design {
     

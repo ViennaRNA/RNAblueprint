@@ -9,11 +9,11 @@
 
 // include header
 #include "test_common.h"
-#include "RNAdesign.h"
+#include "RNAblueprint.h"
 
 // include headers containing functions to test
 
-BOOST_AUTO_TEST_SUITE(RNAdesign)
+BOOST_AUTO_TEST_SUITE(RNAblueprint)
 
 BOOST_AUTO_TEST_CASE(IsBipartite) {
 

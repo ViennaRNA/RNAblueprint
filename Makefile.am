@@ -13,7 +13,7 @@ doc:
 
 if DX_COND_man
 # post-process man pages and install them
-dist_man3_MANS = @DX_DOCDIR@/man/man3/RNAdesign.h.3
+dist_man3_MANS = @DX_DOCDIR@/man/man3/RNAblueprint.h.3
 
 $(dist_man3_MANS): doxygen-doc
 
@@ -24,7 +24,7 @@ htmldocdir = $(docdir)/html
 xmldocdir = $(docdir)/xml
 
 if DX_COND_pdf
-docdata += @DX_DOCDIR@/RNAdesign.pdf
+docdata += @DX_DOCDIR@/RNAblueprint.pdf
 endif
 if DX_COND_html
 dist_htmldoc_DATA = @DX_DOCDIR@/html/*
@@ -33,7 +33,7 @@ $(dist_htmldoc_DATA): doxygen-doc
 
 endif
 if DX_COND_xml
-docdata += @DX_DOCDIR@/RNAdesign.tag 
+docdata += @DX_DOCDIR@/RNAblueprint.tag 
 dist_xmldoc_DATA = @DX_DOCDIR@/xml/*
 
 $(dist_htmldoc_DATA): doxygen-doc

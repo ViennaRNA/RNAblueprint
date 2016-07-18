@@ -11,7 +11,7 @@
 
 // include common header with graph definition and global variables
 #include "common.h"
-#include "RNAdesign.h"
+#include "RNAblueprint.h"
 
 // include standard library parts
 #include <sstream>

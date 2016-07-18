@@ -5,7 +5,7 @@
  * Author: Stefan Hammer <s.hammer@univie.ac.at>
  * License: GPLv3
  * 
- * Compile with: g++ -fopenmp -g -Wall --std=c++11 -I$HOME/local/include/RNAdesign -L$HOME/local/lib/ -L/usr/lib64/ design_cpp.cc -lRNA -lRNAdesign -lm -o design_cpp
+ * Compile with: g++ -fopenmp -g -Wall --std=c++11 -I$HOME/local/include/RNAblueprint -L$HOME/local/lib/ -L/usr/lib64/ design_cpp.cc -lRNA -lRNAblueprint -lm -o design_cpp
  */
 
 // include standard library parts
@@ -19,8 +19,8 @@ extern "C" {
 	#include "ViennaRNA/fold.h"
 	#include "ViennaRNA/part_func.h"
 }
-// include RNAdesign
-#include "RNAdesign.h"
+// include RNAblueprint
+#include "RNAblueprint.h"
 
 // typedefs
 

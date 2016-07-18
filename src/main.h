@@ -11,7 +11,7 @@
 #define MAIN_H
 
 // include library DependencyGraph
-#include "RNAdesign.h"
+#include "RNAblueprint.h"
 
 // include standard library parts
 #include <iostream>

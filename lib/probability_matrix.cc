@@ -1,4 +1,4 @@
-/* RNAdesign
+/* RNAblueprint
  * A program for designing RNA molecules.
  *
  * Created on: 18.03.2014

@@ -3,12 +3,12 @@
 # interface. It generates 1000 neighbors of an initially sampled
 # random sequence.
 
-use RNAdesign;
+use RNAblueprint;
 
 # define structures
 @structures = ['(((((....)))))', '(((....)))....'];
 # construct dependency graph with these structures
-$dg = new RNAdesign::DependencyGraphMT(@structures);
+$dg = new RNAblueprint::DependencyGraphMT(@structures);
 
 # print this sequence
 print $dg->get_sequence()."\n";
@@ -26,4 +26,4 @@ print 'Maximal number of solutions: '.$dg->number_of_sequences()."\n";
 print 'Number of Connected Components: '.$dg->number_of_connected_components()."\n";
 
 # make a deep copy of the dependency graph
-$dg1 = new RNAdesign::DependencyGraphMT($dg)
+$dg1 = new RNAblueprint::DependencyGraphMT($dg)

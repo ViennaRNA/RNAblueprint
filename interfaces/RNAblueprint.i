@@ -1,4 +1,4 @@
-/* RNAdesign.i */
+/* RNAblueprint.i */
 
 /*
  * include exception handling from C++ to scripting language
@@ -16,19 +16,19 @@
  }
 
 /*
- * include the RNAdesign header it self
+ * include the RNAblueprint header it self
  */
 
-%module RNAdesign
+%module RNAblueprint
 %{
 
   /* Includes the header in the wrapper code */
-#include "../lib/RNAdesign.h"
+#include "../lib/RNAblueprint.h"
 
   %}
 
 /*
- * stuff necessary to get the RNAdesign DependencyGraph stuff working
+ * stuff necessary to get the RNAblueprint DependencyGraph stuff working
  */
 
 %include "std_string.i"

@@ -1,4 +1,4 @@
-/*!\file RNAdesign.h 
+/*!\file RNAblueprint.h 
  * \brief This file holds the external representation of the DependencyGraph, the main construct for designing RNA molecules.
  * 
  * The dependency graph is constructed from structures in dot-bracket notation and sequence constraints following the IUPAC notation.
@@ -10,11 +10,11 @@
  *
  */
 
-/*! \mainpage RNAdesign library written in C++
+/*! \mainpage RNAblueprint library written in C++
  *
  * \section intro_sec Introduction
  *
- * The RNAdesign library still needs some documentation!
+ * The RNAblueprint library still needs some documentation!
  * Write here something about the theoretical background
  * Show how to cite the software
  *
@@ -48,7 +48,7 @@
  * Most important configure options are:
  * - \-\-prefix           Specify an installation path prefix
  * - \-\-with-boost       Specify the installation directory of the boost library
- * - \-\-disable-program  Disable RNAdesign program compilation
+ * - \-\-disable-program  Disable RNAblueprint program compilation
  * - \-\-disable-swig     Disable all SWIG scripting interfaces
  * - \-\-enable-libGMP    Enable the calculation of big numbers with multiprecision
  * - \-\-disable-openmp   Disable the usage of parallel computation

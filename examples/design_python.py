@@ -3,7 +3,7 @@
 # interface. It generates 1000 neighbors of an initially sampled
 # random sequence.
 
-import RNAdesign as rd
+import RNAblueprint as rd
 
 # define structures
 structures = ['(((((....)))))', '(((....)))....']

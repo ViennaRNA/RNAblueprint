@@ -9,7 +9,7 @@
 
 // include header
 #include "test_common.h"
-#include "RNAdesign.h"
+#include "RNAblueprint.h"
 #include <random>
 #include <chrono>
 

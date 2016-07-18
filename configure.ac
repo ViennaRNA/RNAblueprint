@@ -1,7 +1,7 @@
-# RNAdesign: configure.ac
+# RNAblueprint: configure.ac
 
 # initial information about the project
-AC_INIT([RNAdesign],[0.1],[s.hammer@univie.ac.at],[RNAdesign],[http://www.tbi.univie.ac.at/~jango/])
+AC_INIT([RNAblueprint],[0.1],[s.hammer@univie.ac.at],[RNAblueprint],[http://www.tbi.univie.ac.at/~jango/])
 
 # automake initialisation (mandatory)
 AC_PREREQ([2.59])
@@ -68,14 +68,14 @@ AS_IF([test "x$enable_tests" != "xno"], [
 
 AM_CONDITIONAL([ENABLE_TESTS],[test "x$enable_tests_status" = x"yes"])
 
-# build with RNAdesign binary
+# build with RNAblueprint binary
 ##########################################################################tests
 AC_ARG_ENABLE([RNADESIGN_PROGRAM],
     [AS_HELP_STRING([--disable-program],
-        [Disable building the RNAdesign program.])])
+        [Disable building the RNAblueprint program.])])
 
 AS_IF([test "x$enable_program" != "xno"], [
-    AC_MSG_NOTICE([Building with RNAdesign program])
+    AC_MSG_NOTICE([Building with RNAblueprint program])
     BOOST_PROGRAM_OPTIONS([s])
     [enable_program_status="yes"]
 ], [
@@ -282,7 +282,7 @@ Configure successful with the following options:
 Options:
   Prefix path:          $prefix
   Custom BOOST path:    $with_boost
-  RNAdesign program:    $enable_program_status
+  RNAblueprint program:    $enable_program_status
   Debug information:    $enable_debug
   Use GMP integers:     $enable_libgmp_status
 

@@ -1,9 +1,9 @@
 
-# RNAdesign library written in C++
+# RNAblueprint library written in C++
 
 ## Introduction
 
-The RNAdesign library still needs some documentation! Write here something about the theoretical background Show how to cite the software
+The RNAblueprint library still needs some documentation! Write here something about the theoretical background Show how to cite the software
 Dependencies
 
 ### Required:
@@ -40,7 +40,7 @@ make install
     --prefix Specify an installation path prefix
     --with-boost Specify the installation directory of the boost library
     --disable-swig Disable all SWIG scripting interfaces
-    --disable-program  Disable RNAdesign program compilation
+    --disable-program  Disable RNAblueprint program compilation
     --enable-libGMP Enable the calculation of big numbers with multiprecision
     --disable-openmp Disable the usage of parallel computation
 
@@ -49,7 +49,7 @@ TIP: You might want call ./configure –help for all install options!
 ## Documentation
 
 Documentation is done using Doxygen. Call 'make doc' for a offline version in HTML and PDF.
-There is also a online version available here: [http://ribonets.github.io/RNAdesign/](http://ribonets.github.io/RNAdesign/)
+There is also a online version available here: [http://ribonets.github.io/RNAblueprint/](http://ribonets.github.io/RNAblueprint/)
 
 ## How to cite
 
