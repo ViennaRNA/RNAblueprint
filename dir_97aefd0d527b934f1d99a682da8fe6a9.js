@@ -9,5 +9,5 @@ var dir_97aefd0d527b934f1d99a682da8fe6a9 =
     [ "pathcoloring.h", "pathcoloring_8h.html", null ],
     [ "printgraph.h", "printgraph_8h.html", null ],
     [ "probability_matrix.h", "probability__matrix_8h.html", null ],
-    [ "RNAdesign.h", "RNAdesign_8h.html", "RNAdesign_8h" ]
+    [ "RNAblueprint.h", "RNAblueprint_8h.html", "RNAblueprint_8h" ]
 ];

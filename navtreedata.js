@@ -1,7 +1,7 @@
 var NAVTREE =
 [
-  [ "RNAdesign-0.1", "index.html", [
-    [ "RNAdesign library written in C++", "index.html", [
+  [ "RNAblueprint-0.1", "index.html", [
+    [ "RNAblueprint library", "index.html", [
       [ "Introduction", "index.html#intro_sec", null ],
       [ "Dependencies", "index.html#dependency_sec", null ],
       [ "Installation", "index.html#install_sec", null ],
@@ -10,8 +10,10 @@ var NAVTREE =
         [ "Perl example", "index.html#perl_ex", null ],
         [ "C++ example", "index.html#cpp_ex", null ]
       ] ],
+      [ "Testing", "index.html#testing_sec", null ],
       [ "How to cite", "index.html#cite_sec", null ]
     ] ],
+    [ "Bug List", "bug.html", null ],
     [ "Namespaces", null, [
       [ "Namespace List", "namespaces.html", "namespaces" ],
       [ "Namespace Members", "namespacemembers.html", [
@@ -36,7 +38,7 @@ var NAVTREE =
 
 var NAVTREEINDEX =
 [
-"RNAdesign_8h.html"
+"RNAblueprint_8h.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
