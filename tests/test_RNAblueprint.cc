@@ -1,9 +1,9 @@
 /* This file is a boost.test unit test and provides tests to check if we sample 
  * with valid statistics
  *
- * Created on: 11.01.2016
- * Author: Stefan Hammer <s.hammer@univie.ac.at>
- * License: GPLv3
+ * @date 11.01.2016
+ * @author Stefan Hammer <s.hammer@univie.ac.at>
+ * @copyright GPLv3
  * 
  */
 

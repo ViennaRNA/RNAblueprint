@@ -1,9 +1,9 @@
 /* RNAblueprint
  * A program for designing RNA molecules.
  *
- * Created on: 27.05.2015
- * Author: Stefan Hammer <s.hammer@univie.ac.at>
- * License: GPLv3
+ * @date 27.05.2015
+ * @author Stefan Hammer <s.hammer@univie.ac.at>
+ * @copyright GPLv3
  *
  */
 

@@ -8,9 +8,6 @@ include $(top_srcdir)/doxygen.am
 # the subdirectories of the project to go into
 SUBDIRS = lib src interfaces tests
 
-doc:
-	$(MAKE) doxygen-doc
-
 if DX_COND_man
 # post-process man pages and install them
 dist_man3_MANS = @DX_DOCDIR@/man/man3/RNAblueprint.h.3

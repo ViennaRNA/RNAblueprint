@@ -1,9 +1,9 @@
 /*!\file common.h 
  * \brief This file holds all global includes, definitions and variables.
  *
- * Created on: 25.03.2013
- * Author: Stefan Hammer <s.hammer@univie.ac.at>
- * License: GPLv3
+ * @date 25.03.2013
+ * @author Stefan Hammer <s.hammer@univie.ac.at>
+ * @copyright GPLv3
  *
  * \cond INTERNAL
  */

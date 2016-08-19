@@ -1,9 +1,9 @@
 /* RNAblueprint
  * A program for designing RNA molecules.
  *
- * Created on: 18.03.2014
- * Author: Stefan Hammer <s.hammer@univie.ac.at>
- * License: GPLv3
+ * @date 18.03.2014
+ * @author Stefan Hammer <s.hammer@univie.ac.at>
+ * @copyright GPLv3
  *
  */
 
@@ -390,8 +390,7 @@ namespace design
                 revert_sequence(0);
                 std::stringstream ss;
                 ss << "Error while sampling an initial sequence!" << std::endl
-                        << "Resetting to previous sequence: " << get_sequence_string() << e.what();
-                    std::cerr << ss.str() << std::endl;
+                    << "Resetting to previous sequence: " << get_sequence_string() << e.what();
                 throw std::logic_error(ss.str());
             }
             // remember this new sequence in the history

@@ -1,9 +1,9 @@
 /* This file is a boost.test unit test and should provide tests for many functions of the project
  *
  *
- * Created on: 23.10.2013
- * Author: Stefan Hammer <s.hammer@univie.ac.at>
- * License: GPLv3
+ * @date 23.10.2013
+ * @author Stefan Hammer <s.hammer@univie.ac.at>
+ * @copyright GPLv3
  *
  * compile with g++ -Wall -std=c++11 -lstdc++ -g -o testRNAblueprint -lboost_unit_test_framework main.cc test_pathcoloring.cc ../pathcoloring.cc ../common.cc ../graphcommon.cc
  *

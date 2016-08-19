@@ -1,9 +1,9 @@
 /* RNAblueprint
  * A program for designing RNA molecules.
  *
- * Created on: 25.03.2013
- * Author: Stefan Hammer <s.hammer@univie.ac.at>
- * License: GPLv3
+ * @date 25.03.2013
+ * @author Stefan Hammer <s.hammer@univie.ac.at>
+ * @copyright GPLv3
  *
  */
 
@@ -17,6 +17,12 @@ namespace design {
     namespace detail {
         
         Graph parse_structures(std::vector<std::string> structures) {
+            
+            // sanity check for input
+            if (structures.size() == 0) {
+                throw ( std::logic_error( "Cannot initialize Dependency Graph with no structures!" ));
+            }
+            
             // remember cutpoints if cofold is inserted
             std::map<int, char>  cutpoints;
             int checksum = 0;

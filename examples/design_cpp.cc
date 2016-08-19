@@ -1,9 +1,9 @@
 /** @example design_cpp.cc
  * A small design example for the C++ interface usage
  *
- * Created on: 23.01.2014
- * Author: Stefan Hammer <s.hammer@univie.ac.at>
- * License: GPLv3
+ * @date 23.01.2014
+ * @author Stefan Hammer <s.hammer@univie.ac.at>
+ * @copyright GPLv3
  * 
  * Compile with: g++ -fopenmp -g -Wall --std=c++11 -I$HOME/local/include/RNAblueprint -L$HOME/local/lib/ -L/usr/lib64/ design_cpp.cc -lRNA -lRNAblueprint -lm -o design_cpp
  */
@@ -46,7 +46,7 @@ float pf_fold(std::string& sequence, std::string& structure) {
     return energy;
 }
 
-//objective function: eos(1)+eos(2)+eos(3) - 3 * gibbs + 1 * ((eos(1)-eos(2))^2 + (eos(1)-eos(3))^2 + (eos(2)-eos(3))^2)
+//objective function: 1/3 * eos(1)+eos(2)+eos(3) - 3 * gibbs + 0.5 * 1/3 * (|eos(1)-eos(2)| + |eos(1)-eos(3)| + |eos(2)-eos(3)|)
 float objective_function(std::string& sequence, std::vector<std::string>& structures) {
     int M = structures.size();
     std::vector<float> eos;

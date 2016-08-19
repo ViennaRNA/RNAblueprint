@@ -19,11 +19,11 @@ Please cite the software as specified at the bottom of the page!
 
  * GNU Automake
  * Boost Graph Library
- * Boost Programm Options
  * C++ Standard Library
 
 ### Optional:
 
+ * Boost Programm Options
  * SWIG for interfaces
  * Python for interface
  * Perl for interface
@@ -48,12 +48,12 @@ make install
 
     --prefix Specify an installation path prefix
     --with-boost Specify the installation directory of the boost library
-    --disable-swig Disable all SWIG scripting interfaces
     --disable-program  Disable RNAblueprint program compilation
+    --disable-swig Disable all SWIG scripting interfaces
     --enable-libGMP Enable the calculation of big numbers with multiprecision
     --disable-openmp Disable the usage of parallel computation
 
-TIP: You might want call ./configure –help for all install options!
+TIP: You might want call `./configure --help` for all install options!
 
 ## Documentation
 

@@ -4,19 +4,25 @@
  * The dependency graph is constructed from structures in dot-bracket notation and sequence constraints following the IUPAC notation.
  * All important functions on the graph are available as member functions of this object.
  *
- * Created on: 26.06.2014
- * @author: Stefan Hammer <s.hammer@univie.ac.at>
- * License: GPLv3
+ * @date 26.06.2014
+ * @author Stefan Hammer <s.hammer@univie.ac.at>
+ * @copyright GPLv3
  *
  */
 
-/*! \mainpage RNAblueprint library written in C++
+/*! \mainpage RNAblueprint library
  *
  * \section intro_sec Introduction
  *
- * The RNAblueprint library still needs some documentation!
- * Write here something about the theoretical background
- * Show how to cite the software
+ * The RNAblueprint library solves the problem of stochastically sampling RNA/DNA sequences
+ * compatible to multiple structural constraints.
+ * It only creates sequences that fulfill all base pairs specified in any given input structure.
+ * Furthermore, it is possible to specify sequence constraints in IUPAC notation.
+ * Solutions are sampled uniformly from the whole solution space, therefore it is guaranteed,
+ * that there is no bias towards certain sequences.
+ *
+ * The library is written in C++ with SWIG scripting interfaces for Python and Perl.
+ * Please cite the software as specified at the bottom of the page!
  *
  * \section dependency_sec Dependencies
  *
@@ -53,7 +59,7 @@
  * - \-\-enable-libGMP    Enable the calculation of big numbers with multiprecision
  * - \-\-disable-openmp   Disable the usage of parallel computation
  * 
- * TIP: You might want call ./configure --help for all install options!
+ * TIP: You might want call `./configure --help` for all install options!
  * 
  * \section examples_sec Interface Examples
  * \subsection python_ex Python example
@@ -63,9 +69,13 @@
  * \subsection cpp_ex C++ example
  * \include design_cpp.cc
  * 
+ * \section testing_sec Testing
+ * 
+ * Unit tests are available for many functions of the library. Please call `make check` to run these tests!
+ * 
  * \section cite_sec How to cite
  * 
- * This is a early release for testing purposes only and a publication for this software package is in progress.
+ * Publication for this software package is in progress.
  * We will update this information as soon as a preprint is available online!
  * 
  */
@@ -165,7 +175,7 @@ namespace design {
      * This function checks, if a given sequence can fold into the given structure and returns 
      * an empty vector if this is the case. Else, it returns all positions on the sequence which
      * are incompatible with the given structural constraint.
-     * E.g. incompatible_sequence_positions("ANC", "(.)") would return {(0, 2)}!
+     * E.g. incompatible_sequence_positions("ANC", "(.)") would return [0, 2]!
      * 
      * \param sequence \b string in IUPAC notation.
      * \param structure \b string in dot-bracket notation.
@@ -334,6 +344,7 @@ namespace design {
         SolutionSizeType sample_local(int min_num_pos, int max_num_pos);
         /*! \brief Randomly chooses one path (either top-level a connected component, or within a block, etc.) and samples all positions.
          * 
+         * \bug It is a known issue, that this function does not draw solutions completely fair as the paths to sample are selected in a biased manner.
          * \sa sample_local(int min_num_pos, int max_num_pos), sample_global(), sample_global(int min_num_pos, int max_num_pos), sample_global(int connected_component_ID)
          * \return \b number of possible solutions for this sampling.
         */

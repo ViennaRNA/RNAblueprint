@@ -1,8 +1,8 @@
 /* This file is a boost.test unit test and provides tests the internal dependency graph
  *
- * Created on: 03.08.2015
- * Author: Stefan Hammer <s.hammer@univie.ac.at>
- * License: GPLv3
+ * @date 03.08.2015
+ * @author Stefan Hammer <s.hammer@univie.ac.at>
+ * @copyright GPLv3
  * 
  */
 

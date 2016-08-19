@@ -1,6 +1,6 @@
 /* 
  * File:   uninduced_subgraph.hpp
- * Author: Stefan Hammer <jango@tbi.univie.ac.at>
+ * @author Stefan Hammer <jango@tbi.univie.ac.at>
  *
  * Created on October 6, 2015, 2:33 PM
  */
@@ -258,7 +258,7 @@ namespace detail {
                     add_edge_recur_up(u_global, v_global, ep, static_cast<uninduced_subgraph<Graph>&>(*g.m_parent), orig);
             
             // insert edge into the current uninduced_subgraph on the way down
-            std::cerr << "added local edge: " << u_global << "->" << v_global << std::endl;
+            // std::cerr << "added local edge: " << u_global << "->" << v_global << std::endl;
             g.local_add_edge(g.global_to_local(u_global), g.global_to_local(v_global), e_global);
             return std::make_pair(e_global, inserted);
         }

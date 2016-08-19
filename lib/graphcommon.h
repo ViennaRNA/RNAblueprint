@@ -1,9 +1,9 @@
 /*!\file graphcommon.h 
  * \brief This file holds all important information for the dependency graph, its definition and often used functions.
  *
- * Created on: 26.08.2013
- * Author: Stefan Hammer <s.hammer@univie.ac.at>
- * License: GPLv3
+ * @date 26.08.2013
+ * @author Stefan Hammer <s.hammer@univie.ac.at>
+ * @copyright GPLv3
  *
  * \cond INTERNAL
  */

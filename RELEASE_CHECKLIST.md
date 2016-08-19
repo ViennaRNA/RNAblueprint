@@ -3,7 +3,7 @@ RELEASE CHECKLIST
 
  * Check that all bugs have been resolved
  * Verify all steps in the deployment plan are completed
- * Write Known Issues List
+ * Write Known Issues List (or update \bug statements in documentation)
  * Remove debugging and testing code and print statements
 
  * Verify that every function appears in the Test Scripts

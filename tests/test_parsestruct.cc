@@ -1,9 +1,9 @@
 /* This file is a boost.test unit test and provides tests for parsestruct.cc
  *
  *
- * Created on: 02.11.2013
- * Author: Stefan Hammer <s.hammer@univie.ac.at>
- * License: GPLv3
+ * @date 02.11.2013
+ * @author Stefan Hammer <s.hammer@univie.ac.at>
+ * @copyright GPLv3
  *
  * 
  *

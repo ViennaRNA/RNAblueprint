@@ -1,9 +1,9 @@
 /* This file is a boost.test unit test and provides tests for probability_matrix.cc
  *
  *
- * Created on: 11.06.2015
- * Author: Stefan Hammer <s.hammer@univie.ac.at>
- * License: GPLv3
+ * @date 11.06.2015
+ * @author Stefan Hammer <s.hammer@univie.ac.at>
+ * @copyright GPLv3
  *
  * 
  *

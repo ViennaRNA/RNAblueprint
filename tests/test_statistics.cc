@@ -1,9 +1,9 @@
 /* This file is a boost.test unit test and provides tests to check if we sample 
  * with valid statistics
  *
- * Created on: 03.08.2015
- * Author: Stefan Hammer <s.hammer@univie.ac.at>
- * License: GPLv3
+ * @date 03.08.2015
+ * @author Stefan Hammer <s.hammer@univie.ac.at>
+ * @copyright GPLv3
  * 
  */
 
@@ -92,7 +92,7 @@ BOOST_AUTO_TEST_CASE(ComponentSampling) {
 
     for (int i = 0; i < 100000; i++) {
         try{
-            count[dependency_graph->sample_global()]++; // color the graph and get the sequence
+            count[double(dependency_graph->sample_global())]++; // color the graph and get the sequence
         }
 
         catch(std::exception & e) {

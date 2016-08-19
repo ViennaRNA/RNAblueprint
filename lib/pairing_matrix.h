@@ -1,9 +1,9 @@
 /*!\file pairing_matrix.h 
  * \brief This file holds the class definitions for the PairingMatrix.
  *
- * Created on: 27.05.2015
- * Author: Stefan Hammer <s.hammer@univie.ac.at>
- * License: GPLv3
+ * @date 27.05.2015
+ * @author Stefan Hammer <s.hammer@univie.ac.at>
+ * @copyright GPLv3
  *
  * \cond INTERNAL
  */

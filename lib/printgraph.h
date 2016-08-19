@@ -1,9 +1,9 @@
 /*!\file printgraph.h 
  * \brief This file holds the functions to print out a graph in xml representation.
  *
- * Created on: 25.03.2013
- * Author: Stefan Hammer <s.hammer@univie.ac.at>
- * License: GPLv3
+ * @date 25.03.2013
+ * @author Stefan Hammer <s.hammer@univie.ac.at>
+ * @copyright GPLv3
  *
  * \cond INTERNAL
  */
