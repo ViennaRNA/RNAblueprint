@@ -1,15 +1,15 @@
 /* This file is a boost.test unit test and provides tests to check if we sample 
  * with valid statistics
  *
- * Created on: 03.08.2015
- * Author: Stefan Hammer <s.hammer@univie.ac.at>
- * License: GPLv3
+ * @date 03.08.2015
+ * @author Stefan Hammer <s.hammer@univie.ac.at>
+ * @copyright GPLv3
  * 
  */
 
 // include header
 #include "test_common.h"
-#include "RNAdesign.h"
+#include "RNAblueprint.h"
 #include <random>
 #include <chrono>
 
@@ -54,13 +54,55 @@ BOOST_AUTO_TEST_CASE(EqualDistribution) {
         }
 
         std::string sequence = dependency_graph->get_sequence();
-        for (int pos = 0; pos < sequence.length(); pos++) {
+        for (unsigned int pos = 0; pos < sequence.length(); pos++) {
             count[sequence[pos]]++;
         }
     }
 
     for (auto c : count) {
-        BOOST_CHECK_CLOSE(c.second / 200000, 0.25000f, 1);
+        BOOST_CHECK_CLOSE(c.second / 200000, 0.25000f, 2);
+    }
+    
+    delete dependency_graph;
+}
+
+BOOST_AUTO_TEST_CASE(ComponentSampling) {
+    BOOST_TEST_MESSAGE("Test if we sample connected components weighted the right way");
+
+    design::initialize_library(false);
+    unsigned long seed = std::chrono::system_clock::now().time_since_epoch().count();
+    std::mt19937 rand_gen(seed);
+
+    design::DependencyGraph<std::mt19937>* dependency_graph;
+    try{
+        dependency_graph = new design::DependencyGraph<std::mt19937>(
+        {"((..))", ".()..."}, "", rand_gen);
+    }
+
+    catch(std::exception & e) {
+        std::cerr << e.what() << std::endl;
+        exit(EXIT_FAILURE);
+    }
+
+    std::unordered_map<double, double> count = {
+        {4, 0},
+        {6, 0},
+        {10, 0}
+    };
+
+    for (int i = 0; i < 100000; i++) {
+        try{
+            count[double(dependency_graph->sample_global())]++; // color the graph and get the sequence
+        }
+
+        catch(std::exception & e) {
+            std::cerr << e.what() << std::endl;
+            exit(EXIT_FAILURE);
+        }
+    }
+
+    for (auto c : count) {
+        BOOST_CHECK_CLOSE(c.second / 100000, c.first / 20, 2);
     }
     
     delete dependency_graph;

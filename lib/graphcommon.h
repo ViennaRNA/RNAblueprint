@@ -1,9 +1,9 @@
 /*!\file graphcommon.h 
  * \brief This file holds all important information for the dependency graph, its definition and often used functions.
  *
- * Created on: 26.08.2013
- * Author: Stefan Hammer <s.hammer@univie.ac.at>
- * License: GPLv3
+ * @date 26.08.2013
+ * @author Stefan Hammer <s.hammer@univie.ac.at>
+ * @copyright GPLv3
  *
  * \cond INTERNAL
  */
@@ -47,7 +47,9 @@ namespace design {
              4 -> path
              */
             int type;
+            SolutionSizeType nos;
             bool is_path = false;
+            std::map<int, char> cutpoints;
         };
 
         // graph_properties 
@@ -79,9 +81,9 @@ namespace design {
         }
         
         // get the vertex descriptor from a vertex_color_t tag
-        inline Vertex int_to_vertex(int i, Graph& g) {
+        inline Vertex int_to_vertex(unsigned int i, Graph& g) {
             Vertex v = boost::vertex(i, g.root());
-            if (i >= num_vertices(g) || i < 0 || v == Graph::null_vertex()) {
+            if (i >= boost::num_vertices(g.root()) || i < 0 || v == Graph::null_vertex()) {
                 std::stringstream ss;
                 ss << "Error getting vertex descriptor from integer: " << i;
                 throw std::out_of_range(ss.str());

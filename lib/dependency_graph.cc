@@ -1,9 +1,9 @@
-/* RNAdesign
+/* RNAblueprint
  * A program for designing RNA molecules.
  *
- * Created on: 18.03.2014
- * Author: Stefan Hammer <s.hammer@univie.ac.at>
- * License: GPLv3
+ * @date 18.03.2014
+ * @author Stefan Hammer <s.hammer@univie.ac.at>
+ * @copyright GPLv3
  *
  */
 
@@ -23,11 +23,14 @@ namespace design
     namespace detail {
         template <typename R>
         DependencyGraph<R>::DependencyGraph(std::vector<std::string> structures, std::string constraints, R _rand)
-        : rand(_rand), history_size(10) {
+        : rand(_rand), history_size(100) {
 
             if (debug) {
                 std::cerr << "Initializing DependencyGraph..." << std::endl;
             }
+            // start to measure time
+            std::chrono::steady_clock::time_point start_time = std::chrono::steady_clock::now();
+            
             // generate graph from input vector
             try {
                 graph = parse_structures(structures);
@@ -38,7 +41,11 @@ namespace design
             }
             
             // set sequence constraints
-            set_constraints(graph, constraints);
+            try {
+                set_constraints(graph, constraints);
+            } catch (std::exception& e) {
+                throw std::logic_error(e.what());
+            }
 
             // decompose the graph into its connected components, biconnected
             // components and decompose blocks via ear decomposition
@@ -56,7 +63,7 @@ namespace design
             
             // now calculate all the PMs
             try {
-                calculate_probabilities(graph);
+                calculate_probabilities(graph, start_time);
             } catch (std::exception& e) {
                 std::stringstream ss;
                 ss << "Error while calculating the probabilities: " << std::endl << e.what();
@@ -67,14 +74,17 @@ namespace design
         }
 
         template <typename R>
-        void DependencyGraph<R>::calculate_probabilities(Graph& g) {
+        void DependencyGraph<R>::calculate_probabilities(Graph& g, std::chrono::steady_clock::time_point& start_time) {
             
             // Remember a temporary PM which holds the current state
             ProbabilityMatrix current;
-            std::unordered_map<Vertex, int> degree_map;
+            std::unordered_map<Vertex, unsigned int> degree_map;
             
             Graph::children_iterator cg, cg_end;
             for (boost::tie(cg, cg_end) = g.children(); cg != cg_end; ++cg) {
+                // check if timeout is already reached
+                check_timeout(start_time);
+                
                 // get property map of graph
                 graph_property& gprop = boost::get_property(*cg, boost::graph_name);
                 
@@ -94,8 +104,11 @@ namespace design
                         ss << "Could not get a ProbabilityMatrix for a path: " << std::endl << e.what();
                         throw std::logic_error( ss.str() );
                     }
+                    // save number of solutions as graph property
+                    gprop.nos = pms[&*cg].mnos();
+                    
                     if (debug) {
-                        std::cerr << "Path PM (" << gprop.type << "-" << gprop.id << "):" << std::endl
+                        std::cerr << "Path PM (" << gprop.type << "-" << gprop.id << ") with nos " << gprop.nos << ":" << std::endl
                                 << pms[&*cg] << std::endl;
                     }
                 } else {
@@ -103,14 +116,23 @@ namespace design
                         std::cerr << "Recursion!" << std::endl;
                     }
                     // recursion is here
-                    calculate_probabilities(*cg);
+                    calculate_probabilities(*cg, start_time);
                 }
                 
                 // Multiply current with pm of this child
-                current = pms[&*cg] * current;
+                // Multiplication is not symmetric in terms of performance, therefore
+                // we want to have the matrix with more special vertices at the front.
+                if (current.getSpecials().size() > pms[&*cg].getSpecials().size())
+                    current = current * pms[&*cg];
+                else
+                    current = pms[&*cg] * current;
+                
                 if (debug) {
                     std::cerr << "current PM: " << std::endl << current << std::endl;
                 }
+                
+                // check if timeout is already reached
+                check_timeout(start_time);
                 
                 // only save PM before first make_internal
                 bool alreadysaved = false;
@@ -156,9 +178,13 @@ namespace design
             // save final state of PM to the main graph
             
             pms[&g] = current;
+            graph_property& rgprop = boost::get_property(g, boost::graph_name);
+            // remember maximum number of solutions for this subgraph
+            rgprop.nos = current.mnos();
+            
             if (debug) {
                 graph_property& rgprop = boost::get_property(g, boost::graph_name);
-                std::cerr << "final PM (" << rgprop.type << "-" << rgprop.id << "):" << std::endl
+                std::cerr << "final PM (" << rgprop.type << "-" << rgprop.id << ") with nos " << rgprop.nos << ":" << std::endl
                         << pms[&g] << std::endl;
             }
         }
@@ -260,6 +286,7 @@ namespace design
                 std::cerr << "Using this seed: " << seed << std::endl;
             }
             rand.seed(seed);
+            return seed;
         }
 
         template <typename R>
@@ -269,25 +296,49 @@ namespace design
             BGL_FORALL_VERTICES_T(v, graph, Graph) {
                 sequence[vertex_to_int(v, graph)] = graph[v].base;
             }
+            
             return sequence;
         }
 
         template <typename R>
         std::string DependencyGraph<R>::get_sequence_string() {
-            Sequence sequence = get_sequence();
-
+            return sequence_to_string(get_sequence());
+        }
+        
+        template <typename R>
+        std::string DependencyGraph<R>::sequence_to_string(Sequence sequence) {           
             std::stringstream stream;
             stream << sequence;
 
-            return stream.str();
+            std::string result_str = stream.str();
+            
+            // insert cutpoints
+            for (auto& c : boost::get_property(graph, boost::graph_name).cutpoints) {
+                result_str.insert(result_str.begin()+c.first, c.second);
+            }
+            
+            return result_str;
         }
         
         template <typename R>
         SolutionSizeType DependencyGraph<R>::set_sequence_string(std::string seq_str) {
+            // remove cut points
+            std::size_t found_cut;
+            std::map<int, char> cutpoints = boost::get_property(graph, boost::graph_name).cutpoints;
+            while (true) {
+                found_cut = seq_str.find_last_of("&+");
+                if (found_cut == std::string::npos)
+                    break;
+                std::map<int, char>::const_iterator found = cutpoints.find(found_cut);
+                if (found == cutpoints.end())
+                    throw std::logic_error("Cut points of the new sequence are not aligned properly!");
+                seq_str.erase(found_cut, 1);
+            }
+            
             // get a sequence object
             Sequence sequence(seq_str.length());
             
-            for (int pos = 0; pos < seq_str.length(); pos++) {
+            for (unsigned int pos = 0; pos < seq_str.length(); pos++) {
                 sequence[pos] = char_to_enum(std::toupper(seq_str[pos]));
             }
             // not set this sequence to graph
@@ -339,8 +390,7 @@ namespace design
                 revert_sequence(0);
                 std::stringstream ss;
                 ss << "Error while sampling an initial sequence!" << std::endl
-                        << "Resetting to previous sequence: " << get_sequence_string() << e.what();
-                    std::cerr << ss.str() << std::endl;
+                    << "Resetting to previous sequence: " << get_sequence_string() << e.what();
                 throw std::logic_error(ss.str());
             }
             // remember this new sequence in the history
@@ -353,20 +403,23 @@ namespace design
             // get all paths which fulfill the requirements of the range
             std::unordered_set< Graph* > subgraphs;
             get_subgraphs(graph, subgraphs, graph_type, min_num_pos, max_num_pos);
-            if (debug) {
-                for (auto s : subgraphs) {
+            // calculate maximum number of solutions for all subgraphs
+            SolutionSizeType mnos = 0;
+            for (auto s : subgraphs) {
+                mnos += boost::get_property(*s, boost::graph_name).nos;
+                if (debug) {
                     std::vector<int> vertices = getVertexList(*s);
                     std::cerr << "subgraph: " << std::endl << vertices << std::endl;
                 }
             }
             
             // and multiply the count it with a random number
-            RandomDistType dist(0, subgraphs.size());
+            RandomDistType dist(0, mnos);
             SolutionSizeType random = dist(rand);
             
             SolutionSizeType sum = 0;
             for (auto s : subgraphs) {
-                sum ++;
+                sum += boost::get_property(*s, boost::graph_name).nos;
                 // if the random number is bigger than our probability, take this base as the current base!
                 if (random < sum) {
                     SolutionSizeType cnos = sample(*s);
@@ -392,7 +445,7 @@ namespace design
         }
         
         template <typename R>
-        void DependencyGraph<R>::get_subgraphs(Graph& g, std::unordered_set< Graph* >& subgraphs, int type, int min_size, int max_size) {
+        void DependencyGraph<R>::get_subgraphs(Graph& g, std::unordered_set< Graph* >& subgraphs, int type, unsigned int min_size, unsigned int max_size) {
             // if max is 0, set it to infinite, as defined in the documentation
             if (max_size == 0) {
                 max_size = std::numeric_limits<int>::max();
@@ -406,8 +459,12 @@ namespace design
             }
             
             // if this subgraph is from the given type, insert it into the set
+            // check the graph type
+            // check the graph size
+            // ignore subgraphs with only one possibility
             if (((type == -1 && boost::get_property(g, boost::graph_name).is_path) || (boost::get_property(g, boost::graph_name).type == type))
-                    && (min_size <= boost::num_vertices(g) <= max_size)) {
+                    && ((min_size <= boost::num_vertices(g)) && (boost::num_vertices(g) <= max_size))
+                    && (boost::get_property(g, boost::graph_name).nos != 1)) {
                 subgraphs.emplace(&g);
             }
             // and now check all children, too
@@ -423,10 +480,11 @@ namespace design
             for (boost::tie(c, c_end) = g.children(); c != c_end; ++c) {
                 // search if this vertex is present
                 if ((*c).find_vertex(v_global).second) {
+                    Vertex v = (*c).find_vertex(v_global).first;
                     // get graph properties
                     graph_property& gprop = boost::get_property(*c, boost::graph_name);
-                    // return pointer to this path, or go deeper
-                    if (gprop.is_path) {
+                    // return pointer to this path or connected component in case of a special position, or go deeper
+                    if (gprop.is_path || (gprop.type == 1 && g[v].special)) {
                         if (debug)
                             print_graph(*c, &std::cerr);
                         return &*c;
@@ -436,6 +494,8 @@ namespace design
                     break;
                 }
             }
+            // this should never happen
+            return &g;
         }
 
         template <typename R>
@@ -460,7 +520,8 @@ namespace design
             
             for (; start <= end; start++) {
                 Vertex v_global = int_to_vertex(start, graph);
-                std::cerr << "vertex is: " << v_global << std::endl;
+                if (debug)
+                    std::cerr << "vertex is: " << v_global << std::endl;
                 subgraphs.insert(find_path_subgraph(v_global, graph));
             }
             // sample collected subgraphs
@@ -528,16 +589,19 @@ namespace design
         
         template <typename R>
         SolutionSizeType DependencyGraph<R>::number_of_sequences() {
-            return pms[&graph].mnos();
+            //return pms[&graph].mnos();
+            return boost::get_property(graph, boost::graph_name).nos;
         }
         
         template <typename R>
         SolutionSizeType DependencyGraph<R>::number_of_sequences(int connected_component_ID) {
-            // iterate over all connected component and return pm.mnos() for the one with the right ID
+            // iterate over all connected component and return pm.mnos() or gprop.nos for the one with the right ID
             Graph::children_iterator cc, cc_end;
             for (boost::tie(cc, cc_end) = graph.children(); cc != cc_end; ++cc) {
-                if (boost::get_property(*cc, boost::graph_name).id == connected_component_ID) {
-                    return pms[&*cc].mnos();
+                graph_property& gprop = boost::get_property(*cc, boost::graph_name);
+                if (gprop.id == connected_component_ID) {
+                    //return pms[&*cc].mnos();
+                    return gprop.nos;
                 }
             }
             throw std::out_of_range("Could not find a connected component with this ID!");
@@ -599,7 +663,7 @@ namespace design
         }
         
         template <typename R>
-        bool DependencyGraph<R>::revert_sequence(int jump) {
+        bool DependencyGraph<R>::revert_sequence(unsigned int jump) {
             // check if we already reached the beginning or do a boundary jump
             if (debug) {
                 std::cerr << "Going back in time some steps: " << jump << std::endl;
@@ -613,7 +677,8 @@ namespace design
                 std::list<Sequence>::iterator current = std::prev(history.end());
                 // jump back in time
                 try {
-                    std::advance(current, (jump * -1));
+                    // std::advance can set the iterator forward, but also reverse if jump is negative
+                    std::advance(current, ((int) jump * -1));
                 } catch (std::exception& e) {
                     std::stringstream ss;
                     ss << "Error while reverting the sequence: " << std::endl << e.what();
@@ -643,7 +708,28 @@ namespace design
                 history.erase(history.begin());
         }
         
-
+        template <typename R>
+        void DependencyGraph<R>::set_history_size(unsigned int size) {
+            history_size = size;
+            if (history.size() > history_size) {
+                // get an iterator pointing to the first element that should be maintained
+                std::list<Sequence>::iterator end = history.begin();
+                std::advance(end, history.size()-history_size);
+                // erase everything old. from beginning until only history_size elements remain
+                history.erase(history.begin(), end);
+            }
+        }
+        
+        template <typename R>
+        std::vector< std::string > DependencyGraph<R>::get_history() {
+            std::vector< std::string > result;
+            // convert history stack to string
+            for (auto& h : history) {
+                result.push_back(sequence_to_string(h));
+            }
+            return result;
+        }
+        
         template class DependencyGraph<std::mt19937>;
     }
 }

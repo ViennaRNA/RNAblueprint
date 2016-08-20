@@ -1,20 +1,20 @@
 # this is: lib/Makefile.am
 
 # the library names to build
-lib_LTLIBRARIES = libRNAdesign.la
+lib_LTLIBRARIES = libRNAblueprint.la
 
 # where to install the headers on the system
-libRNAdesign_ladir = $(includedir)/RNAdesign
+libRNAblueprint_ladir = $(includedir)/RNAblueprint
 
 # ldflags to avoid version information
-libRNAdesign_la_LDFLAGS = -avoid-version
+libRNAblueprint_la_LDFLAGS = -avoid-version $(OPENMP_CXXFLAGS)
 
 # additional include pathes necessary to compile the C++ library
-AM_CPPFLAGS = $(BOOST_CPPFLAGS) @AM_CXXFLAGS@
+AM_CPPFLAGS = $(BOOST_CPPFLAGS) $(OPENMP_CXXFLAGS) @AM_CXXFLAGS@
 
 # the list of header files that belong to the library
-libRNAdesign_la_HEADERS = \
-            RNAdesign.h \
+libRNAblueprint_la_HEADERS = \
+            RNAblueprint.h \
 			common.h \
 			decompose.h \
 			printgraph.h \
@@ -28,9 +28,9 @@ libRNAdesign_la_HEADERS = \
 			ear-decomposition.hpp
 
 # the sources to add to the library and to add to the source distribution
-libRNAdesign_la_SOURCES =	\
-			$(libRNAdesign_a_HEADERS) \
-			RNAdesign.cc \
+libRNAblueprint_la_SOURCES =	\
+			$(libRNAblueprint_a_HEADERS) \
+			RNAblueprint.cc \
 			common.cc \
 			decompose.cc \
 			printgraph.cc \

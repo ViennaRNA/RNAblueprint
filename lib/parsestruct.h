@@ -1,9 +1,9 @@
 /*!\file parsestruct.h 
  * \brief This file holds the functions to parse a dot-bracket representation to a boost graph and set the sequence constraints.
  *
- * Created on: 25.03.2013
- * Author: Stefan Hammer <s.hammer@univie.ac.at>
- * License: GPLv3
+ * @date 25.03.2013
+ * @author Stefan Hammer <s.hammer@univie.ac.at>
+ * @copyright GPLv3
  *
  * \cond INTERNAL
  */
@@ -19,9 +19,8 @@
 #include <sstream>
 #include <cctype>
 #include <iterator>
-#include <regex>
-
-// include boost components
+#include <cstddef>
+#include <unordered_map>
 
 namespace design {
     namespace detail {
@@ -34,6 +33,8 @@ namespace design {
         void parse_bracket(Graph& g, std::string& structure, BracketList::iterator bracket);
         // set the sequence constraints in the graph object
         void set_constraints(Graph& g, std::string constraints);
+        // implementation of the function above, just returns incompatible positions and throws an error if requested
+        std::vector<int> set_constraints(Graph& g, std::string constraints, bool throwerror);
     }
 }
 #endif

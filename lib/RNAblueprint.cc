@@ -1,21 +1,26 @@
 /* This program reads secundary RNA structures in dot-bracket and
  * builds a graph for a latter ear-decomposition and bipartitness-check.
  *
- * Created on: 26.06.2014
- * Author: Stefan Hammer <s.hammer@univie.ac.at>
- * License: GPLv3
+ * @date 26.06.2014
+ * @author Stefan Hammer <s.hammer@univie.ac.at>
+ * @copyright GPLv3
  *
  */
 
-#include "RNAdesign.h"
+#include "RNAblueprint.h"
 
 namespace design {
-
+    
     void initialize_library(bool debug) {
-        *detail::debug_ptr = debug;
+        initialize_library(debug, 0);
     }
     
-    std::string structures_to_graphml(std::vector<std::string> structures, std::string constraints) {
+    void initialize_library(bool debug, int construction_timeout) {
+        *detail::debug_ptr = debug;
+        *detail::construction_timeout_ptr = construction_timeout;
+    }
+    
+    std::string structures_to_graphml(std::vector<std::string> structures, std::string constraints, bool decompose, unsigned long seed) {
         detail::Graph graph;
         // generate graph from input vector
         try {
@@ -25,14 +30,40 @@ namespace design {
             ss << "Error while parsing the structures: " << std::endl << e.what();
             throw std::logic_error(ss.str());
         }
-            
+        
         // set sequence constraints
-        detail::set_constraints(graph, constraints);
+        try {
+            detail::set_constraints(graph, constraints);
+        } catch (std::exception& e) {
+            throw std::logic_error(e.what());
+        }
+        
+        if (decompose) {
+            try {
+                std::mt19937 rand(seed);
+                detail::decompose_graph(graph, rand);
+            } catch (std::exception& e) {
+                std::stringstream ss;
+                ss << "Error while decomposing the dependency graph: " << std::endl << e.what();
+                throw std::logic_error(ss.str());
+            }
+        }
         
         std::ostringstream stream;
         detail::print_graph(graph, dynamic_cast<std::ostream*>(&stream));
         return stream.str();
     }
+    
+    std::string structures_to_graphml(std::vector<std::string> structures, std::string constraints, bool decompose) {
+        unsigned long seed = std::chrono::system_clock::now().time_since_epoch().count();
+        return structures_to_graphml(structures, constraints, decompose, seed);
+    }
+    
+    std::string structures_to_graphml(std::vector<std::string> structures, std::string constraints) {
+        unsigned long seed = std::chrono::system_clock::now().time_since_epoch().count();
+        return structures_to_graphml(structures, constraints, true, seed);
+    }
+    
     
     bool graph_is_bipartite(std::vector<std::string> structures) {
         detail::Graph graph;
@@ -47,6 +78,41 @@ namespace design {
             
         // return if graph is bipartite
         return boost::is_bipartite(graph);
+    }
+    
+    bool sequence_structure_compatible(std::string sequence, std::vector<std::string> structures) {
+        detail::Graph graph;
+        // generate graph from input vector
+        try {
+            graph = detail::parse_structures(structures);
+        } catch (std::exception& e) {
+            std::stringstream ss;
+            ss << "Error while parsing the structures: " << std::endl << e.what();
+            throw std::logic_error(ss.str());
+        }
+        
+        // set sequence constraints
+        try {
+            detail::set_constraints(graph, sequence);
+        } catch (std::exception& e) {
+            return false;
+        }
+        return true;
+    }
+    
+    std::vector<int> incompatible_sequence_positions(std::string sequence, std::string structure) {
+        detail::Graph graph;
+        // generate graph from input vector
+        try {
+            graph = detail::parse_structures({structure});
+        } catch (std::exception& e) {
+            std::stringstream ss;
+            ss << "Error while parsing the structures: " << std::endl << e.what();
+            throw std::logic_error(ss.str());
+        }
+        
+        // set sequence constraints
+        return detail::set_constraints(graph, sequence, false);
     }
 
     template <typename R>
@@ -93,7 +159,7 @@ namespace design {
     }
     
     template <typename R>
-    void DependencyGraph<R>::set_history_size(int size) {
+    void DependencyGraph<R>::set_history_size(unsigned int size) {
         g->set_history_size(size);
     }
     
@@ -129,7 +195,12 @@ namespace design {
     
     template <typename R>
     bool DependencyGraph<R>::revert_sequence(unsigned int jump) {
-        return g->revert_sequence((int)jump);
+        return g->revert_sequence(jump);
+    }
+    
+    template <typename R>
+    std::vector< std::string > DependencyGraph<R>::get_history() {
+        return g->get_history();
     }
     
     template <typename R>

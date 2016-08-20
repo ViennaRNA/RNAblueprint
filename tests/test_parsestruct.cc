@@ -1,9 +1,9 @@
 /* This file is a boost.test unit test and provides tests for parsestruct.cc
  *
  *
- * Created on: 02.11.2013
- * Author: Stefan Hammer <s.hammer@univie.ac.at>
- * License: GPLv3
+ * @date 02.11.2013
+ * @author Stefan Hammer <s.hammer@univie.ac.at>
+ * @copyright GPLv3
  *
  * 
  *
@@ -158,6 +158,22 @@ BOOST_AUTO_TEST_CASE(SetLowerCaseConstraints) {
         BOOST_CHECK(g[v].constraint == char_to_enum(std::toupper(constraints[vertex_to_int(v, g)])));
         BOOST_CHECK((g[v].constraint != N) == g[v].special);
     }
+}
+
+BOOST_AUTO_TEST_CASE(SetIncompatibleConstraints) {
+    Graph g(3);
+    int vertex_name = 0;
+
+    BGL_FORALL_VERTICES_T(v, g, Graph) {
+        boost::put(boost::vertex_color_t(), g, v, vertex_name++);
+    }
+    boost::add_edge(boost::vertex(0, g), boost::vertex(2, g), g);
+    
+    BOOST_TEST_MESSAGE("set incompatible sequence constraints on graph");
+
+    std::string constraints = "CNW";
+    
+    BOOST_REQUIRE_THROW(set_constraints(g, constraints), std::exception);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

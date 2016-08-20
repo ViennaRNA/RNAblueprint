@@ -1,32 +1,38 @@
-/*!\file RNAdesign.h 
+/*!\file RNAblueprint.h 
  * \brief This file holds the external representation of the DependencyGraph, the main construct for designing RNA molecules.
  * 
  * The dependency graph is constructed from structures in dot-bracket notation and sequence constraints following the IUPAC notation.
  * All important functions on the graph are available as member functions of this object.
  *
- * Created on: 26.06.2014
- * @author: Stefan Hammer <s.hammer@univie.ac.at>
- * License: GPLv3
+ * @date 26.06.2014
+ * @author Stefan Hammer <s.hammer@univie.ac.at>
+ * @copyright GPLv3
  *
  */
 
-/*! \mainpage RNAdesign library written in C++
+/*! \mainpage RNAblueprint library
  *
  * \section intro_sec Introduction
  *
- * The RNAdesign library still needs some documentation!
- * Write here something about the theoretical background
- * Show how to cite the software
+ * The RNAblueprint library solves the problem of stochastically sampling RNA/DNA sequences
+ * compatible to multiple structural constraints.
+ * It only creates sequences that fulfill all base pairs specified in any given input structure.
+ * Furthermore, it is possible to specify sequence constraints in IUPAC notation.
+ * Solutions are sampled uniformly from the whole solution space, therefore it is guaranteed,
+ * that there is no bias towards certain sequences.
+ *
+ * The library is written in C++ with SWIG scripting interfaces for Python and Perl.
+ * Please cite the software as specified at the bottom of the page!
  *
  * \section dependency_sec Dependencies
  *
  * Required:
  * - GNU Automake
  * - Boost Graph Library
- * - Boost Programm Options
  * - C++ Standard Library
  * 
  * Optional:
+ * - Boost Programm Options
  * - SWIG for interfaces
  * - Python for interface
  * - Perl for interface
@@ -48,15 +54,28 @@
  * Most important configure options are:
  * - \-\-prefix           Specify an installation path prefix
  * - \-\-with-boost       Specify the installation directory of the boost library
+ * - \-\-disable-program  Disable RNAblueprint program compilation
  * - \-\-disable-swig     Disable all SWIG scripting interfaces
  * - \-\-enable-libGMP    Enable the calculation of big numbers with multiprecision
  * - \-\-disable-openmp   Disable the usage of parallel computation
  * 
- * TIP: You might want call ./configure --help for all install options!
+ * TIP: You might want call `./configure --help` for all install options!
+ * 
+ * \section examples_sec Interface Examples
+ * \subsection python_ex Python example
+ * \include design_python.py
+ * \subsection perl_ex Perl example
+ * \include design_perl.pl
+ * \subsection cpp_ex C++ example
+ * \include design_cpp.cc
+ * 
+ * \section testing_sec Testing
+ * 
+ * Unit tests are available for many functions of the library. Please call `make check` to run these tests!
  * 
  * \section cite_sec How to cite
  * 
- * This is a early release for testing purposes only and a publication for this software package is in progress.
+ * Publication for this software package is in progress.
  * We will update this information as soon as a preprint is available online!
  * 
  */
@@ -69,8 +88,10 @@
 #include "common.h"
 #include "dependency_graph.h"
 #include "parsestruct.h"
+#include "decompose.h"
 
 // boost header
+#include <chrono>
 #include <boost/graph/bipartite.hpp>
 
 
@@ -82,15 +103,49 @@ namespace design {
      * \param debug \b boolean whether to print debugging information to std:err (default: false)
      */
     void initialize_library(bool debug);
+    /*! \brief Initialize the Libraries global variables.
+     * 
+     * \param debug \b boolean whether to print debugging information to std:err (default: false)
+     * \param construction_timeout \b integer specifying the dependency graph construction timeout in seconds. 0 is infinite. (default: 0)
+     */
+    void initialize_library(bool debug, int construction_timeout);
     /*! \brief Generate a graphml representation of structural and sequence constraints
      * 
      * This function generates a graphml representation of the dependency graph given some structural
-     * and sequence constraints without constructing a DependencyGraph object.
-     * It is mainly thought to be useful for developmental purposes and analysis of hard problems.
+     * and sequence constraints without constructing a DependencyGraph object, with or without decomposition of the graph into subpaths.
+     * It is mainly thought to be useful for developmental purposes, analysis of hard problems and vizualisation.
      * 
      * \param structures \b vector of \b string structures in dot-bracket notation.
      * \param constraints \b string containing the sequence constraints in IUPAC notation. Can also be a empty string!
-     * \exception std::exception if input is invalid or construction fails an exception is thrown.
+     * \param decompose \b boolean Whether to decompose the dependency graph into paths and therefore draw special vertices and ears.
+     * \param seed \b unsigned long Seed for the random number generator which is used for some random parts of the decomposition.
+     * \exception std::exception if input is invalid or construction/decomposition fails an exception is thrown.
+     * \return \b string containing the GraphML notation of the dependency graph.
+     */
+    std::string structures_to_graphml(std::vector<std::string> structures, std::string constraints, bool decompose, unsigned long seed);
+    /*! \brief Generate a graphml representation of structural and sequence constraints
+     * 
+     * This function generates a graphml representation of the dependency graph given some structural
+     * and sequence constraints without constructing a DependencyGraph object, with or without decomposition of the graph into subpaths.
+     * It is mainly thought to be useful for developmental purposes, analysis of hard problems and vizualisation.
+     * Caution: There are random parts in the decomposition algorithms. If you want to assign a seed, use structures_to_graphml(std::vector<std::string> structures, std::string constraints, bool decompose, unsigned long seed)
+     * 
+     * \param structures \b vector of \b string structures in dot-bracket notation.
+     * \param constraints \b string containing the sequence constraints in IUPAC notation. Can also be a empty string!
+     * \param decompose \b boolean Whether to decompose the dependency graph into paths and therefore draw special vertices and ears.
+     * \exception std::exception if input is invalid or construction/decomposition fails an exception is thrown.
+     * \return \b string containing the GraphML notation of the dependency graph.
+     */
+    std::string structures_to_graphml(std::vector<std::string> structures, std::string constraints, bool decompose);
+    /*! \brief Generate a graphml representation of structural and sequence constraints
+     * 
+     * This function generates a graphml representation of the dependency graph given some structural
+     * and sequence constraints without constructing a DependencyGraph object, but with decomposition of the graph into subpaths.
+     * It is mainly thought to be useful for developmental purposes, analysis of hard problems and vizualisation.
+     * 
+     * \param structures \b vector of \b string structures in dot-bracket notation.
+     * \param constraints \b string containing the sequence constraints in IUPAC notation. Can also be a empty string!
+     * \exception std::exception if input is invalid or construction/decomposition fails an exception is thrown.
      * \return \b string containing the GraphML notation of the dependency graph.
      */
     std::string structures_to_graphml(std::vector<std::string> structures, std::string constraints);
@@ -104,6 +159,30 @@ namespace design {
      * \return \b boolean specifying whether the input structures can be constructed to a bipartite dependency graph.
      */
     bool graph_is_bipartite(std::vector<std::string> structures);
+    /*! \brief Returns whether the the given sequence is compatible to all the given structures
+     * 
+     * This function checks, if a given sequence can form all base-pairs given by a set of input structures.
+     * Or the other way around, if the given structures could have produced this sequence.
+     * 
+     * \param sequence \b string in IUPAC notation.
+     * \param structures \b vector of \b string structures in dot-bracket notation.
+     * \exception std::exception if input is invalid.
+     * \return \b boolean specifying whether the input sequence is compatible to all the given structures.
+     */
+    bool sequence_structure_compatible(std::string sequence, std::vector<std::string> structures);
+    /*! \brief Returns whether the the given sequence is compatible to all the given structures
+     * 
+     * This function checks, if a given sequence can fold into the given structure and returns 
+     * an empty vector if this is the case. Else, it returns all positions on the sequence which
+     * are incompatible with the given structural constraint.
+     * E.g. incompatible_sequence_positions("ANC", "(.)") would return [0, 2]!
+     * 
+     * \param sequence \b string in IUPAC notation.
+     * \param structure \b string in dot-bracket notation.
+     * \exception std::exception if input is invalid.
+     * \return \b map of a pair of \b integers specifying the sequence positions incompatible to the structure input.
+     */
+    std::vector<int> incompatible_sequence_positions(std::string sequence, std::string structure);
     /*! \brief Dependency Graph which holds all structural constraints.
      * 
      * This graph is used to generate valid sequences compatible to the input structures
@@ -154,14 +233,14 @@ namespace design {
         /*! \brief Destructor for the dependency graph object.
         */
         ~DependencyGraph();
-        /*! \brief Set the maximum number of previous sampled sequences to memorize (Default: 10).
+        /*! \brief Set the maximum number of previous sampled sequences to memorize (Default: 100).
          *  
          * A history of all sampled sequences is stored within the dependency graph object. 
          * Use this function to set the size of the storage stack.
          * 
          * \param size \b integer to set the size of the history storage container.
         */ 
-        void set_history_size(int size);
+        void set_history_size(unsigned int size);
         /*! \brief Returns the root graph in GraphML format as a string
          * 
          * Get the dependency graph in the XML based GraphML format for further analysis or visualization.
@@ -211,6 +290,12 @@ namespace design {
          * \return \b boolean specifying if this move was possible. If no such previous sequence is stored, it returns false.
         */
         bool revert_sequence(unsigned int jump);
+        /*! \brief Returns the history of previous sampled sequences at this point.
+         * 
+         * \sa set_history_size(int size), revert_sequence(), revert_sequence(unsigned int jump)
+         * \return \b vector of \b string representing the history of previous sampled sequences.
+        */
+        std::vector< std::string > get_history();
         /*! \brief Resets all bases in the whole dependency graph and samples a new sequence randomly.
          * 
          * Call get_sequence() after you sampled a new sequence.
@@ -259,6 +344,7 @@ namespace design {
         SolutionSizeType sample_local(int min_num_pos, int max_num_pos);
         /*! \brief Randomly chooses one path (either top-level a connected component, or within a block, etc.) and samples all positions.
          * 
+         * \bug It is a known issue, that this function does not draw solutions completely fair as the paths to sample are selected in a biased manner.
          * \sa sample_local(int min_num_pos, int max_num_pos), sample_global(), sample_global(int min_num_pos, int max_num_pos), sample_global(int connected_component_ID)
          * \return \b number of possible solutions for this sampling.
         */

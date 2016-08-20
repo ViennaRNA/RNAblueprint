@@ -1,7 +1,7 @@
-# RNAdesign: configure.ac
+# RNAblueprint: configure.ac
 
 # initial information about the project
-AC_INIT([RNAdesign],[0.1],[s.hammer@univie.ac.at],[RNAdesign],[http://www.tbi.univie.ac.at/~jango/])
+AC_INIT([RNAblueprint],[1.0],[s.hammer@univie.ac.at],[RNAblueprint],[http://www.tbi.univie.ac.at/~jango/])
 
 # automake initialisation (mandatory)
 AC_PREREQ([2.59])
@@ -49,8 +49,7 @@ BOOST_REQUIRE([1.55])
 #BOOST_SYSTEM
 #BOOST_FILESYSTEM
 
-# Check lib boost_program_options
-BOOST_PROGRAM_OPTIONS([s])
+# Check lib boost_program_options, graph and regex
 BOOST_GRAPH([s])
 
 # build with unit tests
@@ -69,6 +68,21 @@ AS_IF([test "x$enable_tests" != "xno"], [
 
 AM_CONDITIONAL([ENABLE_TESTS],[test "x$enable_tests_status" = x"yes"])
 
+# build with RNAblueprint binary
+##########################################################################tests
+AC_ARG_ENABLE([RNADESIGN_PROGRAM],
+    [AS_HELP_STRING([--disable-program],
+        [Disable building the RNAblueprint program.])])
+
+AS_IF([test "x$enable_program" != "xno"], [
+    AC_MSG_NOTICE([Building with RNAblueprint program])
+    BOOST_PROGRAM_OPTIONS([s])
+    [enable_program_status="yes"]
+], [
+    [enable_program_status="no"]
+])
+
+AM_CONDITIONAL([ENABLE_PROGRAM],[test "x$enable_program_status" = x"yes"])
 
 # debug compilation support
 ##########################################################################
@@ -92,7 +106,7 @@ fi
 # Check for OpenMP enabled and prepare flags
 ##########################################################################
 AC_OPENMP
-AC_SUBST(OPENMP_CFLAGS)
+AC_SUBST(OPENMP_CXXFLAGS)
 
 # Checks for libraries: gmp enabled?
 ##########################################################################
@@ -121,6 +135,7 @@ AC_CHECK_HEADERS([algorithm])
 AC_CHECK_HEADERS([array])
 AC_CHECK_HEADERS([chrono])
 AC_CHECK_HEADERS([cctype])
+AC_CHECK_HEADERS([cstddef])
 AC_CHECK_HEADERS([exception])
 AC_CHECK_HEADERS([fstream])
 AC_CHECK_HEADERS([functional])
@@ -130,7 +145,6 @@ AC_CHECK_HEADERS([iterator])
 AC_CHECK_HEADERS([limits])
 AC_CHECK_HEADERS([list])
 AC_CHECK_HEADERS([random])
-AC_CHECK_HEADERS([regex])
 AC_CHECK_HEADERS([set])
 AC_CHECK_HEADERS([sstream])
 AC_CHECK_HEADERS([string])
@@ -245,16 +259,10 @@ AC_SUBST([LIBS])
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_FILES([lib/Makefile])
 AC_CONFIG_FILES([src/Makefile])
-AM_COND_IF([ENABLE_TESTS], [
-    AC_CONFIG_FILES([tests/Makefile])
-])
+AC_CONFIG_FILES([tests/Makefile])
 AC_CONFIG_FILES([interfaces/Makefile])
-AM_COND_IF([ENABLE_PYTHON], [
-    AC_CONFIG_FILES([interfaces/Python/Makefile])
-])
-AM_COND_IF([ENABLE_PERL5], [
-    AC_CONFIG_FILES([interfaces/Perl/Makefile])
-])
+AC_CONFIG_FILES([interfaces/Python/Makefile])
+AC_CONFIG_FILES([interfaces/Perl/Makefile])
 
 # generate the final Makefile etc. and display summary
 ##########################################################################
@@ -274,6 +282,7 @@ Configure successful with the following options:
 Options:
   Prefix path:          $prefix
   Custom BOOST path:    $with_boost
+  RNAblueprint program:    $enable_program_status
   Debug information:    $enable_debug
   Use GMP integers:     $enable_libgmp_status
 

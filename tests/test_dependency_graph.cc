@@ -1,8 +1,8 @@
 /* This file is a boost.test unit test and provides tests the internal dependency graph
  *
- * Created on: 03.08.2015
- * Author: Stefan Hammer <s.hammer@univie.ac.at>
- * License: GPLv3
+ * @date 03.08.2015
+ * @author Stefan Hammer <s.hammer@univie.ac.at>
+ * @copyright GPLv3
  * 
  */
 
@@ -386,7 +386,7 @@ BOOST_AUTO_TEST_CASE(sample_pos) {
         std::string result = dependency_graph.get_sequence_string();
         BOOST_CHECK(dependency_graph.sample(5) == 4);
         // check if only position 5 changed
-        for (int j=0; j < result.length(); j++) {
+        for (unsigned int j=0; j < result.length(); j++) {
             if (j != 5 ) {
                 BOOST_CHECK(result[j] == dependency_graph.get_sequence_string()[j]);
             }
@@ -409,7 +409,7 @@ BOOST_AUTO_TEST_CASE(sample_pos) {
         std::string result = dependency_graph.get_sequence_string();
         BOOST_CHECK(dependency_graph.sample(8) == 2);
         // check if only position 2 changed
-        for (int j=0; j < result.length(); j++) {
+        for (unsigned int j=0; j < result.length(); j++) {
             if (j != 8 ) {
                 BOOST_CHECK(result[j] == dependency_graph.get_sequence_string()[j]);
             }
@@ -459,6 +459,8 @@ BOOST_AUTO_TEST_CASE(revert_sequence) {
     std::mt19937 rand_gen(1);
     design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "NNNNN", rand_gen);
     
+    dependency_graph.set_history_size(10);
+    
     BOOST_CHECK(!dependency_graph.revert_sequence(1));
     std::string sequence = dependency_graph.get_sequence_string();
     BOOST_CHECK(!dependency_graph.revert_sequence(1));
@@ -502,6 +504,59 @@ BOOST_AUTO_TEST_CASE(revert_sequence) {
     }
     // check if we did not arrive at initial sequence and indeed forgot something
     BOOST_CHECK(dependency_graph.get_sequence_string() == sequence);
+}
+
+BOOST_AUTO_TEST_CASE(set_history_size) {
+    BOOST_TEST_MESSAGE("test the set history size function");
+    
+    design::initialize_library(true);
+    std::vector<std::string> structures = {"....."};
+    std::mt19937 rand_gen(1);
+    design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "NNNNN", rand_gen);
+    
+    dependency_graph.set_history_size(10);
+    for (int i = 0; i < 20; i++) {
+        dependency_graph.sample();
+    }
+    BOOST_CHECK(dependency_graph.get_history().size() == 10);
+    // check if we can make the stack smaller again
+    dependency_graph.set_history_size(5);
+    BOOST_CHECK(dependency_graph.get_history().size() == 5);
+    dependency_graph.sample();
+    dependency_graph.set_history_size(0);
+    dependency_graph.sample();
+    BOOST_CHECK(dependency_graph.get_history().size() == 0);
+}
+
+BOOST_AUTO_TEST_CASE(get_history) {
+    BOOST_TEST_MESSAGE("test the get_history functionality");
+    
+    design::initialize_library(true);
+    std::vector<std::string> structures = {"..+..."};
+    std::mt19937 rand_gen(1);
+    design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "NN+NNN", rand_gen);
+    
+    dependency_graph.set_history_size(10);
+    
+    for (int i = 0; i < 20; i++) {
+        dependency_graph.sample();
+    }
+    
+    std::vector<std::string> history1 = dependency_graph.get_history();
+    
+    std::cout << history1 << std::endl;
+    BOOST_CHECK(history1.size() == 10);
+    
+    dependency_graph.set_history_size(100);
+    for (int i = 0; i < 20; i++) {
+        dependency_graph.sample();
+    }
+    
+    std::vector<std::string> history2 = dependency_graph.get_history();
+    std::cout << history2 << std::endl;
+    BOOST_CHECK(history2.size() == 30);
+    BOOST_CHECK(history1[0] == history2[0]);
+    BOOST_CHECK(history1[9] == history2[9]);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -5,9 +5,9 @@
  * for a certaion ProbabilityKey.
  * The ProbabilityKey contains a list of pairs, the vertex (position) and its current base-color.
  *
- * Created on: 18.03.2014
- * Author: Stefan Hammer <s.hammer@univie.ac.at>
- * License: GPLv3
+ * @date 18.03.2014
+ * @author Stefan Hammer <s.hammer@univie.ac.at>
+ * @copyright GPLv3
  * 
  * \cond INTERNAL
  */
@@ -75,9 +75,10 @@ namespace design {
             // special case without probability key (and therefore constraints)
             template <typename R>
             std::pair<ProbabilityKey, SolutionSizeType> sample(R& rand);
+            // multiplicator
+            ProbabilityMatrix operator*(ProbabilityMatrix& y);
             // My custom hash key used for n
             friend class ProbabilityKeyHash;
-            friend ProbabilityMatrix operator*(ProbabilityMatrix& x, ProbabilityMatrix& y);
             ~ProbabilityMatrix() = default;
         private:
             // map of possibilities saved by key
@@ -108,9 +109,6 @@ namespace design {
                 }
             }
         };
-
-        // multiply operator overloaded which calculates new pm
-        ProbabilityMatrix operator*(ProbabilityMatrix& x, ProbabilityMatrix& y);
 
         // a function which creates a new ProbabilityMatrix where the given key is internal
         ProbabilityMatrix make_internal(ProbabilityMatrix& pm, int v);

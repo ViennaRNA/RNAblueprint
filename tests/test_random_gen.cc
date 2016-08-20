@@ -1,9 +1,9 @@
 /* This file is a boost.test unit test and provides tests the random generator
  *
  *
- * Created on: 07.11.2013
- * Author: Stefan Hammer <s.hammer@univie.ac.at>
- * License: GPLv3
+ * @date 07.11.2013
+ * @author Stefan Hammer <s.hammer@univie.ac.at>
+ * @copyright GPLv3
  *
  * 
  *

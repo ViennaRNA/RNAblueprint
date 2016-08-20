@@ -1,8 +1,8 @@
 /* This file is a boost.test unit test and provides tests the internal dependency graph
  *
- * Created on: 03.08.2015
- * Author: Stefan Hammer <s.hammer@univie.ac.at>
- * License: GPLv3
+ * @date 03.08.2015
+ * @author Stefan Hammer <s.hammer@univie.ac.at>
+ * @copyright GPLv3
  * 
  */
 
@@ -29,8 +29,8 @@ BOOST_AUTO_TEST_CASE(simpleGraph) {
 
     typedef uninduced_subgraph< adjacency_list< vecS, vecS, directedS,
         no_property, property< edge_index_t, int > > > Graph;
-    typedef Graph::edge_descriptor Edge;
-    typedef Graph::vertex_descriptor Vertex;
+    //typedef Graph::edge_descriptor Edge;
+    //typedef Graph::vertex_descriptor Vertex;
 
     const int N = 6;
     Graph G0(N);
@@ -88,7 +88,7 @@ BOOST_AUTO_TEST_CASE(addVertices) {
 
     typedef uninduced_subgraph< adjacency_list< vecS, vecS, directedS,
         no_property, property< edge_index_t, int > > > Graph;
-    typedef Graph::edge_descriptor Edge;
+    //typedef Graph::edge_descriptor Edge;
     typedef Graph::vertex_descriptor Vertex;
 
     const int N = 3;
@@ -188,7 +188,7 @@ BOOST_AUTO_TEST_CASE(addEdge) {
 
     typedef uninduced_subgraph< adjacency_list< vecS, vecS, directedS,
         no_property, property< edge_index_t, int > > > Graph;
-    typedef Graph::edge_descriptor Edge;
+    //typedef Graph::edge_descriptor Edge;
     typedef Graph::vertex_descriptor Vertex;
 
     const int N = 3;
@@ -308,7 +308,7 @@ BOOST_AUTO_TEST_CASE(addEdgeByDescriptor) {
     typedef uninduced_subgraph< adjacency_list< vecS, vecS, directedS,
         no_property, property< edge_index_t, int > > > Graph;
     typedef Graph::edge_descriptor Edge;
-    typedef Graph::vertex_descriptor Vertex;
+    //typedef Graph::vertex_descriptor Vertex;
 
     const int N = 3;
     Graph G0(N);
@@ -380,7 +380,7 @@ BOOST_AUTO_TEST_CASE(removeEdge) {
     typedef uninduced_subgraph< adjacency_list< vecS, vecS, directedS,
         no_property, property< edge_index_t, int > > > Graph;
     typedef Graph::edge_descriptor Edge;
-    typedef Graph::vertex_descriptor Vertex;
+    //typedef Graph::vertex_descriptor Vertex;
 
     const int N = 3;
     Graph G0(N);

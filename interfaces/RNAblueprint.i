@@ -1,4 +1,4 @@
-/* RNAdesign.i */
+/* RNAblueprint.i */
 
 /*
  * include exception handling from C++ to scripting language
@@ -16,19 +16,19 @@
  }
 
 /*
- * include the RNAdesign header it self
+ * include the RNAblueprint header it self
  */
 
-%module RNAdesign
+%module RNAblueprint
 %{
 
   /* Includes the header in the wrapper code */
-#include "../lib/RNAdesign.h"
+#include "../lib/RNAblueprint.h"
 
   %}
 
 /*
- * stuff necessary to get the RNAdesign DependencyGraph stuff working
+ * stuff necessary to get the RNAblueprint DependencyGraph stuff working
  */
 
 %include "std_string.i"
@@ -42,8 +42,13 @@ namespace std {
 
 namespace design {
   void initialize_library(bool debug);
+  void initialize_library(bool debug, int construction_timeout);
+  std::string structures_to_graphml(std::vector<std::string> structures, std::string constraints, bool decompose, unsigned long seed);
+  std::string structures_to_graphml(std::vector<std::string> structures, std::string constraints, bool decompose);
   std::string structures_to_graphml(std::vector<std::string> structures, std::string constraints);
   bool graph_is_bipartite(std::vector<std::string> structures);
+  bool sequence_structure_compatible(std::string sequence, std::vector<std::string> structures);
+  std::vector<int> incompatible_sequence_positions(std::string sequence, std::string structure);
   
   template<typename R>
     class DependencyGraph {
@@ -53,13 +58,14 @@ namespace design {
     DependencyGraph(std::vector<std::string> structures);
     DependencyGraph(const DependencyGraph& copy);
     ~DependencyGraph();
-    void set_history_size(int size);
+    void set_history_size(unsigned int size);
     std::string get_graphml();
     std::string get_graphml(int connected_component_ID);
     std::string get_sequence();
     double set_sequence(std::string sequence);
     bool revert_sequence();
     bool revert_sequence(unsigned int jump);
+    std::vector< std::string > get_history();
     double sample();
     double sample_local(int min_num_pos, int max_num_pos);
     double sample_local();

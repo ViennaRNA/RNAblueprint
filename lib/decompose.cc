@@ -1,9 +1,9 @@
-/* RNAdesign
+/* RNAblueprint
  * A program for designing RNA molecules.
  *
- * Created on: 25.03.2013
- * Author: Stefan Hammer <s.hammer@univie.ac.at>
- * License: GPLv3
+ * @date 25.03.2013
+ * @author Stefan Hammer <s.hammer@univie.ac.at>
+ * @copyright GPLv3
  *
  */
 
@@ -206,7 +206,7 @@ namespace design {
             int j = 0;
             // map with subgraphs
             std::map<int, Graph*> bicomponent_graphs;
-            
+            // TODO fix bug
             // add all edges of the biconnected component to the right subgraph
             BGL_FORALL_EDGES_T(e, g, Graph) {
                 std::map<int, Graph*>::iterator it = bicomponent_graphs.find(component[e]);
@@ -307,7 +307,7 @@ namespace design {
                 std::cerr << "Best alpha/beta: " << best_alpha << "/" << best_beta << std::endl;
             }
             
-            int num = boost::ear_decomposition(g, best_pred, em, std::back_inserter(att_points));
+            boost::ear_decomposition(g, best_pred, em, std::back_inserter(att_points));
             
             // create subgraphs from decomposed ears
             // map with subgraphs
@@ -384,7 +384,6 @@ namespace design {
 
         void parts_between_specials_to_subgraphs(Graph& g) {
             bool split = false;
-            Vertex end;
             BGL_FORALL_VERTICES_T(v, g, Graph) {
                 split = split || (g[v].special && (boost::degree(v, g) > 1));
             }
