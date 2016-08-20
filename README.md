@@ -57,7 +57,7 @@ TIP: You might want call `./configure --help` for all install options!
 
 ## Documentation
 
-Documentation is done using Doxygen. Call `make doc` for a offline version in HTML and PDF.
+Documentation is done using Doxygen. Call `make doxygen-doc` for a offline version in HTML and PDF.
 There is also a online version available here: [http://ribonets.github.io/RNAblueprint/](http://ribonets.github.io/RNAblueprint/)
 
 ## Testing
