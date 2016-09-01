@@ -32,10 +32,11 @@
  * - C++ Standard Library
  * 
  * Optional:
- * - Boost Programm Options
- * - SWIG for interfaces
- * - Python for interface
- * - Perl for interface
+ * - Boost Programm Options (default: on)
+ * - SWIG for interfaces (default: on)
+ * - Python for interface (default: on)
+ * - Perl for interface (default: on)
+ * - ExtUtils::Embed module for perl interface (default: on)
  * - Doxygen for documentation
  * - LaTeX for PDF documentation
  * - libGMP for multiprecision integers
@@ -50,6 +51,9 @@
  * ./configure\n
  * make\n
  * make install\n
+ *
+ * In case of a local installation, please do not forget to adopt your path variables such as
+ * `PATH`, `LD_LIBRARY_PATH`, `CPLUS_INCLUDE_PATH`, `PYTHONPATH`, `PERL5LIB`
  * 
  * Most important configure options are:
  * - \-\-prefix           Specify an installation path prefix
@@ -75,6 +79,8 @@
  * 
  * \section cite_sec How to cite
  * 
+ * Stefan Hammer, Birgit Tschiatschek, Christoph Flamm, Ivo L. Hofacker and Sven Findeiß. Submitted 2016. "Flexible and universal multiple target nucleic acid sequence design" Journal: Pages. doi: DOI.
+ *
  * Publication for this software package is in progress.
  * We will update this information as soon as a preprint is available online!
  * 
