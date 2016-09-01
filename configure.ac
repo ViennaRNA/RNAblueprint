@@ -15,6 +15,7 @@ AC_CONFIG_MACRO_DIR([m4])
 
 # init doxygen
 ##########################################################################
+DX_DOXYGEN_FEATURE(OFF)
 DX_HTML_FEATURE(ON)
 DX_CHM_FEATURE(OFF)
 DX_CHI_FEATURE(OFF)
