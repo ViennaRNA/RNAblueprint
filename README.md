@@ -23,10 +23,11 @@ Please cite the software as specified at the bottom of the page!
 
 ### Optional:
 
- * Boost Programm Options
- * SWIG for interfaces
- * Python for interface
- * Perl for interface
+ * Boost Programm Options (default: on)
+ * SWIG for interfaces (default: on)
+ * Python for interface (default: on)
+ * Perl for interface (default: on)
+ * ExtUtils::Embed module for perl interface (default: on)
  * Doxygen for documentation
  * LaTeX for PDF documentation
  * libGMP for multiprecision integers
@@ -44,6 +45,9 @@ make
 make install
 ```
 
+In case of a local installation, please do not forget to adopt your path variables such as
+`PATH`, `LD_LIBRARY_PATH`, `CPLUS_INCLUDE_PATH`, `PYTHONPATH`, `PERL5LIB`
+
 ### Most important configure options are:
 
     --prefix Specify an installation path prefix
@@ -57,14 +61,17 @@ TIP: You might want call `./configure --help` for all install options!
 
 ## Documentation
 
-Documentation is done using Doxygen. Call `make doc` for a offline version in HTML and PDF.
+Library documentation is done using Doxygen. Call `make doxygen-doc` for a offline version in HTML and PDF.
 There is also a online version available here: [http://ribonets.github.io/RNAblueprint/](http://ribonets.github.io/RNAblueprint/)
+Documentation of the RNAblueprint program is provided by calling `RNAblueprint --help`.
 
 ## Testing
 
 Unit tests are available for many functions of the library. Please call `make check` to run these tests!
 
 ## How to cite
+
+Stefan Hammer, Birgit Tschiatschek, Christoph Flamm, Ivo L. Hofacker and Sven Findeiß. Submitted 2016. "Flexible and universal multiple target nucleic acid sequence design" Journal: Pages. doi: DOI.
 
 Publication for this software package is in progress.
 We will update this information as soon as a preprint is available online!
