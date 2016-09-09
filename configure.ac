@@ -1,7 +1,7 @@
 # RNAblueprint: configure.ac
 
 # initial information about the project
-AC_INIT([RNAblueprint],[1.0],[s.hammer@univie.ac.at],[RNAblueprint],[http://www.tbi.univie.ac.at/~jango/])
+AC_INIT([RNAblueprint],[1.1],[s.hammer@univie.ac.at],[RNAblueprint],[http://www.tbi.univie.ac.at/~jango/])
 
 # automake initialisation (mandatory)
 AC_PREREQ([2.59])
@@ -15,6 +15,7 @@ AC_CONFIG_MACRO_DIR([m4])
 
 # init doxygen
 ##########################################################################
+DX_DOXYGEN_FEATURE(OFF)
 DX_HTML_FEATURE(ON)
 DX_CHM_FEATURE(OFF)
 DX_CHI_FEATURE(OFF)

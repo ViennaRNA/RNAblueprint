@@ -1,5 +1,6 @@
-/* This program reads secundary RNA structures in dot-bracket and
- * builds a graph for a latter ear-decomposition and bipartitness-check
+/* This program reads RNA secondary structures in dot-bracket notation as well as
+ * sequence constraints in IUPAC code and fairly samples RNA sequences compatible
+ * to both inputs.
  *
  * @date 25.03.2013
  * @author Stefan Hammer <s.hammer@univie.ac.at>

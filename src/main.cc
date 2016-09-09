@@ -1,5 +1,6 @@
-/* RNAblueprint
- * A program for designing RNA molecules.
+/* This program reads RNA secondary structures in dot-bracket notation as well as
+ * sequence constraints in IUPAC code and fairly samples RNA sequences compatible
+ * to both inputs.
  *
  * @date 25.03.2013
  * @author Stefan Hammer <s.hammer@univie.ac.at>
@@ -199,8 +200,12 @@ boost::program_options::variables_map init_options(int ac, char* av[]) {
     // boost option parser
     // http://www.boost.org/doc/libs/1_53_0/doc/html/program_options/tutorial.html
     namespace po = boost::program_options;
+    po::options_description desc(     
+        "This program reads RNA secondary structures in dot-bracket notation as well as\n"
+        "sequence constraints in IUPAC code and fairly samples RNA sequences compatible\n"
+        "to both inputs");
     // Group of options that will be allowed only on command line
-    po::options_description generic("Generic options");
+    po::options_description generic("Generic Options");
     generic.add_options()
             ("help,h", "print help message")
             ("verbose,v", po::bool_switch()->default_value(false)->zero_tokens(), "be verbose")
@@ -231,7 +236,7 @@ boost::program_options::variables_map init_options(int ac, char* av[]) {
     p.add("in", 1).add("out", 2);
 
     po::options_description cmdline_options;
-    cmdline_options.add(generic).add(config);
+    cmdline_options.add(desc).add(generic).add(config);
 
     po::variables_map vm;
     po::store(po::command_line_parser(ac, av).options(cmdline_options).positional(p).run(), vm);

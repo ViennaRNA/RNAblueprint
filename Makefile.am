@@ -33,7 +33,7 @@ if DX_COND_xml
 docdata += @DX_DOCDIR@/RNAblueprint.tag 
 dist_xmldoc_DATA = @DX_DOCDIR@/xml/*
 
-$(dist_htmldoc_DATA): doxygen-doc
+$(dist_xmldoc_DATA): doxygen-doc
 
 endif
 
