@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.11"/>
-<title>RNAblueprint-1.0: RNAblueprint library</title>
+<title>RNAblueprint-1.1: RNAblueprint library</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -26,7 +26,7 @@
  <tr style="height: 56px;">
   <td id="projectlogo"><img alt="Logo" src="rnablueprint-icon.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">RNAblueprint-1.0
+   <div id="projectname">RNAblueprint-1.1
    </div>
   </td>
  </tr>
@@ -76,10 +76,11 @@ Dependencies</h1>
 <li>C++ Standard Library</li>
 </ul>
 <p>Optional:</p><ul>
-<li>Boost Programm Options</li>
-<li>SWIG for interfaces</li>
-<li>Python for interface</li>
-<li>Perl for interface</li>
+<li>Boost Programm Options (default: on)</li>
+<li>SWIG for interfaces (default: on)</li>
+<li>Python for interface (default: on)</li>
+<li>Perl for interface (default: on)</li>
+<li>ExtUtils::Embed module for perl interface (default: on)</li>
 <li>Doxygen for documentation</li>
 <li>LaTeX for PDF documentation</li>
 <li>libGMP for multiprecision integers</li>
@@ -93,7 +94,8 @@ Installation</h1>
 ./configure<br />
 make<br />
 make install<br />
- Most important configure options are:</p><ul>
+ In case of a local installation, please do not forget to adopt your path variables such as <code>PATH</code>, <code>LD_LIBRARY_PATH</code>, <code>CPLUS_INCLUDE_PATH</code>, <code>PYTHONPATH</code>, <code>PERL5LIB</code></p>
+<p>Most important configure options are:</p><ul>
 <li>--prefix Specify an installation path prefix</li>
 <li>--with-boost Specify the installation directory of the boost library</li>
 <li>--disable-program Disable RNAblueprint program compilation</li>
@@ -115,6 +117,7 @@ Testing</h1>
 <p>Unit tests are available for many functions of the library. Please call <code>make check</code> to run these tests!</p>
 <h1><a class="anchor" id="cite_sec"></a>
 How to cite</h1>
+<p>Stefan Hammer, Birgit Tschiatschek, Christoph Flamm, Ivo L. Hofacker and Sven Findeiß. Submitted 2016. "Flexible and universal multiple target nucleic acid sequence design" Journal: Pages. doi: DOI.</p>
 <p>Publication for this software package is in progress. We will update this information as soon as a preprint is available online! </p>
 </div></div><!-- contents -->
 </div><!-- doc-content -->
