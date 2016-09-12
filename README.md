@@ -65,6 +65,8 @@ Library documentation is done using Doxygen. Call `make doxygen-doc` for a offli
 There is also a online version available here: [http://ribonets.github.io/RNAblueprint/](http://ribonets.github.io/RNAblueprint/)
 Documentation of the RNAblueprint program is provided by calling `RNAblueprint --help`.
 
+Documentation of the RNAblueprint program is provided by calling `RNAblueprint --help`.
+
 ## Testing
 
 Unit tests are available for many functions of the library. Please call `make check` to run these tests!
