@@ -129,7 +129,11 @@ std::tuple<std::vector<std::string>, std::string, std::string > read_input(std::
         if (line == "@") {
             std::fclose(stdin);
         } else if (line.length() != 0) {
-            structures.push_back(line);
+            if (line[0] == '#') {
+                continue;
+            } else {
+                structures.push_back(line);
+            }
         }
     }
 
