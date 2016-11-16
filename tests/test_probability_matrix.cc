@@ -624,11 +624,12 @@ BOOST_AUTO_TEST_CASE(RandomlySampleKey1) {
     constraint[4] = V;
     constraint[7] = N;
 
-    std::pair<ProbabilityKey, SolutionSizeType> result = m.sample(constraint, rand_gen);
+    std::pair<ProbabilityKey, ProbabilityFraction> result = m.sample(constraint, rand_gen);
     BOOST_CHECK(result.first[1] == A);
     BOOST_CHECK(result.first[4] == A);
     BOOST_CHECK(result.first[7] == U);
-    BOOST_CHECK(result.second == 630);
+    BOOST_CHECK(result.second.second == 630);
+    BOOST_CHECK(result.second.first == 158);
 }
 
 BOOST_AUTO_TEST_CASE(RandomlySampleKey2) {
@@ -652,7 +653,7 @@ BOOST_AUTO_TEST_CASE(RandomlySampleKey2) {
     }
     ProbabilityMatrix c = m;
 
-    std::pair<ProbabilityKey, SolutionSizeType> result = m.sample(rand_gen);
+    std::pair<ProbabilityKey, ProbabilityFraction> result = m.sample(rand_gen);
     // remember for every < vertex, a map of < base, count > to get mean value in the end
     std::unordered_map<int, std::unordered_map<int, SolutionSizeType> > result_stats;
     std::unordered_map<int, std::unordered_map<int, double> > stats_check {
@@ -662,7 +663,7 @@ BOOST_AUTO_TEST_CASE(RandomlySampleKey2) {
     };
     
     for (int i = 0; i < 10000; i++) {
-        std::pair<ProbabilityKey, SolutionSizeType> test = m.sample(rand_gen);
+        std::pair<ProbabilityKey, ProbabilityFraction> test = m.sample(rand_gen);
         for (auto p : test.first) {
             result_stats[p.first][p.second]++;
         }

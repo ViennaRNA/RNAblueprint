@@ -71,10 +71,10 @@ namespace design {
             // sample one combination randomly given a ProbabilityKey with the constraints and a random number generator
             // return a pair with the chosen ProbabilityKey and the number_of_sequences for the given input constraints
             template <typename R>
-            std::pair<ProbabilityKey, SolutionSizeType> sample(ProbabilityKey pk, R& rand);
+            std::pair<ProbabilityKey, ProbabilityFraction> sample(ProbabilityKey pk, R& rand);
             // special case without probability key (and therefore constraints)
             template <typename R>
-            std::pair<ProbabilityKey, SolutionSizeType> sample(R& rand);
+            std::pair<ProbabilityKey, ProbabilityFraction> sample(R& rand);
             // multiplicator
             ProbabilityMatrix operator*(ProbabilityMatrix& y);
             // My custom hash key used for n

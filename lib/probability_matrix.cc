@@ -90,7 +90,7 @@ namespace design {
         }
         
         template <typename R>
-        std::pair<ProbabilityKey, SolutionSizeType> ProbabilityMatrix::sample(R& rand) {
+        std::pair<ProbabilityKey, ProbabilityFraction> ProbabilityMatrix::sample(R& rand) {
             ProbabilityKey pk;
             
             for (auto s : getSpecials()) {
@@ -101,23 +101,26 @@ namespace design {
         }
         
         template <typename R>
-        std::pair<ProbabilityKey, SolutionSizeType> ProbabilityMatrix::sample(ProbabilityKey pk, R& rand) {
+        std::pair<ProbabilityKey, ProbabilityFraction> ProbabilityMatrix::sample(ProbabilityKey pk, R& rand) {
             ProbabilityKey result;
+            // remember the probability of the chosen solution as a fraction
+            // numerator is the amount of solutions for the chosen value
+            // denominator is the total amount of solutions for the problem
+            ProbabilityFraction pf = std::make_pair(0,0);
             
             // get all possible keys for the constraints set in pk
             PermuteKeyFactory pkf(pk);
-            SolutionSizeType constrained_mnos = 0;
             // get the maximal number of sequences for the input constraints set in pk
             while (true) {
-                constrained_mnos += (*this)[*pkf.key()];
+                pf.second += (*this)[*pkf.key()];
                 if (!pkf.next_permutation())
                     break;
             }
             
-            if (constrained_mnos == 0) {
+            if (pf.second == 0) {
                 throw std::logic_error( "Cannot fulfill constraints while sampling a key!" );
             }
-            RandomDistType dist(0, constrained_mnos);
+            RandomDistType dist(0, pf.second);
             SolutionSizeType random = dist(rand);
             // stochastically take one of the possibilities
             // start at the probability of first possible character and add each other base probability as long long as the random number is bigger.
@@ -128,6 +131,7 @@ namespace design {
                 // if the random number is bigger than our probability, take this base as the current base!
                 if (random < sum) {
                     result = *pkf.key();
+                    pf.first = (*this)[*pkf.key()];
                     // don't forget to exit the loop, otherwise will always be last entry
                     break;
                 }
@@ -136,9 +140,9 @@ namespace design {
             }
 
             if (debug) {
-                std::cerr << "Key Sampled: " << result << " with mnos: " << constrained_mnos << std::endl;
+                std::cerr << "Key Sampled: " << result << " with mnos: " << pf.second << std::endl;
             }
-            return std::make_pair(result, constrained_mnos);
+            return std::make_pair(result, pf);
         }
         
         ProbabilityMatrix ProbabilityMatrix::operator* (ProbabilityMatrix& y) {
@@ -324,7 +328,7 @@ namespace design {
             return os;
         }
         
-        template std::pair<ProbabilityKey, SolutionSizeType> ProbabilityMatrix::sample<std::mt19937> (std::mt19937&);
-        template std::pair<ProbabilityKey, SolutionSizeType> ProbabilityMatrix::sample<std::mt19937> (ProbabilityKey, std::mt19937&);
+        template std::pair<ProbabilityKey, ProbabilityFraction> ProbabilityMatrix::sample<std::mt19937> (std::mt19937&);
+        template std::pair<ProbabilityKey, ProbabilityFraction> ProbabilityMatrix::sample<std::mt19937> (ProbabilityKey, std::mt19937&);
     }
 }

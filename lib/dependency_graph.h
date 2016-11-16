@@ -70,7 +70,7 @@ namespace design {
             unsigned int history_size;
             void remember_sequence();
             void calculate_probabilities(Graph& g, std::chrono::steady_clock::time_point& start_time);
-            SolutionSizeType sample_sequence(Graph& g);
+            ProbabilityFraction sample_sequence(Graph& g);
             void reset_colors(Graph& g);
             SolutionSizeType sample(Graph& g);
             Graph* find_path_subgraph(Vertex v_global, Graph& g);

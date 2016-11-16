@@ -129,6 +129,11 @@ namespace design {
 
         // Typedef for sequences of enums
         typedef std::deque< int > Sequence;
+        
+        // remember the probability of the chosen solution as a fraction
+        // numerator is the amount of solutions for the chosen value
+        // denominator is the total amount of solutions for the problem
+        typedef std::pair< SolutionSizeType, SolutionSizeType > ProbabilityFraction;
 
         // function to make enum a char again and other way round
         char enum_to_char(int intletter);

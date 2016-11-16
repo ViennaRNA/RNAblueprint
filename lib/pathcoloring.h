@@ -38,7 +38,7 @@ namespace design {
         
         // color a path
         template <typename RG>
-        SolutionSizeType color_path_graph(Graph& g, RG& rand);
+        ProbabilityFraction color_path_graph(Graph& g, RG& rand);
         
     }
 }

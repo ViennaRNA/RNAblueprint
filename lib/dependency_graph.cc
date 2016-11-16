@@ -190,7 +190,7 @@ namespace design
         }
         
         template <typename R>
-        SolutionSizeType DependencyGraph<R>::sample_sequence(Graph& g) {
+        ProbabilityFraction DependencyGraph<R>::sample_sequence(Graph& g) {
             
             // get graph properties
             graph_property& gprop = boost::get_property(g, boost::graph_name);
@@ -212,15 +212,15 @@ namespace design
                        << pms[&g] << std::endl;
             }
             
-            SolutionSizeType cnos = 0;
+            ProbabilityFraction pf = std::make_pair(1,0);
             ProbabilityKey colors;
             
             try {
-                std::tie(colors, cnos) = pms[&g].sample(constraints, rand);
+                std::tie(colors, pf) = pms[&g].sample(constraints, rand);
             } catch (std::exception& e) {
                 std::stringstream ss;
                 ss << "Error while sampling from a ProbabilityMatrix: " << std::endl 
-                        << "constrained number of sequences: " << cnos << e.what();
+                        << "constrained number of sequences: " << pf.second << e.what();
                 throw std::logic_error(ss.str());
             }
             // write to graph
@@ -234,14 +234,14 @@ namespace design
                     std::cerr << "Path Coloring!" << std::endl;
                 }
                 try {
-                    SolutionSizeType path_nos = color_path_graph(g, rand);
+                    ProbabilityFraction  path_pf = color_path_graph(g, rand);
                     if (onlypath) {
-                        cnos = path_nos;
+                        pf = path_pf;
                     }
                 } catch (std::exception& e) {
                     std::stringstream ss;
                     ss << "Error while sampling a path sequence: " << std::endl 
-                        << "constrained number of sequences: " << cnos << e.what();
+                        << "constrained number of sequences: " << pf.second << e.what();
                     throw std::logic_error(ss.str());
                 }
             } else {
@@ -253,10 +253,12 @@ namespace design
                 boost::tie(cg, cg_end) = g.children();
                 for ( current = cg_end; current != cg;) {
                     --current;
-                    sample_sequence(*current);
+                    ProbabilityFraction graph_pf = sample_sequence(*current);
+                    pf.first *= graph_pf.first/graph_pf.second;
                 } 
             }
-            return cnos;
+            
+            return pf;
         }
         
         template <typename R>
@@ -347,7 +349,7 @@ namespace design
         
         template <typename R>
         SolutionSizeType DependencyGraph<R>::set_sequence(Sequence sequence) {
-            SolutionSizeType cnos;
+            ProbabilityFraction pf;
             // reset all the colors to N
             reset_colors(graph);
             // write bases to graph
@@ -364,7 +366,7 @@ namespace design
                 }
             }
             try {
-                cnos = sample_sequence(graph);
+                pf = sample_sequence(graph);
             } catch (std::exception& e) {
                 // reset to previous sequence
                 revert_sequence(0);
@@ -376,16 +378,16 @@ namespace design
             }
             // remember this new sequence in the history
             remember_sequence();
-            return cnos;
+            return pf.second;
         }
 
         template <typename R>
         SolutionSizeType DependencyGraph<R>::sample() {
-            SolutionSizeType cnos;
+            ProbabilityFraction pf;
             // reset all the colors to N
             reset_colors(graph);
             try {
-                cnos = sample_sequence(graph);
+                 pf = sample_sequence(graph);
             } catch (std::exception& e) {
                 revert_sequence(0);
                 std::stringstream ss;
@@ -395,7 +397,7 @@ namespace design
             }
             // remember this new sequence in the history
             remember_sequence();
-            return cnos;
+            return pf.second;
         }
 
         template <typename R>
@@ -545,7 +547,7 @@ namespace design
                 // reset the whole connected component and sample everything
                 reset_colors(g);
                 try {
-                    return sample_sequence(g);
+                    return sample_sequence(g).second;
                 } catch (std::exception& e) {
                     std::stringstream ss;
                     ss << "Error while sampling a connected component (" << gprop.type << "-" << gprop.id << "): " << std::endl << e.what();
@@ -564,7 +566,7 @@ namespace design
                     }
                 }
                 try {
-                    return sample_sequence(g);
+                    return sample_sequence(g).second;
                 } catch (std::exception& e) {
                     std::stringstream ss;
                     ss << "Error while sampling a path (" << gprop.type << "-" << gprop.id << "): " << std::endl << e.what();
