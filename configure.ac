@@ -5,6 +5,7 @@ AC_INIT([RNAblueprint],[1.1],[s.hammer@univie.ac.at],[RNAblueprint],[http://www.
 
 # automake initialisation (mandatory)
 AC_PREREQ([2.59])
+AM_SILENT_RULES([yes])
 AM_INIT_AUTOMAKE([1.9 subdir-objects])
 
 # check if the source folder is correct
@@ -55,7 +56,7 @@ BOOST_GRAPH([s])
 
 # build with unit tests
 ##########################################################################tests
-AC_ARG_ENABLE([UNIT_TESTS],
+AC_ARG_ENABLE([tests],
     [AS_HELP_STRING([--disable-tests],
         [Disable support for Boost UNIT tests.])])
 
@@ -71,7 +72,7 @@ AM_CONDITIONAL([ENABLE_TESTS],[test "x$enable_tests_status" = x"yes"])
 
 # build with RNAblueprint binary
 ##########################################################################tests
-AC_ARG_ENABLE([RNADESIGN_PROGRAM],
+AC_ARG_ENABLE([program],
     [AS_HELP_STRING([--disable-program],
         [Disable building the RNAblueprint program.])])
 
@@ -184,7 +185,7 @@ AC_TYPE_SIZE_T
 
 # SWIG Interface
 ##########################################################################
-AC_ARG_ENABLE([SWIG],
+AC_ARG_ENABLE([swig],
     [AS_HELP_STRING([--disable-swig],
         [Disable all SWIG interfaces.])])
 
@@ -206,7 +207,7 @@ AM_COND_IF([ENABLE_SWIG], [
 
     # Python support
     ######################################################################
-    AC_ARG_ENABLE([PYTHON],
+    AC_ARG_ENABLE([python],
         [AS_HELP_STRING([--disable-python],
             [Disable the Python interface.])])
 
@@ -225,7 +226,7 @@ AM_COND_IF([ENABLE_SWIG], [
     
     # Perl5 support
     ######################################################################
-    AC_ARG_ENABLE([PERL5],
+    AC_ARG_ENABLE([perl],
         [AS_HELP_STRING([--disable-perl],
             [Disable the Perl5 interface.])])
 
@@ -283,7 +284,7 @@ Configure successful with the following options:
 Options:
   Prefix path:          $prefix
   Custom BOOST path:    $with_boost
-  RNAblueprint program:    $enable_program_status
+  RNAblueprint program: $enable_program_status
   Debug information:    $enable_debug
   Use GMP integers:     $enable_libgmp_status
 
