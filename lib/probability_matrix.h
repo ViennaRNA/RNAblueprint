@@ -64,10 +64,13 @@ namespace design {
                 return initialized;
             }
             // get set of special vertices
-
             std::set< int > getSpecials() {
                 return specials;
             };
+            // get number of dimensions
+            int getDimensions() {
+                return specials.size();
+            }
             // sample one combination randomly given a ProbabilityKey with the constraints and a random number generator
             // return a pair with the chosen ProbabilityKey and the number_of_sequences for the given input constraints
             template <typename R>

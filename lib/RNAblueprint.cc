@@ -273,6 +273,11 @@ namespace design {
         return g->special_vertices(connected_component_ID);
     }
     
+    template <typename R>
+    unsigned int DependencyGraph<R>::max_number_of_dimensions() {
+        return g->max_number_of_dimensions();
+    }
+    
     template class DependencyGraph<std::mt19937>;
 
 }

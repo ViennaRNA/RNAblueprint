@@ -127,6 +127,11 @@ namespace design
                 else
                     current = pms[&*cg] * current;
                 
+                // update max_dimensions
+                if (current.getDimensions() > max_dimensions) {
+                    max_dimensions = current.getDimensions();
+                }
+                
                 if (debug) {
                     std::cerr << "current PM: " << std::endl << current << std::endl;
                 }

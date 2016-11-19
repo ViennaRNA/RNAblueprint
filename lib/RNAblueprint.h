@@ -431,7 +431,13 @@ namespace design {
          * \return \b vector of \b integer values specifying the positions/vertices marked as special in the connected component.
         */
         std::vector< int > special_vertices(int connected_component_ID);
-        
+        /*! \brief Returns the maximal number of dimensions of all dynamic programming tables.
+         * 
+         * This value is a great measure for the complexity of the graph coloring approach for the chosen input constraints.
+         * 
+         * \return \b integer specifying the maximal number of dimensions for all DP tables.
+        */
+        unsigned int max_number_of_dimensions();
         // ??? get_special_probabilities(connected components ID)
         // Returns basically the ProbabilityMatrix for all special vertices (remove make_internal() function) of the whole connected component 
         // hash of hash: vertex -> base_color -> number_of_sequences

@@ -81,6 +81,7 @@ int main(int ac, char* av[]) {
 
     if (verbose) {
         std::cerr << "Size of solution space: " << dependency_graph->number_of_sequences() << std::endl;
+        std::cerr << "Maximal table dimension: " << dependency_graph->max_number_of_dimensions() << std::endl;
     }
     // get or set an initial sequence
     if (start_seq == "") {

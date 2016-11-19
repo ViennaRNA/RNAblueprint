@@ -47,7 +47,9 @@ namespace design {
                 return seed;
             }
             unsigned long set_seed();
-            
+            unsigned int max_number_of_dimensions() {
+                return max_dimensions;
+            }
             Sequence get_sequence();
             std::string get_sequence_string();
             SolutionSizeType set_sequence(Sequence sequence);
@@ -68,6 +70,8 @@ namespace design {
             R rand;
             std::list<Sequence> history;
             unsigned int history_size;
+            // remember maximal dimension count for complexity measure
+            unsigned int max_dimensions = 0;
             void remember_sequence();
             void calculate_probabilities(Graph& g, std::chrono::steady_clock::time_point& start_time);
             ProbabilityFraction sample_sequence(Graph& g);
