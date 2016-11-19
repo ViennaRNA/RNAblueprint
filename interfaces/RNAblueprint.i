@@ -80,6 +80,7 @@ namespace design {
     std::vector< int > component_vertices(int connected_component_ID);
     std::vector< int > special_vertices();
     std::vector< int > special_vertices(int connected_component_ID);
+    int max_number_of_dimensions();
   };
     
   %template(DependencyGraphMT) DependencyGraph<std::mt19937>;
