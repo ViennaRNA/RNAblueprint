@@ -344,17 +344,17 @@ namespace design {
          * 
          * \param min_num_pos \b integer specifying the minimal size of the component to re-sample [ 1, N )
          * \param max_num_pos \b integer specifying the maximal size of the component to re-sample [ 1, N ). 0 defines infinity.
-         * \sa sample_local(), sample_global(), sample_global(int min_num_pos, int max_num_pos), sample_global(int connected_component_ID)
+         * \sa sample_plocal(), sample_clocal(), sample_clocal(int min_num_pos, int max_num_pos), sample_clocal(int connected_component_ID)
          * \return \b number of possible solutions for this sampling.
         */
-        SolutionSizeType sample_local(int min_num_pos, int max_num_pos);
+        SolutionSizeType sample_plocal(int min_num_pos, int max_num_pos);
         /*! \brief Randomly chooses one path (either top-level a connected component, or within a block, etc.) and samples all positions.
          * 
          * \bug It is a known issue, that this function does not draw solutions completely fair as the paths to sample are selected in a biased manner.
-         * \sa sample_local(int min_num_pos, int max_num_pos), sample_global(), sample_global(int min_num_pos, int max_num_pos), sample_global(int connected_component_ID)
+         * \sa sample_plocal(int min_num_pos, int max_num_pos), sample_clocal(), sample_clocal(int min_num_pos, int max_num_pos), sample_clocal(int connected_component_ID)
          * \return \b number of possible solutions for this sampling.
         */
-        SolutionSizeType sample_local();
+        SolutionSizeType sample_plocal();
         /*! \brief Randomly chooses a connected component with the given size and samples a new sequence for the whole component.
          * 
          * This is a more global way of sampling a new sequence as it exchanges a much bigger graph object.
@@ -363,24 +363,24 @@ namespace design {
          * 
          * \param min_num_pos \b integer specifying the minimal size of the component to re-sample [ 1, N )
          * \param max_num_pos \b integer specifying the maximal size of the component to re-sample [ 1, N ). 0 defines infinity.
-         * \sa sample_local(), sample_local(int min_num_pos, int max_num_pos), sample_global(), sample_global(int connected_component_ID)
+         * \sa sample_plocal(), sample_plocal(int min_num_pos, int max_num_pos), sample_clocal(), sample_clocal(int connected_component_ID)
          * \return \b number of possible solutions for this sampling.
         */
-        SolutionSizeType sample_global(int min_num_pos, int max_num_pos);
+        SolutionSizeType sample_clocal(int min_num_pos, int max_num_pos);
         /*! \brief Takes the connected component with the specified ID and samples a new sequence for the whole component.
          * 
          * \param connected_component_ID \b integer specifying the connected component with its ID [ 0, number_of_connected_components() ).
-         * \sa number_of_connected_components(), sample_local(), sample_local(int min_num_pos, int max_num_pos), sample_global(), sample_global(int min_num_pos, int max_num_pos)
+         * \sa number_of_connected_components(), sample_plocal(), sample_plocal(int min_num_pos, int max_num_pos), sample_clocal(), sample_clocal(int min_num_pos, int max_num_pos)
          * \exception std::out_of_range if connected_component_ID is invalid.
          * \return \b number of possible sequences for this sampling.
         */
-        SolutionSizeType sample_global(int connected_component_ID);
+        SolutionSizeType sample_clocal(int connected_component_ID);
         /*! \brief Takes a random connected component and samples a new sequence for the whole component.
          * 
-         * \sa sample_local(), sample_local(int min_num_pos, int max_num_pos), sample_global(int connected_component_ID), sample_global(int min_num_pos, int max_num_pos)
+         * \sa sample_plocal(), sample_plocal(int min_num_pos, int max_num_pos), sample_clocal(int connected_component_ID), sample_clocal(int min_num_pos, int max_num_pos)
          * \return \b number of possible sequences for this sampling.
         */
-        SolutionSizeType sample_global();
+        SolutionSizeType sample_clocal();
         /*! \brief Returns the amount of solutions given the dependency graph and sequence constraints
          * 
          * Number of sequences is the total amount of sequences possible for the given structural and sequence constraints.

@@ -92,7 +92,7 @@ BOOST_AUTO_TEST_CASE(ComponentSampling) {
 
     for (int i = 0; i < 100000; i++) {
         try{
-            count[double(dependency_graph->sample_global())]++; // color the graph and get the sequence
+            count[double(dependency_graph->sample_clocal())]++; // color the graph and get the sequence
         }
 
         catch(std::exception & e) {
