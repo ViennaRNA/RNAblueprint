@@ -25,7 +25,7 @@ namespace design {
             
             // remember cutpoints if cofold is inserted
             std::map<int, char>  cutpoints;
-            int checksum = 0;
+            unsigned int checksum = 0;
             for (auto& s : structures) {
                 // remove ampersands and pluses and remember them as cut points
                 std::size_t found_cut;
@@ -40,7 +40,7 @@ namespace design {
             }
             // lambda calculating the sum of the cut point positions
             auto sum = [] (std::map<int, char> cp) {
-                int sum = 0;
+                unsigned int sum = 0;
                 for (auto c: cp)
                     sum += c.first;
                 return sum;

@@ -68,7 +68,7 @@ namespace design {
                 return specials;
             };
             // get number of dimensions
-            int getDimensions() {
+            unsigned int getDimensions() {
                 return specials.size();
             }
             // sample one combination randomly given a ProbabilityKey with the constraints and a random number generator
