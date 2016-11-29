@@ -245,15 +245,15 @@ BOOST_AUTO_TEST_CASE(EarDecomposition) {
     // check if it is just 3 connected components
     BOOST_CHECK(number_of_children == 3);
 
-    // check if Aks are labeled as special for those two vertices
+    // check if Aks are labeled as articulation for those two vertices
     std::vector<int> AKs = {0, 2, 6, 8};
     for (auto s : AKs) {
-        BOOST_CHECK(g[g.find_vertex(boost::get(boost::vertex_color_t(), g, s)).first].special);
+        BOOST_CHECK(g[g.find_vertex(boost::get(boost::vertex_color_t(), g, s)).first].articulation);
     }
     // check if others are not
     std::vector<int> noAKs = {1, 3, 4, 5, 7};
     for (auto s : noAKs) {
-        BOOST_CHECK(!g[g.find_vertex(boost::get(boost::vertex_color_t(), g, s)).first].special);
+        BOOST_CHECK(!g[g.find_vertex(boost::get(boost::vertex_color_t(), g, s)).first].articulation);
     }
 }
 
@@ -302,9 +302,9 @@ BOOST_AUTO_TEST_CASE(partsBetweenArticulationPoints) {
     int number_of_children = 0;
     Graph::children_iterator ear, ear_end;
     for (boost::tie(ear, ear_end) = g.children(); ear != ear_end; ++ear) {
-        parts_between_specials_to_subgraphs(*ear);
+        parts_between_articulations_to_subgraphs(*ear);
         // print_subgraphs(*ear, &std::cout);
-        // there should be sugraphs for all ears now representing the paths and cycles between special nodes (like attachment points and constraints)
+        // there should be sugraphs for all ears now representing the paths and cycles between articulation nodes (like attachment points and constraints)
         // or in case of no Ak or Ai, the whole ear is another subgraph
         std::pair<Graph::edge_iterator, Graph::edge_iterator> ei = edges(*ear);
         int k = (*ear)[*ei.first].ear;

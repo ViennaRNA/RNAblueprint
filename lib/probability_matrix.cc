@@ -36,7 +36,7 @@ namespace design {
         SolutionSizeType ProbabilityMatrix::operator[] (ProbabilityKey& pk) {
             // sanity check if the vertices requested are indeed stored in this pm
             for (auto pair : pk) {
-                if ( specials.find(pair.first) == specials.end() ) {
+                if ( articulations.find(pair.first) == articulations.end() ) {
                     throw( new std::logic_error( "Tried to get a not allowed Vertex from ProbabilityMatrix." ));
                 }
             }
@@ -61,7 +61,7 @@ namespace design {
         void ProbabilityMatrix::put (ProbabilityKey& pk, SolutionSizeType nos) {
             if (!initialized) {
                 for (auto pair : pk) {
-                    specials.insert(pair.first);
+                    articulations.insert(pair.first);
                 }
                 initialized = true;
             }
@@ -71,7 +71,7 @@ namespace design {
                 if (pair.second >= A_Size) {
                     throw new std::out_of_range( "Tried to write a base outside of the alphabet size into ProbabilityMatrix." );
                 // sanity check if the vertices requested are indeed stored in this pm
-                } else if ( specials.find(pair.first) == specials.end() ) {
+                } else if ( articulations.find(pair.first) == articulations.end() ) {
                     throw new std::logic_error( "Tried to write a not allowed Vertex into ProbabilityMatrix." );
                 }
             }
@@ -93,7 +93,7 @@ namespace design {
         std::pair<ProbabilityKey, ProbabilityFraction> ProbabilityMatrix::sample(R& rand) {
             ProbabilityKey pk;
             
-            for (auto s : getSpecials()) {
+            for (auto s : getArticulations()) {
                 pk[s] = N; //TODO maybe we could check sequence constraints here?
             }
             
@@ -153,19 +153,19 @@ namespace design {
             } else {
                 ProbabilityMatrix z;
                 // get all vertices that are present in both PMs
-                std::set< int > xSpecials = this->getSpecials();
-                std::set< int > ySpecials = y.getSpecials();
-                //std::cerr << "xSpecials: " << xSpecials << std::endl;
-                //std::cerr << "ySpecials: " << ySpecials << std::endl;
-                std::set< int > zSpecials;
-                std::insert_iterator< std::set<int> > insert_it (zSpecials, zSpecials.begin());
-                std::set_union(xSpecials.begin(), xSpecials.end(), ySpecials.begin(), ySpecials.end(), insert_it);
-                //std::cerr << "zSpecials: " << zSpecials << std::endl;
+                std::set< int > xArticulations = this->getArticulations();
+                std::set< int > yArticulations = y.getArticulations();
+                //std::cerr << "xArticulations: " << xArticulations << std::endl;
+                //std::cerr << "yArticulations: " << yArticulations << std::endl;
+                std::set< int > zArticulations;
+                std::insert_iterator< std::set<int> > insert_it (zArticulations, zArticulations.begin());
+                std::set_union(xArticulations.begin(), xArticulations.end(), yArticulations.begin(), yArticulations.end(), insert_it);
+                //std::cerr << "zArticulations: " << zArticulations << std::endl;
                 
                 for (ProbabilityMap::iterator pmap_it = this->pmap.begin(); pmap_it != this->pmap.end(); ++pmap_it) {
                     // first get the current key and insert Ns to those vertices not present already
                     ProbabilityKey newkey = pmap_it->first;
-                    for (auto s : zSpecials) {
+                    for (auto s : zArticulations) {
                         if (newkey.find(s) == newkey.end())
                             newkey[s] = N;
                     }
@@ -175,7 +175,7 @@ namespace design {
                     while (true) {
                         // now access the second value
                         ProbabilityKey ykey;
-                        for (auto s : ySpecials) {
+                        for (auto s : yArticulations) {
                             ykey[s] = (*pkf.key())[s];
                         }
                         // read probability for this keys and multiply them
@@ -192,14 +192,14 @@ namespace design {
         ProbabilityMatrix make_internal(ProbabilityMatrix& pm, int v) {
             ProbabilityMatrix result;
 
-            std::set< int > specials = pm.getSpecials();
-            // find v in specials
-            std::set< int >::iterator v_it = specials.find(v);
-            if (v_it != specials.end()) {
-                specials.erase(v_it);
+            std::set< int > articulations = pm.getArticulations();
+            // find v in articulations
+            std::set< int >::iterator v_it = articulations.find(v);
+            if (v_it != articulations.end()) {
+                articulations.erase(v_it);
                 // create a key for the new pm
                 ProbabilityKey newkey;
-                for (auto s : specials) {
+                for (auto s : articulations) {
                     newkey[s] = N; //TODO maybe we could check sequence constraints here?
                 }
 
@@ -213,7 +213,7 @@ namespace design {
                         break;
                 }
             } else {
-                // in case the vertex is not present in specials, it is already "internal"
+                // in case the vertex is not present in articulations, it is already "internal"
                 result = pm;
             }
             return result;
@@ -313,8 +313,8 @@ namespace design {
         // overload << operator to print ProbabilityMatrix
         std::ostream& operator<<(std::ostream& os, ProbabilityMatrix& m) {
             ProbabilityKey key;
-            std::set<int> specials = m.getSpecials();
-            for (auto s : specials) {
+            std::set<int> articulations = m.getArticulations();
+            for (auto s : articulations) {
                 key[s] = N;
             }
             PermuteKeyFactory pkf(key);

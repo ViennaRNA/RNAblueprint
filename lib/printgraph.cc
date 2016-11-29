@@ -35,7 +35,7 @@ namespace design {
             dp.property("constraints", constraint_map);
             dp.property("name", boost::get(boost::vertex_color_t(), g));
             dp.property("ear", boost::get(&edge_property::ear, g));
-            dp.property("special", boost::get(&vertex_property::special, g));
+            dp.property("articulation", boost::get(&vertex_property::articulation, g));
             
             boost::write_graphml(*out, g, dp, true);
             if (debug) {

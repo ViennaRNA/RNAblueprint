@@ -27,22 +27,22 @@ namespace design {
             }
             
             ProbabilityKey key;
-            std::set< int > specials;
+            std::set< int > articulations;
             
             BGL_FORALL_VERTICES_T(v, g, Graph) {
-                if (g[v].special) {
+                if (g[v].articulation) {
                     if (boost::out_degree(v, g) <= 1) {
                         // remember vertex as int with sequence constraint
                         key[vertex_to_int(v, g)] = g[v].constraint;
-                        specials.emplace(vertex_to_int(v, g));
+                        articulations.emplace(vertex_to_int(v, g));
                     } else {
-                        throw std::logic_error("There is a special vertex which is no path end in get_path_pm. This is not possible!");
+                        throw std::logic_error("There is a articulation vertex which is no path end in get_path_pm. This is not possible!");
                     }
                 }
             }
             
-            if (specials.size() > 2) {
-                throw std::logic_error("More than two special vertices in one path. ridiculous!");
+            if (articulations.size() > 2) {
+                throw std::logic_error("More than two articulation vertices in one path. ridiculous!");
             }
             
             //std::cerr << "keys: " << std::endl << keys;
@@ -55,19 +55,19 @@ namespace design {
             
             while (true) {
                 ProbabilityKey* k = pkf.key();
-                switch ( specials.size() )
+                switch ( articulations.size() )
                 {
                     case 0:
                         result.put(*k, p->get(length, N, N));
                         break;
                     case 1:
-                        result.put(*k, p->get(length, (*k)[*(specials.begin())], N));
+                        result.put(*k, p->get(length, (*k)[*(articulations.begin())], N));
                         break;
                     case 2:
-                        result.put(*k, p->get(length, (*k)[*(specials.begin())], (*k)[*(++specials.begin())]));
+                        result.put(*k, p->get(length, (*k)[*(articulations.begin())], (*k)[*(++articulations.begin())]));
                         break;
                     default:
-                        throw std::logic_error("More than two special vertices in one path. ridiculous!");
+                        throw std::logic_error("More than two articulation vertices in one path. ridiculous!");
                 }
                 if (!pkf.next_permutation())
                     break;

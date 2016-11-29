@@ -264,13 +264,13 @@ namespace design {
     }
     
     template <typename R>
-    std::vector< int > DependencyGraph<R>::special_vertices() {
-        return g->special_vertices();
+    std::vector< int > DependencyGraph<R>::articulation_vertices() {
+        return g->articulation_vertices();
     }
     
     template <typename R>
-    std::vector< int > DependencyGraph<R>::special_vertices(int connected_component_ID) {
-        return g->special_vertices(connected_component_ID);
+    std::vector< int > DependencyGraph<R>::articulation_vertices(int connected_component_ID) {
+        return g->articulation_vertices(connected_component_ID);
     }
     
     template <typename R>

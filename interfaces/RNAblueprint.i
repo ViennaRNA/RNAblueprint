@@ -78,8 +78,8 @@ namespace design {
     double number_of_sequences(int connected_component_ID);
     int number_of_connected_components();
     std::vector< int > component_vertices(int connected_component_ID);
-    std::vector< int > special_vertices();
-    std::vector< int > special_vertices(int connected_component_ID);
+    std::vector< int > articulation_vertices();
+    std::vector< int > articulation_vertices(int connected_component_ID);
     int max_number_of_dimensions();
   };
     

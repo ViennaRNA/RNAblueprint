@@ -210,8 +210,8 @@ BOOST_AUTO_TEST_CASE(GetPutKey1) {
     BOOST_TEST_MESSAGE(ss.str());
 
     BOOST_CHECK(pm[pk] == control);
-    std::set< int > specials = {0, 4};
-    BOOST_CHECK(pm.getSpecials() == specials);
+    std::set< int > articulations = {0, 4};
+    BOOST_CHECK(pm.getArticulations() == articulations);
 }
 
 BOOST_AUTO_TEST_CASE(GetPutKey2) {
@@ -238,8 +238,8 @@ BOOST_AUTO_TEST_CASE(GetPutKey2) {
     BOOST_TEST_MESSAGE(ss.str());
 
     BOOST_CHECK(pm[pk] == control);
-    std::set< int > specials = {0, 4};
-    BOOST_CHECK(pm.getSpecials() == specials);
+    std::set< int > articulations = {0, 4};
+    BOOST_CHECK(pm.getArticulations() == articulations);
 }
 
 BOOST_AUTO_TEST_CASE(GetPutKey3) {
@@ -266,8 +266,8 @@ BOOST_AUTO_TEST_CASE(GetPutKey3) {
     BOOST_TEST_MESSAGE(ss.str());
 
     BOOST_CHECK(pm[pk] == control);
-    std::set< int > specials = {0, 4};
-    BOOST_CHECK(pm.getSpecials() == specials);
+    std::set< int > articulations = {0, 4};
+    BOOST_CHECK(pm.getArticulations() == articulations);
 }
 
 BOOST_AUTO_TEST_CASE(GetNOS1) {
@@ -288,8 +288,8 @@ BOOST_AUTO_TEST_CASE(GetNOS1) {
     BOOST_TEST_MESSAGE("Try to get number of sequences for a ProbabilityMatrix");
 
     BOOST_CHECK(pm.mnos() == control);
-    std::set< int > specials = {0, 4};
-    BOOST_CHECK(pm.getSpecials() == specials);
+    std::set< int > articulations = {0, 4};
+    BOOST_CHECK(pm.getArticulations() == articulations);
 }
 
 BOOST_AUTO_TEST_CASE(GetNOS2) {
@@ -319,17 +319,17 @@ BOOST_AUTO_TEST_CASE(CopyConstructor1) {
     BOOST_TEST_MESSAGE("Try to get number of sequences for a ProbabilityMatrix, copy and compare");
 
     BOOST_CHECK(pm.mnos() == check.mnos());
-    BOOST_CHECK(pm.getSpecials() == check.getSpecials());
+    BOOST_CHECK(pm.getArticulations() == check.getArticulations());
 }
 
-BOOST_AUTO_TEST_CASE(GetSpecials1) {
+BOOST_AUTO_TEST_CASE(GetArticulations1) {
 
     ProbabilityMatrix pm;
 
-    BOOST_TEST_MESSAGE("Try to get specials for empty ProbabilityMatrix");
+    BOOST_TEST_MESSAGE("Try to get articulations for empty ProbabilityMatrix");
 
-    std::set< int > specials = {};
-    BOOST_CHECK(pm.getSpecials() == specials);
+    std::set< int > articulations = {};
+    BOOST_CHECK(pm.getArticulations() == articulations);
 }
 
 BOOST_AUTO_TEST_CASE(MultiplyPM1) {
@@ -567,7 +567,7 @@ BOOST_AUTO_TEST_CASE(MakeInternal1) {
     testkey[5] = N;
     SolutionSizeType xtest = x[testkey];
     BOOST_CHECK(ytest == xtest);
-    BOOST_CHECK(x.getSpecials().size() == y.getSpecials().size() + 1);
+    BOOST_CHECK(x.getArticulations().size() == y.getArticulations().size() + 1);
     BOOST_CHECK(x.mnos() == y.mnos());
 }
 
@@ -594,7 +594,7 @@ BOOST_AUTO_TEST_CASE(MakeInternal2) {
     testkey[5] = N;
     SolutionSizeType xtest = x[testkey];
     BOOST_CHECK(ytest == xtest);
-    BOOST_CHECK(x.getSpecials().size() == y.getSpecials().size() + 1);
+    BOOST_CHECK(x.getArticulations().size() == y.getArticulations().size() + 1);
     BOOST_CHECK(x.mnos() == y.mnos());
 }
 

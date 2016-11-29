@@ -257,11 +257,11 @@ BOOST_AUTO_TEST_CASE(get_path_pm_test) {
         // set the sequence constraints
         g[boost::vertex(0, g)].constraint = t.first;
         if (t.first != N) {
-            g[boost::vertex(0, g)].special = true;
+            g[boost::vertex(0, g)].articulation = true;
         }
         g[boost::vertex(boost::num_vertices(g) - 1, g)].constraint = t.last;
         if (t.last != N) {
-            g[boost::vertex(boost::num_vertices(g) - 1, g)].special = true;
+            g[boost::vertex(boost::num_vertices(g) - 1, g)].articulation = true;
         }
 
         //call the function

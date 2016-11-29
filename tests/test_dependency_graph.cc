@@ -242,9 +242,9 @@ BOOST_AUTO_TEST_CASE(number_of_sequences_ccID) {
     BOOST_CHECK(dependency_graph.number_of_sequences(1) == 4);
 }
 
-BOOST_AUTO_TEST_CASE(get_specials1) {
+BOOST_AUTO_TEST_CASE(get_articulations1) {
 
-    BOOST_TEST_MESSAGE("get empty list of special vertices");
+    BOOST_TEST_MESSAGE("get empty list of articulation vertices");
 
     design::initialize_library(true);
     std::vector<std::string> structures = {".."};
@@ -252,12 +252,12 @@ BOOST_AUTO_TEST_CASE(get_specials1) {
     
     design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "WN", rand_gen);
     std::vector< int > check = {};
-    BOOST_CHECK(dependency_graph.special_vertices() == check);
+    BOOST_CHECK(dependency_graph.articulation_vertices() == check);
 }
 
-BOOST_AUTO_TEST_CASE(get_specials2) {
+BOOST_AUTO_TEST_CASE(get_articulations2) {
 
-    BOOST_TEST_MESSAGE("get list of special vertices for more complex graph");
+    BOOST_TEST_MESSAGE("get list of articulation vertices for more complex graph");
 
     design::initialize_library(true);
     std::vector<std::string> structures = {"().().", ".().()", ".(..)."};
@@ -265,7 +265,7 @@ BOOST_AUTO_TEST_CASE(get_specials2) {
     
     design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "NNNNNY", rand_gen);
     std::vector< int > check = {1, 4};
-    BOOST_CHECK(dependency_graph.special_vertices() == check);
+    BOOST_CHECK(dependency_graph.articulation_vertices() == check);
 }
 
 BOOST_AUTO_TEST_CASE(sample_cc_with_ID) {

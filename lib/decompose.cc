@@ -88,25 +88,25 @@ namespace design {
                 }
             // this is a circle
             } else if (min_degree == 2 && max_degree == 2) {
-                // check if there are already special vertices
+                // check if there are already articulation vertices
                 int count = 0;
                 BGL_FORALL_VERTICES_T(v, g, Graph) {
-                    if (g[v].special) {
+                    if (g[v].articulation) {
                         count++;
                     }
                 }
                 if (count < 2) {
-                    // assign any two special vertices and get paths in between
+                    // assign any two articulation vertices and get paths in between
                     Vertex s = boost::vertex(0, g);
                     Vertex r = boost::vertex(boost::num_vertices(g)-1, g);
-                    (g)[s].special = true;
-                    (g)[r].special = true;
+                    (g)[s].articulation = true;
+                    (g)[r].articulation = true;
                 }
-                parts_between_specials_to_subgraphs(g);
+                parts_between_articulations_to_subgraphs(g);
                 return;
             // this is a path or a single vertex
             } else {
-                parts_between_specials_to_subgraphs(g);
+                parts_between_articulations_to_subgraphs(g);
                 return;
             }
             
@@ -188,8 +188,8 @@ namespace design {
             // now need to merge biconnected components that are separated by a articulation point that has a degree == 2 !
             for (auto v : art_points) {
                 if (boost::degree(v, g) > 2) {
-                    // mark this vertex as special point
-                    g[v].special = true;
+                    // mark this vertex as articulation point
+                    g[v].articulation = true;
                     
                     BGL_FORALL_ADJ_T(v, adj, g, Graph) {
                         if ((boost::degree(adj, g) == 2)
@@ -326,9 +326,9 @@ namespace design {
                 boost::add_edge(g.local_to_global(e), *ear_graphs[g[e].ear]);
             }
             
-            // attachment points are special vertices
+            // attachment points are articulation vertices
             for (Vertex v : att_points) {
-                g[v].special = true;
+                g[v].articulation = true;
                 if (debug) {
                     std::cout << "Vertex " << vertex_to_int(v, g) << " is a attachment point!" << std::endl;
                 }
@@ -382,18 +382,18 @@ namespace design {
             return std::make_pair(alpha, beta);
         }
 
-        void parts_between_specials_to_subgraphs(Graph& g) {
+        void parts_between_articulations_to_subgraphs(Graph& g) {
             bool split = false;
             BGL_FORALL_VERTICES_T(v, g, Graph) {
-                split = split || (g[v].special && (boost::degree(v, g) > 1));
+                split = split || (g[v].articulation && (boost::degree(v, g) > 1));
             }
             if (debug && !split) {
-                std::cerr << "No need to generate a subgraph as this is already a path with specials only on ends." << std::endl;
+                std::cerr << "No need to generate a subgraph as this is already a path with articulations only on ends." << std::endl;
             }
             
             if (split) {
                 if (debug) {
-                    std::cerr << "Paths between specials to subgraphs..." << std::endl;
+                    std::cerr << "Paths between articulations to subgraphs..." << std::endl;
                 }
                 // reset edge colors
 
@@ -420,7 +420,7 @@ namespace design {
                     }
                 }
                 if (debug) {
-                    std::cerr << "subgraphs parts between specials:" << std::endl;
+                    std::cerr << "subgraphs parts between articulations:" << std::endl;
                     print_subgraphs(g, &std::cerr);
                 }
             } else {
@@ -434,7 +434,7 @@ namespace design {
             //boost::add_vertex(boost::get(boost::vertex_color_t(), g, v), *subgptr);
             g[v].color = 1;
             
-            if (!g[v].special) {
+            if (!g[v].articulation) {
                 BGL_FORALL_OUTEDGES_T(v, e, g, Graph) {
                     if (g[e].color == 0) {
                         g[e].color = 1;
