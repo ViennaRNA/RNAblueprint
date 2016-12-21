@@ -40,14 +40,16 @@ namespace design {
             SolutionSizeType number_of_sequences(int connected_component_ID);
             int number_of_connected_components();
             std::vector< int > component_vertices(int connected_component_ID);
-            std::vector< int > special_vertices();
-            std::vector< int > special_vertices(int connected_component_ID);
+            std::vector< int > articulation_vertices();
+            std::vector< int > articulation_vertices(int connected_component_ID);
             unsigned long set_seed(int seed) {
                 rand.seed(seed);
                 return seed;
             }
             unsigned long set_seed();
-            
+            unsigned int max_number_of_dimensions() {
+                return max_dimensions;
+            }
             Sequence get_sequence();
             std::string get_sequence_string();
             SolutionSizeType set_sequence(Sequence sequence);
@@ -55,7 +57,7 @@ namespace design {
             SolutionSizeType sample();
             // call this function to sample a random subgraph (either a path, if graph_type=-1 or a connected component, if graph_type=1)
             SolutionSizeType sample_local_global(int graph_type, int min_num_pos, int max_num_pos);
-            SolutionSizeType sample_global(int connected_component_ID);
+            SolutionSizeType sample_clocal(int connected_component_ID);
             SolutionSizeType sample(int position);
             SolutionSizeType sample(int start, int end);
             void set_history_size(unsigned int size);
@@ -68,9 +70,11 @@ namespace design {
             R rand;
             std::list<Sequence> history;
             unsigned int history_size;
+            // remember maximal dimension count for complexity measure
+            unsigned int max_dimensions = 0;
             void remember_sequence();
             void calculate_probabilities(Graph& g, std::chrono::steady_clock::time_point& start_time);
-            SolutionSizeType sample_sequence(Graph& g);
+            ProbabilityFraction sample_sequence(Graph& g);
             void reset_colors(Graph& g);
             SolutionSizeType sample(Graph& g);
             Graph* find_path_subgraph(Vertex v_global, Graph& g);

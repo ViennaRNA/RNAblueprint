@@ -63,18 +63,21 @@ namespace design {
             bool is_initialized() {
                 return initialized;
             }
-            // get set of special vertices
-
-            std::set< int > getSpecials() {
-                return specials;
+            // get set of articulation vertices
+            std::set< int > getArticulations() {
+                return articulations;
             };
+            // get number of dimensions
+            unsigned int getDimensions() {
+                return articulations.size();
+            }
             // sample one combination randomly given a ProbabilityKey with the constraints and a random number generator
             // return a pair with the chosen ProbabilityKey and the number_of_sequences for the given input constraints
             template <typename R>
-            std::pair<ProbabilityKey, SolutionSizeType> sample(ProbabilityKey pk, R& rand);
-            // special case without probability key (and therefore constraints)
+            std::pair<ProbabilityKey, ProbabilityFraction> sample(ProbabilityKey pk, R& rand);
+            // articulation case without probability key (and therefore constraints)
             template <typename R>
-            std::pair<ProbabilityKey, SolutionSizeType> sample(R& rand);
+            std::pair<ProbabilityKey, ProbabilityFraction> sample(R& rand);
             // multiplicator
             ProbabilityMatrix operator*(ProbabilityMatrix& y);
             // My custom hash key used for n
@@ -85,8 +88,8 @@ namespace design {
             ProbabilityMap pmap;
             // remember if initialized
             bool initialized = false;
-            // remember all special points
-            std::set< int > specials = {};
+            // remember all articulation points
+            std::set< int > articulations = {};
             // TODO a function to "multiply" probability matrixes
         };
 

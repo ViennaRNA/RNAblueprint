@@ -123,7 +123,7 @@ namespace design {
      * 
      * \param structures \b vector of \b string structures in dot-bracket notation.
      * \param constraints \b string containing the sequence constraints in IUPAC notation. Can also be a empty string!
-     * \param decompose \b boolean Whether to decompose the dependency graph into paths and therefore draw special vertices and ears.
+     * \param decompose \b boolean Whether to decompose the dependency graph into paths and therefore draw articulation vertices and ears.
      * \param seed \b unsigned long Seed for the random number generator which is used for some random parts of the decomposition.
      * \exception std::exception if input is invalid or construction/decomposition fails an exception is thrown.
      * \return \b string containing the GraphML notation of the dependency graph.
@@ -138,7 +138,7 @@ namespace design {
      * 
      * \param structures \b vector of \b string structures in dot-bracket notation.
      * \param constraints \b string containing the sequence constraints in IUPAC notation. Can also be a empty string!
-     * \param decompose \b boolean Whether to decompose the dependency graph into paths and therefore draw special vertices and ears.
+     * \param decompose \b boolean Whether to decompose the dependency graph into paths and therefore draw articulation vertices and ears.
      * \exception std::exception if input is invalid or construction/decomposition fails an exception is thrown.
      * \return \b string containing the GraphML notation of the dependency graph.
      */
@@ -314,7 +314,7 @@ namespace design {
          * 
          * This way you can optimize by targeted sampling at the given positions. All positions dependent on the chosen one
          * will also be sampled.
-         * If your position is a special vertex, the whole connected component will be re-sampled. Else, in case of being a non-special vertex,
+         * If your position is a articulation vertex, the whole connected component will be re-sampled. Else, in case of being a non-articulation vertex,
          * only the smallest path containing the vertex will be sampled.
          * 
          * \param position \b integer specifying the position to re-sample [ 0, N )
@@ -326,7 +326,7 @@ namespace design {
          * 
          * This way you can optimize by targeted sampling at the given positions. All positions dependent on the chosen ones
          * will also be sampled.
-         * If your positions contain special vertices, the whole connected components will be re-sampled. Else, in case of being only non-special vertex,
+         * If your positions contain articulation vertices, the whole connected components will be re-sampled. Else, in case of being only non-articulation vertex,
          * only the smallest paths containing the vertices will be sampled. Positions for start and end are inclusive [ start, end ]
          *
          * \param start \b integer specifying the first position to re-sample [ 0, N )
@@ -337,24 +337,24 @@ namespace design {
         SolutionSizeType sample(int start, int end);
         /*! \brief Randomly chooses one path (either top-level a connected component, or within a block, etc.) with the given size and samples all positions.
          * 
-         * Special vertices such as cut points or articulation points will stay the same. Therefore it is guaranteed that the sampling is correct,
+         * Articulation vertices such as cut points or articulation points will stay the same. Therefore it is guaranteed that the sampling is correct,
          * even if we only sample a small local piece of a more complex graph object.
          * min_num_pos and max_num_pos set the minimal/maximal number of sampled positions, e.g., for [ 3, 5 ] only paths
-         * with minimal 3 and maximal 5 non-special vertices will be chosen for sampling.
+         * with minimal 3 and maximal 5 non-articulation vertices will be chosen for sampling.
          * 
          * \param min_num_pos \b integer specifying the minimal size of the component to re-sample [ 1, N )
          * \param max_num_pos \b integer specifying the maximal size of the component to re-sample [ 1, N ). 0 defines infinity.
-         * \sa sample_local(), sample_global(), sample_global(int min_num_pos, int max_num_pos), sample_global(int connected_component_ID)
+         * \sa sample_plocal(), sample_clocal(), sample_clocal(int min_num_pos, int max_num_pos), sample_clocal(int connected_component_ID)
          * \return \b number of possible solutions for this sampling.
         */
-        SolutionSizeType sample_local(int min_num_pos, int max_num_pos);
+        SolutionSizeType sample_plocal(int min_num_pos, int max_num_pos);
         /*! \brief Randomly chooses one path (either top-level a connected component, or within a block, etc.) and samples all positions.
          * 
          * \bug It is a known issue, that this function does not draw solutions completely fair as the paths to sample are selected in a biased manner.
-         * \sa sample_local(int min_num_pos, int max_num_pos), sample_global(), sample_global(int min_num_pos, int max_num_pos), sample_global(int connected_component_ID)
+         * \sa sample_plocal(int min_num_pos, int max_num_pos), sample_clocal(), sample_clocal(int min_num_pos, int max_num_pos), sample_clocal(int connected_component_ID)
          * \return \b number of possible solutions for this sampling.
         */
-        SolutionSizeType sample_local();
+        SolutionSizeType sample_plocal();
         /*! \brief Randomly chooses a connected component with the given size and samples a new sequence for the whole component.
          * 
          * This is a more global way of sampling a new sequence as it exchanges a much bigger graph object.
@@ -363,24 +363,24 @@ namespace design {
          * 
          * \param min_num_pos \b integer specifying the minimal size of the component to re-sample [ 1, N )
          * \param max_num_pos \b integer specifying the maximal size of the component to re-sample [ 1, N ). 0 defines infinity.
-         * \sa sample_local(), sample_local(int min_num_pos, int max_num_pos), sample_global(), sample_global(int connected_component_ID)
+         * \sa sample_plocal(), sample_plocal(int min_num_pos, int max_num_pos), sample_clocal(), sample_clocal(int connected_component_ID)
          * \return \b number of possible solutions for this sampling.
         */
-        SolutionSizeType sample_global(int min_num_pos, int max_num_pos);
+        SolutionSizeType sample_clocal(int min_num_pos, int max_num_pos);
         /*! \brief Takes the connected component with the specified ID and samples a new sequence for the whole component.
          * 
          * \param connected_component_ID \b integer specifying the connected component with its ID [ 0, number_of_connected_components() ).
-         * \sa number_of_connected_components(), sample_local(), sample_local(int min_num_pos, int max_num_pos), sample_global(), sample_global(int min_num_pos, int max_num_pos)
+         * \sa number_of_connected_components(), sample_plocal(), sample_plocal(int min_num_pos, int max_num_pos), sample_clocal(), sample_clocal(int min_num_pos, int max_num_pos)
          * \exception std::out_of_range if connected_component_ID is invalid.
          * \return \b number of possible sequences for this sampling.
         */
-        SolutionSizeType sample_global(int connected_component_ID);
+        SolutionSizeType sample_clocal(int connected_component_ID);
         /*! \brief Takes a random connected component and samples a new sequence for the whole component.
          * 
-         * \sa sample_local(), sample_local(int min_num_pos, int max_num_pos), sample_global(int connected_component_ID), sample_global(int min_num_pos, int max_num_pos)
+         * \sa sample_plocal(), sample_plocal(int min_num_pos, int max_num_pos), sample_clocal(int connected_component_ID), sample_clocal(int min_num_pos, int max_num_pos)
          * \return \b number of possible sequences for this sampling.
         */
-        SolutionSizeType sample_global();
+        SolutionSizeType sample_clocal();
         /*! \brief Returns the amount of solutions given the dependency graph and sequence constraints
          * 
          * Number of sequences is the total amount of sequences possible for the given structural and sequence constraints.
@@ -413,33 +413,39 @@ namespace design {
          * \return \b vector of \b integer values specifying the positions/vertices contained in the connected component.
         */
         std::vector<int> component_vertices(int connected_component_ID);
-        /*! \brief Returns a list of vertices specified as "special".
+        /*! \brief Returns a list of vertices specified as articulation vertices.
          * 
-         * These special vertices include cut points, articulation points and also a cycle opening cuts.
+         * These articulation vertices are also known as cut points or attachment points and also include cycle opening cuts.
          * 
-         * \sa special_vertices(int connected_component_ID)
-         * \return \b vector of \b integer values specifying the positions/vertices marked as special.
+         * \sa articulation_vertices(int connected_component_ID)
+         * \return \b vector of \b integer values specifying the positions/vertices marked as articulation vertices.
         */
-        std::vector< int > special_vertices();
-        /*! \brief Returns a list of vertices in the specified connected component specified as "special".
+        std::vector< int > articulation_vertices();
+        /*! \brief Returns a list of vertices in the specified connected component specified as articulation vertices.
          * 
-         * These special vertices include cut points, articulation points and also a cycle opening cuts.
+         * These articulation vertices include cut points, articulation points and also a cycle opening cuts.
          * 
          * \param connected_component_ID \b integer specifying the connected component with its ID [ 0, number_of_connected_components() ).
-         * \sa number_of_connected_components(), special_vertices()
+         * \sa number_of_connected_components(), articulation_vertices()
          * \exception std::out_of_range if connected_component_ID is invalid.
-         * \return \b vector of \b integer values specifying the positions/vertices marked as special in the connected component.
+         * \return \b vector of \b integer values specifying the positions/vertices marked as articulation vertices in the connected component.
         */
-        std::vector< int > special_vertices(int connected_component_ID);
-        
-        // ??? get_special_probabilities(connected components ID)
-        // Returns basically the ProbabilityMatrix for all special vertices (remove make_internal() function) of the whole connected component 
+        std::vector< int > articulation_vertices(int connected_component_ID);
+        /*! \brief Returns the maximal number of dimensions of all dynamic programming tables.
+         * 
+         * This value is a great measure for the complexity of the graph coloring approach for the chosen input constraints.
+         * 
+         * \return \b integer specifying the maximal number of dimensions for all DP tables.
+        */
+        unsigned int max_number_of_dimensions();
+        // ??? get_articulation_probabilities(connected components ID)
+        // Returns basically the ProbabilityMatrix for all articulation vertices (remove make_internal() function) of the whole connected component 
         // hash of hash: vertex -> base_color -> number_of_sequences
 
         // ??? get_constrained_probabilities()
         // Returns a hash of hash table of vertex -> base_color -> number_of_sequences for all positions given the base_color.
-        // for special vertices we can just call the function above and get the sums, 
-        // for non-specials we maybe have to do a constraint recalculation for every position/base combination?
+        // for articulation vertices we can just call the function above and get the sums, 
+        // for non-articulation we maybe have to do a constraint recalculation for every position/base combination?
         
         
     private:

@@ -204,31 +204,31 @@ namespace design {
     }
     
     template <typename R>
-    SolutionSizeType DependencyGraph<R>::sample_local(int min_num_pos, int max_num_pos) {
+    SolutionSizeType DependencyGraph<R>::sample_plocal(int min_num_pos, int max_num_pos) {
         // if local_global=-1 we will sample only actual graphs (independent of their type)
         return g->sample_local_global(-1, min_num_pos, max_num_pos);
     }
     
     template <typename R>
-    SolutionSizeType DependencyGraph<R>::sample_local() {
+    SolutionSizeType DependencyGraph<R>::sample_plocal() {
         // if local_global=-1 we will sample only actual graphs, with 0,0 we choose any
         return g->sample_local_global(-1, 0, 0);
     }
     
     template <typename R>
-    SolutionSizeType DependencyGraph<R>::sample_global(int min_num_pos, int max_num_pos) {
+    SolutionSizeType DependencyGraph<R>::sample_clocal(int min_num_pos, int max_num_pos) {
         // if local_global=1 we will sample only connected components
         return g->sample_local_global(1, min_num_pos, max_num_pos);
     }
     
     template <typename R>
-    SolutionSizeType DependencyGraph<R>::sample_global(int connected_component_ID) {
+    SolutionSizeType DependencyGraph<R>::sample_clocal(int connected_component_ID) {
         // sample the connected component with the ID
-        return g->sample_global(connected_component_ID);
+        return g->sample_clocal(connected_component_ID);
     }
     
     template <typename R>
-    SolutionSizeType DependencyGraph<R>::sample_global() {
+    SolutionSizeType DependencyGraph<R>::sample_clocal() {
         // sample any component with any size
         return g->sample_local_global(1, 0, 0);
     }
@@ -264,13 +264,18 @@ namespace design {
     }
     
     template <typename R>
-    std::vector< int > DependencyGraph<R>::special_vertices() {
-        return g->special_vertices();
+    std::vector< int > DependencyGraph<R>::articulation_vertices() {
+        return g->articulation_vertices();
     }
     
     template <typename R>
-    std::vector< int > DependencyGraph<R>::special_vertices(int connected_component_ID) {
-        return g->special_vertices(connected_component_ID);
+    std::vector< int > DependencyGraph<R>::articulation_vertices(int connected_component_ID) {
+        return g->articulation_vertices(connected_component_ID);
+    }
+    
+    template <typename R>
+    unsigned int DependencyGraph<R>::max_number_of_dimensions() {
+        return g->max_number_of_dimensions();
     }
     
     template class DependencyGraph<std::mt19937>;

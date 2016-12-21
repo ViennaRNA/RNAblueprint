@@ -63,7 +63,7 @@ namespace design {
         void color_attachment_points(Graph& g);
 
         // now create subgraphs for the parts between Ak and Iks
-        void parts_between_specials_to_subgraphs(Graph& g);
+        void parts_between_articulations_to_subgraphs(Graph& g);
 
         // recursion for parts function
         void parts_recursion(Graph& g, Graph * subgptr, Vertex v);

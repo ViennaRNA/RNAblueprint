@@ -28,7 +28,7 @@ namespace design {
             int color = 0;
             int base = N;
             int constraint = N;
-            bool special = false;
+            bool articulation = false;
         };
 
         struct edge_property {

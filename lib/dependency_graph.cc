@@ -121,11 +121,16 @@ namespace design
                 
                 // Multiply current with pm of this child
                 // Multiplication is not symmetric in terms of performance, therefore
-                // we want to have the matrix with more special vertices at the front.
-                if (current.getSpecials().size() > pms[&*cg].getSpecials().size())
+                // we want to have the matrix with more articulation vertices at the front.
+                if (current.getArticulations().size() > pms[&*cg].getArticulations().size())
                     current = current * pms[&*cg];
                 else
                     current = pms[&*cg] * current;
+                
+                // update max_dimensions
+                if (current.getDimensions() > max_dimensions) {
+                    max_dimensions = current.getDimensions();
+                }
                 
                 if (debug) {
                     std::cerr << "current PM: " << std::endl << current << std::endl;
@@ -146,8 +151,8 @@ namespace design
                 BGL_FORALL_VERTICES_T(v, *cg, Graph) {
                     Vertex global_v = cg->local_to_global(v);
 
-                    if ((*cg)[v].special) {
-                        // update current degrees as status of special points
+                    if ((*cg)[v].articulation) {
+                        // update current degrees as status of articulation points
                         if (debug) {
                             std::cerr << "updating degree: " << degree_map[global_v] << " + " << boost::degree(v, *cg) << std::endl;
                         }
@@ -168,9 +173,9 @@ namespace design
                                             << pms[&*cg] << std::endl;
                                 }
                             }
-                            // remove internal special vertex from this PM!
+                            // remove internal articulation vertex from this PM!
                             current = make_internal(current, vertex_to_int(v, *cg));
-                            //TODO is there a need to remove special flag if this vertex is now internal?
+                            //TODO is there a need to remove articulation flag if this vertex is now internal?
                         }
                     }
                 }
@@ -190,7 +195,7 @@ namespace design
         }
         
         template <typename R>
-        SolutionSizeType DependencyGraph<R>::sample_sequence(Graph& g) {
+        ProbabilityFraction DependencyGraph<R>::sample_sequence(Graph& g) {
             
             // get graph properties
             graph_property& gprop = boost::get_property(g, boost::graph_name);
@@ -198,7 +203,7 @@ namespace design
             ProbabilityKey constraints;
             bool onlypath = true;
 
-            for (auto s : pms[&g].getSpecials()) {
+            for (auto s : pms[&g].getArticulations()) {
                 //std::cerr << s << "/" << int_to_vertex(s, g.root()) << "/" << enum_to_char(g.root()[int_to_vertex(s, g.root())].base) << std::endl;
                 constraints[s] = g.root()[int_to_vertex(s, g.root())].base;
                 if (constraints[s] >= A_Size)
@@ -212,36 +217,36 @@ namespace design
                        << pms[&g] << std::endl;
             }
             
-            SolutionSizeType cnos = 0;
+            ProbabilityFraction pf = std::make_pair(1,0);
             ProbabilityKey colors;
             
             try {
-                std::tie(colors, cnos) = pms[&g].sample(constraints, rand);
+                std::tie(colors, pf) = pms[&g].sample(constraints, rand);
             } catch (std::exception& e) {
                 std::stringstream ss;
                 ss << "Error while sampling from a ProbabilityMatrix: " << std::endl 
-                        << "constrained number of sequences: " << cnos << e.what();
+                        << "constrained number of sequences: " << pf.second << e.what();
                 throw std::logic_error(ss.str());
             }
             // write to graph
             for (auto c : colors) {
                 g.root()[int_to_vertex(c.first, g.root())].base = c.second;
             }
-            // if the graph is a path, we need to colour everything in between special points as well
+            // if the graph is a path, we need to colour everything in between articulation points as well
             // else we will start the recursion
             if (gprop.is_path) {
                 if (debug) {
                     std::cerr << "Path Coloring!" << std::endl;
                 }
                 try {
-                    SolutionSizeType path_nos = color_path_graph(g, rand);
+                    ProbabilityFraction  path_pf = color_path_graph(g, rand);
                     if (onlypath) {
-                        cnos = path_nos;
+                        pf = path_pf;
                     }
                 } catch (std::exception& e) {
                     std::stringstream ss;
                     ss << "Error while sampling a path sequence: " << std::endl 
-                        << "constrained number of sequences: " << cnos << e.what();
+                        << "constrained number of sequences: " << pf.second << e.what();
                     throw std::logic_error(ss.str());
                 }
             } else {
@@ -253,10 +258,12 @@ namespace design
                 boost::tie(cg, cg_end) = g.children();
                 for ( current = cg_end; current != cg;) {
                     --current;
-                    sample_sequence(*current);
+                    ProbabilityFraction graph_pf = sample_sequence(*current);
+                    pf.first *= graph_pf.first/graph_pf.second;
                 } 
             }
-            return cnos;
+            
+            return pf;
         }
         
         template <typename R>
@@ -347,7 +354,7 @@ namespace design
         
         template <typename R>
         SolutionSizeType DependencyGraph<R>::set_sequence(Sequence sequence) {
-            SolutionSizeType cnos;
+            ProbabilityFraction pf;
             // reset all the colors to N
             reset_colors(graph);
             // write bases to graph
@@ -364,7 +371,7 @@ namespace design
                 }
             }
             try {
-                cnos = sample_sequence(graph);
+                pf = sample_sequence(graph);
             } catch (std::exception& e) {
                 // reset to previous sequence
                 revert_sequence(0);
@@ -376,16 +383,16 @@ namespace design
             }
             // remember this new sequence in the history
             remember_sequence();
-            return cnos;
+            return pf.second;
         }
 
         template <typename R>
         SolutionSizeType DependencyGraph<R>::sample() {
-            SolutionSizeType cnos;
+            ProbabilityFraction pf;
             // reset all the colors to N
             reset_colors(graph);
             try {
-                cnos = sample_sequence(graph);
+                 pf = sample_sequence(graph);
             } catch (std::exception& e) {
                 revert_sequence(0);
                 std::stringstream ss;
@@ -395,7 +402,7 @@ namespace design
             }
             // remember this new sequence in the history
             remember_sequence();
-            return cnos;
+            return pf.second;
         }
 
         template <typename R>
@@ -432,7 +439,7 @@ namespace design
         }
         
         template <typename R>
-        SolutionSizeType DependencyGraph<R>::sample_global(int connected_component_ID) {
+        SolutionSizeType DependencyGraph<R>::sample_clocal(int connected_component_ID) {
             Graph::children_iterator cc, cc_end;
             for (boost::tie(cc, cc_end) = graph.children(); cc != cc_end; ++cc) {
                 if (boost::get_property(*cc, boost::graph_name).id == connected_component_ID) {
@@ -483,8 +490,8 @@ namespace design
                     Vertex v = (*c).find_vertex(v_global).first;
                     // get graph properties
                     graph_property& gprop = boost::get_property(*c, boost::graph_name);
-                    // return pointer to this path or connected component in case of a special position, or go deeper
-                    if (gprop.is_path || (gprop.type == 1 && g[v].special)) {
+                    // return pointer to this path or connected component in case of a articulation position, or go deeper
+                    if (gprop.is_path || (gprop.type == 1 && g[v].articulation)) {
                         if (debug)
                             print_graph(*c, &std::cerr);
                         return &*c;
@@ -545,26 +552,26 @@ namespace design
                 // reset the whole connected component and sample everything
                 reset_colors(g);
                 try {
-                    return sample_sequence(g);
+                    return sample_sequence(g).second;
                 } catch (std::exception& e) {
                     std::stringstream ss;
                     ss << "Error while sampling a connected component (" << gprop.type << "-" << gprop.id << "): " << std::endl << e.what();
                     throw std::logic_error(ss.str());
                 }
-                // in case this is a path, only reset without specials
+                // in case this is a path, only reset without articulations
             } else if (gprop.is_path) {
                 if (debug) {
                     std::cerr << "Sampling a path!" << std::endl;
                 }
-                // reset all vertices, except special ones, as those are the important ends
+                // reset all vertices, except articulation ones, as those are the important ends
                 // which have to stay the same
                 BGL_FORALL_VERTICES_T(v, g, Graph) {
-                    if (!g[v].special) {
+                    if (!g[v].articulation) {
                         g[v].base = N;
                     }
                 }
                 try {
-                    return sample_sequence(g);
+                    return sample_sequence(g).second;
                 } catch (std::exception& e) {
                     std::stringstream ss;
                     ss << "Error while sampling a path (" << gprop.type << "-" << gprop.id << "): " << std::endl << e.what();
@@ -632,11 +639,11 @@ namespace design
         }
 
         template <typename R>
-        std::vector< int > DependencyGraph<R>::special_vertices() {
-            // get special vertices as vector
+        std::vector< int > DependencyGraph<R>::articulation_vertices() {
+            // get articulation vertices as vector
             std::vector< int > result;
             BGL_FORALL_VERTICES_T(v, graph, Graph) {
-                if (graph[v].special && (graph[v].constraint == N)) {
+                if (graph[v].articulation && (graph[v].constraint == N)) {
                     result.push_back(vertex_to_int(v, graph));
                 }
             }
@@ -644,15 +651,15 @@ namespace design
         }
         
         template <typename R>
-        std::vector< int > DependencyGraph<R>::special_vertices(int connected_component_ID) {
-            // get special vertices as vector
+        std::vector< int > DependencyGraph<R>::articulation_vertices(int connected_component_ID) {
+            // get articulation vertices as vector
             std::vector< int > result;
             // iterate over all connected component and fill up the vector
             Graph::children_iterator cc, cc_end;
             for (boost::tie(cc, cc_end) = graph.children(); cc != cc_end; ++cc) {
                 if (boost::get_property(*cc, boost::graph_name).id == connected_component_ID) {
                     BGL_FORALL_VERTICES_T(v, *cc, Graph) {
-                        if (graph[v].special && (graph[v].constraint == N)) {
+                        if (graph[v].articulation && (graph[v].constraint == N)) {
                             result.push_back(vertex_to_int(v, graph));
                         }
                     }

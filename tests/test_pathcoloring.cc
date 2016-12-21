@@ -116,14 +116,15 @@ BOOST_AUTO_TEST_CASE(generateSeq) {
         g[boost::vertex(boost::num_vertices(g) - 1, g)].base = t.last;
 
         //call the function
-        SolutionSizeType nos = color_path_graph(g, rand_gen);
+        ProbabilityFraction pf = color_path_graph(g, rand_gen);
         Sequence sequence = get_vertex_colors(g);
         // do the comparison of the results
         ss.str(std::string());
-        ss << std::endl << "Got Sequence: " << sequence << " with NOS: " << nos;
+        ss << std::endl << "Got Sequence: " << sequence << " with NOS: " << pf.second << " and numerator: " << pf.first;
         BOOST_TEST_MESSAGE(ss.str());
         BOOST_CHECK(sequence == t.sequence);
-        BOOST_CHECK(nos == t.nos);
+        BOOST_CHECK(pf.second == t.nos);
+        BOOST_CHECK_CLOSE(pf.first, 1, 0.0000001);
     }
 }
 
@@ -186,14 +187,14 @@ BOOST_AUTO_TEST_CASE(generateConstraintSeq) {
         }
 
         //call the function
-        SolutionSizeType nos = color_path_graph(g, rand_gen);
+        ProbabilityFraction pf = color_path_graph(g, rand_gen);
         Sequence sequence = get_vertex_colors(g);
         // do the comparison of the results
         ss.str(std::string());
-        ss << std::endl << "Got Sequence: " << sequence << " with NOS: " << nos;
+        ss << std::endl << "Got Sequence: " << sequence << " with NOS: " << pf.second;
         BOOST_TEST_MESSAGE(ss.str());
         BOOST_CHECK(sequence == t.sequence);
-        BOOST_CHECK(nos == t.nos);
+        BOOST_CHECK(pf.second == t.nos);
     }
 }
 
@@ -256,11 +257,11 @@ BOOST_AUTO_TEST_CASE(get_path_pm_test) {
         // set the sequence constraints
         g[boost::vertex(0, g)].constraint = t.first;
         if (t.first != N) {
-            g[boost::vertex(0, g)].special = true;
+            g[boost::vertex(0, g)].articulation = true;
         }
         g[boost::vertex(boost::num_vertices(g) - 1, g)].constraint = t.last;
         if (t.last != N) {
-            g[boost::vertex(boost::num_vertices(g) - 1, g)].special = true;
+            g[boost::vertex(boost::num_vertices(g) - 1, g)].articulation = true;
         }
 
         //call the function
@@ -272,6 +273,5 @@ BOOST_AUTO_TEST_CASE(get_path_pm_test) {
         BOOST_CHECK(pm.mnos() == t.nos);
     }
 }
-
 
 BOOST_AUTO_TEST_SUITE_END()

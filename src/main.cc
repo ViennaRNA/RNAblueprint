@@ -81,6 +81,7 @@ int main(int ac, char* av[]) {
 
     if (verbose) {
         std::cerr << "Size of solution space: " << dependency_graph->number_of_sequences() << std::endl;
+        std::cerr << "Maximal table dimension: " << dependency_graph->max_number_of_dimensions() << std::endl;
     }
     // get or set an initial sequence
     if (start_seq == "") {
@@ -93,16 +94,16 @@ int main(int ac, char* av[]) {
         try {
             if (mode == "sample")
                 dependency_graph->sample(); // color the graph and get the sequence
-            else if (mode == "sample-global")
-                dependency_graph->sample_global(); 
-            else if (mode == "sample-local")
-                dependency_graph->sample_local();
-            else if (mode == "global-neighbors") {
+            else if (mode == "sample-clocal")
+                dependency_graph->sample_clocal(); 
+            else if (mode == "sample-plocal")
+                dependency_graph->sample_plocal();
+            else if (mode == "clocal-neighbors") {
                 dependency_graph->revert_sequence();
-                dependency_graph->sample_global();
-            } else if (mode == "local-neighbors") {
+                dependency_graph->sample_clocal();
+            } else if (mode == "plocal-neighbors") {
                 dependency_graph->revert_sequence();
-                dependency_graph->sample_local();
+                dependency_graph->sample_plocal();
             } else
                 dependency_graph->sample();
         } catch (std::exception& e) {
@@ -129,7 +130,11 @@ std::tuple<std::vector<std::string>, std::string, std::string > read_input(std::
         if (line == "@") {
             std::fclose(stdin);
         } else if (line.length() != 0) {
-            structures.push_back(line);
+            if (line[0] == '#') {
+                continue;
+            } else {
+                structures.push_back(line);
+            }
         }
     }
 
@@ -221,12 +226,12 @@ boost::program_options::variables_map init_options(int ac, char* av[]) {
                                     "start sequence: \t A initial RNA sequence to start the sampling from [ACGU] (optional)")
             ("out,o", po::value<std::string>(), "output file for writing the sequences (default: stdout) [string]")
             ("graphml,g", po::value<std::string>(), "write a GraphML file representing the dependency graph to the given filename (optional) [string]")
-            ("mode,m", po::value<std::string>()->default_value("sampling"), "mode for sequence generation [string]:\n"
-                                    "sampling: \tstochastic sampling of all positions (default)\n"
-                                    "sample-global: \tOnly sample one connected component at a time starting from an initial sequence\n"
-                                    "sample-local: \tSample only single paths starting from an initial sequence\n"
-                                    "global-neighbors: \tOnly find neighboring sequences to the initial start sequence by sampling one connected component only\n"
-                                    "local-neighbors: \tOnly find neighboring sequences to the initial start sequence by sampling one path only\n"
+            ("mode,m", po::value<std::string>()->default_value("sample"), "mode for sequence generation [string]:\n"
+                                    "sample: \tstochastic sampling of all positions (default)\n"
+                                    "sample-clocal: \tOnly sample one connected component at a time starting from an initial sequence\n"
+                                    "sample-plocal: \tSample only single paths starting from an initial sequence\n"
+                                    "clocal-neighbors: \tOnly find neighboring sequences to the initial start sequence by sampling one connected component only\n"
+                                    "plocal-neighbors: \tOnly find neighboring sequences to the initial start sequence by sampling one path only\n"
             )
             ("seed,s", po::value<unsigned long>(), "random number generator seed [unsigned long]")
             ("num,n", po::value<unsigned int>()->default_value(10), "number of designs (default: 10) [unsigned int]")

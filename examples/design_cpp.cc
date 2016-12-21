@@ -100,7 +100,7 @@ int main () {
         float score = objective_function(result_sequence, structures);
     
         for (unsigned int i=0; i<10000; i++) {
-            dependency_graph->sample_global();
+            dependency_graph->sample_clocal();
             std::string current_sequence = dependency_graph->get_sequence();
             float this_score = objective_function(current_sequence, structures);
             

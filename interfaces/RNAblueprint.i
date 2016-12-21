@@ -67,19 +67,20 @@ namespace design {
     bool revert_sequence(unsigned int jump);
     std::vector< std::string > get_history();
     double sample();
-    double sample_local(int min_num_pos, int max_num_pos);
-    double sample_local();
-    double sample_global(int min_num_pos, int max_num_pos);
-    double sample_global(int connected_component_ID);
-    double sample_global();
+    double sample_plocal(int min_num_pos, int max_num_pos);
+    double sample_plocal();
+    double sample_clocal(int min_num_pos, int max_num_pos);
+    double sample_clocal(int connected_component_ID);
+    double sample_clocal();
     double sample(int position);
     double sample(int start, int end);
     double number_of_sequences();
     double number_of_sequences(int connected_component_ID);
     int number_of_connected_components();
     std::vector< int > component_vertices(int connected_component_ID);
-    std::vector< int > special_vertices();
-    std::vector< int > special_vertices(int connected_component_ID);
+    std::vector< int > articulation_vertices();
+    std::vector< int > articulation_vertices(int connected_component_ID);
+    int max_number_of_dimensions();
   };
     
   %template(DependencyGraphMT) DependencyGraph<std::mt19937>;

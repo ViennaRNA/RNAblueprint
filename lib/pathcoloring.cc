@@ -27,22 +27,22 @@ namespace design {
             }
             
             ProbabilityKey key;
-            std::set< int > specials;
+            std::set< int > articulations;
             
             BGL_FORALL_VERTICES_T(v, g, Graph) {
-                if (g[v].special) {
+                if (g[v].articulation) {
                     if (boost::out_degree(v, g) <= 1) {
                         // remember vertex as int with sequence constraint
                         key[vertex_to_int(v, g)] = g[v].constraint;
-                        specials.emplace(vertex_to_int(v, g));
+                        articulations.emplace(vertex_to_int(v, g));
                     } else {
-                        throw std::logic_error("There is a special vertex which is no path end in get_path_pm. This is not possible!");
+                        throw std::logic_error("There is a articulation vertex which is no path end in get_path_pm. This is not possible!");
                     }
                 }
             }
             
-            if (specials.size() > 2) {
-                throw std::logic_error("More than two special vertices in one path. ridiculous!");
+            if (articulations.size() > 2) {
+                throw std::logic_error("More than two articulation vertices in one path. ridiculous!");
             }
             
             //std::cerr << "keys: " << std::endl << keys;
@@ -55,19 +55,19 @@ namespace design {
             
             while (true) {
                 ProbabilityKey* k = pkf.key();
-                switch ( specials.size() )
+                switch ( articulations.size() )
                 {
                     case 0:
                         result.put(*k, p->get(length, N, N));
                         break;
                     case 1:
-                        result.put(*k, p->get(length, (*k)[*(specials.begin())], N));
+                        result.put(*k, p->get(length, (*k)[*(articulations.begin())], N));
                         break;
                     case 2:
-                        result.put(*k, p->get(length, (*k)[*(specials.begin())], (*k)[*(++specials.begin())]));
+                        result.put(*k, p->get(length, (*k)[*(articulations.begin())], (*k)[*(++articulations.begin())]));
                         break;
                     default:
-                        throw std::logic_error("More than two special vertices in one path. ridiculous!");
+                        throw std::logic_error("More than two articulation vertices in one path. ridiculous!");
                 }
                 if (!pkf.next_permutation())
                     break;
@@ -76,9 +76,7 @@ namespace design {
         }
         
         template <typename RG>
-        SolutionSizeType color_path_graph(Graph& g, RG& rand) {
-
-            SolutionSizeType max_number_of_sequences = 0;
+        ProbabilityFraction color_path_graph(Graph& g, RG& rand) {
 
             // check if given graph is indeed a path with max_degree = 2 and two ends with degree = 1;
             int max_degree;
@@ -97,11 +95,11 @@ namespace design {
             class color_dfs_visitor : public boost::default_dfs_visitor {
             public:
 
-                color_dfs_visitor(SolutionSizeType& max_number_of_sequences, RG& rand, PairingMatrix * pair,
+                color_dfs_visitor(ProbabilityFraction& probability_fraction, RG& rand, PairingMatrix * pair,
                         nosMap& n, std::unordered_map<Vertex, int>& c, int& prev)
-                : mnos(max_number_of_sequences), r(rand), p(pair), nos_map(n), colors(c), previous(prev) {
+                : pf(probability_fraction), r(rand), p(pair), nos_map(n), colors(c), previous(prev) {
                 }
-                SolutionSizeType& mnos;
+                ProbabilityFraction& pf;
                 RG& r;
                 PairingMatrix * p;
                 nosMap& nos_map;
@@ -113,14 +111,14 @@ namespace design {
                     if (debug) {
                         std::cerr << "Start vertex: " << s << " [" << enum_to_char(g[s].base) << "]" << std::endl;
                     }
-
-                    mnos = 0;
+                    pf.first = 1;
+                    pf.second = 0;
                     for (auto b : base_conversion[ g[s].base ]) {
                         nos_map[s][b] = p->get(0, b, b);
                         if (debug) {
                             std::cerr << "v" << s << ": " << enum_to_char(b) << ": " << nos_map[s][b] << std::endl;
                         }
-                        mnos += nos_map[s][b];
+                        pf.second += nos_map[s][b];
                     }
                 }
 
@@ -135,14 +133,14 @@ namespace design {
                     // the number of possibilities for each base on this node.
                     // therefore we do all the combinations between the last !N node
                     // and all the combinations on this one and remember them.
-                    mnos = 0;
+                    pf.second = 0;
                     for (auto u_base : base_conversion[ g[u].base ]) {
                         nos_map[u][u_base] = 0;
                         for (auto v_base : base_conversion[ g[v].base ]) {
                             nos_map[u][u_base] += nos_map[v][v_base] * p->get(1, v_base, u_base);
                         }
                         // calculate maximal number of sequences on this vertex
-                        mnos += nos_map[u][u_base];
+                        pf.second += nos_map[u][u_base];
                         if (debug) {
                             std::cerr << "v" << u << ": " << enum_to_char(u_base) << ": " << nos_map[u][u_base] << std::endl;
                         }
@@ -188,6 +186,8 @@ namespace design {
                             if (random < sum) {
                                 colors[u] = b;
                                 previous = b;
+                                // in the probability fraction remember the sum of all choices made as numerator
+                                pf.first *= nos_map[u][b]/nos;
                                 // don't forget to exit the loop, otherwise will always be first = C;
                                 break;
                             }
@@ -199,14 +199,17 @@ namespace design {
                     }
                 }
             };
-
+            // remember the probability of the chosen solution as a fraction
+            // numerator is the amount of solutions for the chosen value
+            // denominator is the total amount of solutions for the problem
+            ProbabilityFraction pf;
             PairingMatrix * p = PairingMatrix::Instance();
             nosMap nos_map;
             std::unordered_map<Vertex, int> colors;
             int prev = N;
             
-            color_dfs_visitor vis(max_number_of_sequences, rand, p, nos_map, colors, prev);
-
+            color_dfs_visitor vis(pf, rand, p, nos_map, colors, prev);
+            
             // start is the 0 node in case of a circle
             Vertex start = boost::vertex(0, g); //boost::graph_traits<Graph>::null_vertex();
             // or is any path-end
@@ -227,9 +230,12 @@ namespace design {
             BGL_FORALL_VERTICES_T(v, g, Graph) {
                 g[v].base = colors[v];
             }
-            return max_number_of_sequences;
+            
+            // correct numerator of pf
+            pf.first *= pf.second;
+            return pf;
         }
 
-        template SolutionSizeType color_path_graph<std::mt19937> (Graph&, std::mt19937&);
+        template ProbabilityFraction color_path_graph<std::mt19937> (Graph&, std::mt19937&);
     }
 }

@@ -31,7 +31,7 @@
 #include <boost/graph/iteration_macros.hpp>
 #ifdef LIBGMP
 #include <boost/multiprecision/gmp.hpp>
-#include <boost/multiprecision/random.hpp>
+#include <boost/random.hpp>
 #endif
 // modified boost headers
 #include "uninduced_subgraph.hpp"
@@ -39,19 +39,9 @@
 namespace design {
     
     // Typedef for nos values
-    #ifdef LIBGMP
-    // This subclass is needed to get a uniform_int_distribution with the upper boundary _excluded_ to be compatible to uniform_float_distribution.
-    template<typename IntegerType>
-    class uniform_int_distribution : public boost::random::uniform_int_distribution<IntegerType> {
-    public:
-        uniform_int_distribution(
-            IntegerType min_arg = 0,
-            IntegerType max_arg = (std::numeric_limits<IntegerType>::max)())
-        : boost::random::uniform_int_distribution<IntegerType>(min_arg, max_arg-1) {  }
-    };
-    
-    typedef boost::multiprecision::mpz_int SolutionSizeType;
-    typedef design::uniform_int_distribution<boost::multiprecision::mpz_int> RandomDistType;
+    #ifdef LIBGMP    
+    typedef boost::multiprecision::mpf_float_50 SolutionSizeType;
+    typedef boost::random::uniform_real_distribution<boost::multiprecision::mpf_float_50> RandomDistType;
     #else
     typedef double SolutionSizeType;
     typedef std::uniform_real_distribution<double> RandomDistType;
@@ -129,6 +119,11 @@ namespace design {
 
         // Typedef for sequences of enums
         typedef std::deque< int > Sequence;
+        
+        // remember the probability of the chosen solution as a fraction
+        // numerator is the amount of solutions for the chosen value
+        // denominator is the total amount of solutions for the problem
+        typedef std::pair< SolutionSizeType, SolutionSizeType > ProbabilityFraction;
 
         // function to make enum a char again and other way round
         char enum_to_char(int intletter);

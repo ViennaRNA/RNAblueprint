@@ -15,7 +15,7 @@ print dg.get_sequence()
 
 # mutate globally for 1000 times and print
 for i in range(0, 1000):
-    dg.sample_global()
+    dg.sample_clocal()
     print dg.get_sequence()
     # revert to the previous sequence
     dg.revert_sequence();

@@ -25,16 +25,13 @@ BOOST_AUTO_TEST_CASE(rand_test) {
     BOOST_TEST_MESSAGE("test random number generator");
     
     std::mt19937 rand_gen(1);
-#ifdef LIBGMP
-    RandomDistType dist(0, SolutionSizeType("713297132980479382748047938274"));
-#else
     RandomDistType dist(0, 713297132980479382748047938274.0);
-#endif
+    
     for (int i = 0; i < 10; i++) {
         rand_gen.seed(1);
         SolutionSizeType random = dist(rand_gen);
 #ifdef LIBGMP
-        BOOST_CHECK(random == SolutionSizeType("245000304800877160769938115407"));
+        BOOST_CHECK_CLOSE(random, 297460595874988724119142727680.0, 0.0001);
 #else
         BOOST_CHECK_CLOSE(random, 7.1128906476233755e+29, 0.0001);
 #endif

@@ -15,7 +15,7 @@ print $dg->get_sequence()."\n";
 
 # mutate globally for 1000 times and print
 for($i=0; $i<1000; $i++) {
-    $dg->sample_global();
+    $dg->sample_clocal();
     print $dg->get_sequence()."\n";
     # revert to the previous sequence
     $dg->revert_sequence();

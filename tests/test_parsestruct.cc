@@ -136,7 +136,7 @@ BOOST_AUTO_TEST_CASE(SetConstraints) {
     BGL_FORALL_VERTICES_T(v, g, Graph) {
         //std::cerr << g[v].constraint << "/" << char_to_enum(constraints[vertex_to_int(v, g)]) << std::endl;
         BOOST_CHECK(g[v].constraint == char_to_enum(constraints[vertex_to_int(v, g)]));
-        BOOST_CHECK((g[v].constraint != N) == g[v].special);
+        BOOST_CHECK((g[v].constraint != N) == g[v].articulation);
     }
 }
 
@@ -156,7 +156,7 @@ BOOST_AUTO_TEST_CASE(SetLowerCaseConstraints) {
     BGL_FORALL_VERTICES_T(v, g, Graph) {
         //std::cerr << g[v].constraint << "/" << char_to_enum(constraints[vertex_to_int(v, g)]) << std::endl;
         BOOST_CHECK(g[v].constraint == char_to_enum(std::toupper(constraints[vertex_to_int(v, g)])));
-        BOOST_CHECK((g[v].constraint != N) == g[v].special);
+        BOOST_CHECK((g[v].constraint != N) == g[v].articulation);
     }
 }
 
