@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.11"/>
-<title>RNAblueprint-1.1: design::DependencyGraph&lt; R &gt; Class Template Reference</title>
+<title>RNAblueprint-1.2: design::DependencyGraph&lt; R &gt; Class Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -26,7 +26,7 @@
  <tr style="height: 56px;">
   <td id="projectlogo"><img alt="Logo" src="rnablueprint-icon.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">RNAblueprint-1.1
+   <div id="projectname">RNAblueprint-1.2
    </div>
   </td>
  </tr>
@@ -134,21 +134,21 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a0fd1274742cce748ff01abcf96d9b8e4"><td class="memItemLeft" align="right" valign="top">SolutionSizeType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdesign_1_1DependencyGraph.html#a0fd1274742cce748ff01abcf96d9b8e4">sample</a> (int start, int end)</td></tr>
 <tr class="memdesc:a0fd1274742cce748ff01abcf96d9b8e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resets only the smallest subgraph(s) possible containing the vertices from position start to end.  <a href="#a0fd1274742cce748ff01abcf96d9b8e4">More...</a><br /></td></tr>
 <tr class="separator:a0fd1274742cce748ff01abcf96d9b8e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afdbbe6053c2968f600ac9291c058763c"><td class="memItemLeft" align="right" valign="top">SolutionSizeType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdesign_1_1DependencyGraph.html#afdbbe6053c2968f600ac9291c058763c">sample_local</a> (int min_num_pos, int max_num_pos)</td></tr>
-<tr class="memdesc:afdbbe6053c2968f600ac9291c058763c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Randomly chooses one path (either top-level a connected component, or within a block, etc.) with the given size and samples all positions.  <a href="#afdbbe6053c2968f600ac9291c058763c">More...</a><br /></td></tr>
-<tr class="separator:afdbbe6053c2968f600ac9291c058763c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adb6d882cf2fa681d35a65e8569c62ae3"><td class="memItemLeft" align="right" valign="top">SolutionSizeType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdesign_1_1DependencyGraph.html#adb6d882cf2fa681d35a65e8569c62ae3">sample_local</a> ()</td></tr>
-<tr class="memdesc:adb6d882cf2fa681d35a65e8569c62ae3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Randomly chooses one path (either top-level a connected component, or within a block, etc.) and samples all positions.  <a href="#adb6d882cf2fa681d35a65e8569c62ae3">More...</a><br /></td></tr>
-<tr class="separator:adb6d882cf2fa681d35a65e8569c62ae3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2631c87a65b760ec336b690eaa0f1d6f"><td class="memItemLeft" align="right" valign="top">SolutionSizeType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdesign_1_1DependencyGraph.html#a2631c87a65b760ec336b690eaa0f1d6f">sample_global</a> (int min_num_pos, int max_num_pos)</td></tr>
-<tr class="memdesc:a2631c87a65b760ec336b690eaa0f1d6f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Randomly chooses a connected component with the given size and samples a new sequence for the whole component.  <a href="#a2631c87a65b760ec336b690eaa0f1d6f">More...</a><br /></td></tr>
-<tr class="separator:a2631c87a65b760ec336b690eaa0f1d6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a052575d2f344b473634cbc9c83aa993f"><td class="memItemLeft" align="right" valign="top">SolutionSizeType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdesign_1_1DependencyGraph.html#a052575d2f344b473634cbc9c83aa993f">sample_global</a> (int connected_component_ID)</td></tr>
-<tr class="memdesc:a052575d2f344b473634cbc9c83aa993f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Takes the connected component with the specified ID and samples a new sequence for the whole component.  <a href="#a052575d2f344b473634cbc9c83aa993f">More...</a><br /></td></tr>
-<tr class="separator:a052575d2f344b473634cbc9c83aa993f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8f10cb4bf55a41ce9cd715f5cd5a655d"><td class="memItemLeft" align="right" valign="top">SolutionSizeType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdesign_1_1DependencyGraph.html#a8f10cb4bf55a41ce9cd715f5cd5a655d">sample_global</a> ()</td></tr>
-<tr class="memdesc:a8f10cb4bf55a41ce9cd715f5cd5a655d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Takes a random connected component and samples a new sequence for the whole component.  <a href="#a8f10cb4bf55a41ce9cd715f5cd5a655d">More...</a><br /></td></tr>
-<tr class="separator:a8f10cb4bf55a41ce9cd715f5cd5a655d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa17cde3896055c4e162a2e0864a11f2"><td class="memItemLeft" align="right" valign="top">SolutionSizeType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdesign_1_1DependencyGraph.html#afa17cde3896055c4e162a2e0864a11f2">sample_plocal</a> (int min_num_pos, int max_num_pos)</td></tr>
+<tr class="memdesc:afa17cde3896055c4e162a2e0864a11f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Randomly chooses one path (either top-level a connected component, or within a block, etc.) with the given size and samples all positions.  <a href="#afa17cde3896055c4e162a2e0864a11f2">More...</a><br /></td></tr>
+<tr class="separator:afa17cde3896055c4e162a2e0864a11f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae147bb714306f05740a54d9970615ffa"><td class="memItemLeft" align="right" valign="top">SolutionSizeType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdesign_1_1DependencyGraph.html#ae147bb714306f05740a54d9970615ffa">sample_plocal</a> ()</td></tr>
+<tr class="memdesc:ae147bb714306f05740a54d9970615ffa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Randomly chooses one path (either top-level a connected component, or within a block, etc.) and samples all positions.  <a href="#ae147bb714306f05740a54d9970615ffa">More...</a><br /></td></tr>
+<tr class="separator:ae147bb714306f05740a54d9970615ffa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25c6f862884b192aec61394826359162"><td class="memItemLeft" align="right" valign="top">SolutionSizeType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdesign_1_1DependencyGraph.html#a25c6f862884b192aec61394826359162">sample_clocal</a> (int min_num_pos, int max_num_pos)</td></tr>
+<tr class="memdesc:a25c6f862884b192aec61394826359162"><td class="mdescLeft">&#160;</td><td class="mdescRight">Randomly chooses a connected component with the given size and samples a new sequence for the whole component.  <a href="#a25c6f862884b192aec61394826359162">More...</a><br /></td></tr>
+<tr class="separator:a25c6f862884b192aec61394826359162"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57f9ae2e41909ab0aeb8ccabf99dc8ca"><td class="memItemLeft" align="right" valign="top">SolutionSizeType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdesign_1_1DependencyGraph.html#a57f9ae2e41909ab0aeb8ccabf99dc8ca">sample_clocal</a> (int connected_component_ID)</td></tr>
+<tr class="memdesc:a57f9ae2e41909ab0aeb8ccabf99dc8ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Takes the connected component with the specified ID and samples a new sequence for the whole component.  <a href="#a57f9ae2e41909ab0aeb8ccabf99dc8ca">More...</a><br /></td></tr>
+<tr class="separator:a57f9ae2e41909ab0aeb8ccabf99dc8ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a392f54501162d8c0f806d3b7cd12ccbb"><td class="memItemLeft" align="right" valign="top">SolutionSizeType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdesign_1_1DependencyGraph.html#a392f54501162d8c0f806d3b7cd12ccbb">sample_clocal</a> ()</td></tr>
+<tr class="memdesc:a392f54501162d8c0f806d3b7cd12ccbb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Takes a random connected component and samples a new sequence for the whole component.  <a href="#a392f54501162d8c0f806d3b7cd12ccbb">More...</a><br /></td></tr>
+<tr class="separator:a392f54501162d8c0f806d3b7cd12ccbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3323daeef3c83acb50d2caa5718401d5"><td class="memItemLeft" align="right" valign="top">SolutionSizeType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdesign_1_1DependencyGraph.html#a3323daeef3c83acb50d2caa5718401d5">number_of_sequences</a> ()</td></tr>
 <tr class="memdesc:a3323daeef3c83acb50d2caa5718401d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the amount of solutions given the dependency graph and sequence constraints.  <a href="#a3323daeef3c83acb50d2caa5718401d5">More...</a><br /></td></tr>
 <tr class="separator:a3323daeef3c83acb50d2caa5718401d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -161,12 +161,15 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a554fd8328de551768cf43f421111b3bf"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdesign_1_1DependencyGraph.html#a554fd8328de551768cf43f421111b3bf">component_vertices</a> (int connected_component_ID)</td></tr>
 <tr class="memdesc:a554fd8328de551768cf43f421111b3bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a vector with all the vertices in this component of the given ID.  <a href="#a554fd8328de551768cf43f421111b3bf">More...</a><br /></td></tr>
 <tr class="separator:a554fd8328de551768cf43f421111b3bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a61f873f57d1fe0a2038e95618400a47f"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdesign_1_1DependencyGraph.html#a61f873f57d1fe0a2038e95618400a47f">special_vertices</a> ()</td></tr>
-<tr class="memdesc:a61f873f57d1fe0a2038e95618400a47f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a list of vertices specified as "special".  <a href="#a61f873f57d1fe0a2038e95618400a47f">More...</a><br /></td></tr>
-<tr class="separator:a61f873f57d1fe0a2038e95618400a47f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a25f0a64a3d890e81732e23a60a7f15b8"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdesign_1_1DependencyGraph.html#a25f0a64a3d890e81732e23a60a7f15b8">special_vertices</a> (int connected_component_ID)</td></tr>
-<tr class="memdesc:a25f0a64a3d890e81732e23a60a7f15b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a list of vertices in the specified connected component specified as "special".  <a href="#a25f0a64a3d890e81732e23a60a7f15b8">More...</a><br /></td></tr>
-<tr class="separator:a25f0a64a3d890e81732e23a60a7f15b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb049a20268992a979a2264977dd4fff"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdesign_1_1DependencyGraph.html#abb049a20268992a979a2264977dd4fff">articulation_vertices</a> ()</td></tr>
+<tr class="memdesc:abb049a20268992a979a2264977dd4fff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a list of vertices specified as articulation vertices.  <a href="#abb049a20268992a979a2264977dd4fff">More...</a><br /></td></tr>
+<tr class="separator:abb049a20268992a979a2264977dd4fff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5e3474fdd94a3530a8cdee33626704f"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdesign_1_1DependencyGraph.html#ab5e3474fdd94a3530a8cdee33626704f">articulation_vertices</a> (int connected_component_ID)</td></tr>
+<tr class="memdesc:ab5e3474fdd94a3530a8cdee33626704f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a list of vertices in the specified connected component specified as articulation vertices.  <a href="#ab5e3474fdd94a3530a8cdee33626704f">More...</a><br /></td></tr>
+<tr class="separator:ab5e3474fdd94a3530a8cdee33626704f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba37e2f77bc86add80141f337962f01a"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdesign_1_1DependencyGraph.html#aba37e2f77bc86add80141f337962f01a">max_number_of_dimensions</a> ()</td></tr>
+<tr class="memdesc:aba37e2f77bc86add80141f337962f01a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the maximal number of dimensions of all dynamic programming tables.  <a href="#aba37e2f77bc86add80141f337962f01a">More...</a><br /></td></tr>
+<tr class="separator:aba37e2f77bc86add80141f337962f01a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
@@ -441,6 +444,63 @@ template&lt;typename R &gt; </div>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="abb049a20268992a979a2264977dd4fff"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename R &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; int &gt; <a class="el" href="classdesign_1_1DependencyGraph.html">design::DependencyGraph</a>&lt; R &gt;::articulation_vertices </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns a list of vertices specified as articulation vertices. </p>
+<p>These articulation vertices are also known as cut points or attachment points and also include cycle opening cuts.</p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="classdesign_1_1DependencyGraph.html#ab5e3474fdd94a3530a8cdee33626704f" title="Returns a list of vertices in the specified connected component specified as articulation vertices...">articulation_vertices(int connected_component_ID)</a> </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd><b>vector</b> of <b>integer</b> values specifying the positions/vertices marked as articulation vertices. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ab5e3474fdd94a3530a8cdee33626704f"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename R &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; int &gt; <a class="el" href="classdesign_1_1DependencyGraph.html">design::DependencyGraph</a>&lt; R &gt;::articulation_vertices </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>connected_component_ID</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns a list of vertices in the specified connected component specified as articulation vertices. </p>
+<p>These articulation vertices include cut points, articulation points and also a cycle opening cuts.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">connected_component_ID</td><td><b>integer</b> specifying the connected component with its ID [ 0, <a class="el" href="classdesign_1_1DependencyGraph.html#ac772c2237aa57eacdd89b76941c3cec0" title="Returns the number of connected components into which the dependency graph was decomposed. ">number_of_connected_components()</a> ). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="classdesign_1_1DependencyGraph.html#ac772c2237aa57eacdd89b76941c3cec0" title="Returns the number of connected components into which the dependency graph was decomposed. ">number_of_connected_components()</a>, <a class="el" href="classdesign_1_1DependencyGraph.html#abb049a20268992a979a2264977dd4fff" title="Returns a list of vertices specified as articulation vertices. ">articulation_vertices()</a> </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::out_of_range</td><td>if connected_component_ID is invalid. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><b>vector</b> of <b>integer</b> values specifying the positions/vertices marked as articulation vertices in the connected component. </dd></dl>
+
+</div>
+</div>
 <a class="anchor" id="a554fd8328de551768cf43f421111b3bf"></a>
 <div class="memitem">
 <div class="memproto">
@@ -571,6 +631,27 @@ template&lt;typename R &gt; </div>
 <p>This sequence is only N directly after construction. You need to call either set or sample a initial sequence to avoid this behavior.</p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="classdesign_1_1DependencyGraph.html#a535101494526f22fdc7f049144fe962e" title="Resets all bases in the whole dependency graph and samples a new sequence randomly. ">sample()</a>, <a class="el" href="classdesign_1_1DependencyGraph.html#a0fdf0881f3bfaac53bdc8c0752d7b9f2" title="Allows you to set a initial sequence as starting point for your optimization. ">set_sequence()</a> </dd></dl>
 <dl class="section return"><dt>Returns</dt><dd><b>string</b> representing the current RNA sequence. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="aba37e2f77bc86add80141f337962f01a"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename R &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned int <a class="el" href="classdesign_1_1DependencyGraph.html">design::DependencyGraph</a>&lt; R &gt;::max_number_of_dimensions </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the maximal number of dimensions of all dynamic programming tables. </p>
+<p>This value is a great measure for the complexity of the graph coloring approach for the chosen input constraints.</p>
+<dl class="section return"><dt>Returns</dt><dd><b>integer</b> specifying the maximal number of dimensions for all DP tables. </dd></dl>
 
 </div>
 </div>
@@ -740,7 +821,7 @@ template&lt;typename R &gt; </div>
 </div><div class="memdoc">
 
 <p>Resets and samples only the smallest subgraph(s) possible containing the vertex at the given position in the sequence. </p>
-<p>This way you can optimize by targeted sampling at the given positions. All positions dependent on the chosen one will also be sampled. If your position is a special vertex, the whole connected component will be re-sampled. Else, in case of being a non-special vertex, only the smallest path containing the vertex will be sampled.</p>
+<p>This way you can optimize by targeted sampling at the given positions. All positions dependent on the chosen one will also be sampled. If your position is a articulation vertex, the whole connected component will be re-sampled. Else, in case of being a non-articulation vertex, only the smallest path containing the vertex will be sampled.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">position</td><td><b>integer</b> specifying the position to re-sample [ 0, N ) </td></tr>
@@ -779,7 +860,7 @@ template&lt;typename R &gt; </div>
 </div><div class="memdoc">
 
 <p>Resets only the smallest subgraph(s) possible containing the vertices from position start to end. </p>
-<p>This way you can optimize by targeted sampling at the given positions. All positions dependent on the chosen ones will also be sampled. If your positions contain special vertices, the whole connected components will be re-sampled. Else, in case of being only non-special vertex, only the smallest paths containing the vertices will be sampled. Positions for start and end are inclusive [ start, end ]</p>
+<p>This way you can optimize by targeted sampling at the given positions. All positions dependent on the chosen ones will also be sampled. If your positions contain articulation vertices, the whole connected components will be re-sampled. Else, in case of being only non-articulation vertex, only the smallest paths containing the vertices will be sampled. Positions for start and end are inclusive [ start, end ]</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">start</td><td><b>integer</b> specifying the first position to re-sample [ 0, N ) </td></tr>
@@ -792,14 +873,14 @@ template&lt;typename R &gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="a2631c87a65b760ec336b690eaa0f1d6f"></a>
+<a class="anchor" id="a25c6f862884b192aec61394826359162"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
 template&lt;typename R &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">SolutionSizeType <a class="el" href="classdesign_1_1DependencyGraph.html">design::DependencyGraph</a>&lt; R &gt;::sample_global </td>
+          <td class="memname">SolutionSizeType <a class="el" href="classdesign_1_1DependencyGraph.html">design::DependencyGraph</a>&lt; R &gt;::sample_clocal </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>min_num_pos</em>, </td>
@@ -827,19 +908,19 @@ template&lt;typename R &gt; </div>
   </table>
   </dd>
 </dl>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="classdesign_1_1DependencyGraph.html#adb6d882cf2fa681d35a65e8569c62ae3" title="Randomly chooses one path (either top-level a connected component, or within a block, etc.) and samples all positions. ">sample_local()</a>, <a class="el" href="classdesign_1_1DependencyGraph.html#afdbbe6053c2968f600ac9291c058763c" title="Randomly chooses one path (either top-level a connected component, or within a block, etc.) with the given size and samples all positions. ">sample_local(int min_num_pos, int max_num_pos)</a>, <a class="el" href="classdesign_1_1DependencyGraph.html#a8f10cb4bf55a41ce9cd715f5cd5a655d" title="Takes a random connected component and samples a new sequence for the whole component. ">sample_global()</a>, <a class="el" href="classdesign_1_1DependencyGraph.html#a052575d2f344b473634cbc9c83aa993f" title="Takes the connected component with the specified ID and samples a new sequence for the whole componen...">sample_global(int connected_component_ID)</a> </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="classdesign_1_1DependencyGraph.html#ae147bb714306f05740a54d9970615ffa" title="Randomly chooses one path (either top-level a connected component, or within a block, etc.) and samples all positions. ">sample_plocal()</a>, <a class="el" href="classdesign_1_1DependencyGraph.html#afa17cde3896055c4e162a2e0864a11f2" title="Randomly chooses one path (either top-level a connected component, or within a block, etc.) with the given size and samples all positions. ">sample_plocal(int min_num_pos, int max_num_pos)</a>, <a class="el" href="classdesign_1_1DependencyGraph.html#a392f54501162d8c0f806d3b7cd12ccbb" title="Takes a random connected component and samples a new sequence for the whole component. ">sample_clocal()</a>, <a class="el" href="classdesign_1_1DependencyGraph.html#a57f9ae2e41909ab0aeb8ccabf99dc8ca" title="Takes the connected component with the specified ID and samples a new sequence for the whole componen...">sample_clocal(int connected_component_ID)</a> </dd></dl>
 <dl class="section return"><dt>Returns</dt><dd><b>number</b> of possible solutions for this sampling. </dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="a052575d2f344b473634cbc9c83aa993f"></a>
+<a class="anchor" id="a57f9ae2e41909ab0aeb8ccabf99dc8ca"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
 template&lt;typename R &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">SolutionSizeType <a class="el" href="classdesign_1_1DependencyGraph.html">design::DependencyGraph</a>&lt; R &gt;::sample_global </td>
+          <td class="memname">SolutionSizeType <a class="el" href="classdesign_1_1DependencyGraph.html">design::DependencyGraph</a>&lt; R &gt;::sample_clocal </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>connected_component_ID</em></td><td>)</td>
@@ -855,7 +936,7 @@ template&lt;typename R &gt; </div>
   </table>
   </dd>
 </dl>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="classdesign_1_1DependencyGraph.html#ac772c2237aa57eacdd89b76941c3cec0" title="Returns the number of connected components into which the dependency graph was decomposed. ">number_of_connected_components()</a>, <a class="el" href="classdesign_1_1DependencyGraph.html#adb6d882cf2fa681d35a65e8569c62ae3" title="Randomly chooses one path (either top-level a connected component, or within a block, etc.) and samples all positions. ">sample_local()</a>, <a class="el" href="classdesign_1_1DependencyGraph.html#afdbbe6053c2968f600ac9291c058763c" title="Randomly chooses one path (either top-level a connected component, or within a block, etc.) with the given size and samples all positions. ">sample_local(int min_num_pos, int max_num_pos)</a>, <a class="el" href="classdesign_1_1DependencyGraph.html#a8f10cb4bf55a41ce9cd715f5cd5a655d" title="Takes a random connected component and samples a new sequence for the whole component. ">sample_global()</a>, <a class="el" href="classdesign_1_1DependencyGraph.html#a2631c87a65b760ec336b690eaa0f1d6f" title="Randomly chooses a connected component with the given size and samples a new sequence for the whole c...">sample_global(int min_num_pos, int max_num_pos)</a> </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="classdesign_1_1DependencyGraph.html#ac772c2237aa57eacdd89b76941c3cec0" title="Returns the number of connected components into which the dependency graph was decomposed. ">number_of_connected_components()</a>, <a class="el" href="classdesign_1_1DependencyGraph.html#ae147bb714306f05740a54d9970615ffa" title="Randomly chooses one path (either top-level a connected component, or within a block, etc.) and samples all positions. ">sample_plocal()</a>, <a class="el" href="classdesign_1_1DependencyGraph.html#afa17cde3896055c4e162a2e0864a11f2" title="Randomly chooses one path (either top-level a connected component, or within a block, etc.) with the given size and samples all positions. ">sample_plocal(int min_num_pos, int max_num_pos)</a>, <a class="el" href="classdesign_1_1DependencyGraph.html#a392f54501162d8c0f806d3b7cd12ccbb" title="Takes a random connected component and samples a new sequence for the whole component. ">sample_clocal()</a>, <a class="el" href="classdesign_1_1DependencyGraph.html#a25c6f862884b192aec61394826359162" title="Randomly chooses a connected component with the given size and samples a new sequence for the whole c...">sample_clocal(int min_num_pos, int max_num_pos)</a> </dd></dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
     <tr><td class="paramname">std::out_of_range</td><td>if connected_component_ID is invalid. </td></tr>
@@ -866,14 +947,14 @@ template&lt;typename R &gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="a8f10cb4bf55a41ce9cd715f5cd5a655d"></a>
+<a class="anchor" id="a392f54501162d8c0f806d3b7cd12ccbb"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
 template&lt;typename R &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">SolutionSizeType <a class="el" href="classdesign_1_1DependencyGraph.html">design::DependencyGraph</a>&lt; R &gt;::sample_global </td>
+          <td class="memname">SolutionSizeType <a class="el" href="classdesign_1_1DependencyGraph.html">design::DependencyGraph</a>&lt; R &gt;::sample_clocal </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -882,19 +963,19 @@ template&lt;typename R &gt; </div>
 </div><div class="memdoc">
 
 <p>Takes a random connected component and samples a new sequence for the whole component. </p>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="classdesign_1_1DependencyGraph.html#adb6d882cf2fa681d35a65e8569c62ae3" title="Randomly chooses one path (either top-level a connected component, or within a block, etc.) and samples all positions. ">sample_local()</a>, <a class="el" href="classdesign_1_1DependencyGraph.html#afdbbe6053c2968f600ac9291c058763c" title="Randomly chooses one path (either top-level a connected component, or within a block, etc.) with the given size and samples all positions. ">sample_local(int min_num_pos, int max_num_pos)</a>, <a class="el" href="classdesign_1_1DependencyGraph.html#a052575d2f344b473634cbc9c83aa993f" title="Takes the connected component with the specified ID and samples a new sequence for the whole componen...">sample_global(int connected_component_ID)</a>, <a class="el" href="classdesign_1_1DependencyGraph.html#a2631c87a65b760ec336b690eaa0f1d6f" title="Randomly chooses a connected component with the given size and samples a new sequence for the whole c...">sample_global(int min_num_pos, int max_num_pos)</a> </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="classdesign_1_1DependencyGraph.html#ae147bb714306f05740a54d9970615ffa" title="Randomly chooses one path (either top-level a connected component, or within a block, etc.) and samples all positions. ">sample_plocal()</a>, <a class="el" href="classdesign_1_1DependencyGraph.html#afa17cde3896055c4e162a2e0864a11f2" title="Randomly chooses one path (either top-level a connected component, or within a block, etc.) with the given size and samples all positions. ">sample_plocal(int min_num_pos, int max_num_pos)</a>, <a class="el" href="classdesign_1_1DependencyGraph.html#a57f9ae2e41909ab0aeb8ccabf99dc8ca" title="Takes the connected component with the specified ID and samples a new sequence for the whole componen...">sample_clocal(int connected_component_ID)</a>, <a class="el" href="classdesign_1_1DependencyGraph.html#a25c6f862884b192aec61394826359162" title="Randomly chooses a connected component with the given size and samples a new sequence for the whole c...">sample_clocal(int min_num_pos, int max_num_pos)</a> </dd></dl>
 <dl class="section return"><dt>Returns</dt><dd><b>number</b> of possible sequences for this sampling. </dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="afdbbe6053c2968f600ac9291c058763c"></a>
+<a class="anchor" id="afa17cde3896055c4e162a2e0864a11f2"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
 template&lt;typename R &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">SolutionSizeType <a class="el" href="classdesign_1_1DependencyGraph.html">design::DependencyGraph</a>&lt; R &gt;::sample_local </td>
+          <td class="memname">SolutionSizeType <a class="el" href="classdesign_1_1DependencyGraph.html">design::DependencyGraph</a>&lt; R &gt;::sample_plocal </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>min_num_pos</em>, </td>
@@ -914,7 +995,7 @@ template&lt;typename R &gt; </div>
 </div><div class="memdoc">
 
 <p>Randomly chooses one path (either top-level a connected component, or within a block, etc.) with the given size and samples all positions. </p>
-<p>Special vertices such as cut points or articulation points will stay the same. Therefore it is guaranteed that the sampling is correct, even if we only sample a small local piece of a more complex graph object. min_num_pos and max_num_pos set the minimal/maximal number of sampled positions, e.g., for [ 3, 5 ] only paths with minimal 3 and maximal 5 non-special vertices will be chosen for sampling.</p>
+<p>Articulation vertices such as cut points or articulation points will stay the same. Therefore it is guaranteed that the sampling is correct, even if we only sample a small local piece of a more complex graph object. min_num_pos and max_num_pos set the minimal/maximal number of sampled positions, e.g., for [ 3, 5 ] only paths with minimal 3 and maximal 5 non-articulation vertices will be chosen for sampling.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">min_num_pos</td><td><b>integer</b> specifying the minimal size of the component to re-sample [ 1, N ) </td></tr>
@@ -922,19 +1003,19 @@ template&lt;typename R &gt; </div>
   </table>
   </dd>
 </dl>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="classdesign_1_1DependencyGraph.html#adb6d882cf2fa681d35a65e8569c62ae3" title="Randomly chooses one path (either top-level a connected component, or within a block, etc.) and samples all positions. ">sample_local()</a>, <a class="el" href="classdesign_1_1DependencyGraph.html#a8f10cb4bf55a41ce9cd715f5cd5a655d" title="Takes a random connected component and samples a new sequence for the whole component. ">sample_global()</a>, <a class="el" href="classdesign_1_1DependencyGraph.html#a2631c87a65b760ec336b690eaa0f1d6f" title="Randomly chooses a connected component with the given size and samples a new sequence for the whole c...">sample_global(int min_num_pos, int max_num_pos)</a>, <a class="el" href="classdesign_1_1DependencyGraph.html#a052575d2f344b473634cbc9c83aa993f" title="Takes the connected component with the specified ID and samples a new sequence for the whole componen...">sample_global(int connected_component_ID)</a> </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="classdesign_1_1DependencyGraph.html#ae147bb714306f05740a54d9970615ffa" title="Randomly chooses one path (either top-level a connected component, or within a block, etc.) and samples all positions. ">sample_plocal()</a>, <a class="el" href="classdesign_1_1DependencyGraph.html#a392f54501162d8c0f806d3b7cd12ccbb" title="Takes a random connected component and samples a new sequence for the whole component. ">sample_clocal()</a>, <a class="el" href="classdesign_1_1DependencyGraph.html#a25c6f862884b192aec61394826359162" title="Randomly chooses a connected component with the given size and samples a new sequence for the whole c...">sample_clocal(int min_num_pos, int max_num_pos)</a>, <a class="el" href="classdesign_1_1DependencyGraph.html#a57f9ae2e41909ab0aeb8ccabf99dc8ca" title="Takes the connected component with the specified ID and samples a new sequence for the whole componen...">sample_clocal(int connected_component_ID)</a> </dd></dl>
 <dl class="section return"><dt>Returns</dt><dd><b>number</b> of possible solutions for this sampling. </dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="adb6d882cf2fa681d35a65e8569c62ae3"></a>
+<a class="anchor" id="ae147bb714306f05740a54d9970615ffa"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
 template&lt;typename R &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">SolutionSizeType <a class="el" href="classdesign_1_1DependencyGraph.html">design::DependencyGraph</a>&lt; R &gt;::sample_local </td>
+          <td class="memname">SolutionSizeType <a class="el" href="classdesign_1_1DependencyGraph.html">design::DependencyGraph</a>&lt; R &gt;::sample_plocal </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -944,7 +1025,7 @@ template&lt;typename R &gt; </div>
 
 <p>Randomly chooses one path (either top-level a connected component, or within a block, etc.) and samples all positions. </p>
 <dl class="bug"><dt><b><a class="el" href="bug.html#_bug000001">Bug:</a></b></dt><dd>It is a known issue, that this function does not draw solutions completely fair as the paths to sample are selected in a biased manner. </dd></dl>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="classdesign_1_1DependencyGraph.html#afdbbe6053c2968f600ac9291c058763c" title="Randomly chooses one path (either top-level a connected component, or within a block, etc.) with the given size and samples all positions. ">sample_local(int min_num_pos, int max_num_pos)</a>, <a class="el" href="classdesign_1_1DependencyGraph.html#a8f10cb4bf55a41ce9cd715f5cd5a655d" title="Takes a random connected component and samples a new sequence for the whole component. ">sample_global()</a>, <a class="el" href="classdesign_1_1DependencyGraph.html#a2631c87a65b760ec336b690eaa0f1d6f" title="Randomly chooses a connected component with the given size and samples a new sequence for the whole c...">sample_global(int min_num_pos, int max_num_pos)</a>, <a class="el" href="classdesign_1_1DependencyGraph.html#a052575d2f344b473634cbc9c83aa993f" title="Takes the connected component with the specified ID and samples a new sequence for the whole componen...">sample_global(int connected_component_ID)</a> </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="classdesign_1_1DependencyGraph.html#afa17cde3896055c4e162a2e0864a11f2" title="Randomly chooses one path (either top-level a connected component, or within a block, etc.) with the given size and samples all positions. ">sample_plocal(int min_num_pos, int max_num_pos)</a>, <a class="el" href="classdesign_1_1DependencyGraph.html#a392f54501162d8c0f806d3b7cd12ccbb" title="Takes a random connected component and samples a new sequence for the whole component. ">sample_clocal()</a>, <a class="el" href="classdesign_1_1DependencyGraph.html#a25c6f862884b192aec61394826359162" title="Randomly chooses a connected component with the given size and samples a new sequence for the whole c...">sample_clocal(int min_num_pos, int max_num_pos)</a>, <a class="el" href="classdesign_1_1DependencyGraph.html#a57f9ae2e41909ab0aeb8ccabf99dc8ca" title="Takes the connected component with the specified ID and samples a new sequence for the whole componen...">sample_clocal(int connected_component_ID)</a> </dd></dl>
 <dl class="section return"><dt>Returns</dt><dd><b>number</b> of possible solutions for this sampling. </dd></dl>
 
 </div>
@@ -1010,63 +1091,6 @@ template&lt;typename R &gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="a61f873f57d1fe0a2038e95618400a47f"></a>
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename R &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">std::vector&lt; int &gt; <a class="el" href="classdesign_1_1DependencyGraph.html">design::DependencyGraph</a>&lt; R &gt;::special_vertices </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Returns a list of vertices specified as "special". </p>
-<p>These special vertices include cut points, articulation points and also a cycle opening cuts.</p>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="classdesign_1_1DependencyGraph.html#a25f0a64a3d890e81732e23a60a7f15b8" title="Returns a list of vertices in the specified connected component specified as &quot;special&quot;. ">special_vertices(int connected_component_ID)</a> </dd></dl>
-<dl class="section return"><dt>Returns</dt><dd><b>vector</b> of <b>integer</b> values specifying the positions/vertices marked as special. </dd></dl>
-
-</div>
-</div>
-<a class="anchor" id="a25f0a64a3d890e81732e23a60a7f15b8"></a>
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename R &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">std::vector&lt; int &gt; <a class="el" href="classdesign_1_1DependencyGraph.html">design::DependencyGraph</a>&lt; R &gt;::special_vertices </td>
-          <td>(</td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>connected_component_ID</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Returns a list of vertices in the specified connected component specified as "special". </p>
-<p>These special vertices include cut points, articulation points and also a cycle opening cuts.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">connected_component_ID</td><td><b>integer</b> specifying the connected component with its ID [ 0, <a class="el" href="classdesign_1_1DependencyGraph.html#ac772c2237aa57eacdd89b76941c3cec0" title="Returns the number of connected components into which the dependency graph was decomposed. ">number_of_connected_components()</a> ). </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="classdesign_1_1DependencyGraph.html#ac772c2237aa57eacdd89b76941c3cec0" title="Returns the number of connected components into which the dependency graph was decomposed. ">number_of_connected_components()</a>, <a class="el" href="classdesign_1_1DependencyGraph.html#a61f873f57d1fe0a2038e95618400a47f" title="Returns a list of vertices specified as &quot;special&quot;. ">special_vertices()</a> </dd></dl>
-<dl class="exception"><dt>Exceptions</dt><dd>
-  <table class="exception">
-    <tr><td class="paramname">std::out_of_range</td><td>if connected_component_ID is invalid. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd><b>vector</b> of <b>integer</b> values specifying the positions/vertices marked as special in the connected component. </dd></dl>
-
-</div>
-</div>
 <h2 class="groupheader">Field Documentation</h2>
 <a class="anchor" id="a0b2df58fa0e3363c78d15c0f5e2a00e9"></a>
 <div class="memitem">
@@ -1090,7 +1114,7 @@ template&lt;typename R &gt; </div>
 
 <p>Pointer to the internal dependency graph object. </p>
 
-<p>Definition at line <a class="el" href="RNAblueprint_8h_source.html#l00448">448</a> of file <a class="el" href="RNAblueprint_8h_source.html">RNAblueprint.h</a>.</p>
+<p>Definition at line <a class="el" href="RNAblueprint_8h_source.html#l00454">454</a> of file <a class="el" href="RNAblueprint_8h_source.html">RNAblueprint.h</a>.</p>
 
 </div>
 </div>
