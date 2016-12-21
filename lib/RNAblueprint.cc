@@ -224,7 +224,7 @@ namespace design {
     template <typename R>
     SolutionSizeType DependencyGraph<R>::sample_clocal(int connected_component_ID) {
         // sample the connected component with the ID
-        return g->sample_global(connected_component_ID);
+        return g->sample_clocal(connected_component_ID);
     }
     
     template <typename R>

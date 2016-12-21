@@ -439,7 +439,7 @@ namespace design
         }
         
         template <typename R>
-        SolutionSizeType DependencyGraph<R>::sample_global(int connected_component_ID) {
+        SolutionSizeType DependencyGraph<R>::sample_clocal(int connected_component_ID) {
             Graph::children_iterator cc, cc_end;
             for (boost::tie(cc, cc_end) = graph.children(); cc != cc_end; ++cc) {
                 if (boost::get_property(*cc, boost::graph_name).id == connected_component_ID) {
