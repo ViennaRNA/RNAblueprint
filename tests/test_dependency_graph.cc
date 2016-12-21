@@ -283,7 +283,7 @@ BOOST_AUTO_TEST_CASE(sample_cc_with_ID) {
     std::cerr << dependency_graph.get_sequence_string() << std::endl;
     std::string result = dependency_graph.get_sequence_string();
     for (int i = 0; i < 100; i++) {
-        SolutionSizeType cnos = dependency_graph.sample_global(1);
+        SolutionSizeType cnos = dependency_graph.sample_clocal(1);
         BOOST_CHECK(cnos == 4);
         BOOST_CHECK(dependency_graph.get_sequence_string()[0] == result[0]);
     }
@@ -291,14 +291,14 @@ BOOST_AUTO_TEST_CASE(sample_cc_with_ID) {
     std::cerr << dependency_graph.get_sequence_string() << std::endl;
     result = dependency_graph.get_sequence_string();
     for (int i = 0; i < 100; i++) {
-        SolutionSizeType cnos = dependency_graph.sample_global(0);
+        SolutionSizeType cnos = dependency_graph.sample_clocal(0);
         BOOST_CHECK(cnos == 2);
         BOOST_CHECK(dependency_graph.get_sequence_string()[0] == 'A' || dependency_graph.get_sequence_string()[0] == 'U');
         BOOST_CHECK(dependency_graph.get_sequence_string()[1] == result[1]);
     }
 }
 
-BOOST_AUTO_TEST_CASE(sample_global1) {
+BOOST_AUTO_TEST_CASE(sample_clocal1) {
 
     BOOST_TEST_MESSAGE("check if we can sample globally");
 
@@ -323,7 +323,7 @@ BOOST_AUTO_TEST_CASE(sample_global1) {
     // TODO make nice check if the base distributions are alright
 }
 
-BOOST_AUTO_TEST_CASE(sample_local1) {
+BOOST_AUTO_TEST_CASE(sample_plocal1) {
 
     BOOST_TEST_MESSAGE("check if we can sample locally");
 
@@ -465,7 +465,7 @@ BOOST_AUTO_TEST_CASE(revert_sequence) {
     std::string sequence = dependency_graph.get_sequence_string();
     BOOST_CHECK(!dependency_graph.revert_sequence(1));
     
-    dependency_graph.sample_global(1);
+    dependency_graph.sample_clocal(1);
     BOOST_CHECK(dependency_graph.revert_sequence(1));
     BOOST_CHECK(dependency_graph.get_sequence_string() == sequence);
     

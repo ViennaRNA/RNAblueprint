@@ -57,7 +57,7 @@ namespace design {
             SolutionSizeType sample();
             // call this function to sample a random subgraph (either a path, if graph_type=-1 or a connected component, if graph_type=1)
             SolutionSizeType sample_local_global(int graph_type, int min_num_pos, int max_num_pos);
-            SolutionSizeType sample_global(int connected_component_ID);
+            SolutionSizeType sample_clocal(int connected_component_ID);
             SolutionSizeType sample(int position);
             SolutionSizeType sample(int start, int end);
             void set_history_size(unsigned int size);
