@@ -62,7 +62,7 @@ TIP: You might want call `./configure --help` for all install options!
 ## Documentation
 
 Library documentation is done using Doxygen. Call `make doxygen-doc` for a offline version in HTML and PDF.
-There is also a online version available here: [http://ribonets.github.io/RNAblueprint/](http://ribonets.github.io/RNAblueprint/)
+There is also a online version available here: [http://viennarna.github.io/RNAblueprint/](http://viennarna.github.io/RNAblueprint/)
 
 Documentation of the RNAblueprint program is provided by calling `RNAblueprint --help`.
 
@@ -72,7 +72,5 @@ Unit tests are available for many functions of the library. Please call `make ch
 
 ## How to cite
 
-Stefan Hammer, Birgit Tschiatschek, Christoph Flamm, Ivo L. Hofacker and Sven Findeiß. Submitted 2016. "Flexible multiple target nucleic acid sequence design" Journal: Pages. doi: DOI.
+Stefan Hammer, Birgit Tschiatschek, Christoph Flamm, Ivo L. Hofacker, and Sven Findeiß. “RNAblueprint: Flexible Multiple Target Nucleic Acid Sequence Design.” Bioinformatics, 2017. [doi:10.1093/bioinformatics/btx263](https://doi.org/10.1093/bioinformatics/btx263).
 
-Publication for this software package is in progress.
-We will update this information as soon as a preprint is available online!
