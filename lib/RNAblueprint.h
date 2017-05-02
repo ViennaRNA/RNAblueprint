@@ -79,7 +79,7 @@
  * 
  * \section cite_sec How to cite
  * 
- * Stefan Hammer, Birgit Tschiatschek, Christoph Flamm, Ivo L. Hofacker, and Sven Findeiß. “RNAblueprint: Flexible Multiple Target Nucleic Acid Sequence Design.” Bioinformatics, 2017. doi:10.1093/bioinformatics/btx263. 
+ * Stefan Hammer, Birgit Tschiatschek, Christoph Flamm, Ivo L. Hofacker, and Sven Findeiß. “RNAblueprint: Flexible Multiple Target Nucleic Acid Sequence Design.” Bioinformatics, 2017. doi:[10.1093/bioinformatics/btx263](http://dx.doi.org/10.1093/bioinformatics/btx263]). 
  *
  */
 
