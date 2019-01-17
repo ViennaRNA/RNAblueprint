@@ -1,6 +1,6 @@
 var NAVTREE =
 [
-  [ "RNAblueprint-1.2", "index.html", [
+  [ "RNAblueprint-1.2.1", "index.html", [
     [ "RNAblueprint library", "index.html", [
       [ "Introduction", "index.html#intro_sec", null ],
       [ "Dependencies", "index.html#dependency_sec", null ],
