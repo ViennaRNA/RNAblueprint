@@ -22,11 +22,11 @@
 
 // define heads
 
-using namespace design;
-using namespace design::detail;
 
 BOOST_AUTO_TEST_SUITE(probabilityMatrix)
 
+using namespace design;
+using namespace design::detail;
 
 BOOST_AUTO_TEST_CASE(PermuteKey1) {
 
@@ -60,9 +60,18 @@ BOOST_AUTO_TEST_CASE(PermuteKey1) {
             control.push_back(pk);
         }
     }
+    using namespace design;
+    using namespace design::detail;
 
-    ss << "Control Key:" << std::endl << control << std::endl;
-    ss << "Test Key:" << std::endl << test << std::endl;
+    ss << "Control Key:" << std::endl;
+    for (ProbabilityKey k : control) {
+        ss << k;
+    }
+    ss << std::endl << "Test Key:" << std::endl;
+    for (ProbabilityKey k : test) {
+        ss << k;
+    }
+    ss << std::endl;
     BOOST_TEST_MESSAGE(ss.str());
     BOOST_CHECK(test == control);
 }
@@ -104,8 +113,15 @@ BOOST_AUTO_TEST_CASE(PermuteKey2) {
         }
     }
 
-    ss << "Control Key:" << std::endl << control << std::endl;
-    ss << "Test Key:" << std::endl << test << std::endl;
+    ss << "Control Key:" << std::endl;
+    for (ProbabilityKey k : control) {
+        ss << k;
+    }
+    ss << std::endl << "Test Key:" << std::endl;
+    for (ProbabilityKey k : test) {
+        ss << k;
+    }
+    ss << std::endl;
     BOOST_TEST_MESSAGE(ss.str());
     BOOST_CHECK(test == control);
 }
@@ -134,8 +150,15 @@ BOOST_AUTO_TEST_CASE(PermuteKey3) {
     std::vector<ProbabilityKey> control;
     ProbabilityKey key;
     control.push_back(key);
-    ss << "Control Key:" << std::endl << control << std::endl;
-    ss << "Test Key:" << std::endl << test << std::endl;
+    ss << "Control Key:" << std::endl;
+    for (ProbabilityKey k : control) {
+        ss << k;
+    }
+    ss << std::endl << "Test Key:" << std::endl;
+    for (ProbabilityKey k : test) {
+        ss << k;
+    }
+    ss << std::endl;
     BOOST_TEST_MESSAGE(ss.str());
     BOOST_CHECK(test == control);
 }

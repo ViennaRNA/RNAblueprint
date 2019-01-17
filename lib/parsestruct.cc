@@ -94,7 +94,7 @@ namespace design {
         
         void parse_bracket(Graph& g, std::string& structure, BracketList::iterator bracket) {
             std::vector<int> pair_table(structure.length(), 0); // remember position of the open bracket
-            unsigned int open = 0; // remember how many open brackets there are
+            int open = 0; // remember how many open brackets there are
             // iterate over characters from structure
             for (unsigned int pos = 0; pos < structure.length(); pos++) {
                 if (structure[pos] == bracket->first) {
