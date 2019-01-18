@@ -6,7 +6,7 @@ check_PROGRAMS = testRNAblueprint
 
 # additional include pathes necessary to compile the C++ programs
 testRNAblueprint_CPPFLAGS = -I$(top_srcdir)/lib $(BOOST_CPPFLAGS) @AM_CXXFLAGS@
-testRNAblueprint_LDFLAGS = $(BOOST_GRAPH_LDFLAGS) $(BOOST_UNIT_TEST_FRAMEWORK_LDFLAGS)
+testRNAblueprint_LDFLAGS = $(LDFLAGS) $(BOOST_GRAPH_LDFLAGS) $(BOOST_UNIT_TEST_FRAMEWORK_LDFLAGS)
 testRNAblueprint_LDADD = $(LDADD) $(top_builddir)/lib/libRNAblueprint.la $(BOOST_GRAPH_LIBS) $(BOOST_UNIT_TEST_FRAMEWORK_LIBS) $(AM_LDFLAGS)
 
 # list of sources for the 'testRNAblueprint' binary

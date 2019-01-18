@@ -107,8 +107,8 @@ fi
 
 # Check for OpenMP enabled and prepare flags
 ##########################################################################
-AC_OPENMP
-AC_SUBST(OPENMP_CXXFLAGS)
+#AC_OPENMP
+#AC_SUBST(OPENMP_CXXFLAGS)
 
 # Checks for libraries: gmp enabled?
 ##########################################################################
@@ -248,6 +248,13 @@ AM_COND_IF([ENABLE_SWIG], [
 
 AM_CONDITIONAL([ENABLE_PYTHON],[test "x$enable_python_status" = x"yes"])
 AM_CONDITIONAL([ENABLE_PERL5],[test "x$enable_perl_status" = x"yes"])
+
+# Configure supported platforms
+##########################################################################
+case $host in
+  *-apple-darwin*)
+    AC_DEFINE([OSX], [], [Define if building on Apple OSX.]) ;;
+esac
 
 # distribute additional compiler and linker flags
 # set these variables instead of CXXFLAGS or LDFLAGS
