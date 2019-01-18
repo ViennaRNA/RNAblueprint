@@ -13,7 +13,7 @@
 #include "test_common.h"
 
 // include headers containing functions to test
-#include "decompose.h"
+#include "decompose.cc"
 #include "printgraph.h"
 
 // include boost components

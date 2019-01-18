@@ -40,7 +40,6 @@
  * - Doxygen for documentation
  * - LaTeX for PDF documentation
  * - libGMP for multiprecision integers
- * - openmp for parallel computation
  * - Boost Unit Test Framework
  *
  * \section install_sec Installation
@@ -61,7 +60,6 @@
  * - \-\-disable-program  Disable RNAblueprint program compilation
  * - \-\-disable-swig     Disable all SWIG scripting interfaces
  * - \-\-enable-libGMP    Enable the calculation of big numbers with multiprecision
- * - \-\-disable-openmp   Disable the usage of parallel computation
  * 
  * TIP: You might want call `./configure --help` for all install options!
  * 

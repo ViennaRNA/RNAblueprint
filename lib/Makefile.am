@@ -7,10 +7,10 @@ lib_LTLIBRARIES = libRNAblueprint.la
 libRNAblueprint_ladir = $(includedir)/RNAblueprint
 
 # ldflags to avoid version information
-libRNAblueprint_la_LDFLAGS = -avoid-version $(OPENMP_CXXFLAGS)
+libRNAblueprint_la_LDFLAGS = -avoid-version
 
 # additional include pathes necessary to compile the C++ library
-AM_CPPFLAGS = $(BOOST_CPPFLAGS) $(OPENMP_CXXFLAGS) @AM_CXXFLAGS@
+AM_CPPFLAGS = $(BOOST_CPPFLAGS) @AM_CXXFLAGS@
 
 # the list of header files that belong to the library
 libRNAblueprint_la_HEADERS = \

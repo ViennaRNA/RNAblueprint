@@ -1,7 +1,11 @@
 # RNAblueprint: configure.ac
 
 # initial information about the project
+<<<<<<< HEAD
 AC_INIT([RNAblueprint],[1.2.1],[s.hammer@univie.ac.at],[RNAblueprint],[http://www.tbi.univie.ac.at/~jango/])
+=======
+AC_INIT([RNAblueprint],[1.2.2],[s.hammer@univie.ac.at],[RNAblueprint],[https://github.com/ViennaRNA/RNAblueprint])
+>>>>>>> develop
 
 # automake initialisation (mandatory)
 AC_PREREQ([2.59])
@@ -107,8 +111,8 @@ fi
 
 # Check for OpenMP enabled and prepare flags
 ##########################################################################
-AC_OPENMP
-AC_SUBST(OPENMP_CXXFLAGS)
+#AC_OPENMP
+#AC_SUBST(OPENMP_CXXFLAGS)
 
 # Checks for libraries: gmp enabled?
 ##########################################################################
@@ -248,6 +252,13 @@ AM_COND_IF([ENABLE_SWIG], [
 
 AM_CONDITIONAL([ENABLE_PYTHON],[test "x$enable_python_status" = x"yes"])
 AM_CONDITIONAL([ENABLE_PERL5],[test "x$enable_perl_status" = x"yes"])
+
+# Configure supported platforms
+##########################################################################
+case $host in
+  *-apple-darwin*)
+    AC_DEFINE([OSX], [], [Define if building on Apple OSX.]) ;;
+esac
 
 # distribute additional compiler and linker flags
 # set these variables instead of CXXFLAGS or LDFLAGS
