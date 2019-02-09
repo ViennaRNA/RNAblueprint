@@ -3,7 +3,7 @@
  * @date 03.08.2015
  * @author Stefan Hammer <s.hammer@univie.ac.at>
  * @copyright GPLv3
- * 
+ *
  */
 
 // include header
@@ -121,7 +121,7 @@ BOOST_AUTO_TEST_CASE(cc_sampling) {
     design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "NNNNNNNNN", rand_gen);
     dependency_graph.sample();
     std::cerr << "Sampled sequence: " << dependency_graph.get_sequence_string() << std::endl;
-    
+
     BOOST_CHECK(dependency_graph.number_of_sequences() == 134);
 }
 
@@ -141,7 +141,7 @@ BOOST_AUTO_TEST_CASE(output_connected_components) {
     for (int i = 0; i < dependency_graph.number_of_connected_components(); i++) {
         BOOST_CHECK(dependency_graph.component_vertices(i) == check_output[i]);
     }
-    
+
 }
 
 BOOST_AUTO_TEST_CASE(set_sequence1) {
@@ -154,7 +154,7 @@ BOOST_AUTO_TEST_CASE(set_sequence1) {
 
     design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "NNNN", rand_gen);
     dependency_graph.set_sequence_string("AAAU");
-    
+
     BOOST_CHECK(dependency_graph.get_sequence_string() == "AAAU");
 }
 
@@ -232,12 +232,12 @@ BOOST_AUTO_TEST_CASE(number_of_sequences_ccID) {
 
     design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "WN", rand_gen);
     BOOST_CHECK(dependency_graph.number_of_sequences() == 8);
-    
+
     std::map< int, std::vector<int> > check = {{0, {0}}, {1, {1}}};
     for (int i = 0; i < dependency_graph.number_of_connected_components(); i++) {
         BOOST_CHECK(dependency_graph.component_vertices(i) == check[i]);
-    }    
-    
+    }
+
     BOOST_CHECK(dependency_graph.number_of_sequences(0) == 2);
     BOOST_CHECK(dependency_graph.number_of_sequences(1) == 4);
 }
@@ -249,7 +249,7 @@ BOOST_AUTO_TEST_CASE(get_articulations1) {
     design::initialize_library(true);
     std::vector<std::string> structures = {".."};
     std::mt19937 rand_gen(1);
-    
+
     design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "WN", rand_gen);
     std::vector< int > check = {};
     BOOST_CHECK(dependency_graph.articulation_vertices() == check);
@@ -262,7 +262,7 @@ BOOST_AUTO_TEST_CASE(get_articulations2) {
     design::initialize_library(true);
     std::vector<std::string> structures = {"().().", ".().()", ".(..)."};
     std::mt19937 rand_gen(1);
-    
+
     design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "NNNNNY", rand_gen);
     std::vector< int > check = {1, 4};
     BOOST_CHECK(dependency_graph.articulation_vertices() == check);
@@ -279,7 +279,7 @@ BOOST_AUTO_TEST_CASE(sample_cc_with_ID) {
     design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "WN", rand_gen);
     BOOST_CHECK(dependency_graph.number_of_sequences() == 8);
     dependency_graph.sample();
-    
+
     std::cerr << dependency_graph.get_sequence_string() << std::endl;
     std::string result = dependency_graph.get_sequence_string();
     for (int i = 0; i < 100; i++) {
@@ -287,7 +287,7 @@ BOOST_AUTO_TEST_CASE(sample_cc_with_ID) {
         BOOST_CHECK(cnos == 4);
         BOOST_CHECK(dependency_graph.get_sequence_string()[0] == result[0]);
     }
-    
+
     std::cerr << dependency_graph.get_sequence_string() << std::endl;
     result = dependency_graph.get_sequence_string();
     for (int i = 0; i < 100; i++) {
@@ -308,19 +308,10 @@ BOOST_AUTO_TEST_CASE(sample_clocal1) {
 
     design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "WN", rand_gen);
     BOOST_CHECK(dependency_graph.number_of_sequences() == 8);
-    dependency_graph.sample();
+
+    SolutionSizeType cnos = dependency_graph.sample_local_global(1, 0, 0);
     BOOST_CHECK(dependency_graph.get_sequence_string()[0] == 'A' || dependency_graph.get_sequence_string()[0] == 'U');
-    
-    for (int i = 0; i < 100; i++) {
-        std::string result = dependency_graph.get_sequence_string();
-        SolutionSizeType cnos = dependency_graph.sample_local_global(1, 0, 0);
-        if (dependency_graph.get_sequence_string()[0] != result[0]) {
-            BOOST_CHECK(cnos == 2);
-        } else if (dependency_graph.get_sequence_string()[1] != result[1]) {
-            BOOST_CHECK(cnos == 4);
-        }
-    }
-    // TODO make nice check if the base distributions are alright
+    BOOST_CHECK(cnos == 6);
 }
 
 BOOST_AUTO_TEST_CASE(sample_plocal1) {
@@ -333,20 +324,10 @@ BOOST_AUTO_TEST_CASE(sample_plocal1) {
 
     design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "WN", rand_gen);
     BOOST_CHECK(dependency_graph.number_of_sequences() == 8);
-    dependency_graph.sample();
-    std::cerr << dependency_graph.get_sequence_string() << std::endl;
+
+    SolutionSizeType cnos = dependency_graph.sample_local_global(-1, 0, 0);
     BOOST_CHECK(dependency_graph.get_sequence_string()[0] == 'A' || dependency_graph.get_sequence_string()[0] == 'U');
-    
-    for (int i = 0; i < 100; i++) {
-        std::string result = dependency_graph.get_sequence_string();
-        SolutionSizeType cnos = dependency_graph.sample_local_global(-1, 0, 0);
-        if (dependency_graph.get_sequence_string()[0] != result[0]) {
-            BOOST_CHECK(cnos == 2);
-        } else if (dependency_graph.get_sequence_string()[1] != result[1]) {
-            BOOST_CHECK(cnos == 4);
-        }
-    }
-    // TODO make nice check if the base distributions are alright
+    BOOST_CHECK(cnos == 6);
 }
 
 BOOST_AUTO_TEST_CASE(number_of_sequences_cc) {
@@ -355,11 +336,11 @@ BOOST_AUTO_TEST_CASE(number_of_sequences_cc) {
 
     design::initialize_library(true);
     std::vector<std::string> structures = {"()....()..()", ".()()..(.)..", ".(.)...()..."};
-    
+
     std::mt19937 rand_gen(1);
     // connected components: cc0 ps 28 #p 5 0,1,2,3,4 cc1 ps 4 #p 1 5 cc2 ps 18 #p 4 6,7,8,9 cc3 ps 6 #p 2 10,11
     design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "NNNNNNNNNNNN", rand_gen);
-    
+
     BOOST_CHECK(dependency_graph.number_of_sequences(0) == 28);
     BOOST_CHECK(dependency_graph.number_of_sequences(1) == 4);
     BOOST_CHECK(dependency_graph.number_of_sequences(2) == 18);
@@ -373,7 +354,7 @@ BOOST_AUTO_TEST_CASE(sample_pos) {
 
     design::initialize_library(true);
     std::vector<std::string> structures = {"()....()..()", ".()()..(.)..", ".(.)...()..."};
-    
+
     std::mt19937 rand_gen(1);
     // connected components: cc0 ps 28 #p 5 0,1,2,3,4 cc1 ps 4 #p 1 5 cc2 ps 18 #p 4 6,7,8,9 cc3 ps 6 #p 2 10,11
     design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "NNNNNNNGNNNN", rand_gen);
@@ -392,7 +373,7 @@ BOOST_AUTO_TEST_CASE(sample_pos) {
             }
         }
     }
-    
+
     // sample CCs which are paths
     for (int i = 0; i<100; i++) {
         std::string result = dependency_graph.get_sequence_string();
@@ -402,7 +383,7 @@ BOOST_AUTO_TEST_CASE(sample_pos) {
             BOOST_CHECK(result[j] == dependency_graph.get_sequence_string()[j]);
         }
     }
-    
+
     // sample more nested subgraphs
     // sample CCs which are paths
     for (int i = 0; i<100; i++) {
@@ -423,11 +404,11 @@ BOOST_AUTO_TEST_CASE(sample_pos_range) {
 
     design::initialize_library(true);
     std::vector<std::string> structures = {"()....()..()", ".()()..(.)..", ".(.)...()..."};
-    
+
     std::mt19937 rand_gen(1);
     // connected components: cc0 ps 28 #p 5 0,1,2,3,4 cc1 ps 4 #p 1 5 cc2 ps 18 #p 4 6,7,8,9 cc3 ps 6 #p 2 10,11
     design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "NNNNNNNGNNNN", rand_gen);
-    
+
     BOOST_CHECK(dependency_graph.number_of_sequences() == 5376);
     dependency_graph.sample();
     // sample positions which are in one path
@@ -453,32 +434,32 @@ BOOST_AUTO_TEST_CASE(sample_pos_range) {
 
 BOOST_AUTO_TEST_CASE(revert_sequence) {
     BOOST_TEST_MESSAGE("test the revert sequence functionality");
-    
+
     design::initialize_library(true);
     std::vector<std::string> structures = {"....."};
     std::mt19937 rand_gen(1);
     design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "NNNNN", rand_gen);
-    
+
     dependency_graph.set_history_size(10);
-    
+
     BOOST_CHECK(!dependency_graph.revert_sequence(1));
     std::string sequence = dependency_graph.get_sequence_string();
     BOOST_CHECK(!dependency_graph.revert_sequence(1));
-    
+
     dependency_graph.sample_clocal(1);
     BOOST_CHECK(dependency_graph.revert_sequence(1));
     BOOST_CHECK(dependency_graph.get_sequence_string() == sequence);
-    
+
     dependency_graph.sample(0, 3);
     dependency_graph.sample_local_global(1, 0, 0);
     BOOST_CHECK(dependency_graph.revert_sequence(2));
     BOOST_CHECK(dependency_graph.get_sequence_string() == sequence);
     BOOST_CHECK(!dependency_graph.revert_sequence(1));
-    
+
     dependency_graph.sample();
     dependency_graph.sample();
     BOOST_CHECK(!dependency_graph.revert_sequence(4));
-    
+
     // now make history big so that we have to forget
     for (int i = 0; i < 10; i++) {
         dependency_graph.sample();
@@ -491,7 +472,7 @@ BOOST_AUTO_TEST_CASE(revert_sequence) {
     }
     // check if we did not arrive at initial sequence and indeed forgot something
     BOOST_CHECK(dependency_graph.get_sequence_string() != sequence);
-    
+
     // now the same with bigger history stack
     dependency_graph.set_history_size(20);
     sequence = dependency_graph.get_sequence_string();
@@ -508,12 +489,12 @@ BOOST_AUTO_TEST_CASE(revert_sequence) {
 
 BOOST_AUTO_TEST_CASE(set_history_size) {
     BOOST_TEST_MESSAGE("test the set history size function");
-    
+
     design::initialize_library(true);
     std::vector<std::string> structures = {"....."};
     std::mt19937 rand_gen(1);
     design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "NNNNN", rand_gen);
-    
+
     dependency_graph.set_history_size(10);
     for (int i = 0; i < 20; i++) {
         dependency_graph.sample();
@@ -530,28 +511,28 @@ BOOST_AUTO_TEST_CASE(set_history_size) {
 
 BOOST_AUTO_TEST_CASE(get_history) {
     BOOST_TEST_MESSAGE("test the get_history functionality");
-    
+
     design::initialize_library(true);
     std::vector<std::string> structures = {"..+..."};
     std::mt19937 rand_gen(1);
     design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "NN+NNN", rand_gen);
-    
+
     dependency_graph.set_history_size(10);
-    
+
     for (int i = 0; i < 20; i++) {
         dependency_graph.sample();
     }
-    
+
     std::vector<std::string> history1 = dependency_graph.get_history();
-    
+
     std::cout << history1 << std::endl;
     BOOST_CHECK(history1.size() == 10);
-    
+
     dependency_graph.set_history_size(100);
     for (int i = 0; i < 20; i++) {
         dependency_graph.sample();
     }
-    
+
     std::vector<std::string> history2 = dependency_graph.get_history();
     std::cout << history2 << std::endl;
     BOOST_CHECK(history2.size() == 30);
