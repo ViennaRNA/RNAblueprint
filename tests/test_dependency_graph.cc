@@ -308,10 +308,15 @@ BOOST_AUTO_TEST_CASE(sample_clocal1) {
 
     design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "WN", rand_gen);
     BOOST_CHECK(dependency_graph.number_of_sequences() == 8);
-
-    SolutionSizeType cnos = dependency_graph.sample_local_global(1, 0, 0);
+    dependency_graph.sample();
     BOOST_CHECK(dependency_graph.get_sequence_string()[0] == 'A' || dependency_graph.get_sequence_string()[0] == 'U');
-    BOOST_CHECK(cnos == 6);
+
+    for (int i = 0; i < 100; i++) {
+        std::string result = dependency_graph.get_sequence_string();
+        SolutionSizeType cnos = dependency_graph.sample_local_global(1, 0, 0);
+        BOOST_CHECK(cnos == 6);
+    }
+    // TODO make nice check if the base distributions are alright
 }
 
 BOOST_AUTO_TEST_CASE(sample_plocal1) {
@@ -324,10 +329,16 @@ BOOST_AUTO_TEST_CASE(sample_plocal1) {
 
     design::detail::DependencyGraph<std::mt19937> dependency_graph(structures, "WN", rand_gen);
     BOOST_CHECK(dependency_graph.number_of_sequences() == 8);
-
-    SolutionSizeType cnos = dependency_graph.sample_local_global(-1, 0, 0);
+    dependency_graph.sample();
+    std::cerr << dependency_graph.get_sequence_string() << std::endl;
     BOOST_CHECK(dependency_graph.get_sequence_string()[0] == 'A' || dependency_graph.get_sequence_string()[0] == 'U');
-    BOOST_CHECK(cnos == 6);
+
+    for (int i = 0; i < 100; i++) {
+        std::string result = dependency_graph.get_sequence_string();
+        SolutionSizeType cnos = dependency_graph.sample_local_global(-1, 0, 0);
+        BOOST_CHECK(cnos == 6);
+    }
+    // TODO make nice check if the base distributions are alright
 }
 
 BOOST_AUTO_TEST_CASE(number_of_sequences_cc) {
