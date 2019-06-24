@@ -391,18 +391,32 @@ namespace design
             ProbabilityFraction pf;
             // reset all the colors to N
             reset_colors(graph);
+
+            std::list<Sequence>::iterator last_histentry;
+            try {
+                last_histentry = std::prev(history.end());
+            } catch (std::exception& e) {
+                last_histentry = history.end();
+            }
+
             try {
                  pf = sample_sequence(graph);
             } catch (std::exception& e) {
                 revert_sequence(0);
                 std::stringstream ss;
                 ss << "Error while sampling an initial sequence!" << std::endl
-                    << "Resetting to previous sequence: " << get_sequence_string() << e.what();
+                   << "Resetting to previous sequence: " << get_sequence_string() << e.what();
                 throw std::logic_error(ss.str());
             }
             // remember this new sequence in the history
-            remember_sequence();
-            return pf.second;
+            if (last_histentry == history.end() ||
+               *last_histentry != get_sequence()) {
+                remember_sequence();
+                return pf.second - 1;
+            } else {
+                return sample();
+            }
+            return 0;
         }
 
         template <typename R>
@@ -413,7 +427,10 @@ namespace design
             // calculate maximum number of solutions for all subgraphs
             SolutionSizeType mnos = 0;
             for (auto s : subgraphs) {
-                mnos += boost::get_property(*s, boost::graph_name).nos;
+                auto thisnos = boost::get_property(*s, boost::graph_name).nos;
+                if (thisnos > 1) {
+                    mnos += thisnos;
+                }
                 if (debug) {
                     std::vector<int> vertices = getVertexList(*s);
                     std::cerr << "subgraph: " << std::endl << vertices << std::endl;
@@ -426,32 +443,54 @@ namespace design
 
             SolutionSizeType sum = 0;
             for (auto s : subgraphs) {
-                sum += boost::get_property(*s, boost::graph_name).nos;
+                auto thisnos = boost::get_property(*s, boost::graph_name).nos;
+                if (thisnos > 1) {
+                    sum += thisnos;
+                }
                 // if the random number is bigger than our probability, take this base as the current base!
                 if (random < sum) {
-                    SolutionSizeType cnos = sample(*s);
-                    remember_sequence();
-                    if (debug) {
-                        std::vector<int> vertices = getVertexList(*s);
-                        std::cerr << "sampling subgraph with " << cnos << " possibilities:" << std::endl << vertices << std::endl;
+                    auto last_histentry = std::prev(history.end());
+                    while(true) {
+                        SolutionSizeType cnos = sample(*s);
+                        if (debug) {
+                            std::vector<int> vertices = getVertexList(*s);
+                            std::cerr << "sampling subgraph with " << cnos << " possibilities:" << std::endl << vertices << std::endl;
+                        }
+                        if (*last_histentry != get_sequence()) {
+                            remember_sequence();
+                            return mnos - 1;
+                        }
                     }
-                    break;
                 }
             }
-            return mnos;
+            return 0;
         }
 
         template <typename R>
         SolutionSizeType DependencyGraph<R>::sample_clocal(int connected_component_ID) {
             Graph::children_iterator cc, cc_end;
+            // iterate over all components
             for (boost::tie(cc, cc_end) = graph.children(); cc != cc_end; ++cc) {
                 if (boost::get_property(*cc, boost::graph_name).id == connected_component_ID) {
-                    SolutionSizeType cnos = sample(*cc);
-                    remember_sequence();
-                    return cnos;
+                    auto last_histentry = std::prev(history.end());
+                    while(true) {
+                        SolutionSizeType cnos = sample(*cc);
+                        if (cnos == 1) {
+                            return 0;
+                        }
+                        if (debug) {
+                            std::vector<int> vertices = getVertexList(*cc);
+                            std::cerr << "sampling subgraph with " << cnos << " possibilities:" << std::endl << vertices << std::endl;
+                        }
+                        if (*last_histentry != get_sequence()) {
+                            remember_sequence();
+                            return cnos - 1;
+                        }
+                    }
                 }
             }
             throw std::out_of_range("Could not find a connected component with this ID!");
+            return 0;
         }
 
         template <typename R>
@@ -516,15 +555,26 @@ namespace design
                 std::cerr << "vertex is: " << v_global << std::endl;
             // search for the lowest path subgraph and sample
             Graph* g = find_path_subgraph(v_global, graph);
-            SolutionSizeType cnos = sample(*g);
-            remember_sequence();
-            return cnos;
+            auto last_histentry = std::prev(history.end());
+            while(true) {
+                SolutionSizeType cnos = sample(*g);
+                if (cnos == 1) {
+                    return 0;
+                }
+                if (debug) {
+                    std::vector<int> vertices = getVertexList(*g);
+                    std::cerr << "sampling subgraph with " << cnos << " possibilities:" << std::endl << vertices << std::endl;
+                }
+                if (*last_histentry != get_sequence()) {
+                    remember_sequence();
+                    return cnos - 1;
+                }
+            }
+            return 0;
         }
 
         template <typename R>
         SolutionSizeType DependencyGraph<R>::sample(int start, int end) {
-            // nos
-            SolutionSizeType nos = 1;
             // set with all subgraphs to sample
             std::set<Graph*> subgraphs;
 
@@ -534,12 +584,23 @@ namespace design
                     std::cerr << "vertex is: " << v_global << std::endl;
                 subgraphs.insert(find_path_subgraph(v_global, graph));
             }
-            // sample collected subgraphs
-            for (auto sg : subgraphs) {
-                nos *= sample(*sg);
+
+            auto last_histentry = std::prev(history.end());
+            while(true) {
+                SolutionSizeType nos = 1;
+                // sample collected subgraphs
+                for (auto sg : subgraphs) {
+                    nos *= sample(*sg);
+                }
+                if (nos == 1) {
+                    return 0;
+                }
+                if (*last_histentry != get_sequence()) {
+                    remember_sequence();
+                    return nos - 1;
+                }
             }
-            remember_sequence();
-            return nos;
+            return 0;
         }
 
         template <typename R>
@@ -720,13 +781,17 @@ namespace design
 
         template <typename R>
         void DependencyGraph<R>::set_history_size(unsigned int size) {
-            history_size = size;
-            if (history.size() > history_size) {
-                // get an iterator pointing to the first element that should be maintained
-                std::list<Sequence>::iterator end = history.begin();
-                std::advance(end, history.size()-history_size);
-                // erase everything old. from beginning until only history_size elements remain
-                history.erase(history.begin(), end);
+            if (size < 1) {
+                throw std::out_of_range("History must be at least one entry big!");
+            } else {
+                history_size = size;
+                if (history.size() > history_size) {
+                    // get an iterator pointing to the first element that should be maintained
+                    std::list<Sequence>::iterator end = history.begin();
+                    std::advance(end, history.size()-history_size);
+                    // erase everything old. from beginning until only history_size elements remain
+                    history.erase(history.begin(), end);
+                }
             }
         }
 

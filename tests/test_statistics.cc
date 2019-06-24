@@ -66,4 +66,6 @@ BOOST_AUTO_TEST_CASE(EqualDistribution) {
     delete dependency_graph;
 }
 
+// TODO make nice check if the base distributions are alright
+
 BOOST_AUTO_TEST_SUITE_END()
