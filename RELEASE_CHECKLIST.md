@@ -6,6 +6,8 @@ RELEASE CHECKLIST
  * Write Known Issues List (or update \bug statements in documentation)
  * Remove debugging and testing code and print statements
 
+ * Bump Software Version in configure.ac
+
  * Verify that every function appears in the Test Scripts
  * Run Unit tests on final build
  
@@ -16,7 +18,6 @@ RELEASE CHECKLIST
 
  * Verify that User Documentation matches current Release
 
- * Bump Software Version
  * Tag and Branch the source code repository
  * Create the releasable tarball
  * Push to Github
