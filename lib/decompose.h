@@ -1,4 +1,4 @@
-/*!\file decompose.h 
+/*!\file decompose.h
  * \brief This file holds the functions to decompose the dependency graph into its subgraphs.
  *
  * @date 25.03.2013
@@ -42,12 +42,15 @@ namespace design {
         // does the graph decomposition recursion
         template <typename RG>
         void decompose_recursion(Graph& g, RG& rand);
-        
+
         // get a vector of all vertices with their component id. finds connected components with DFS
         void connected_components_to_subgraphs(Graph& g);
 
         // finds biconnected components with DFS
         void biconnected_components_to_subgraphs(Graph& g);
+
+        // iterate over graph and create subgraph of biconnected components
+        void create_biconnected_subgraphs(Graph& g, Vertex v, std::map<int, Graph*> bicomponent_graphs, std::map<Edge, int>& component, int j);
 
         // starts at a degree>3 articulation point and walks along a path to connect it to one component
         void merge_biconnected_paths(Graph& g, Vertex p, Vertex v, std::map<Edge, int>& component, std::vector<Vertex>& art_points, int& nc);
@@ -55,7 +58,7 @@ namespace design {
         // ear decomposition of blocks
         template <typename RG>
         void ear_decomposition_to_subgraphs(Graph& g, RG& rand, bool optimize_decomposition);
-        
+
         // calculate alpha and beta values as measure for the complexity of this ear_decomposition
         std::pair<int, int> get_alpha_beta(Graph& g, std::vector<Vertex> att_points, int num);
 
@@ -72,6 +75,6 @@ namespace design {
 #endif
 
 
-/* 
+/*
  * \endcond INTERNAL
  */
