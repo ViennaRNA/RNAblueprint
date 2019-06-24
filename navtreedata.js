@@ -13,7 +13,6 @@ var NAVTREE =
       [ "Testing", "index.html#testing_sec", null ],
       [ "How to cite", "index.html#cite_sec", null ]
     ] ],
-    [ "Bug List", "bug.html", null ],
     [ "Namespaces", null, [
       [ "Namespace List", "namespaces.html", "namespaces" ],
       [ "Namespace Members", "namespacemembers.html", [
