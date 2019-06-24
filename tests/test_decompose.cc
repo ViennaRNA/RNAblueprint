@@ -5,7 +5,7 @@
  * @author Stefan Hammer <s.hammer@univie.ac.at>
  * @copyright GPLv3
  *
- * 
+ *
  *
  */
 
@@ -51,30 +51,31 @@ Graph createGraph(int type) {
 
     if ((type == BC) || (type == CC)) {
         // add a biconnected component
-        for (int i = 9; i <= 11; i++) {
+        for (int i = 9; i <= 12; i++) {
             Vertex v = boost::add_vertex(g);
             boost::put(boost::vertex_color_t(), g, v, i);
         }
         boost::add_edge(boost::vertex(7, g), boost::vertex(9, g), g);
         boost::add_edge(boost::vertex(9, g), boost::vertex(10, g), g);
         boost::add_edge(boost::vertex(10, g), boost::vertex(11, g), g);
+        boost::add_edge(boost::vertex(10, g), boost::vertex(12, g), g);
     }
 
     if (type == CC) {
         // add a connected component
         Vertex v = boost::add_vertex(g);
-        boost::put(boost::vertex_color_t(), g, v, 12);
-        v = boost::add_vertex(g);
         boost::put(boost::vertex_color_t(), g, v, 13);
-        boost::add_edge(boost::vertex(12, g), boost::vertex(13, g), g);
+        v = boost::add_vertex(g);
+        boost::put(boost::vertex_color_t(), g, v, 14);
+        boost::add_edge(boost::vertex(13, g), boost::vertex(14, g), g);
     }
 
     /* full graph looks like this now (block plus path as biconnected component and connected component):
       5---6---7---9---10---11
+      |   |   |        |
+      4   8---0       12
       |   |   |
-      4   8---0
-      |   |   |
-      3---2---1       12---13
+      3---2---1       13---14
      */
     return g;
 }
@@ -89,7 +90,7 @@ std::unordered_set<int> getVertexSet(Graph& g) {
 }
 
 BOOST_AUTO_TEST_CASE(connectedComponents) {
-    
+
     initialize_library(true);
     // create a graph
     Graph g = createGraph(CC);
@@ -104,8 +105,8 @@ BOOST_AUTO_TEST_CASE(connectedComponents) {
         // for the smaller connected component (12---13)
         if (boost::num_vertices(*child) == 2) {
             // check if both vertices exist and are labeled right
-            BOOST_CHECK(boost::get(boost::vertex_color_t(), *child, 0) == 12);
-            BOOST_CHECK(boost::get(boost::vertex_color_t(), *child, 1) == 13);
+            BOOST_CHECK(boost::get(boost::vertex_color_t(), *child, 0) == 13);
+            BOOST_CHECK(boost::get(boost::vertex_color_t(), *child, 1) == 14);
             // check if just one edge exists here
             BOOST_CHECK(boost::num_edges(*child) == 1);
         }
@@ -114,8 +115,8 @@ BOOST_AUTO_TEST_CASE(connectedComponents) {
     BOOST_CHECK(number_of_children == 2);
 }
 
-BOOST_AUTO_TEST_CASE(biconnectedComponents) {
-    
+BOOST_AUTO_TEST_CASE(biconnectedComponents1) {
+
     initialize_library(true);
     // get graph
     Graph g = createGraph(BC);
@@ -123,56 +124,63 @@ BOOST_AUTO_TEST_CASE(biconnectedComponents) {
     BOOST_TEST_MESSAGE("decompose biconnected components 1");
     biconnected_components_to_subgraphs(g);
 
-    int number_of_children = 0;
+    unsigned int number_of_children = 0;
 
     Graph::children_iterator child, child_end;
     for (boost::tie(child, child_end) = g.children(); child != child_end; ++child) {
         number_of_children++;
         // print_graph(*child, &std::cout);
         // for the smaller connected component (12---13)
-        if (boost::num_vertices(*child) == 4) {
-            std::unordered_set<int> testcase{7, 9, 10, 11};
+        if (boost::num_vertices(*child) == 3) {
+            std::unordered_set<int> testcase{7, 9, 10};
             BOOST_CHECK(getVertexSet(*child) == testcase);
             // check if just one edge exists here
-            BOOST_CHECK(boost::num_edges(*child) == 3);
+            BOOST_CHECK(boost::num_edges(*child) == 2);
+        } else if (boost::num_vertices(*child) == 2) {
+            std::unordered_set<int> testcase1{10, 11};
+            std::unordered_set<int> testcase2{10, 12};
+            BOOST_CHECK(getVertexSet(*child) == testcase1 || getVertexSet(*child) == testcase2);
+            // check if just one edge exists here
+            BOOST_CHECK(boost::num_edges(*child) == 1);
         }
     }
     // check if it is just 2 connected components
-    BOOST_CHECK(number_of_children == 2);
+    BOOST_CHECK(number_of_children == 4);
+}
 
+BOOST_AUTO_TEST_CASE(biconnectedComponents2) {
     // ---------------------------------------------------------------
     // do another one with 2 paths connected on the block
-    Graph h = createGraph(BC);
-    for (int i = 12; i <= 13; i++) {
-        Vertex v = boost::add_vertex(h);
-        boost::put(boost::vertex_color_t(), h, v, i);
-    }
-    boost::add_edge(boost::vertex(0, h), boost::vertex(12, h), h);
-    boost::add_edge(boost::vertex(12, h), boost::vertex(13, h), h);
+    initialize_library(true);
+    Graph h = createGraph(CC);
+    boost::add_edge(boost::vertex(0, h), boost::vertex(13, h), h);
 
     BOOST_TEST_MESSAGE("decompose biconnected components 2");
     biconnected_components_to_subgraphs(h);
 
-    number_of_children = 0;
+    unsigned int number_of_children = 0;
 
+    Graph::children_iterator child, child_end;
     for (boost::tie(child, child_end) = h.children(); child != child_end; ++child) {
         number_of_children++;
         // print_graph(*child, &std::cout);
         // for the smaller connected component (12---13)
-        if (boost::num_vertices(*child) == 4) {
-            std::unordered_set<int> testcase{7, 9, 10, 11};
-            BOOST_CHECK(getVertexSet(*child) == testcase);
-            // check if just one edge exists here
-            BOOST_CHECK(boost::num_edges(*child) == 3);
-        } else if (boost::num_vertices(*child) == 3) {
-            std::unordered_set<int> testcase{0, 12, 13};
-            BOOST_CHECK(getVertexSet(*child) == testcase);
+         if (boost::num_vertices(*child) == 3) {
+            std::unordered_set<int> testcase1{7, 9, 10};
+            std::unordered_set<int> testcase2{0, 13, 14};
+            BOOST_CHECK(getVertexSet(*child) == testcase1 || getVertexSet(*child) == testcase2);
             // check if just one edge exists here
             BOOST_CHECK(boost::num_edges(*child) == 2);
+        } else if (boost::num_vertices(*child) == 2) {
+            std::unordered_set<int> testcase1{10, 11};
+            std::unordered_set<int> testcase2{10, 12};
+            BOOST_CHECK(getVertexSet(*child) == testcase1 || getVertexSet(*child) == testcase2);
+            // check if just one edge exists here
+            BOOST_CHECK(boost::num_edges(*child) == 1);
         }
     }
     // check if it is just 3 connected components
-    BOOST_CHECK(number_of_children == 3);
+    BOOST_CHECK(number_of_children == 5);
 }
 
 BOOST_AUTO_TEST_CASE(EarDecomposition) {
@@ -191,7 +199,7 @@ BOOST_AUTO_TEST_CASE(EarDecomposition) {
     for (boost::tie(child, child_end) = g.children(); child != child_end; ++child) {
         number_of_children++;
         std::unordered_set<int> testcase;
-        
+
         std::pair<Graph::edge_iterator, Graph::edge_iterator> ei = edges(g);
         int ear = (*child)[*ei.first].ear;
         switch (ear) {
@@ -283,7 +291,7 @@ BOOST_AUTO_TEST_CASE(alpha_beta) {
     BOOST_CHECK(alpha == 3);
     BOOST_CHECK(beta == 4);
     BOOST_CHECK(num == 3);
-    
+
 }
 
 BOOST_AUTO_TEST_CASE(partsBetweenArticulationPoints) {
@@ -308,7 +316,7 @@ BOOST_AUTO_TEST_CASE(partsBetweenArticulationPoints) {
         // or in case of no Ak or Ai, the whole ear is another subgraph
         std::pair<Graph::edge_iterator, Graph::edge_iterator> ei = edges(*ear);
         int k = (*ear)[*ei.first].ear;
-        
+
         Graph::children_iterator child, child_end;
         if (k == 1) {
             boost::tie(child, child_end) = (*ear).children();
@@ -321,7 +329,7 @@ BOOST_AUTO_TEST_CASE(partsBetweenArticulationPoints) {
             // Now check if everything worked out!
             number_of_children++;
             std::unordered_set<int> testcase;
-            
+
             switch (k) {
                 case 2:
                     // for ear number 2 there should be two children, one with 3 nodes
@@ -384,13 +392,13 @@ BOOST_AUTO_TEST_CASE(simpleCircle) {
         boost::add_edge(boost::vertex(i, g), boost::vertex(i + 1, g), g);
     }
     boost::add_edge(boost::vertex(0, g), boost::vertex(3, g), g);
-    
+
     // decompose into subgraphs
     std::mt19937 mt(1);
     decompose_recursion(g, mt);
     // check
     int number_of_children = 0;
-    
+
     Graph::children_iterator child, child_end;
     for (boost::tie(child, child_end) = g.children(); child != child_end; ++child) {
         number_of_children++;
@@ -401,7 +409,7 @@ BOOST_AUTO_TEST_CASE(simpleCircle) {
         BOOST_CHECK(max_degree <= 2);
         BOOST_CHECK(min_degree == 1);
     }
-    
+
     BOOST_CHECK(number_of_children == 2);
 }
 
