@@ -345,7 +345,6 @@ namespace design {
         SolutionSizeType sample_plocal(int min_num_pos, int max_num_pos);
         /*! \brief Randomly chooses one path (either top-level a connected component, or within a block, etc.) and samples all positions.
          *
-         * \bug It is a known issue, that this function does not draw solutions completely fair as the paths to sample are selected in a biased manner.
          * \sa sample_plocal(int min_num_pos, int max_num_pos), sample_clocal(), sample_clocal(int min_num_pos, int max_num_pos), sample_clocal(int connected_component_ID)
          * \return \b number of possible solutions for this sampling.
         */
