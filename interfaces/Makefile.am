@@ -1,6 +1,8 @@
 # the subdirectories of the interface
-if ENABLE_SWIG
+SUBDIRS = @PERL_INTERFACE@ @PYTHON2_INTERFACE@ @PYTHON3_INTERFACE@
 
-SUBDIRS = Python Perl
+SOURCES = \
+    RNAblueprint.i
 
-endif
+EXTRA_DIST = \
+    RNAblueprint.i

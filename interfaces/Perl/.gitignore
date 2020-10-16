@@ -1,0 +1,6 @@
+# ignore files that are created by SWIG
+RNAblueprint.pm
+RNAblueprint_wrap.*
+auto
+version.i
+

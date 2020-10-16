@@ -3,7 +3,7 @@
 autom4te.cache/
 config.status
 configure
-*/.deps/
+*.deps
 *nbproject*
 *RNAdesign
 *.[oa]
@@ -30,5 +30,5 @@ m4/lt~obsolete.m4
 doc*
 depcomp
 install-sh
-interfaces/Perl/*
-interfaces/Python/*
+src/RNAblueprint
+tests/testRNAblueprint
