@@ -1,3 +1,6 @@
+#
+# Modified by Ronny Lorenz <ronny@tbi.univie.ac.at>
+#
 # ===========================================================================
 #        http://www.gnu.org/software/autoconf-archive/ax_perl_ext.html
 # ===========================================================================
@@ -5,7 +8,6 @@
 # SYNOPSIS
 #
 #   AX_PERL_EXT
-#   AX_PERL_EXT([prefix])
 #
 # DESCRIPTION
 #
@@ -81,6 +83,28 @@ AC_DEFUN([AX_PERL_EXT],[
                 AC_SUBST(PERL_EXT_PREFIX)
 
                 #
+                # Check for Perl siteprefix.
+                #
+                AC_ARG_VAR(PERL_EXT_SITEPREFIX, [Perl SITEPREFIX])
+                AC_MSG_CHECKING([for Perl siteprefix])
+                if test -z "$PERL_EXT_SITEPREFIX" ; then
+                        [PERL_EXT_SITEPREFIX=`$PERL -MConfig -e 'print $Config{siteprefix};'`];
+                fi
+                AC_MSG_RESULT([$PERL_EXT_SITEPREFIX])
+                AC_SUBST(PERL_EXT_SITEPREFIX)
+
+                #
+                # Check for Perl vendorprefix.
+                #
+                AC_ARG_VAR(PERL_EXT_VENDORPREFIX, [Perl VENDORPREFIX])
+                AC_MSG_CHECKING([for Perl vendorprefix])
+                if test -z "$PERL_EXT_VENDORPREFIX" ; then
+                        [PERL_EXT_VENDORPREFIX=`$PERL -MConfig -e 'print $Config{vendorprefix};'`];
+                fi
+                AC_MSG_RESULT([$PERL_EXT_VENDORPREFIX])
+                AC_SUBST(PERL_EXT_VENDORPREFIX)
+
+                #
                 # Check for Perl extensions include path.
                 #
                 AC_ARG_VAR(PERL_EXT_INC, [Directory to include XS headers from])
@@ -97,14 +121,55 @@ AC_DEFUN([AX_PERL_EXT],[
                 AC_ARG_VAR(PERL_EXT_LIB, [Directory to install perl files into])
                 AC_MSG_CHECKING([for Perl extension target directory])
                 if test -z "$PERL_EXT_LIB" ; then
-                    if test -z "$1" -o "x$1" = xNONE ; then
-                        [PERL_EXT_LIB=`$PERL -MConfig -e 'print $Config{sitearch};'`];
-                    else
-                        [PERL_EXT_LIB=`$PERL -MConfig -e 'print $ARGV.shift, "/lib/perl";' $1`]
-                    fi
+                    [PERL_EXT_LIB=`$PERL -MConfig -e 'print $Config{sitearch};'`];
                 fi
                 AC_MSG_RESULT([$PERL_EXT_LIB])
                 AC_SUBST(PERL_EXT_LIB)
+
+                #
+                # Check for the extensions (architecture dependent) site target directory.
+                # (same as PERL_EXT_LIB)
+                #
+                AC_ARG_VAR(PERL_EXT_SITEARCH, [Directory to install architecture dependent site perl files into])
+                AC_MSG_CHECKING([for architecture dependent Perl extension site target directory])
+                if test -z "$PERL_EXT_SITEARCH" ; then
+                    [PERL_EXT_SITEARCH=`$PERL -MConfig -e 'print $Config{sitearch};'`];
+                fi
+                AC_MSG_RESULT([$PERL_EXT_SITEARCH])
+                AC_SUBST(PERL_EXT_SITEARCH)
+
+                #
+                # Check for the extensions (architecture dependent) vendor target directory.
+                #
+                AC_ARG_VAR(PERL_EXT_VENDORARCH, [Directory to install architecture dependent vendor perl files into])
+                AC_MSG_CHECKING([for architecture dependent Perl extension vendor target directory])
+                if test -z "$PERL_EXT_VENDORARCH" ; then
+                    [PERL_EXT_VENDORARCH=`$PERL -MConfig -e 'print $Config{vendorarch};'`];
+                fi
+                AC_MSG_RESULT([$PERL_EXT_VENDORARCH])
+                AC_SUBST(PERL_EXT_VENDORARCH)
+
+                #
+                # Check for the extensions (architecture independent) site target directory.
+                #
+                AC_ARG_VAR(PERL_EXT_SITELIB, [Directory to install architecture independent site perl files into])
+                AC_MSG_CHECKING([for architecture independent Perl extension site target directory])
+                if test -z "$PERL_EXT_SITELIB" ; then
+                    [PERL_EXT_SITELIB=`$PERL -MConfig -e 'print $Config{sitelib};'`];
+                fi
+                AC_MSG_RESULT([$PERL_EXT_SITELIB])
+                AC_SUBST(PERL_EXT_SITELIB)
+
+                #
+                # Check for vendors extensions (architecture independent) vendor target directory.
+                #
+                AC_ARG_VAR(PERL_EXT_VENDORLIB, [Directory to install architecture independent vendor perl files into])
+                AC_MSG_CHECKING([for architecture independent Perl extension vendor target directory])
+                if test -z "$PERL_EXT_VENDORLIB" ; then
+                    [PERL_EXT_VENDORLIB=`$PERL -MConfig -e 'print $Config{vendorlib};'`];
+                fi
+                AC_MSG_RESULT([$PERL_EXT_VENDORLIB])
+                AC_SUBST(PERL_EXT_VENDORLIB)
 
                 #
                 # Check for Perl CPP flags.
@@ -139,13 +204,12 @@ AC_DEFUN([AX_PERL_EXT],[
                 #
                 # Check for Perl dynamic library extension.
                 #
-                AC_ARG_VAR(PERL_EXT_DLEXT, [Perl dynamic library extension])
+                AC_ARG_VAR(PERL_SO, [Perl dynamic library extension])
                 AC_MSG_CHECKING([for Perl dynamic library extension])
-                if test -z "$PERL_EXT_DLEXT" ; then
-                        [PERL_EXT_DLEXT=`$PERL -MConfig -e 'print ".", $Config{'dlext'};'`];
+                if test -z "$PERL_SO" ; then
+                        [PERL_SO=`$PERL -MConfig -e 'print ".", $Config{'dlext'};'`];
                 fi
-                AC_MSG_RESULT([$PERL_EXT_DLEXT])
-                AC_SUBST(PERL_EXT_DLEXT)
+                AC_MSG_RESULT([$PERL_SO])
+                AC_SUBST(PERL_SO)
         fi
 ])
-

@@ -19,7 +19,12 @@
  * include the RNAblueprint header it self
  */
 
+#ifdef SWIGPYTHON
+%module(moduleimport="from . import _RNAblueprint") RNAblueprint
+#else
 %module RNAblueprint
+#endif
+
 %{
 
   /* Includes the header in the wrapper code */
@@ -30,6 +35,8 @@
 /*
  * stuff necessary to get the RNAblueprint DependencyGraph stuff working
  */
+
+%include version.i
 
 %include "std_string.i"
 %include "std_vector.i"

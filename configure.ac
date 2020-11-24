@@ -202,28 +202,62 @@ AS_IF([test "x$enable_swig" != "xno"], [
 AM_CONDITIONAL([ENABLE_SWIG], [test x"$enable_swig_status" = x"yes"])
 
 AM_COND_IF([ENABLE_SWIG], [
-    AX_SWIG_ENABLE_CXX
-    AX_SWIG_MULTI_MODULE_SUPPORT
-
-    # Python support
+    # Python2 support
     ######################################################################
+    AX_REQUIRE_DEFINED([AX_PYTHON2_DEVEL])
+    AC_ARG_ENABLE([python2],
+        [AS_HELP_STRING([--disable-python2],
+            [Disable the Python 2.x interface.])])
+
+    AS_IF([test "x$enable_python2" != "xno"], [
+        AC_MSG_NOTICE([Building with Python 2.x bindings])
+        ## check for python2 config
+        AX_PYTHON2_DEVEL
+
+        if test "x$python2_enabled_but_failed" != "x"
+        then
+            with_python2="no"
+        else
+            AC_SUBST(PYTHON2DIR,$python2dir)
+            AC_SUBST(PKGPYTHON2DIR,$pkgpython2dir)
+            AC_SUBST(PYEXEC2DIR,$py2execdir)
+            AC_SUBST(PKGPYEXEC2DIR,$pkgpy2execdir)
+
+            AC_DEFINE([WITH_PYTHON2_INTERFACE], [1], [Create the python2 interface to RNAblueprint])
+            AC_SUBST([PYTHON2_INTERFACE], [Python2])
+            AC_CONFIG_FILES([interfaces/Python2/Makefile interfaces/Python2/version.i])
+        fi
+        [enable_python2_status="yes"]
+    ], [
+        [enable_python2_status="no"]
+    ])
+
+    # Python3 support
+    ######################################################################
+    AX_REQUIRE_DEFINED([AX_PYTHON3_DEVEL])
     AC_ARG_ENABLE([python],
         [AS_HELP_STRING([--disable-python],
-            [Disable the Python interface.])])
+            [Disable the Python 3.x interface.])])
 
     AS_IF([test "x$enable_python" != "xno"], [
-        AC_MSG_NOTICE([Building with Python bindings])
-        AM_PATH_PYTHON(2.7, [], [ 
-            AC_MSG_ERROR([Python is required to build.])
-            [enable_python_status="Python is required to build."]
-        ])
-        AX_PYTHON_DEVEL
-        AX_SWIG_PYTHON
+        AC_MSG_NOTICE([Building with Python 3.x bindings])
+        ## check for python3 config
+        AX_PYTHON3_DEVEL
+
+        if test "x$python3_enabled_but_failed" != "x"
+        then
+            with_python="no"
+        else
+            AC_DEFINE([WITH_PYTHON3_INTERFACE], [1], [Create the Python3 interface to RNAlib])
+            AC_SUBST([PYTHON3_INTERFACE], [Python3])
+        fi
+
+        AC_CONFIG_FILES([interfaces/Python3/Makefile interfaces/Python3/version.i])
         [enable_python_status="yes"]
     ], [
         [enable_python_status="no"]
     ])
-    
+
     # Perl5 support
     ######################################################################
     AC_ARG_ENABLE([perl],
@@ -232,22 +266,44 @@ AM_COND_IF([ENABLE_SWIG], [
 
     AS_IF([test "x$enable_perl" != "xno"], [
         AC_MSG_NOTICE([Building with Perl bindings])
-        AX_PERL_EXT([$prefix])
-        if test x"$PERL" = x; then
+        AX_PERL_EXT
+        if test "x$PERL" = "x"; then
             AC_MSG_ERROR([Perl is required to build.])
-            [enable_python_status="Perl is required to build."]
+            [enable_perl_status="Perl is required to build."]
         fi
-        AX_PERL_EXT_FLAGS([PERLXS_CFLAGS], [PERLXS_LDFLAGS])
-        AC_SUBST([PERLXS_CFLAGS])
-        AC_SUBST([PERLXS_LDFLAGS])
+    ])
+
+    AS_IF([test "x$enable_perl" != "xno"], [
+        # Compose the correct installation path for perl modules
+        #
+        # here we actually have to account for INSTALLDIRS env variable, which can be
+        #
+        # site    = where the local systems administrator installs packages to
+        # vendor  = where system packages are installed to, or
+        # core    = where perl core packages are installed
+        #
+        # The default selection is 'site', but upon packaging for a specific distribution
+        # we might want the user to set this to 'vendor'
+        #
+        AS_IF([ test "x$INSTALLDIRS" == "xvendor" ],[
+          PERL_ARCH_RELATIVE_INSTALL_DIR=`echo ${PERL_EXT_VENDORARCH} | sed "s,${PERL_EXT_VENDORPREFIX},,"`
+          PERL_LIB_RELATIVE_INSTALL_DIR=`echo ${PERL_EXT_VENDORLIB} | sed "s,${PERL_EXT_VENDORPREFIX},,"`
+          ],[
+          PERL_ARCH_RELATIVE_INSTALL_DIR=`echo ${PERL_EXT_SITEARCH} | sed "s,${PERL_EXT_SITEPREFIX},,"`
+          PERL_LIB_RELATIVE_INSTALL_DIR=`echo ${PERL_EXT_SITELIB} | sed "s,${PERL_EXT_SITEPREFIX},,"`
+        ])
+        AC_SUBST(PERL_ARCH_RELATIVE_INSTALL_DIR)
+        AC_SUBST(PERL_LIB_RELATIVE_INSTALL_DIR)
+
+        AC_DEFINE([WITH_PERL_INTERFACE], [1], [Create the perl interface to RNAlib])
+        AC_SUBST([PERL_INTERFACE], [Perl])
+        AC_CONFIG_FILES([interfaces/Perl/Makefile interfaces/Perl/version.i])
+
         [enable_perl_status="yes"]
     ], [
         [enable_perl_status="no"]
     ])
 ])
-
-AM_CONDITIONAL([ENABLE_PYTHON],[test "x$enable_python_status" = x"yes"])
-AM_CONDITIONAL([ENABLE_PERL5],[test "x$enable_perl_status" = x"yes"])
 
 # Configure supported platforms
 ##########################################################################
@@ -270,8 +326,6 @@ AC_CONFIG_FILES([lib/Makefile])
 AC_CONFIG_FILES([src/Makefile])
 AC_CONFIG_FILES([tests/Makefile])
 AC_CONFIG_FILES([interfaces/Makefile])
-AC_CONFIG_FILES([interfaces/Python/Makefile])
-AC_CONFIG_FILES([interfaces/Perl/Makefile])
 
 # generate the final Makefile etc. and display summary
 ##########################################################################
@@ -297,7 +351,8 @@ Options:
 
 SWIG enabled:           $enable_swig_status
   Perl interface:       $enable_perl_status
-  Python interface:     $enable_python_status
+  Python2 interface:    $enable_python2_status
+  Python3 interface:    $enable_python_status
 
 Documentation enabled:  $doxygen_doc
   (HTML):               $doxygen_html

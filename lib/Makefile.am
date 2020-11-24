@@ -3,8 +3,15 @@
 # the library names to build
 lib_LTLIBRARIES = libRNAblueprint.la
 
+# convenience library
+noinst_LTLIBRARIES =  libRNAblueprint_conv.la
+
 # where to install the headers on the system
 libRNAblueprint_ladir = $(includedir)/RNAblueprint
+libRNAblueprint_la_SOURCES = 
+
+# ldflags to avoid version information
+libRNAblueprint_la_LIBADD = libRNAblueprint_conv.la
 
 # ldflags to avoid version information
 libRNAblueprint_la_LDFLAGS = -avoid-version
@@ -13,7 +20,7 @@ libRNAblueprint_la_LDFLAGS = -avoid-version
 AM_CPPFLAGS = $(BOOST_CPPFLAGS) @AM_CXXFLAGS@
 
 # the list of header files that belong to the library
-libRNAblueprint_la_HEADERS = \
+pkginclude_HEADERS = \
             RNAblueprint.h \
 			common.h \
 			decompose.h \
@@ -28,8 +35,7 @@ libRNAblueprint_la_HEADERS = \
 			ear-decomposition.hpp
 
 # the sources to add to the library and to add to the source distribution
-libRNAblueprint_la_SOURCES =	\
-			$(libRNAblueprint_a_HEADERS) \
+libRNAblueprint_conv_la_SOURCES = \
 			RNAblueprint.cc \
 			common.cc \
 			decompose.cc \
@@ -39,3 +45,5 @@ libRNAblueprint_la_SOURCES =	\
 			pairing_matrix.cc \
 			dependency_graph.cc \
 			probability_matrix.cc
+
+EXTRA_DIST =  $(pkginclude_HEADERS)
