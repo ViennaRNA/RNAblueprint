@@ -305,6 +305,8 @@ AM_COND_IF([ENABLE_SWIG], [
     ])
 ])
 
+AC_CONFIG_FILES([doxygen.cfg])
+
 # Configure supported platforms
 ##########################################################################
 case $host in
