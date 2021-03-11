@@ -24,8 +24,8 @@ RNAblueprint_la_CXXFLAGS = -Wno-unused-label -Wno-unused-variable
 
 RNAblueprint_la_LIBADD = \
                   $(LDADD) \
-                  $(top_builddir)/lib/libRNAblueprint_conv.la \
                   $(BOOST_GRAPH_LIBS) \
+                  $(top_builddir)/lib/libRNAblueprint_conv.la \
                  -lstdc++
 
 RNAblueprint_la_LDFLAGS = \
