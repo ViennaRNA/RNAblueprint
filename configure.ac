@@ -1,7 +1,7 @@
 # RNAblueprint: configure.ac
 
 # initial information about the project
-AC_INIT([RNAblueprint],[1.3.0],[sven@bioinf.uni-leipzig.de],[RNAblueprint],[https://github.com/ViennaRNA/RNAblueprint])
+AC_INIT([RNAblueprint],[1.3.1],[sven@bioinf.uni-leipzig.de],[RNAblueprint],[https://github.com/ViennaRNA/RNAblueprint])
 
 # automake initialisation (mandatory)
 AC_PREREQ([2.59])
@@ -304,6 +304,8 @@ AM_COND_IF([ENABLE_SWIG], [
         [enable_perl_status="no"]
     ])
 ])
+
+AC_CONFIG_FILES([doxygen.cfg])
 
 # Configure supported platforms
 ##########################################################################

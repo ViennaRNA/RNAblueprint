@@ -1,11 +1,15 @@
 % Latex header for doxygen 1.8.9.1
 \documentclass[twoside]{book}
 
+% Use pass-options instead of square bracket options
+% to avoid LaTeX Error: Option clash for package adjustbox
+\PassOptionsToPackage{export}{adjustbox}
+
 % Packages required by doxygen
 \usepackage{fixltx2e}
 \usepackage{calc}
 \usepackage{doxygen}
-\usepackage[export]{adjustbox} % also loads graphicx
+\usepackage{adjustbox} % also loads graphicx
 \usepackage{graphicx}
 \usepackage[utf8]{inputenc}
 \usepackage{makeidx}
@@ -15,6 +19,11 @@
 \usepackage{textcomp}
 \usepackage[nointegrals]{wasysym}
 \usepackage[table]{xcolor}
+
+% Package ifthen has moved from doxygen.sty to refman.tex since
+% doxygen 1.8.16. As we provide a custom header, we need to include
+% it explicitely
+\usepackage{ifthen}
 
 % Font selection
 \usepackage[T1]{fontenc}

@@ -24,8 +24,8 @@ _RNAblueprint_la_CXXFLAGS = -Wno-unused-label -Wno-unused-variable
 
 _RNAblueprint_la_LIBADD = \
     $(LDADD) \
-    $(top_builddir)/lib/libRNAblueprint_conv.la \
     $(BOOST_GRAPH_LIBS) \
+    $(top_builddir)/lib/libRNAblueprint_conv.la \
     -lstdc++
 
 _RNAblueprint_la_LDFLAGS = \
@@ -34,7 +34,6 @@ _RNAblueprint_la_LDFLAGS = \
                   -shared \
                   -export-dynamic \
                   -shrext \
-                  $(BOOST_GRAPH_LDFLAGS) \
                   $(PYTHON2_SO) \
                   $(PYTHON2_LDFLAGS)
 

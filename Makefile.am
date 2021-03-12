@@ -2,6 +2,13 @@
 ACLOCAL_AMFLAGS = -I m4 
 AUTOMAKE_OPTIONS = foreign
 
+AM_DISTCHECK_CONFIGURE_FLAGS = \
+    --enable-doxygen-doc \
+    --enable-doxygen-xml \
+    --enable-doxygen-html \
+     --disable-silent-rules
+
+
 # include docygen am file
 include $(top_srcdir)/doxygen.am
 
@@ -17,12 +24,19 @@ $(dist_man3_MANS): doxygen-doc
 endif
 
 docdata=
+
+if DX_COND_html
 htmldocdir = $(docdir)/html
+endif
+
+if DX_COND_xml
 xmldocdir = $(docdir)/xml
+endif
 
 if DX_COND_pdf
 docdata += @DX_DOCDIR@/RNAblueprint.pdf
 endif
+
 if DX_COND_html
 dist_htmldoc_DATA = @DX_DOCDIR@/html/*
 
@@ -40,5 +54,9 @@ endif
 dist_doc_DATA = $(docdata) 
 
 $(dist_doc_DATA): doxygen-doc
+
+
+EXTRA_DIST = \
+    data
 
 MOSTLYCLEANFILES = $(DX_CLEANFILES)
