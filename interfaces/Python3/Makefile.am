@@ -37,7 +37,6 @@ _RNAblueprint_la_LDFLAGS = \
                   -shared \
                   -export-dynamic \
                   -shrext \
-                  $(BOOST_GRAPH_LDFLAGS) \
                   $(PYTHON3_SO) \
                   $(PYTHON3_LDFLAGS)
 

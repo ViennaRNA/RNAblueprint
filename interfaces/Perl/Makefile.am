@@ -34,7 +34,6 @@ RNAblueprint_la_LDFLAGS = \
                   -shared \
                   -export-dynamic \
                   -shrext \
-                  $(BOOST_GRAPH_LDFLAGS) \
                   $(PERL_SO)
 
 EXTRA_DIST = \
