@@ -23,6 +23,7 @@
 #include <utility>
 #include <exception>
 #include <random>
+#include <deque>
 
 // include boost components
 #include <boost/lexical_cast.hpp>
