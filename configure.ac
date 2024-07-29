@@ -1,7 +1,7 @@
 # RNAblueprint: configure.ac
 
 # initial information about the project
-AC_INIT([RNAblueprint],[1.3.2],[sven@bioinf.uni-leipzig.de],[RNAblueprint],[https://github.com/ViennaRNA/RNAblueprint])
+AC_INIT([RNAblueprint],[1.3.3],[sven@bioinf.uni-leipzig.de],[RNAblueprint],[https://github.com/ViennaRNA/RNAblueprint])
 
 # automake initialisation (mandatory)
 AC_PREREQ([2.59])
